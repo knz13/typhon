@@ -25,7 +25,8 @@ class EngineSubWindow extends StatefulWidget {
   SubWindowDivision division;
   double mainChildProportion;
   bool shouldShowBorder;
-  double titleHeightPercentage;
+  static double titleHeight = 20;
+  static double subWindowBorderWidth = 5;
 
 
 
@@ -38,14 +39,16 @@ class EngineSubWindow extends StatefulWidget {
       this.secondChildTitle,
       this.division = SubWindowDivision.top,
       this.mainChildProportion = 0.5,
-      this.shouldShowBorder = true,
-      this.titleHeightPercentage = 0.03
+      this.shouldShowBorder = true
     }
   );
 
   @override
   State<EngineSubWindow> createState() => _EngineSubWindowState();
 }
+
+
+
 
 
 class _EngineSubWindowState extends State<EngineSubWindow> {
@@ -61,21 +64,16 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
     
     Widget mainChildWidget = widget.mainChild.runtimeType == EngineSubWindow? widget.mainChild : Column(
       children: [
-        Expanded(
-          flex: ((widget.titleHeightPercentage)*100).toInt(),
-          child: Container(
-            color: Colors.blue,
-            child: Center(
-              child: Text(
-                widget.mainChildTitle ?? ""
-              ),
+        Container(
+          height: EngineSubWindow.titleHeight,
+          color: Colors.blue,
+          child: Center(
+            child: Text(
+              widget.mainChildTitle ?? ""
             ),
           ),
         ),
-        Expanded(
-          flex: ((1 - widget.titleHeightPercentage) * 100).toInt(),
-          child: widget.mainChild
-        )
+        Expanded(child: widget.mainChild)
       ],
     );
 
@@ -83,13 +81,20 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
       return mainChildWidget;
     }
 
-    Widget secondChildWidget = widget.secondChild!.runtimeType == EngineSubWindow? widget.secondChild! :Column(
-      children: [
-        //title
-        Expanded(
-          flex: ((widget.titleHeightPercentage)*100).toInt(),
-          child: Container(
-            
+    mainChildWidget = SizedBox(
+      width: widget.division == SubWindowDivision.left || widget.division == SubWindowDivision.right ? MediaQuery.of(context).size.width * (widget.mainChildProportion) : null,
+      height: widget.division == SubWindowDivision.top || widget.division == SubWindowDivision.bottom? MediaQuery.of(context).size.height * (widget.mainChildProportion) : null,
+      child: mainChildWidget 
+    );
+
+    Widget secondChildWidget = widget.secondChild!.runtimeType == EngineSubWindow? widget.secondChild! :SizedBox(
+      width: widget.division == SubWindowDivision.left || widget.division == SubWindowDivision.right ? MediaQuery.of(context).size.width * (1 - widget.mainChildProportion) : null,
+      height: widget.division == SubWindowDivision.top || widget.division == SubWindowDivision.bottom? MediaQuery.of(context).size.height * (1- widget.mainChildProportion) : null,
+      child: Column(
+        children: [
+          //title
+          Container(
+            height: EngineSubWindow.titleHeight,
             color: Colors.blue,
             child: Center(
               child: Text(
@@ -97,34 +102,29 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
               ),
             )
           ),
-        ),
-        Expanded(
-          flex: ((1 - widget.titleHeightPercentage)*100).toInt(),
-          child:widget.secondChild!
-        )
-      ],
+          Expanded(child: widget.secondChild!)
+        ],
+      ),
     );
-
+    
     
     //mainChildWidget = mainChildWidget.runtimeType == EngineSubWindow? mainChildWidget : EngineSubWindow(mainChild: mainChildWidget,mainChildTitle: widget.mainChildTitle,);
     //secondChildWidget = secondChildWidget.runtimeType == EngineSubWindow? secondChildWidget : EngineSubWindow(mainChild: secondChildWidget,mainChildTitle: widget.secondChildTitle,);
-
+    
     return widget.division == SubWindowDivision.top || widget.division == SubWindowDivision.bottom? 
     Column(
       children: widget.division == SubWindowDivision.top? 
       [
         Expanded(
-          flex: ((widget.mainChildProportion - 1)* 100).toInt(),
+          flex: ((widget.mainChildProportion)* 100).toInt(),
           child: mainChildWidget
         ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            color: Colors.black87,
-          ),
+        Container(
+          color: Colors.black45,
+          height: EngineSubWindow.subWindowBorderWidth,
         ),
         Expanded(
-          flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
+          flex:((1-(widget.mainChildProportion))* 100).toInt(),
           child: secondChildWidget
         )
       ] 
@@ -134,11 +134,9 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
           flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
           child: secondChildWidget
         ),
-        Expanded(
-          flex: 1,
-          child: Container(
-            color: Colors.black87,
-          ),
+        Container(
+          height: EngineSubWindow.subWindowBorderWidth,
+          color: Colors.black45,
         ),
         Expanded(
           flex: ((widget.mainChildProportion - 1)* 100).toInt(),
@@ -154,11 +152,9 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
           flex: ((widget.mainChildProportion - 1)* 100).toInt(),
           child: mainChildWidget
         ),
-        Expanded(
-          flex: 2,
-          child: Container(
-            color: Colors.black87,
-          ),
+        Container(
+          width: EngineSubWindow.subWindowBorderWidth,
+          color: Colors.black45,
         ),
         Expanded(
           flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
@@ -171,11 +167,9 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
           flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
           child: secondChildWidget
         ),
-        Expanded(
-          flex: 2,
-          child: Container(
-            color: Colors.black87,
-          ),
+        Container(
+          width: EngineSubWindow.subWindowBorderWidth,
+          color: Colors.black45,
         ),
         Expanded(
           flex: ((widget.mainChildProportion - 1)* 100).toInt(),

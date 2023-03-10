@@ -69,8 +69,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
       child: Scaffold(
         body: EngineSubWindow(
           shouldShowBorder: false,
-          mainChildProportion: 0.8,
-          mainChildTitle: "hi",
+          mainChildProportion: 0.4,
           mainChild:  GameWidget(game: engine),
           secondChild: EngineSubWindow(
             mainChildProportion: 0.3,
