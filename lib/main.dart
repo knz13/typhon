@@ -71,7 +71,8 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
           mainChildProportion: 0.4,
           tabs:  [
             EngineSubWindowData(
-              title: "game",
+              closable: false,
+              title: "Scene",
               child: GameWidget(game: engine)
             )
           ],

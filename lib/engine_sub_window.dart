@@ -22,8 +22,9 @@ class EngineSubWindowData {
   Widget child;
   String title;
   bool closable;
+  List<TabbedViewMenuItem> menuItems;
 
-  EngineSubWindowData({required this.child,required this.title,this.closable = true});
+  EngineSubWindowData({required this.child,required this.title,this.closable = true,this.menuItems = const []});
 
 }
 
@@ -132,7 +133,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             icon: IconProvider.data(FontAwesomeIcons.ellipsisVertical),
             
             menuBuilder: (context) {
-              List<TabbedViewMenuItem> items = [];
+              List<TabbedViewMenuItem> items = widget.tabs[_controller.selectedIndex!].menuItems.toList();
 
               if(widget.tabs[_controller.selectedIndex!].closable){
                 items.add(TabbedViewMenuItem(text: "Close Tab",onSelection: () {
