@@ -68,15 +68,30 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
     return SafeArea(
       child: Scaffold(
         body: EngineSubWindow(
-          shouldShowBorder: false,
           mainChildProportion: 0.4,
-          mainChild:  GameWidget(game: engine),
-          secondChild: EngineSubWindow(
-            mainChildProportion: 0.3,
-            mainChild: Text("hi"),
-            mainChildTitle: "title!",
-            secondChild: Text("he!"),
+          tabs:  [
+            EngineSubWindowData(
+              title: "game",
+              child: GameWidget(game: engine)
+            )
+          ],
+          splitSubWindow: EngineSubWindow(
+            mainChildProportion: 0.4,
+            tabs: [
+              EngineSubWindowData(
+                title:'hi tab',
+                child: Text("hi")
+              )
+            ],
             division: SubWindowDivision.left,
+            splitSubWindow: EngineSubWindow(
+              tabs: [ 
+                EngineSubWindowData(
+                  title: "hehe",
+                  child: Text("he!")
+                )
+              ]
+            ),
           )
         )
       ),

@@ -83,6 +83,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  font_awesome_flutter:
+    dependency: "direct main"
+    description:
+      name: font_awesome_flutter
+      sha256: "959ef4add147753f990b4a7c6cccb746d5792dbdc81b1cde99e62e7edb31b206"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.4.0"
   js:
     dependency: transitive
     description:
@@ -139,14 +147,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.2"
-  resizable_widget:
-    dependency: "direct main"
-    description:
-      name: resizable_widget
-      sha256: db2919754b93f386b9b3fb15e9f48f6c9d6d41f00a24397629133c99df86606a
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -184,6 +184,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  tabbed_view:
+    dependency: "direct main"
+    description:
+      name: tabbed_view
+      sha256: dfe40dc579f92cb421b51310a6320cf3239492ed5b198f1a290c81726b2a33c8
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.16.0+1"
   term_glyph:
     dependency: transitive
     description:
