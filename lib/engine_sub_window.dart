@@ -25,6 +25,7 @@ class EngineSubWindow extends StatefulWidget {
   SubWindowDivision division;
   double mainChildProportion;
   bool shouldShowBorder;
+  double proportionAllowedRange;
   static double titleHeight = 20;
   static double subWindowBorderWidth = 5;
 
@@ -39,7 +40,8 @@ class EngineSubWindow extends StatefulWidget {
       this.secondChildTitle,
       this.division = SubWindowDivision.top,
       this.mainChildProportion = 0.5,
-      this.shouldShowBorder = true
+      this.shouldShowBorder = true,
+      this.proportionAllowedRange = 0.8,
     }
   );
 
@@ -119,9 +121,23 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
           flex: ((widget.mainChildProportion)* 100).toInt(),
           child: mainChildWidget
         ),
-        Container(
-          color: Colors.black45,
-          height: EngineSubWindow.subWindowBorderWidth,
+        Draggable(
+          onDragUpdate: (details) {
+            double delta = details.localPosition.dy/MediaQuery.of(context).size.height;
+            if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
+              setState(() {
+                widget.mainChildProportion = delta;
+              });
+            }
+          },
+          feedback: Container(),
+          child: MouseRegion(
+            cursor:SystemMouseCursors.resizeUpDown,
+            child: Container(
+              color: Colors.black45,
+              height: EngineSubWindow.subWindowBorderWidth,
+            ),
+          ),
         ),
         Expanded(
           flex:((1-(widget.mainChildProportion))* 100).toInt(),
@@ -134,9 +150,23 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
           flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
           child: secondChildWidget
         ),
-        Container(
-          height: EngineSubWindow.subWindowBorderWidth,
-          color: Colors.black45,
+        Draggable(
+          onDragUpdate: (details) {
+            double delta = details.localPosition.dy/MediaQuery.of(context).size.height;
+            if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
+              setState(() {
+                widget.mainChildProportion = 1 - delta;
+              });
+            }
+          },
+          feedback: Container(),
+          child: MouseRegion(
+            cursor:SystemMouseCursors.resizeUpDown,
+            child: Container(
+              color: Colors.black45,
+              height: EngineSubWindow.subWindowBorderWidth,
+            ),
+          ),
         ),
         Expanded(
           flex: ((widget.mainChildProportion - 1)* 100).toInt(),
@@ -152,9 +182,23 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
           flex: ((widget.mainChildProportion - 1)* 100).toInt(),
           child: mainChildWidget
         ),
-        Container(
-          width: EngineSubWindow.subWindowBorderWidth,
-          color: Colors.black45,
+        Draggable(
+          feedback: Container(),
+          onDragUpdate: (details) {
+            double delta = details.localPosition.dx/MediaQuery.of(context).size.width;
+            if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
+              setState(() {
+                widget.mainChildProportion = delta;
+              });
+            }
+          },
+          child: MouseRegion(
+            cursor:SystemMouseCursors.resizeLeftRight,
+            child: Container(
+              color: Colors.black45,
+              width: EngineSubWindow.subWindowBorderWidth,
+            ),
+          ),
         ),
         Expanded(
           flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
@@ -167,9 +211,23 @@ class _EngineSubWindowState extends State<EngineSubWindow> {
           flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
           child: secondChildWidget
         ),
-        Container(
-          width: EngineSubWindow.subWindowBorderWidth,
-          color: Colors.black45,
+        Draggable(
+          onDragUpdate: (details) {
+            double delta = details.localPosition.dx/MediaQuery.of(context).size.width;
+            if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
+              setState(() {
+                widget.mainChildProportion = 1- delta;
+              });
+            }
+          },
+          feedback: Container(),
+          child: MouseRegion(
+            cursor:SystemMouseCursors.resizeLeftRight,
+            child: Container(
+              color: Colors.black45,
+              width: EngineSubWindow.subWindowBorderWidth,
+            ),
+          ),
         ),
         Expanded(
           flex: ((widget.mainChildProportion - 1)* 100).toInt(),
