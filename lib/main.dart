@@ -1,6 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:typhon/engine_sub_window.dart';
+import 'package:typhon/scene_viewer.dart';
 
 import 'engine.dart';
 
@@ -73,7 +74,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
             EngineSubWindowData(
               closable: false,
               title: "Scene",
-              child: GameWidget(game: engine)
+              child: SceneViewer()
             )
           ],
           splitSubWindow: EngineSubWindow(

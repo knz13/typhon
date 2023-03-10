@@ -38,7 +38,11 @@ class EngineSubWindow extends StatefulWidget {
   double proportionAllowedRange;
   static double titleHeight = 20;
   static double subWindowBorderWidth = 5;
+  static Color tabAreaColor = Colors.black;
+  static Color tabColor = const Color.fromARGB(255, 60, 60, 60);
+  static Color backgroundColor = const Color.fromARGB(255, 100, 100, 100);
   ValueNotifier emptyNotifier = ValueNotifier(false);
+  ValueNotifier getInnerNotifier = ValueNotifier(false);
 
 
   EngineSubWindow(
@@ -51,6 +55,7 @@ class EngineSubWindow extends StatefulWidget {
       this.proportionAllowedRange = 0.8
     }
   );
+
 
  
   
@@ -73,16 +78,15 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
   void clone(EngineSubWindow other) {
     setState(() {
       widget.tabs = other.tabs;
-      widget.splitSubWindow = other.splitSubWindow;
       widget.division = other.division;
       widget.mainChildProportion = other.mainChildProportion;
       widget.proportionAllowedRange = other.proportionAllowedRange;
     });
+    setSplitSubWindow(other.splitSubWindow);
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     List<TabData> data = [];
@@ -95,20 +99,37 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           widget.splitSubWindow = null;
         });
       });
+      widget.splitSubWindow!.getInnerNotifier.addListener(() {
+        setState(() {
+          widget.splitSubWindow = widget.splitSubWindow!.splitSubWindow;
+        });
+      });
     }
   }
 
+  void setSplitSubWindow(EngineSubWindow? window) {
+    setState(() {
+      widget.splitSubWindow = window;
+    });
+    if(widget.splitSubWindow != null){
+      widget.splitSubWindow!.emptyNotifier.addListener(() {
+          setSplitSubWindow(null);
+        });
+      widget.splitSubWindow!.getInnerNotifier.addListener(() {
+          setSplitSubWindow(widget.splitSubWindow!.splitSubWindow);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     List<TabData> tabData = [];
-    int index = 0;
     for(EngineSubWindowData data in widget.tabs){
       tabData.add(
         TabData(
           closable: false,
           text: data.title,
           content: data.child,
-          buttons: [
-          ]
         )
       );
     }
@@ -116,6 +137,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     //print("called! len = ${_controller.tabs}");
 
     _controller = TabbedViewController(tabData);
+
     _controller.addListener(() {
       if(_controller.tabs.isEmpty){
         if(widget.splitSubWindow != null){
@@ -125,19 +147,25 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     });
     
     Widget mainChildWidget = TabbedView(
-      
       controller: _controller,
       tabsAreaButtonsBuilder:(context, tabsCount) {
         return [
           TabButton(
             icon: IconProvider.data(FontAwesomeIcons.ellipsisVertical),
-            
             menuBuilder: (context) {
               List<TabbedViewMenuItem> items = widget.tabs[_controller.selectedIndex!].menuItems.toList();
 
               if(widget.tabs[_controller.selectedIndex!].closable){
                 items.add(TabbedViewMenuItem(text: "Close Tab",onSelection: () {
+                  
+                  
                   if(widget.tabs.length == 1){
+                    if(widget.splitSubWindow != null){
+                      setState(() {
+                        widget.getInnerNotifier.value = true;
+                      });
+                      return;
+                    }
                     setState(() {
                       widget.emptyNotifier.value = true;
                     });
@@ -152,17 +180,43 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           )
         ];
       },
+      draggableTabBuilder: (tabIndex, tab, tabWidget) {
+        return Draggable(
+          data: "TabsDraggableData",
+          feedback: SizedBox(
+            width: 200,
+            height: 100,
+            child: EngineSubWindow(tabs: [
+              EngineSubWindowData(
+                title: tab.text,
+                child: Container()
+              )
+            ],),
+          ),
+          child: tabWidget
+        );
+      },
     );
 
-    BorderRadiusGeometry radius = const BorderRadius.vertical(top: Radius.circular(2));
 
     TabbedViewThemeData theme = TabbedViewThemeData.dark()
       ..menu.ellipsisOverflowText = true 
-      ..tabsArea.color = Colors.black87
+      ..tabsArea.color = EngineSubWindow.tabAreaColor
       ..tabsArea.middleGap = 5
+      ..tabsArea.color = EngineSubWindow.backgroundColor
+      ..tab.normalButtonColor = EngineSubWindow.tabColor
+      ..tab.selectedStatus.decoration = BoxDecoration(
+        color: EngineSubWindow.tabColor
+      )
+      ..contentArea.decoration = BoxDecoration(
+        color: EngineSubWindow.tabColor
+      )
       ..menu.blur = true
-      ..menu;
-    mainChildWidget = TabbedViewTheme(child: mainChildWidget, data: theme);
+      ..contentArea.padding = EdgeInsets.zero;
+    mainChildWidget = TabbedViewTheme(
+      data: theme,
+      child: mainChildWidget
+    );
 
     if(widget.splitSubWindow == null) {
       return mainChildWidget;
