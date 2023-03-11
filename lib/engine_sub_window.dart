@@ -2,6 +2,9 @@
 
 
 
+import 'dart:ui';
+
+import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -36,6 +39,7 @@ class EngineSubWindow extends StatefulWidget {
   SubWindowDivision division;
   double mainChildProportion;
   double proportionAllowedRange;
+  TextStyle? titleStyle;
   static double titleHeight = 20;
   static double subWindowBorderWidth = 5;
   static Color tabAreaColor = Colors.black;
@@ -50,6 +54,7 @@ class EngineSubWindow extends StatefulWidget {
       super.key,
       required this.tabs,
       this.splitSubWindow,
+      this.titleStyle,
       this.division = SubWindowDivision.top,
       this.mainChildProportion = 0.5,
       this.proportionAllowedRange = 0.8
@@ -149,6 +154,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     Widget mainChildWidget = TabbedView(
       controller: _controller,
       tabsAreaButtonsBuilder:(context, tabsCount) {
+
         return [
           TabButton(
             icon: IconProvider.data(FontAwesomeIcons.ellipsisVertical),
@@ -157,7 +163,6 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
 
               if(widget.tabs[_controller.selectedIndex!].closable){
                 items.add(TabbedViewMenuItem(text: "Close Tab",onSelection: () {
-                  
                   
                   if(widget.tabs.length == 1){
                     if(widget.splitSubWindow != null){
@@ -171,7 +176,9 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                     });
                     return;
                   }
-                  _controller.removeTab(_controller.selectedIndex!);
+                  setState(() {
+                    widget.tabs.removeAt(_controller.selectedIndex!);
+                  });
                 }));
               }
 
@@ -186,12 +193,16 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           feedback: SizedBox(
             width: 200,
             height: 100,
-            child: EngineSubWindow(tabs: [
-              EngineSubWindowData(
-                title: tab.text,
-                child: Container()
-              )
-            ],),
+            child: Blur(
+              blur: 0.5,
+              colorOpacity: 0.1,
+              child: EngineSubWindow(tabs: [
+                EngineSubWindowData(
+                  title: tab.text,
+                  child: Container()
+                )
+              ],),
+            ),
           ),
           child: tabWidget
         );
@@ -201,18 +212,30 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
 
     TabbedViewThemeData theme = TabbedViewThemeData.dark()
       ..menu.ellipsisOverflowText = true 
-      ..tabsArea.color = EngineSubWindow.tabAreaColor
-      ..tabsArea.middleGap = 5
+      ..tabsArea.middleGap = 2
+      ..tab.textStyle = widget.titleStyle ?? TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.normal,
+        decoration: TextDecoration.none,
+        fontSize: 13
+      )
       ..tabsArea.color = EngineSubWindow.backgroundColor
-      ..tab.normalButtonColor = EngineSubWindow.tabColor
       ..tab.selectedStatus.decoration = BoxDecoration(
         color: EngineSubWindow.tabColor
       )
+      ..tab.decoration = BoxDecoration(
+        color: EngineSubWindow.backgroundColor
+      )
+      ..tabsArea.buttonsAreaPadding = EdgeInsets.zero
+
       ..contentArea.decoration = BoxDecoration(
         color: EngineSubWindow.tabColor
       )
       ..menu.blur = true
       ..contentArea.padding = EdgeInsets.zero;
+
+
+
     mainChildWidget = TabbedViewTheme(
       data: theme,
       child: mainChildWidget
@@ -225,7 +248,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     mainChildWidget = SizedBox(
       width: widget.division == SubWindowDivision.left || widget.division == SubWindowDivision.right ? MediaQuery.of(context).size.width * (widget.mainChildProportion) : null,
       height: widget.division == SubWindowDivision.top || widget.division == SubWindowDivision.bottom? MediaQuery.of(context).size.height * (widget.mainChildProportion) : null,
-      child: mainChildWidget 
+      child: mainChildWidget
     );
 
     Widget secondChildWidget = widget.splitSubWindow!;

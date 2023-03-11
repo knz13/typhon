@@ -83,6 +83,10 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
               EngineSubWindowData(
                 title:'hi tab',
                 child: Text("hi")
+              ),
+              EngineSubWindowData(
+                title: 'hi 3',
+                child: Text("noon")
               )
             ],
             division: SubWindowDivision.left,
@@ -91,7 +95,10 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                 EngineSubWindowData(
                   title: "hehe",
                   child: Text("he!")
-                )
+                ),
+                
+
+
               ]
             ),
           )
