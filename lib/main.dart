@@ -69,32 +69,44 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
     return SafeArea(
       child: Scaffold(
         body: EngineSubWindow(
-          division: SubWindowDivision.right,
-          mainChildProportion: 0.2,
+          division: SubWindowDivision.left,
+          mainChildProportion: 0.75,
           mainSubWindow: EngineSubWindow(
-            mainChildProportion: 0.3,
-            division: SubWindowDivision.right,
+            mainChildProportion: 0.7,
+            division: SubWindowDivision.top,
             mainSubWindow: EngineSubWindow(
-              tabs: [
-                EngineSubWindowData(
-                  title: "algo",
-                  child: Container()
-                )
-              ]
+              division: SubWindowDivision.right,
+              mainChildProportion: 0.75,
+              mainSubWindow: EngineSubWindow(
+                tabs: [
+                  EngineSubWindowData(
+                    title: "Scene",
+                    child: SceneViewer()
+                  )
+                ]
+              ),
+              splitSubWindow: EngineSubWindow(
+                tabs: [
+                  EngineSubWindowData(
+                    title: "Hierarchy",
+                    child: Container()
+                  )
+                ]
+              ),
             ),
             splitSubWindow: EngineSubWindow(
               tabs: [
                 EngineSubWindowData(
-                  title: "",
-                  child: Container(),
+                  title: "File Viewer",
+                  child: Container()
                 )
-              ]
+              ],
             ),
           ),
           splitSubWindow: EngineSubWindow(
             tabs: [
               EngineSubWindowData(
-                title: "Hierarchy",
+                title: "Inspector",
                 child: Container()
               )
             ],

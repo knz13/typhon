@@ -291,7 +291,10 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     Column(
       children: widget.division == SubWindowDivision.top? 
       [
-        mainChildWidget,
+        Expanded(
+          flex: ((widget.mainChildProportion)* 100).toInt(),
+          child: mainChildWidget
+        ),
         Draggable(
           onDragUpdate: (details) {
             double delta = details.localPosition.dy/MediaQuery.of(context).size.height;
@@ -310,11 +313,17 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             ),
           ),
         ),
-        secondChildWidget
+        Expanded(
+          flex:((1-(widget.mainChildProportion))* 100).toInt(),
+          child: secondChildWidget
+        )
       ] 
       :
       [
-        secondChildWidget,
+        Expanded(
+          flex:((1-(widget.mainChildProportion))* 100).toInt(),
+          child: secondChildWidget
+        ),
         Draggable(
           onDragUpdate: (details) {
             double delta = details.localPosition.dy/MediaQuery.of(context).size.height;
@@ -333,14 +342,20 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             ),
           ),
         ),
-        mainChildWidget
+        Expanded(
+          flex: ((widget.mainChildProportion)* 100).toInt(),
+          child: mainChildWidget
+        ),
       ]
     ) 
     :
     Row(
       children: widget.division == SubWindowDivision.left?
       [
-        Expanded(child: mainChildWidget),
+        Expanded(
+          flex: ((widget.mainChildProportion)* 100).toInt(),
+          child: mainChildWidget
+        ),
         Draggable(
           feedback: Container(),
           onDragUpdate: (details) {
@@ -359,11 +374,17 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             ),
           ),
         ),
-        Expanded(child: secondChildWidget)
+        Expanded(
+          flex:((1-(widget.mainChildProportion))* 100).toInt(),
+          child: secondChildWidget
+        ),
       ] 
       :
       [
-        Expanded(child: secondChildWidget),
+        Expanded(
+          flex:((1-(widget.mainChildProportion))* 100).toInt(),
+          child: secondChildWidget
+        ),
         Draggable(
           onDragUpdate: (details) {
             double delta = details.localPosition.dx/MediaQuery.of(context).size.width;
@@ -382,7 +403,10 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             ),
           ),
         ),
-        Expanded(child: mainChildWidget)
+        Expanded(
+          flex: ((widget.mainChildProportion)* 100).toInt(),
+          child: mainChildWidget
+        ),
       ]
     );
   }
