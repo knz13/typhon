@@ -70,7 +70,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
       child: Scaffold(
         body: EngineSubWindow(
           division: SubWindowDivision.right,
-          mainChildProportion: 0.6,
+          mainChildProportion: 0.2,
           mainSubWindow: EngineSubWindow(
             mainChildProportion: 0.3,
             division: SubWindowDivision.right,

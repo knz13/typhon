@@ -42,7 +42,7 @@ class EngineSubWindow extends StatefulWidget {
   double proportionAllowedRange;
   TextStyle? titleStyle;
   static double titleHeight = 20;
-  static double subWindowBorderWidth = 5;
+  static double subWindowBorderWidth = 2;
   static Color tabAreaColor = Colors.black;
   static Color tabColor = const Color.fromARGB(255, 60, 60, 60);
   static Color backgroundColor = const Color.fromARGB(255, 100, 100, 100);
@@ -268,12 +268,20 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
       return mainChildWidget;
     }
 
-   
+    mainChildWidget = SizedBox(
+        width: widget.division == SubWindowDivision.left || widget.division == SubWindowDivision.right ? ((MediaQuery.of(context).size.width * (widget.mainChildProportion))): null,
+        height: widget.division == SubWindowDivision.top || widget.division == SubWindowDivision.bottom? ((MediaQuery.of(context).size.height * (widget.mainChildProportion))): null,
+        child: mainChildWidget
+    );
 
 
     Widget secondChildWidget = widget.splitSubWindow!;
 
-   
+    secondChildWidget = SizedBox(
+        width: widget.division == SubWindowDivision.left || widget.division == SubWindowDivision.right ? ((MediaQuery.of(context).size.width * (1 - widget.mainChildProportion))) : null,
+        height: widget.division == SubWindowDivision.top || widget.division == SubWindowDivision.bottom? ((MediaQuery.of(context).size.height * (1 - widget.mainChildProportion))): null,
+        child: secondChildWidget
+    );
     
     
     //mainChildWidget = mainChildWidget.runtimeType == EngineSubWindow? mainChildWidget : EngineSubWindow(mainChild: mainChildWidget,mainChildTitle: widget.mainChildTitle,);
@@ -283,10 +291,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     Column(
       children: widget.division == SubWindowDivision.top? 
       [
-        Expanded(
-          flex: ((widget.mainChildProportion)* 100).toInt(),
-          child: mainChildWidget
-        ),
+        mainChildWidget,
         Draggable(
           onDragUpdate: (details) {
             double delta = details.localPosition.dy/MediaQuery.of(context).size.height;
@@ -305,17 +310,11 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             ),
           ),
         ),
-        Expanded(
-          flex:((1-(widget.mainChildProportion))* 100).toInt(),
-          child: secondChildWidget
-        )
+        secondChildWidget
       ] 
       :
       [
-        Expanded(
-          flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
-          child: secondChildWidget
-        ),
+        secondChildWidget,
         Draggable(
           onDragUpdate: (details) {
             double delta = details.localPosition.dy/MediaQuery.of(context).size.height;
@@ -334,20 +333,14 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             ),
           ),
         ),
-        Expanded(
-          flex: ((widget.mainChildProportion - 1)* 100).toInt(),
-          child: mainChildWidget
-        )
+        mainChildWidget
       ]
     ) 
     :
     Row(
       children: widget.division == SubWindowDivision.left?
       [
-        Expanded(
-          flex: ((widget.mainChildProportion - 1)* 100).toInt(),
-          child: mainChildWidget
-        ),
+        Expanded(child: mainChildWidget),
         Draggable(
           feedback: Container(),
           onDragUpdate: (details) {
@@ -366,17 +359,11 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             ),
           ),
         ),
-        Expanded(
-          flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
-          child: secondChildWidget
-        )
+        Expanded(child: secondChildWidget)
       ] 
       :
       [
-        Expanded(
-          flex:((1-(widget.mainChildProportion - 1))* 100).toInt(),
-          child: secondChildWidget
-        ),
+        Expanded(child: secondChildWidget),
         Draggable(
           onDragUpdate: (details) {
             double delta = details.localPosition.dx/MediaQuery.of(context).size.width;
@@ -395,10 +382,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             ),
           ),
         ),
-        Expanded(
-          flex: ((widget.mainChildProportion - 1)* 100).toInt(),
-          child: mainChildWidget
-        )
+        Expanded(child: mainChildWidget)
       ]
     );
   }
