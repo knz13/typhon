@@ -91,7 +91,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                     title: "Hierarchy",
                     child: Container()
                   )
-                ]
+                ],
               ),
             ),
             splitSubWindow: EngineSubWindow(

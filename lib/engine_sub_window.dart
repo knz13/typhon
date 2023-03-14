@@ -41,13 +41,13 @@ class EngineSubWindow extends StatefulWidget {
   double mainChildProportion;
   double proportionAllowedRange;
   TextStyle? titleStyle;
+  static List<EngineSubWindow> aliveWindows = [];
   static double titleHeight = 20;
   static double subWindowBorderWidth = 2;
   static Color tabAreaColor = Colors.black;
   static Color tabColor = const Color.fromARGB(255, 60, 60, 60);
   static Color backgroundColor = const Color.fromARGB(255, 100, 100, 100);
   ValueNotifier emptyNotifier = ValueNotifier(false);
-  ValueNotifier getInnerNotifier = ValueNotifier(false);
 
 
   EngineSubWindow(
@@ -88,49 +88,82 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
       widget.division = other.division;
       widget.mainChildProportion = other.mainChildProportion;
       widget.proportionAllowedRange = other.proportionAllowedRange;
+      widget.splitSubWindow = other.splitSubWindow;
+      widget.mainSubWindow = other.mainSubWindow;
     });
-    setSplitSubWindow(other.splitSubWindow);
+
+
+
+    initializeNotifiers();
   }
 
   @override
   void initState() {
     super.initState();
 
-    if(widget.mainSubWindow != null && widget.tabs.length != 0){
-      throw Exception("Please only add tabs or mainSubWindow when initializing");
+    
+
+    if(((widget.mainSubWindow != null && widget.splitSubWindow != null) || (widget.mainSubWindow != null && widget.splitSubWindow == null))|| widget.tabs.length != 0){
+    }
+    else {
+      throw Exception("Please only add tabs to a leaf window (one without main or split sub windows)");
+
+    }
+
+    if(widget.tabs.length != 0){
+      EngineSubWindow.aliveWindows.add(widget);
     }
 
     List<TabData> data = [];
 
     _controller = TabbedViewController(data);
 
+    initializeNotifiers();
+  }
+
+  void initializeNotifiers() {
     if(widget.splitSubWindow != null){
       widget.splitSubWindow!.emptyNotifier.addListener(() {
-        setState(() {
-          widget.splitSubWindow = null;
-        });
+        if(mounted){
+          setState(() {
+            widget.splitSubWindow = null;
+          });
+        }
       });
-      widget.splitSubWindow!.getInnerNotifier.addListener(() {
-        setState(() {
-          widget.splitSubWindow = widget.splitSubWindow!.splitSubWindow;
-        });
+     
+    }
+    if(widget.mainSubWindow != null){
+      widget.mainSubWindow?.emptyNotifier.addListener(() {
+        if(mounted){
+
+          setState(() {
+            if(widget.splitSubWindow != null){
+              widget.mainSubWindow = widget.splitSubWindow;
+              widget.splitSubWindow = null;
+              initializeNotifiers();
+            }
+            else {
+              widget.emptyNotifier.value = true;
+            }  
+          
+          });
+        }
       });
     }
   }
 
-  void setSplitSubWindow(EngineSubWindow? window) {
-    setState(() {
-      widget.splitSubWindow = window;
-    });
-    if(widget.splitSubWindow != null){
-      widget.splitSubWindow!.emptyNotifier.addListener(() {
-          setSplitSubWindow(null);
-        });
-      widget.splitSubWindow!.getInnerNotifier.addListener(() {
-          setSplitSubWindow(widget.splitSubWindow!.splitSubWindow);
-      });
+  @override
+  void dispose() {
+    // TODO: implement dispose
+
+    if(EngineSubWindow.aliveWindows.contains(widget)){
+      EngineSubWindow.aliveWindows.remove(widget);  
     }
+    
+
+    super.dispose();
   }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -155,13 +188,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
 
       _controller = TabbedViewController(tabData);
 
-      _controller.addListener(() {
-        if(_controller.tabs.isEmpty){
-          if(widget.splitSubWindow != null){
-            clone(widget.splitSubWindow!);
-          }
-        }
-      });
+
       
       mainChildWidget = TabbedView(
         controller: _controller,
@@ -173,16 +200,11 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
               menuBuilder: (context) {
                 List<TabbedViewMenuItem> items = widget.tabs[_controller.selectedIndex!].menuItems.toList();
 
-                if(widget.tabs[_controller.selectedIndex!].closable){
+              
+                if(widget.tabs[_controller.selectedIndex!].closable && EngineSubWindow.aliveWindows.length != 1){
                   items.add(TabbedViewMenuItem(text: "Close Tab",onSelection: () {
                     
                     if(widget.tabs.length == 1){
-                      if(widget.splitSubWindow != null){
-                        setState(() {
-                          widget.getInnerNotifier.value = true;
-                        });
-                        return;
-                      }
                       setState(() {
                         widget.emptyNotifier.value = true;
                       });
