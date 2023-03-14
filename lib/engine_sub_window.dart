@@ -330,7 +330,15 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           child: MouseRegion(
             cursor:SystemMouseCursors.resizeUpDown,
             child: Container(
-              color: Colors.black,
+              decoration: BoxDecoration(
+                color:Colors.black,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius:1,
+                    color: Colors.black
+                  )
+                ]
+              ),
               height: EngineSubWindow.subWindowBorderWidth,
             ),
           ),
@@ -359,7 +367,15 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           child: MouseRegion(
             cursor:SystemMouseCursors.resizeUpDown,
             child: Container(
-              color: Colors.black,
+              decoration: BoxDecoration(
+                color:Colors.black,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius:1,
+                    color: Colors.black
+                  )
+                ]
+              ),
               height: EngineSubWindow.subWindowBorderWidth,
             ),
           ),
@@ -391,7 +407,15 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           child: MouseRegion(
             cursor:SystemMouseCursors.resizeLeftRight,
             child: Container(
-              color: Colors.black,
+              decoration: BoxDecoration(
+                color:Colors.black,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius:1,
+                    color: Colors.black
+                  )
+                ]
+              ),
               width: EngineSubWindow.subWindowBorderWidth,
             ),
           ),
@@ -420,7 +444,15 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           child: MouseRegion(
             cursor:SystemMouseCursors.resizeLeftRight,
             child: Container(
-              color: Colors.black,
+              decoration: BoxDecoration(
+                color:Colors.black,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius:1,
+                    color: Colors.black
+                  )
+                ]
+              ),
               width: EngineSubWindow.subWindowBorderWidth,
             ),
           ),
