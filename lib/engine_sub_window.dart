@@ -36,6 +36,7 @@ class EngineSubWindow extends StatefulWidget {
 
   List<EngineSubWindowData> tabs;
   EngineSubWindow? splitSubWindow;
+  EngineSubWindow? mainSubWindow;
   SubWindowDivision division;
   double mainChildProportion;
   double proportionAllowedRange;
@@ -52,9 +53,10 @@ class EngineSubWindow extends StatefulWidget {
   EngineSubWindow(
     {
       super.key,
-      required this.tabs,
+      this.mainSubWindow,
       this.splitSubWindow,
       this.titleStyle,
+      this.tabs = const [],
       this.division = SubWindowDivision.top,
       this.mainChildProportion = 0.5,
       this.proportionAllowedRange = 0.8
@@ -94,6 +96,10 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
   void initState() {
     super.initState();
 
+    if(widget.mainSubWindow != null && widget.tabs.length != 0){
+      throw Exception("Please only add tabs or mainSubWindow when initializing");
+    }
+
     List<TabData> data = [];
 
     _controller = TabbedViewController(data);
@@ -128,130 +134,146 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
 
   @override
   Widget build(BuildContext context) {
-    List<TabData> tabData = [];
-    for(EngineSubWindowData data in widget.tabs){
-      tabData.add(
-        TabData(
-          closable: false,
-          text: data.title,
-          content: data.child,
-        )
-      );
-    }
-
-    //print("called! len = ${_controller.tabs}");
-
-    _controller = TabbedViewController(tabData);
-
-    _controller.addListener(() {
-      if(_controller.tabs.isEmpty){
-        if(widget.splitSubWindow != null){
-          clone(widget.splitSubWindow!);
-        }
-      }
-    });
     
-    Widget mainChildWidget = TabbedView(
-      controller: _controller,
-      tabsAreaButtonsBuilder:(context, tabsCount) {
+    Widget mainChildWidget = Container();
 
-        return [
-          TabButton(
-            icon: IconProvider.data(FontAwesomeIcons.ellipsisVertical),
-            menuBuilder: (context) {
-              List<TabbedViewMenuItem> items = widget.tabs[_controller.selectedIndex!].menuItems.toList();
+    if(widget.tabs.length != 0){
 
-              if(widget.tabs[_controller.selectedIndex!].closable){
-                items.add(TabbedViewMenuItem(text: "Close Tab",onSelection: () {
-                  
-                  if(widget.tabs.length == 1){
-                    if(widget.splitSubWindow != null){
+      
+      List<TabData> tabData = [];
+      for(EngineSubWindowData data in widget.tabs){
+        tabData.add(
+          TabData(
+            closable: false,
+            text: data.title,
+            content: data.child,
+          )
+        );
+      }
+
+      //print("called! len = ${_controller.tabs}");
+
+      _controller = TabbedViewController(tabData);
+
+      _controller.addListener(() {
+        if(_controller.tabs.isEmpty){
+          if(widget.splitSubWindow != null){
+            clone(widget.splitSubWindow!);
+          }
+        }
+      });
+      
+      mainChildWidget = TabbedView(
+        controller: _controller,
+        tabsAreaButtonsBuilder:(context, tabsCount) {
+
+          return [
+            TabButton(
+              icon: IconProvider.data(FontAwesomeIcons.ellipsisVertical),
+              menuBuilder: (context) {
+                List<TabbedViewMenuItem> items = widget.tabs[_controller.selectedIndex!].menuItems.toList();
+
+                if(widget.tabs[_controller.selectedIndex!].closable){
+                  items.add(TabbedViewMenuItem(text: "Close Tab",onSelection: () {
+                    
+                    if(widget.tabs.length == 1){
+                      if(widget.splitSubWindow != null){
+                        setState(() {
+                          widget.getInnerNotifier.value = true;
+                        });
+                        return;
+                      }
                       setState(() {
-                        widget.getInnerNotifier.value = true;
+                        widget.emptyNotifier.value = true;
                       });
                       return;
                     }
                     setState(() {
-                      widget.emptyNotifier.value = true;
+                      widget.tabs.removeAt(_controller.selectedIndex!);
                     });
-                    return;
-                  }
-                  setState(() {
-                    widget.tabs.removeAt(_controller.selectedIndex!);
-                  });
-                }));
-              }
+                  }));
+                }
 
-              return items;
-            },
-          )
-        ];
-      },
-      draggableTabBuilder: (tabIndex, tab, tabWidget) {
-        return Draggable(
-          data: "TabsDraggableData",
-          feedback: SizedBox(
-            width: 200,
-            height: 100,
-            child: Blur(
-              blur: 0.5,
-              colorOpacity: 0.1,
-              child: EngineSubWindow(tabs: [
-                EngineSubWindowData(
-                  title: tab.text,
-                  child: Container()
-                )
-              ],),
+                return items;
+              },
+            )
+          ];
+        },
+        draggableTabBuilder: (tabIndex, tab, tabWidget) {
+          return Draggable(
+            data: "TabsDraggableData",
+            feedback: SizedBox(
+              width: 200,
+              height: 100,
+              child: Blur(
+                blur: 0.5,
+                colorOpacity: 0.1,
+                child: EngineSubWindow(tabs: [
+                  EngineSubWindowData(
+                    title: tab.text,
+                    child: Container()
+                  )
+                ],),
+              ),
             ),
-          ),
-          child: tabWidget
-        );
-      },
-    );
+            child: tabWidget
+          );
+        },
+      );
 
 
-    TabbedViewThemeData theme = TabbedViewThemeData.dark()
-      ..menu.ellipsisOverflowText = true 
-      ..tabsArea.middleGap = 2
-      ..tab.textStyle = widget.titleStyle ?? TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.normal,
-        decoration: TextDecoration.none,
-        fontSize: 13
-      )
-      ..tabsArea.color = EngineSubWindow.backgroundColor
-      ..tab.selectedStatus.decoration = BoxDecoration(
-        color: EngineSubWindow.tabColor
-      )
-      ..tab.decoration = BoxDecoration(
-        color: EngineSubWindow.backgroundColor
-      )
-      ..tabsArea.buttonsAreaPadding = EdgeInsets.zero
+      TabbedViewThemeData theme = TabbedViewThemeData.dark()
+        ..menu.ellipsisOverflowText = true 
+        ..tabsArea.middleGap = 2
+        ..tab.textStyle = widget.titleStyle ?? TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.normal,
+          decoration: TextDecoration.none,
+          fontSize: 13
+        )
+        ..tabsArea.color = EngineSubWindow.backgroundColor
+        ..tab.selectedStatus.decoration = BoxDecoration(
+          color: EngineSubWindow.tabColor
+        )
+        ..tab.decoration = BoxDecoration(
+          color: EngineSubWindow.backgroundColor
+        )
+        ..tabsArea.buttonsAreaPadding = EdgeInsets.zero
 
-      ..contentArea.decoration = BoxDecoration(
-        color: EngineSubWindow.tabColor
-      )
-      ..menu.blur = true
-      ..contentArea.padding = EdgeInsets.zero;
+        ..contentArea.decoration = BoxDecoration(
+          color: EngineSubWindow.tabColor
+        )
+        ..menu.blur = true
+        ..contentArea.padding = EdgeInsets.zero;
+
+      
+
+      mainChildWidget = TabbedViewTheme(
+        data: theme,
+        child: mainChildWidget
+      );
+
+      
 
 
 
-    mainChildWidget = TabbedViewTheme(
-      data: theme,
-      child: mainChildWidget
-    );
+    }
+    else {
+      mainChildWidget = widget.mainSubWindow!;
+
+    }
+
 
     if(widget.splitSubWindow == null) {
       return mainChildWidget;
     }
 
-    mainChildWidget = SizedBox(
-      width: widget.division == SubWindowDivision.left || widget.division == SubWindowDivision.right ? MediaQuery.of(context).size.width * (widget.mainChildProportion) : null,
-      height: widget.division == SubWindowDivision.top || widget.division == SubWindowDivision.bottom? MediaQuery.of(context).size.height * (widget.mainChildProportion) : null,
-      child: mainChildWidget
-    );
+   
+
 
     Widget secondChildWidget = widget.splitSubWindow!;
+
+   
     
     
     //mainChildWidget = mainChildWidget.runtimeType == EngineSubWindow? mainChildWidget : EngineSubWindow(mainChild: mainChildWidget,mainChildTitle: widget.mainChildTitle,);
