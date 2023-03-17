@@ -1,4 +1,6 @@
 # Miscellaneous
+vendor/
+build/
 *.class
 *.log
 *.pyc

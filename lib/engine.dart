@@ -66,9 +66,9 @@ class Engine extends FlameGame {
   static Random rng = Random();
   static Engine? instance;
   static String libPath = 
-  Platform.isMacOS? path.join('lib', 'liblua_cpp_binder.dylib')
-  : Platform.isWindows ? path.join('lib', 'lua_cpp_binder.dll') 
-  : path.join(Directory.current.path,'lib','lua_cpp_binder.so');
+  Platform.isMacOS? path.join('lib', 'libtyphon_lua.dylib')
+  : Platform.isWindows ? path.join('lib', 'typhon_lua.dll') 
+  : path.join(Directory.current.path,'lib','typhon_lua.so');
 
 
   static DynamicLibrary? library;
