@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdint.h>
-#include "typhon_lua.h"
+#include "typhon.h"
 #include "sol/sol.hpp"
 #include "lua.h"
 

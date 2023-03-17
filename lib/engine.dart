@@ -66,9 +66,9 @@ class Engine extends FlameGame {
   static Random rng = Random();
   static Engine? instance;
   static String libPath = 
-  Platform.isMacOS? path.join('lib', 'libtyphon_lua.dylib')
-  : Platform.isWindows ? path.join('lib', 'typhon_lua.dll') 
-  : path.join(Directory.current.path,'lib','typhon_lua.so');
+  Platform.isMacOS? 'libtyphon.dylib'
+  : Platform.isWindows ? 'lib/typhon.dll'
+  : path.join(Directory.current.path,'lib','typhon.so');
 
 
   static DynamicLibrary? library;
@@ -83,6 +83,9 @@ class Engine extends FlameGame {
   }
 
   Future<String> extractLib() async {
+    if(Platform.isMacOS){
+      return libPath;
+    }
     ByteData data = await rootBundle.load("assets/" + libPath);
     List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 

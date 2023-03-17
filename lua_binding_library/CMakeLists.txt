@@ -44,13 +44,13 @@ project(project_teste)
 
     FetchContent_MakeAvailable(SOL2)
   endif()
-    # includes for target typhon_lua...
+    # includes for target typhon...
 
-      list(APPEND typhon_lua_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/sol2/includes)
+      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/sol2/includes)
 
-    # libraries for target typhon_lua...
+    # libraries for target typhon...
 
-      list(APPEND typhon_lua_LIBRARIES sol2)
+      list(APPEND typhon_LIBRARIES sol2)
 
 # repository download and settings for lua...
 
@@ -66,48 +66,48 @@ project(project_teste)
 
     FetchContent_MakeAvailable(LUA)
   endif()
-    # includes for target typhon_lua...
+    # includes for target typhon...
 
-      list(APPEND typhon_lua_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/lua/src)
+      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/lua/src)
 
-    # libraries for target typhon_lua...
+    # libraries for target typhon...
 
-      list(APPEND typhon_lua_LIBRARIES lua::lua)
+      list(APPEND typhon_LIBRARIES lua::lua)
 
 
 
 # --------------------- Targets ------------------------
 
-  # settings for target typhon_lua...
+  # settings for target typhon...
 
     # adding sources
-      list(APPEND typhon_lua_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon_lua.cpp)
-      list(APPEND typhon_lua_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/lua.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/lua.cpp)
     # creating target
 
-    add_library(typhon_lua SHARED
+    add_library(typhon SHARED
 
-        ${typhon_lua_SOURCE_FILES}
+        ${typhon_SOURCE_FILES}
     )
 
     # setting c++ standard
-    set_target_properties(typhon_lua PROPERTIES
+    set_target_properties(typhon PROPERTIES
         CXX_STANDARD 20
     )
 
     # setting c standard
 
-    set_target_properties(typhon_lua PROPERTIES
+    set_target_properties(typhon PROPERTIES
         C_STANDARD 20
     )
     # adding include paths 
 
-      list(APPEND typhon_lua_INCLUDES ${PROJECT_SOURCE_DIR}/src)
+      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src)
 
-      target_include_directories(typhon_lua PUBLIC ${typhon_lua_INCLUDES})
+      target_include_directories(typhon PUBLIC ${typhon_INCLUDES})
 
     # adding internal libraries
 
-      target_link_libraries(typhon_lua PUBLIC ${typhon_lua_LIBRARIES})
+      target_link_libraries(typhon PUBLIC ${typhon_LIBRARIES})
 
 

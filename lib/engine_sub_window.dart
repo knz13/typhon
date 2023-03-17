@@ -80,7 +80,7 @@ class EngineSubWindow extends StatefulWidget {
 class _EngineSubWindowState extends State<EngineSubWindow>  {
   late TabbedViewController _controller;
 
-  
+  double initialMainSize = 0;
 
   void clone(EngineSubWindow other) {
     setState(() {
@@ -100,8 +100,6 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
   @override
   void initState() {
     super.initState();
-
-    
 
     if(((widget.mainSubWindow != null && widget.splitSubWindow != null) || (widget.mainSubWindow != null && widget.splitSubWindow == null))|| widget.tabs.length != 0){
     }
@@ -169,6 +167,9 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
   Widget build(BuildContext context) {
     
     Widget mainChildWidget = Container();
+
+    initialMainSize = widget.division == SubWindowDivision.left || widget.division == SubWindowDivision.right ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
+    initialMainSize = initialMainSize * widget.mainChildProportion;
 
     if(widget.tabs.length != 0){
 
