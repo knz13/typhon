@@ -5,7 +5,7 @@
 import 'dart:ui';
 
 import 'package:blur/blur.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tabbed_view/tabbed_view.dart';
@@ -23,11 +23,12 @@ enum SubWindowDivision {
 
 class EngineSubWindowData {
   Widget child;
+  Widget? topPanelWidgets;
   String title;
   bool closable;
   List<TabbedViewMenuItem> menuItems;
 
-  EngineSubWindowData({required this.child,required this.title,this.closable = true,this.menuItems = const []});
+  EngineSubWindowData({required this.child,required this.title,this.closable = true,this.menuItems = const [],this.topPanelWidgets});
 
 }
 
@@ -180,7 +181,22 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           TabData(
             closable: false,
             text: data.title,
-            content: data.child,
+            content: Column(
+              children: [
+                data.topPanelWidgets ?? Container(),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 1,
+                  decoration: BoxDecoration(
+                    boxShadow: [BoxShadow(
+                      blurRadius: 1,
+
+                    )]
+                  ),
+                ),
+                Expanded(child: data.child),
+              ],
+            ),
           )
         );
       }
@@ -194,7 +210,6 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
       mainChildWidget = TabbedView(
         controller: _controller,
         tabsAreaButtonsBuilder:(context, tabsCount) {
-
           return [
             TabButton(
               icon: IconProvider.data(FontAwesomeIcons.ellipsisVertical),
@@ -223,6 +238,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           ];
         },
         draggableTabBuilder: (tabIndex, tab, tabWidget) {
+          
           return Draggable(
             data: "TabsDraggableData",
             feedback: SizedBox(

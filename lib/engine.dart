@@ -31,7 +31,7 @@ class Engine extends FlameGame {
     return Engine.rng.nextInt(1 << 32);
   }
 
-  
+   
 
   @override
   FutureOr<void> onLoad() {
@@ -39,6 +39,8 @@ class Engine extends FlameGame {
     initializeLibraryAndGetBindings().then((library) {
         //do stuff related to lua here
     });
+    
+
     
     
     return super.onLoad();

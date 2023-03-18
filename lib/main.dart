@@ -1,12 +1,11 @@
 import 'package:flame/game.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/file_viewer_panel.dart';
 import 'package:typhon/hierarchy_panel.dart';
 import 'package:typhon/inspector_panel.dart';
 import 'package:typhon/scene_viewer_panel.dart';
-import 'package:github/github.dart';
 import 'engine.dart';
 
 
@@ -17,17 +16,8 @@ double contextHeight(var context){
   return MediaQuery.of(context).size.height;
 }
 
-void downloadTranspiler() async {
-  var github = GitHub();
-
-  Repository repo = await github.repositories.getRepository(RepositorySlug("dmitrii-eremin","python-lua"));
-
-  
-}
-
 void main() {
 
-  downloadTranspiler();
   runApp(const MyApp());
 }
 
@@ -95,18 +85,12 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
               mainChildProportion: 0.75,
               mainSubWindow: EngineSubWindow(
                 tabs: [
-                  EngineSubWindowData(
-                    title: "Scene",
-                    child: SceneViewerPanel()
-                  )
+                  SceneViewerPanel().subWindowData()
                 ]
               ),
               splitSubWindow: EngineSubWindow(
                 tabs: [
-                  EngineSubWindowData(
-                    title: "Hierarchy",
-                    child: HierarchyPanel()
-                  )
+                  HierarchyPanel().subWindowData()
                 ],
               ),
             ),
