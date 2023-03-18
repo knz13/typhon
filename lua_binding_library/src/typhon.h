@@ -16,10 +16,21 @@
 #endif
 
 
-typedef int (*CreateComponentFunction)(int);
+typedef int (*AddGameObjectFunction)(int); //args: parentID=-1 if no parent, componentName= | returns: gameObjectID
+typedef int (*RemoveGameObjectFunction)(int); // args: gameObjectID
+typedef void (*PrintToEditorWindow)(const char*); 
 
-FFI_PLUGIN_EXPORT void registerCreateComponentFunction(CreateComponentFunction func);
+#ifdef __cplusplus
+extern"C" {
+#endif
+    FFI_PLUGIN_EXPORT void registerAddGameObjectFunction(AddGameObjectFunction func);
 
-FFI_PLUGIN_EXPORT int load_script_from_string(char* string,int stringLen);
+    FFI_PLUGIN_EXPORT int loadScriptFromString(const char* string);
 
+    FFI_PLUGIN_EXPORT void registerRemoveGameObjectFunction(RemoveGameObjectFunction func);
+
+    FFI_PLUGIN_EXPORT void registerPrintToEditorWindow(PrintToEditorWindow func);
+#ifdef __cplusplus
+}
+#endif
 

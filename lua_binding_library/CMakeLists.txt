@@ -27,7 +27,7 @@ include(ExternalProject)
 include(FetchContent)
 
 #project name
-project(project_teste)
+project(project_typhon)
 
 # --------------------- Repository declarations ------------------------
 # repository download and settings for sol2...

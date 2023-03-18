@@ -1,25 +1,38 @@
 #include <iostream>
 #include <stdint.h>
 #include "typhon.h"
-#include "sol/sol.hpp"
 #include "lua.h"
+#include "editor_window.h"
 
 
 
 
 
-
-int load_script_from_string(char* string,int stringLen) {
-
-};
-
-
-
-void registerCreateComponentFunction(CreateComponentFunction func) {
-    Lua::createComponentFunction = [=](int a){
-        return func(a);
-    };
+extern "C" int loadScriptFromString(const char* string) {
     
-    func(-1);
+    EditorWindow::show("called with '" + std::string(string) + "'");
+    
+    return 0;
+}
+
+void registerPrintToEditorWindow(PrintToEditorWindow func)
+{
+    EditorWindow::_printFunc = [=](std::string data){
+        func(data.c_str());
+    };
+}
+
+extern "C" void registerRemoveGameObjectFunction(RemoveGameObjectFunction func)
+{
+     Lua::removeGameObjectFunction = [=](int gameObjectID){
+        return func(gameObjectID);
+    };
+}
+
+
+extern "C" void registerAddGameObjectFunction(AddGameObjectFunction func) {
+    Lua::addGameObjectFunction = [=](int parent){
+        return func(parent);
+    };
 }
 

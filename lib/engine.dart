@@ -8,118 +8,110 @@ import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
+import 'package:ffi/ffi.dart';
 import 'dart:math';
 import 'package:flutter/services.dart' show ByteData, rootBundle;
 import 'package:path/path.dart' as path;
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:typhon/typhon_bindings.dart';
+import 'package:typhon/typhon_bindings_generated.dart';
 
 
-class LuaComponent extends Component {
+class LuaGameObject extends PositionComponent {
+
+
 
 }
 
-int createComponent(int parent) {
+
+
+
+int addGameObject(int parent) {
   int id = Engine.generateRandomID();
 
 
-  while(Engine.registeredLuaComponents.containsKey(id) && id == -1){
+  while(Engine.registeredLuaGameObjects.containsKey(id) && id == -1){
     id = Engine.generateRandomID();
   }
 
-  
-
-  LuaComponent component = LuaComponent();
-  Engine.registeredLuaComponents[id] = component;
+  LuaGameObject component = LuaGameObject();
+  Engine.registeredLuaGameObjects[id] = component;
 
 
-  if(parent != -1 && Engine.registeredLuaComponents.containsKey(parent)){
-    Engine.registeredLuaComponents[id]!.add(component);
+  if(parent != -1 && Engine.registeredLuaGameObjects.containsKey(parent)){
+    Engine.registeredLuaGameObjects[id]!.add(component);
   }
   else {
-    Engine.addLuaComponent(component);
+    Engine.addLuaGameObject(component);
   }
 
 
   return id;
 }
 
+bool checkIfIDValid(int componentID) {
+  if(!Engine.registeredLuaGameObjects.containsKey(componentID)) {
+    return false;
+  }
+  return true;
+}
 
 
 
-int removeFromParent(int parent, int child) {
+int removeGameObject(int componentID){
 
-  if(parent == -1 || child == -1){
+  if(!checkIfIDValid(componentID)){
     return 0;
   }
 
+  Component current = Engine.registeredLuaGameObjects[componentID]!;
+
+  current.removeFromParent();
+
+  Engine.registeredLuaGameObjects.remove(componentID);
 
   return 1;
-
 }
+
 
 
 class Engine extends FlameGame {
 
-  static Map<int,Component> registeredLuaComponents = {};
+  static Map<int,LuaGameObject> registeredLuaGameObjects = {};
   static Random rng = Random();
   static Engine? instance;
-  static String libPath = 
-  Platform.isMacOS? 'libtyphon.dylib'
-  : Platform.isWindows ? 'lib/typhon.dll'
-  : path.join(Directory.current.path,'lib','typhon.so');
 
-
-  static DynamicLibrary? library;
 
   static int generateRandomID() {
     return Engine.rng.nextInt(1 << 32);
   }
 
 
-  static void addLuaComponent(LuaComponent component) {
+  static void addLuaGameObject(LuaGameObject component) {
     Engine.instance?.add(component);
   }
 
-  Future<String> extractLib() async {
-    if(Platform.isMacOS){
-      return libPath;
-    }
-    ByteData data = await rootBundle.load("assets/" + libPath);
-    List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  static void printToConsoleWindow(Pointer<Char> ptr){
+    String s = ptr.cast<Utf8>().toDartString();
 
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    Directory(path.join(appDocDir.path,"lib")).createSync(recursive: true);
-
-    String filePath = path.join(appDocDir.path, libPath);
-
-    await File(filePath).writeAsBytes(bytes);
-
-    return filePath;
+    print(s);
   }
+  
 
   @override
   FutureOr<void> onLoad() {
 
-    extractLib().then((value) {
+    initializeLibraryAndGetBindings().then((library) {
+      //Registering main functions
+      library.registerAddGameObjectFunction(Pointer.fromFunction(addGameObject,0));
+      library.registerPrintToEditorWindow(Pointer.fromFunction(printToConsoleWindow));
 
-      print("initializing library!");
-      library ??= DynamicLibrary.open(value);
       
-      Engine.instance ??= this;
-      
-      
-      Pointer<NativeFunction<Int Function(Int)>> pointer = Pointer.fromFunction(createComponent,0);
-
-      print('here');
-      //Engine.library!.lookupFunction("registerCreateComponentFunction")(pointer);
-      print('after here');
-      
-    },);
-
+      loadScriptFromString("somthing!");
+    });
     
-
     
     return super.onLoad();
   }
