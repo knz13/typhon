@@ -25,67 +25,12 @@ class TyphonBindings {
           lookup)
       : _lookup = lookup;
 
-  void registerAddGameObjectFunction(
-    AddGameObjectFunction func,
-  ) {
-    return _registerAddGameObjectFunction(
-      func,
-    );
+  void placeholderFunc() {
+    return _placeholderFunc();
   }
 
-  late final _registerAddGameObjectFunctionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(AddGameObjectFunction)>>(
-          'registerAddGameObjectFunction');
-  late final _registerAddGameObjectFunction = _registerAddGameObjectFunctionPtr
-      .asFunction<void Function(AddGameObjectFunction)>();
-
-  int loadScriptFromString(
-    ffi.Pointer<ffi.Char> string,
-  ) {
-    return _loadScriptFromString(
-      string,
-    );
-  }
-
-  late final _loadScriptFromStringPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Pointer<ffi.Char>)>>(
-          'loadScriptFromString');
-  late final _loadScriptFromString = _loadScriptFromStringPtr
-      .asFunction<int Function(ffi.Pointer<ffi.Char>)>();
-
-  void registerRemoveGameObjectFunction(
-    RemoveGameObjectFunction func,
-  ) {
-    return _registerRemoveGameObjectFunction(
-      func,
-    );
-  }
-
-  late final _registerRemoveGameObjectFunctionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(RemoveGameObjectFunction)>>(
-          'registerRemoveGameObjectFunction');
-  late final _registerRemoveGameObjectFunction =
-      _registerRemoveGameObjectFunctionPtr
-          .asFunction<void Function(RemoveGameObjectFunction)>();
-
-  void registerPrintToEditorWindow(
-    PrintToEditorWindow func,
-  ) {
-    return _registerPrintToEditorWindow(
-      func,
-    );
-  }
-
-  late final _registerPrintToEditorWindowPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(PrintToEditorWindow)>>(
-          'registerPrintToEditorWindow');
-  late final _registerPrintToEditorWindow = _registerPrintToEditorWindowPtr
-      .asFunction<void Function(PrintToEditorWindow)>();
+  late final _placeholderFuncPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>('placeholderFunc');
+  late final _placeholderFunc =
+      _placeholderFuncPtr.asFunction<void Function()>();
 }
-
-typedef AddGameObjectFunction
-    = ffi.Pointer<ffi.NativeFunction<ffi.Int Function(ffi.Int)>>;
-typedef RemoveGameObjectFunction
-    = ffi.Pointer<ffi.NativeFunction<ffi.Int Function(ffi.Int)>>;
-typedef PrintToEditorWindow
-    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>;

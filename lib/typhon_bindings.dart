@@ -60,10 +60,3 @@ TyphonBindings getCppFunctions() {
   return _bindings!;
 }
 
-void loadScriptFromString(String val){
-  Pointer<Char> ptr = val.toNativeUtf8().cast<Char>();
-
-  getCppFunctions().loadScriptFromString(ptr);
-
-  malloc.free(ptr);
-}

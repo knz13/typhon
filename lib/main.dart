@@ -1,8 +1,12 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
-import 'package:typhon/scene_viewer.dart';
-
+import 'package:typhon/file_viewer_panel.dart';
+import 'package:typhon/hierarchy_panel.dart';
+import 'package:typhon/inspector_panel.dart';
+import 'package:typhon/scene_viewer_panel.dart';
+import 'package:github/github.dart';
 import 'engine.dart';
 
 
@@ -13,7 +17,17 @@ double contextHeight(var context){
   return MediaQuery.of(context).size.height;
 }
 
+void downloadTranspiler() async {
+  var github = GitHub();
+
+  Repository repo = await github.repositories.getRepository(RepositorySlug("dmitrii-eremin","python-lua"));
+
+  
+}
+
 void main() {
+
+  downloadTranspiler();
   runApp(const MyApp());
 }
 
@@ -83,7 +97,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                 tabs: [
                   EngineSubWindowData(
                     title: "Scene",
-                    child: SceneViewer()
+                    child: SceneViewerPanel()
                   )
                 ]
               ),
@@ -91,7 +105,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                 tabs: [
                   EngineSubWindowData(
                     title: "Hierarchy",
-                    child: Container()
+                    child: HierarchyPanel()
                   )
                 ],
               ),
@@ -100,7 +114,11 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
               tabs: [
                 EngineSubWindowData(
                   title: "File Viewer",
-                  child: Container()
+                  child: FileViewerPanel()
+                ),
+                EngineSubWindowData(
+                  title: "Console",
+                  child: ConsolePanel(),
                 )
               ],
             ),
@@ -109,7 +127,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
             tabs: [
               EngineSubWindowData(
                 title: "Inspector",
-                child: Container()
+                child: InspectorPanel()
               )
             ],
           ),

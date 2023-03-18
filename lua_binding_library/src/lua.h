@@ -8,8 +8,6 @@
 class Lua {
 public:
     static sol::state state;
-    inline static std::function<int(int)> addGameObjectFunction = [](int a){return 0;};
-    inline static std::function<int(int)> removeGameObjectFunction = [](int a){return 0;};
     
     
 };

@@ -10,7 +10,7 @@ import 'package:typhon/engine_sub_window.dart';
 
 import 'engine.dart';
 
-class SceneViewer extends StatelessWidget {
+class SceneViewerPanel extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return Column(
