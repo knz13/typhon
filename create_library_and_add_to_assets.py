@@ -2,6 +2,7 @@ import subprocess
 import platform
 import argparse
 import os
+import subprocess
 
 
 parser = argparse.ArgumentParser("create library")
@@ -28,3 +29,9 @@ else:
     
 
 os.system('echo "Build finished!"')
+
+os.system('echo "Updating dart bindings file..."')
+
+os.system('cd ../../ && dart run ffigen --config ffigen.yaml')
+
+os.system('echo "Done updating dart bindings file!"')
