@@ -268,7 +268,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
         ..menu.ellipsisOverflowText = true 
         ..tabsArea.middleGap = 2
         ..tab.textStyle = widget.titleStyle ?? TextStyle(
-          color: Colors.white,
+          color: platinumGray,
           fontWeight: FontWeight.normal,
           decoration: TextDecoration.none,
           fontSize: 13

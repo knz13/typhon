@@ -15,7 +15,9 @@ import 'package:typhon/engine_sub_window.dart';
 
 
 
-
+Color nightBlack = Color(0xff100F0F);
+Color jetBlack = Color(0xff303036);
+Color platinumGray = Color(0xffD8D5DB);
 
 MethodChannel contextMenuChannel = const MethodChannel('context_menu');
 
@@ -84,19 +86,21 @@ Map<String, dynamic> buildOptionMap(List<ContextMenuOption> options, double x, d
 }
 
 void initializeContextMenu() {
-  
+
   contextMenuChannel.setMethodCallHandler(_handleCallback);
 }
 
 class NativeContextMenuButton extends StatefulWidget {
-  const NativeContextMenuButton({
+  NativeContextMenuButton({
     required this.child,
     required this.menuItems,
     Key? key,
     this.menuOffset = Offset.zero,
+    this.color
   }) : super(key: key);
 
   final Widget child;
+  Color? color;
   final List<ContextMenuOption> menuItems;
   final Offset menuOffset;
 
@@ -107,32 +111,27 @@ class NativeContextMenuButton extends StatefulWidget {
 class _NativeContextMenuButtonState extends State<NativeContextMenuButton> {
   bool shouldReact = false;
 
+  Offset mousePos = Offset.zero;
+
   @override
   Widget build(BuildContext context) {
-    return Listener(
-      onPointerDown: (e) {
-        shouldReact = e.kind == PointerDeviceKind.mouse &&
-            e.buttons == kPrimaryMouseButton;
+    return MouseRegion(
+      onHover: (ev) {
+        mousePos = ev.position;
       },
-      onPointerUp: (e) async {
-        if (!shouldReact) return;
-
-        shouldReact = false;
-
-        final position = Offset(
-          
-          (e.position.dx + widget.menuOffset.dx),
-          e.position.dy + widget.menuOffset.dy,
-        );
-
-        showNativeContextMenu(
-          context,
-          position.dx,
-          position.dy,
-          widget.menuItems
-        );
-      },
-      child: widget.child,
+      child: MaterialButton(
+        color: widget.color,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Theme.of(context).highlightColor,
+        animationDuration: Duration.zero,
+        onPressed: () {
+          showNativeContextMenu(context, mousePos.dx, mousePos.dy, widget.menuItems);
+        },
+        minWidth: 0,
+        padding: EdgeInsets.zero,
+        child: widget.child
+      )
     );
   }
 }
