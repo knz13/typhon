@@ -2,6 +2,9 @@
 
 
 
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -9,6 +12,7 @@ import 'dart:async';
 import 'package:flutter/services.dart' show MethodCall, MethodChannel;
 import 'package:flutter/widgets.dart' show Offset;
 import 'package:typhon/engine_sub_window.dart';
+
 
 
 
@@ -38,7 +42,16 @@ class ContextMenuOption {
 }
 
 void showContextMenu(double x,double y, List<ContextMenuOption> options) {
-  contextMenuChannel.invokeMethod('showContextMenu', buildOptionMap(options, x, y));
+  if (Platform.isWindows && !kIsWeb) {
+    // Windows-specific code
+  
+    // Use Win32 API to create and display a native context menu
+    // See https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-trackpopupmenuex
+  } else {
+    // Non-Windows platforms or web
+    // Use the default channel to display the context menu
+    contextMenuChannel.invokeMethod('showContextMenu', buildOptionMap(options, x, y));
+  }
 }
 
 Map<String, dynamic> buildOptionMap(List<ContextMenuOption> options, double x, double y) {
