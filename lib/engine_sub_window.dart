@@ -10,6 +10,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tabbed_view/tabbed_view.dart';
 import 'package:typhon/engine.dart';
+import 'package:typhon/general_widgets.dart';
 import 'package:typhon/main.dart';
 
 
@@ -44,11 +45,11 @@ class EngineSubWindow extends StatefulWidget {
   TextStyle? titleStyle;
   static List<EngineSubWindow> aliveWindows = [];
   static double titleHeight = 20;
-  static double subWindowBorderWidth = 2;
+  static double subWindowBorderWidth = 3;
   static Color tabAreaColor = Colors.black;
   static Color tabColor = const Color.fromARGB(255, 60, 60, 60);
   static Color backgroundColor = const Color.fromARGB(255, 100, 100, 100);
-  ValueNotifier emptyNotifier = ValueNotifier(false);
+  ValueNotifier emptyNotifier = ValueNotifier(0);
 
 
   EngineSubWindow(
@@ -142,7 +143,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
               initializeNotifiers();
             }
             else {
-              widget.emptyNotifier.value = true;
+              widget.emptyNotifier.value++;
             }  
           
           });
@@ -163,6 +164,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     super.dispose();
   }
  
+  Offset mousePosition = Offset.zero;
 
   @override
   Widget build(BuildContext context) {
@@ -207,57 +209,58 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
 
 
       
-      mainChildWidget = TabbedView(
-        controller: _controller,
-        tabsAreaButtonsBuilder:(context, tabsCount) {
-          return [
-            TabButton(
-              icon: IconProvider.data(FontAwesomeIcons.ellipsisVertical),
-              menuBuilder: (context) {
-                List<TabbedViewMenuItem> items = widget.tabs[_controller.selectedIndex!].menuItems.toList();
-
-              
-                if(widget.tabs[_controller.selectedIndex!].closable && EngineSubWindow.aliveWindows.length != 1){
-                  items.add(TabbedViewMenuItem(text: "Close Tab",onSelection: () {
-                    
-                    if(widget.tabs.length == 1){
+      mainChildWidget = MouseRegion(
+        onHover: (event) {
+          mousePosition = event.position;
+        },
+        child: TabbedView(
+          controller: _controller,
+          tabsAreaButtonsBuilder:(context, tabsCount) {
+            return [
+              TabButton(
+                onPressed: () {
+                  showNativeContextMenu(context, mousePosition.dx, mousePosition.dy, [
+                    if((widget.tabs[_controller.selectedIndex!].closable && EngineSubWindow.aliveWindows.length != 1) || widget.tabs.length != 1)
+                    ContextMenuOption(title: "Close Tab",callback: () {
+                      if(widget.tabs.length == 1){
+                        setState(() {
+                          widget.emptyNotifier.value++;
+                        });
+                        return;
+                      }
                       setState(() {
-                        widget.emptyNotifier.value = true;
+                        widget.tabs.removeAt(_controller.selectedIndex!);
                       });
-                      return;
-                    }
-                    setState(() {
-                      widget.tabs.removeAt(_controller.selectedIndex!);
-                    });
-                  }));
-                }
-
-                return items;
-              },
-            )
-          ];
-        },
-        draggableTabBuilder: (tabIndex, tab, tabWidget) {
-          
-          return Draggable(
-            data: "TabsDraggableData",
-            feedback: SizedBox(
-              width: 200,
-              height: 100,
-              child: Blur(
-                blur: 0.5,
-                colorOpacity: 0.1,
-                child: EngineSubWindow(tabs: [
-                  EngineSubWindowData(
-                    title: tab.text,
-                    child: Container()
-                  )
-                ],),
+                    })
+                  ]);
+                },
+                icon: IconProvider.data(FontAwesomeIcons.ellipsisVertical),
+        
+              )
+            ];
+          },
+          draggableTabBuilder: (tabIndex, tab, tabWidget) {
+            
+            return Draggable(
+              data: "TabsDraggableData",
+              feedback: SizedBox(
+                width: 200,
+                height: 100,
+                child: Blur(
+                  blur: 0.5,
+                  colorOpacity: 0.1,
+                  child: EngineSubWindow(tabs: [
+                    EngineSubWindowData(
+                      title: tab.text,
+                      child: Container()
+                    )
+                  ],),
+                ),
               ),
-            ),
-            child: tabWidget
-          );
-        },
+              child: tabWidget
+            );
+          },
+        ),
       );
 
 

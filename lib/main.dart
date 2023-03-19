@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/file_viewer_panel.dart';
+import 'package:typhon/general_widgets.dart';
 import 'package:typhon/hierarchy_panel.dart';
 import 'package:typhon/inspector_panel.dart';
 import 'package:typhon/scene_viewer_panel.dart';
@@ -17,12 +18,26 @@ double contextHeight(var context){
 }
 
 void main() {
-
+  
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    initializeContextMenu();
+  }
 
   // This widget is the root of your application.
   @override

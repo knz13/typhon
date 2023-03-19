@@ -26,7 +26,7 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
     
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        
+            
             switch(call.method){
             case "showContextMenu":
                 
@@ -68,10 +68,12 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
     }
 
     @objc func handleMenuItem(_ sender: NSMenuItem) {
+        
         if let callbackId = sender.representedObject as? NSNumber {
+            
             let arguments: [String: Any] = ["callbackId": callbackId.intValue]
             let methodChannel = FlutterMethodChannel(name: "context_menu", binaryMessenger: MainFlutterWindow.flutterViewController!.engine.binaryMessenger)
-            methodChannel.invokeMethod("contextMenuItemSelected", arguments: arguments)
+            methodChannel.invokeMethod("context_menu", arguments: arguments)
         }
     }
 }

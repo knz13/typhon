@@ -24,7 +24,7 @@ class HierarchyPanelTop extends StatelessWidget {
     // TODO: implement build
     return Row(
             children: [
-              ContextMenuButton(
+              NativeContextMenuButton(
                 child: Icon(Icons.add),
                 menuItems: [
                   ContextMenuOption(title: "hi"),

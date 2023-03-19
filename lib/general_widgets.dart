@@ -84,11 +84,12 @@ Map<String, dynamic> buildOptionMap(List<ContextMenuOption> options, double x, d
 }
 
 void initializeContextMenu() {
+  
   contextMenuChannel.setMethodCallHandler(_handleCallback);
 }
 
-class ContextMenuButton extends StatefulWidget {
-  const ContextMenuButton({
+class NativeContextMenuButton extends StatefulWidget {
+  const NativeContextMenuButton({
     required this.child,
     required this.menuItems,
     Key? key,
@@ -100,10 +101,10 @@ class ContextMenuButton extends StatefulWidget {
   final Offset menuOffset;
 
   @override
-  State<ContextMenuButton> createState() => _ContextMenuButtonState();
+  State<NativeContextMenuButton> createState() => _NativeContextMenuButtonState();
 }
 
-class _ContextMenuButtonState extends State<ContextMenuButton> {
+class _NativeContextMenuButtonState extends State<NativeContextMenuButton> {
   bool shouldReact = false;
 
   @override
