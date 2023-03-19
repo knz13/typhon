@@ -43,6 +43,7 @@ dependencies:
   path_provider:
   ffigen:
   ffi:
+  native_context_menu:
 
 dev_dependencies:
   flutter_test:
