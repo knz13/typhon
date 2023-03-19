@@ -4,13 +4,13 @@
 
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart' show MethodCall, MethodChannel;
 import 'package:flutter/widgets.dart' show Offset;
+import 'package:native_context_menu/native_context_menu.dart';
 import 'package:typhon/engine_sub_window.dart';
 
 
@@ -41,17 +41,27 @@ class ContextMenuOption {
   });
 }
 
-void showContextMenu(double x,double y, List<ContextMenuOption> options) {
-  if (Platform.isWindows && !kIsWeb) {
-    // Windows-specific code
-  
-    // Use Win32 API to create and display a native context menu
-    // See https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-trackpopupmenuex
-  } else {
-    // Non-Windows platforms or web
-    // Use the default channel to display the context menu
-    contextMenuChannel.invokeMethod('showContextMenu', buildOptionMap(options, x, y));
+void showNativeContextMenu(BuildContext context,double x,double y, List<ContextMenuOption> options) {
+  if(Platform.isMacOS){
+    contextMenuChannel.invokeMethod('showContextMenu', buildOptionMap(options, x,MediaQuery.of(context).size.height - y));
   }
+  else{
+    showContextMenu(
+      ShowMenuArgs(
+        MediaQuery.of(context).devicePixelRatio, 
+        Offset(x,y),
+       getMenuItemFromContextMenuOption(options) 
+      )
+    );
+  }
+}
+
+List<MenuItem> getMenuItemFromContextMenuOption(List<ContextMenuOption> options) {
+  return  options.map((e) => MenuItem(
+          title: e.title,
+          onSelected: e.callback,
+          items: e.subOptions != null ? getMenuItemFromContextMenuOption(e.subOptions!) : []
+        )).toList();
 }
 
 Map<String, dynamic> buildOptionMap(List<ContextMenuOption> options, double x, double y) {
@@ -111,10 +121,11 @@ class _ContextMenuButtonState extends State<ContextMenuButton> {
         final position = Offset(
           
           (e.position.dx + widget.menuOffset.dx),
-          MediaQuery.of(context).size.height - (e.position.dy + widget.menuOffset.dy),
+          e.position.dy + widget.menuOffset.dy,
         );
 
-        showContextMenu(
+        showNativeContextMenu(
+          context,
           position.dx,
           position.dy,
           widget.menuItems
