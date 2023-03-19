@@ -2,6 +2,17 @@ import Cocoa
 import FlutterMacOS
 
 
+func convertToDictionary(text: String) -> [String: Any]? {
+    if let data = text.data(using: .utf8) {
+        do {
+            return try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    return nil
+}
+
 public class ContextMenuPlugin: NSObject, FlutterPlugin {
     
     static var instance: ContextMenuPlugin?
@@ -23,42 +34,47 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
         
     }
     
-    
+    public func buildMenuFromArguments(options: [[String: Any]],menu: NSMenu) {
+        
+        for option in options {
+            let title = option["title"] as? String ?? ""
+            
+            let menuItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+            let subOptionsJson = try? JSONSerialization.jsonObject(with: (option["subOptions"] as? String ?? "").data(using: .utf8) ?? Data(), options: [])
+            if let subOptions = subOptionsJson as? [[String:Any]] {
+                
+                let subMenu = NSMenu()
+                
+                buildMenuFromArguments(options: subOptions, menu: subMenu)
+                
+                menuItem.submenu = subMenu
+                
+                
+            } else if let callbackId = option["callbackId"] as? Int {
+                menuItem.target = self
+                menuItem.action = #selector(handleMenuItem(_:))
+                menuItem.representedObject = NSNumber(value: callbackId)
+            }
+            menu.addItem(menuItem)
+        }
+    }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
             
             switch(call.method){
             case "showContextMenu":
                 
-                if let arguments = call.arguments as? [String: Any] {
+                let jsonArgs = convertToDictionary(text: call.arguments as? String ?? "")
+                
+                if let arguments = jsonArgs {
                     let x = arguments["x"] as? Double ?? 0
                     let y = arguments["y"] as? Double ?? 0
                     let options = arguments["options"] as? [[String: Any]] ?? []
+                    
                     let menu = NSMenu()
                     menu.title = "Context menu"
-                    for option in options {
-                        let title = option["title"] as? String ?? ""
-                        let menuItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
-                        if let subOptions = option["subOptions"] as? [[String: Any]], subOptions.count > 0 {
-                            let subMenu = NSMenu()
-                            for subOption in subOptions {
-                                let subOptionTitle = subOption["title"] as? String ?? ""
-                                let subMenuItem = NSMenuItem(title: subOptionTitle, action: nil, keyEquivalent: "")
-                                if let subCallbackId = subOption["callbackId"] as? Int {
-                                    subMenuItem.target = self
-                                    subMenuItem.action = #selector(handleMenuItem(_:))
-                                    subMenuItem.representedObject = NSNumber(value: subCallbackId)
-                                }
-                                subMenu.addItem(subMenuItem)
-                            }
-                            menuItem.submenu = subMenu
-                        } else if let callbackId = option["callbackId"] as? Int {
-                            menuItem.target = self
-                            menuItem.action = #selector(handleMenuItem(_:))
-                            menuItem.representedObject = NSNumber(value: callbackId)
-                        }
-                        menu.addItem(menuItem)
-                    }
+                    buildMenuFromArguments(options: options, menu: menu)
+                    
                     
                     menu.popUp(positioning: nil, at: NSPoint(x: x, y: y), in: MainFlutterWindow.instance?.contentView)
                 }

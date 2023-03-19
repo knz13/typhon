@@ -33,10 +33,16 @@ class HierarchyPanelTop extends StatelessWidget {
               ],
             ),
             menuItems: [
-              ContextMenuOption(title: "hi"),
-              ContextMenuOption(title: "hallo!",callback: () {
-                print("Callback called!");
-              },)
+              ContextMenuOption(title: "Create Empty"),
+              ContextMenuOption(
+                title: "Objects",
+                subOptions: [
+                  ContextMenuOption(title: "Square"),
+                  ContextMenuOption(title: "Circle"),
+                  ContextMenuOption(title: "Triangle"),
+                ],
+              )
+
             ],
           ),
           SizedBox(

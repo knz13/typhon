@@ -3,7 +3,7 @@
 
 
 import 'dart:io';
-
+import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
@@ -41,11 +41,13 @@ class ContextMenuOption {
     this.callback,
     this.subOptions,
   });
+
+  
 }
 
 void showNativeContextMenu(BuildContext context,double x,double y, List<ContextMenuOption> options) {
   if(Platform.isMacOS){
-    contextMenuChannel.invokeMethod('showContextMenu', buildOptionMap(options, x,MediaQuery.of(context).size.height - y));
+    contextMenuChannel.invokeMethod('showContextMenu', buildJSONNativeMessage(options, x,MediaQuery.of(context).size.height - y));
   }
   else{
     showContextMenu(
@@ -66,23 +68,30 @@ List<MenuItem> getMenuItemFromContextMenuOption(List<ContextMenuOption> options)
         )).toList();
 }
 
-Map<String, dynamic> buildOptionMap(List<ContextMenuOption> options, double x, double y) {
-  List<Map<String, dynamic>> optionMaps = [];
-  for (var option in options) {
-    Map<String, dynamic> optionMap = {
-      'title': option.title,
-    };
-    if (option.callback != null) {
+List<Map<String,dynamic>> buildOptionList(List<ContextMenuOption> options) {
+  return options.map((e) {
+    // ignore: unnecessary_cast
+    var map =  {
+      "title":e.title,
+    } as Map<String,dynamic>;
+
+    if(e.callback != null) {
       int callbackId = ++_callbackId;
-      _callbackMap[callbackId] = option.callback!;
-      optionMap['callbackId'] = callbackId;
+      _callbackMap[callbackId] = e.callback!;
+      map["callbackId"] = json.encode(callbackId);
     }
-    if (option.subOptions != null) {
-      optionMap['subOptions'] = buildOptionMap(option.subOptions!, x, y);
+    else if(e.subOptions != null){
+      map["subOptions"] = jsonEncode(buildOptionList(e.subOptions!));
     }
-    optionMaps.add(optionMap);
-  }
-  return {'x': x, 'y': y, 'options': optionMaps};
+
+    return map;
+  }).toList();
+}
+
+String buildJSONNativeMessage(List<ContextMenuOption> options, double x, double y) {
+  List<Map<String, dynamic>> optionMaps = buildOptionList(options);
+
+  return jsonEncode({'x': x, 'y': y, 'options': optionMaps});
 }
 
 void initializeContextMenu() {
