@@ -2,12 +2,13 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
-import 'package:typhon/file_viewer_panel.dart';
+import 'package:typhon/file_viewer_panel_test.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/hierarchy_panel.dart';
 import 'package:typhon/inspector_panel.dart';
 import 'package:typhon/scene_viewer_panel.dart';
 import 'engine.dart';
+import 'file_viewer_panel.dart';
 
 
 double contextWidth(var context){

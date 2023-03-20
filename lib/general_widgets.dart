@@ -18,6 +18,7 @@ import 'package:typhon/engine_sub_window.dart';
 Color nightBlack = Color(0xff100F0F);
 Color jetBlack = Color(0xff303036);
 Color platinumGray = Color(0xffD8D5DB);
+Color midGray = Color.fromARGB(255, 60, 60, 60);
 
 MethodChannel contextMenuChannel = const MethodChannel('context_menu');
 
