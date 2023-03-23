@@ -61,7 +61,7 @@ class EngineSubWindow extends StatefulWidget {
       this.tabs = const [],
       this.division = SubWindowDivision.top,
       this.mainChildProportion = 0.5,
-      this.proportionAllowedRange = 0.8
+      this.proportionAllowedRange = 0.6
     }
   );
 

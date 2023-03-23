@@ -41,6 +41,8 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
             
             let menuItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
             let subOptionsJson = try? JSONSerialization.jsonObject(with: (option["subOptions"] as? String ?? "").data(using: .utf8) ?? Data(), options: [])
+           
+            
             if let subOptions = subOptionsJson as? [[String:Any]] {
                 
                 let subMenu = NSMenu()
@@ -50,10 +52,11 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
                 menuItem.submenu = subMenu
                 
                 
-            } else if let callbackId = option["callbackId"] as? Int {
+            } else if let callbackId = option["callbackId"] as? String {
+                
                 menuItem.target = self
                 menuItem.action = #selector(handleMenuItem(_:))
-                menuItem.representedObject = NSNumber(value: callbackId)
+                menuItem.representedObject = NSNumber(value: Int(callbackId) ?? -1)
             }
             menu.addItem(menuItem)
         }

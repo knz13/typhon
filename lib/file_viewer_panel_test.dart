@@ -68,9 +68,9 @@ class _FileViewerPanelGPTState extends State<FileViewerPanelGPT> {
     final contents = await file.readAsString();
     await Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => Scaffold(
-        appBar: AppBar(title: Text(file.path)),
+        appBar: AppBar(title: GeneralText(file.path)),
         body: SingleChildScrollView(
-          child: Text(contents),
+          child: GeneralText(contents),
         ),
       ),
     ));
@@ -93,7 +93,7 @@ class _FileViewerPanelGPTState extends State<FileViewerPanelGPT> {
             textColor: platinumGray,
             collapsedTextColor: platinumGray,
             leading: Icon(Icons.folder),
-            title: Text(path.basename(entity.path)),
+            title: GeneralText(path.basename(entity.path)),
             onExpansionChanged: (isExpanded) {
               if (isExpanded) {
                 _navigateToDirectory(entity);
@@ -121,7 +121,7 @@ Widget _buildBreadcrumbTrail() {
   var currentPath = _initialDirectory!.path;
   for (final component in breadCrumbs) {
     currentPath = path.join(currentPath, component);
-    breadcrumbs.add(Text('>'));
+    breadcrumbs.add(GeneralText('>'));
     breadcrumbs.add(SizedBox(width: 4));
     breadcrumbs.add(
       TextButton(
@@ -129,7 +129,7 @@ Widget _buildBreadcrumbTrail() {
           final targetDirectory = Directory(currentPath);
           await _navigateToDirectory(targetDirectory);
         },
-        child: Text(component),
+        child: GeneralText(component),
       ),
     );
   }
@@ -206,9 +206,9 @@ Widget _buildBreadcrumbTrail() {
                         leading: entity is File
                             ? Icon(MdiIcons.file)
                             : Icon(Icons.folder),
-                        title: Text(path.basename(entity.path)),
+                        title: GeneralText(path.basename(entity.path)),
                         subtitle: entity is File
-                            ? Text('${(entity.lengthSync() / 1024).toStringAsFixed(2)} KB')
+                            ? GeneralText('${(entity.lengthSync() / 1024).toStringAsFixed(2)} KB')
                             : null,
                         onTap: () async {
                           if (entity is File) {

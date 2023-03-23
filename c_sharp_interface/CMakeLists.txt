@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.16)
 
 #adding useful functions
 
@@ -30,49 +30,27 @@ include(FetchContent)
 project(project_typhon)
 
 # --------------------- Repository declarations ------------------------
-# repository download and settings for sol2...
+# repository download and settings for mono...
 
-  dir_exists(APPEND sol2_exists ${PROJECT_SOURCE_DIR}/vendor/sol2)
+  dir_exists(APPEND mono_exists ${PROJECT_SOURCE_DIR}/vendor/mono)
 
-  if(NOT ${sol2}_exists)
-    FetchContent_Declare(SOL2
-        GIT_REPOSITORY https://github.com/ThePhD/sol2
-        GIT_TAG origin/main
-        SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/sol2
-
-    )   
-
-    FetchContent_MakeAvailable(SOL2)
-  endif()
-    # includes for target typhon...
-
-      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/sol2/includes)
-
-    # libraries for target typhon...
-
-      list(APPEND typhon_LIBRARIES sol2)
-
-# repository download and settings for lua...
-
-  dir_exists(APPEND lua_exists ${PROJECT_SOURCE_DIR}/vendor/lua)
-
-  if(NOT ${lua}_exists)
-    FetchContent_Declare(LUA
-        GIT_REPOSITORY https://github.com/marovira/lua
+  if(NOT ${mono}_exists)
+    FetchContent_Declare(MONO
+        GIT_REPOSITORY https://github.com/volcoma/monopp
         GIT_TAG origin/master
-        SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/lua
+        SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/mono
 
     )   
 
-    FetchContent_MakeAvailable(LUA)
+    FetchContent_MakeAvailable(MONO)
   endif()
     # includes for target typhon...
 
-      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/lua/src)
+      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/mono/)
 
     # libraries for target typhon...
 
-      list(APPEND typhon_LIBRARIES lua::lua)
+      list(APPEND typhon_LIBRARIES monopp)
 
 
 
@@ -82,7 +60,7 @@ project(project_typhon)
 
     # adding sources
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon.cpp)
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/lua.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/mono_manager.cpp)
     # creating target
 
     add_library(typhon SHARED

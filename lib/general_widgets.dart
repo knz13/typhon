@@ -13,7 +13,7 @@ import 'package:flutter/widgets.dart' show Offset;
 import 'package:native_context_menu/native_context_menu.dart';
 import 'package:typhon/engine_sub_window.dart';
 
-
+T? castOrNull<T>(dynamic x) => x is T ? x : null;
 
 Color nightBlack = Color(0xff100F0F);
 Color jetBlack = Color(0xff303036);
@@ -44,6 +44,27 @@ class ContextMenuOption {
   });
 
   
+}
+
+class GeneralText extends StatelessWidget {
+
+
+  String text;
+  double fontSize;
+
+  GeneralText(this.text,{super.key,this.fontSize = 14});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Text(
+      text,
+      style: TextStyle(
+        color: platinumGray,
+        fontSize: fontSize
+      ),
+    );
+  }
 }
 
 void showNativeContextMenu(BuildContext context,double x,double y, List<ContextMenuOption> options) {

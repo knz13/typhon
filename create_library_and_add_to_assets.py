@@ -13,7 +13,7 @@ parser.add_argument("--Release",action='store_true')
 
 args = parser.parse_args()
 
-os.chdir("lua_binding_library")
+os.chdir("c_sharp_interface")
 os.system('echo "Creating c++ library..."')
 os.system(f'cmake {"-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug") if platform.system() == "Darwin" else ""} -B build ./')
 os.system('echo "CMake run finished!')

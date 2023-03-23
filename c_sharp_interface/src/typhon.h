@@ -7,6 +7,7 @@
 #else
 #include <pthread.h>
 #include <unistd.h>
+#include "mono_manager.h"
 #endif
 
 #if _WIN32
@@ -20,7 +21,9 @@
 #ifdef __cplusplus
 extern"C" {
 #endif
-    FFI_PLUGIN_EXPORT void placeholderFunc();
+    FFI_PLUGIN_EXPORT bool initializeMono();
+
+
 #ifdef __cplusplus
 }
 #endif
