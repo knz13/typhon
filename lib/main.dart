@@ -67,6 +67,7 @@ class _MyAppState extends State<MyApp> {
 class MainEngineFrontend extends StatefulWidget {
   const MainEngineFrontend({super.key});
 
+  static bool isEditing = true; 
 
   @override
   State<MainEngineFrontend> createState() => _MainEngineFrontendState();
@@ -88,9 +89,10 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
 
   @override
   Widget build(BuildContext context) {
+  
     return SafeArea(
       child: Scaffold(
-        body: EngineSubWindow(
+        body: MainEngineFrontend.isEditing ? EngineSubWindow(
           division: SubWindowDivision.left,
           mainChildProportion: 0.75,
           mainSubWindow: EngineSubWindow(
@@ -131,8 +133,8 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
               )
             ],
           ),
-        )
-      ),
+        ) : SceneViewerPanel().subWindowData().child
+      ) ,
     );
   }
 }

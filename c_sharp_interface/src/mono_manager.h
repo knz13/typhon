@@ -16,6 +16,8 @@ public:
         return *MonoManager::instance.get();
     }
 
+    
+
 private:
     std::unique_ptr<mono::mono_domain> _domain;
     bool _initialized = false;
@@ -25,5 +27,6 @@ public:
 
     bool initialized();
 
+    
 
 };

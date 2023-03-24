@@ -62,7 +62,6 @@ class Engine extends FlameGame {
 
     initializeLibraryAndGetBindings().then((library) {
       library.initializeMono();
-
     });
     
 

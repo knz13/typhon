@@ -15,5 +15,6 @@ MonoManager::MonoManager()  {
 };
 
 bool MonoManager::initialized()  {
+
     return _initialized;
 }
