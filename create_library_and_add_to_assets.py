@@ -23,8 +23,12 @@ os.system(f'{"make" if platform.system() == "Darwin" else "msbuild project_typho
 os.system('echo "Moving library to assets..."')
 
 if platform.system() == "Darwin":
+    if os.path.exists(os.path.abspath("../../assets/lib/libtyphon.dylib")):
+        os.remove(os.path.abspath("../../assets/lib/libtyphon.dylib"))
     os.rename(os.path.abspath("libtyphon.dylib"),os.path.abspath("../../assets/lib/libtyphon.dylib"))
 else:
+    if os.path.exists(os.path.abspath("../../assets/lib/typhon.dll")):
+        os.remove(os.path.abspath("../../assets/lib/typhon.dll"))
     os.rename(os.path.abspath("Debug/typhon.dll" if not args.Release else "Release/typhon.dll"),os.path.abspath("../../assets/lib/typhon.dll"))
     
 
