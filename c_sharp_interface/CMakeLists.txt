@@ -32,9 +32,7 @@ project(project_typhon)
 # --------------------- Repository declarations ------------------------
 # repository download and settings for mono...
 
-  dir_exists(APPEND mono_exists ${PROJECT_SOURCE_DIR}/vendor/mono)
 
-  if(NOT ${mono}_exists)
     FetchContent_Declare(MONO
         GIT_REPOSITORY https://github.com/volcoma/monopp
         GIT_TAG origin/master
@@ -43,16 +41,34 @@ project(project_typhon)
     )   
 
     FetchContent_MakeAvailable(MONO)
-  endif()
     # includes for target typhon...
 
       list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/mono/)
 
     # libraries for target typhon...
+    
+    list(APPEND typhon_LIBRARIES monopp)
+    
+    # repository download and settings for shaderc
+    set(SHADERC_SKIP_TESTS ON)
+    set(SHADERC_SKIP_EXAMPLES ON)
+    
+    FetchContent_Declare(SHADERC
+    GIT_REPOSITORY https://github.com/google/shaderc
+    GIT_TAG v2023.3
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/shaderc
+    
+    )   
+    
+    FetchContent_MakeAvailable(SHADERC)
 
-      list(APPEND typhon_LIBRARIES monopp)
+    # includes for target typhon...
+    
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/shaderc/glslc/src)
+    
+    # libraries for target typhon...
 
-
+    list(APPEND typhon_LIBRARIES glslc)
 
 # --------------------- Targets ------------------------
 
@@ -62,6 +78,8 @@ project(project_typhon)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/mono_manager.cpp)
     # creating target
+
+    
 
     add_library(typhon SHARED
 
