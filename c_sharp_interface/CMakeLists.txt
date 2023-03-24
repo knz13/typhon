@@ -37,8 +37,9 @@ project(project_typhon)
         GIT_REPOSITORY https://github.com/volcoma/monopp
         GIT_TAG origin/master
         SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/mono
-
-    )   
+      
+    ) 
+    
 
     FetchContent_MakeAvailable(MONO)
     # includes for target typhon...
@@ -86,6 +87,9 @@ project(project_typhon)
         ${typhon_SOURCE_FILES}
     )
 
+    
+
+
     # setting c++ standard
     set_target_properties(typhon PROPERTIES
         CXX_STANDARD 20
@@ -105,5 +109,6 @@ project(project_typhon)
     # adding internal libraries
 
       target_link_libraries(typhon PUBLIC ${typhon_LIBRARIES})
-
+    
+    
 
