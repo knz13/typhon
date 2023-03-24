@@ -51,25 +51,7 @@ project(project_typhon)
     list(APPEND typhon_LIBRARIES monopp)
     
     # repository download and settings for shaderc
-    set(SHADERC_SKIP_TESTS ON)
-    set(SHADERC_SKIP_EXAMPLES ON)
-    
-    FetchContent_Declare(SHADERC
-    GIT_REPOSITORY https://github.com/google/shaderc
-    GIT_TAG v2023.3
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/shaderc
-    
-    )   
-    
-    FetchContent_MakeAvailable(SHADERC)
 
-    # includes for target typhon...
-    
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/shaderc/glslc/src)
-    
-    # libraries for target typhon...
-
-    list(APPEND typhon_LIBRARIES shaderc)
 
 # --------------------- Targets ------------------------
 
