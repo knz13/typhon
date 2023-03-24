@@ -32,9 +32,8 @@ if not os.path.exists(os.path.join(current_dir,f"/assets/lib/{'libshaderc.dll' i
         os.chdir("../../../")
     os.chdir("build/shaderc_compiler/glslc")
     if platform.system() == "Darwin":
-        if os.path.exists(os.path.abspath(os.path.join(current_dir,"assets/lib/libglslc.a"))):
+        if os.path.exists(os.path.abspath(os.path.join(current_dir,"assets/lib/libglslc.a"))) and os.path.exists(os.path.abspath("libglslc.a")):
             os.remove(os.path.abspath(os.path.join(current_dir,"assets/lib/libglslc.a")))
-            
         os.rename(os.path.abspath("libglslc.a"),os.path.abspath(os.path.join(current_dir,"assets/lib/libglslc.a")))
     else:
         #TODO
