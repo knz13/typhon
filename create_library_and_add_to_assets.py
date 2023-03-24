@@ -26,7 +26,7 @@ if not os.path.exists(os.path.join(current_dir,f"/assets/lib/{'libshaderc.dll' i
         os.system("git clone https://github.com/google/shaderc vendor/shaderc")
         os.system("vendor/shaderc/utils/git-sync-deps")
         os.system("cmake -B build/shaderc_compiler vendor/shaderc")
-    if not os.path.exists("build/shaderc_compiler/glslc"):
+    if os.path.exists("build/shaderc_compiler/glslc") and not os.path.exists(os.path.abspath("libglslc.a" if platform.system() == "Darwin" else "glslc.lib")):
         os.chdir("build/shaderc_compiler/glslc")
         os.system(f'{"make" if platform.system() == "Darwin" else "msbuild project_typhon.sln /p:Configuration=" + ("Release" if args.Release else "Debug")}')
         os.chdir("../../../")
