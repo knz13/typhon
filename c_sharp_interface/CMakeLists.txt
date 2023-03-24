@@ -69,7 +69,7 @@ project(project_typhon)
     
     # libraries for target typhon...
 
-    list(APPEND typhon_LIBRARIES glslc)
+    list(APPEND typhon_LIBRARIES shaderc)
 
 # --------------------- Targets ------------------------
 
