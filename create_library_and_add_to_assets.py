@@ -19,7 +19,9 @@ if not os.path.exists("vendor"):
     os.mkdir("vendor")
 
 if not os.path.exists("vendor/shaderc"):
-    os.mkdir("vendor/shaderc")
+    os.system('echo downloading shaderc library...')
+    os.system("git clone https://github.com/google/shaderc vendor/shaderc")
+    os.system(("python " if platform.system() != "Darwin" else "") + "vendor/shaderc/utils/git-sync-deps")
 
 os.system('echo "Creating c++ library..."')
 os.system(f'cmake {"-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug") if platform.system() == "Darwin" else ""} -B build ./')

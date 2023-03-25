@@ -20,6 +20,8 @@ MonoManager::MonoManager() {
         compiler, "#version 450\nvoid main() {}", 27,
         shaderc_shader_kind::shaderc_glsl_vertex_shader, "main.vert", "main", nullptr);
     
+
+    
     if(result->num_errors == 0){
         std::cout << "compiled succesfully!" << std::endl;
     }
