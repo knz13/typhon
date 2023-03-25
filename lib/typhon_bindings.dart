@@ -9,6 +9,7 @@
 
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 import 'package:flutter/services.dart';
@@ -27,13 +28,19 @@ Future<String> _extractLib() async {
     if(Platform.isMacOS){
       return libPath;
     }
-    ByteData data = await rootBundle.load("assets/" + libPath);
+    ByteData data = await rootBundle.load("assets/$libPath");
     List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    
+    String executablePath = Platform.resolvedExecutable.replaceAll('\\', '/');
+    String filePath =  "${executablePath.substring(0,executablePath.lastIndexOf('/'))}/data/$libPath";
+    
+    Directory libDir = Directory(filePath.substring(0,filePath.lastIndexOf("/")));
 
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    Directory(path.join(appDocDir.path,"lib")).createSync(recursive: true);
+    if(!libDir.existsSync()){
+      libDir.createSync();
+    }
 
-    String filePath = path.join(appDocDir.path, libPath);
+    print(filePath);
 
     await File(filePath).writeAsBytes(bytes);
 

@@ -69,12 +69,23 @@ project(project_typhon)
         ${typhon_SOURCE_FILES}
     )
 
+
+    set(SHADERC_SKIP_TESTS ON)
+    set(SHADERC_SKIP_EXAMPLES ON)
+    
     add_subdirectory(${PROJECT_SOURCE_DIR}/vendor/shaderc)
 
     target_link_libraries(typhon PUBLIC shaderc)
 
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/src)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc/src)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc_util/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc_util/src)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/glslang)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/effcee)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/re2)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/spirv-headers/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/spirv-tools/include)
     
 
 
