@@ -69,13 +69,12 @@ project(project_typhon)
         ${typhon_SOURCE_FILES}
     )
 
-    if(APPLE)
-      target_link_libraries(typhon PUBLIC ${PROJECT_SOURCE_DIR}/../assets/lib/libshaderc.a)
-    else()
-      target_link_libraries(typhon PUBLIC ${PROJECT_SOURCE_DIR}/../assets/lib/shaderc.lib)
-    endif()
+    add_subdirectory(${PROJECT_SOURCE_DIR}/vendor/shaderc)
 
-      target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc/include)
+    target_link_libraries(typhon PUBLIC shaderc)
+
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/src)
     
 
 

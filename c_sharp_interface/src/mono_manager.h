@@ -3,6 +3,10 @@
 #include "monopp/mono_domain.h"
 #include "shaderc/shaderc.h"
 #include <iostream>
+#include <functional>
+
+template<typename T>
+using deleted_unique_ptr = std::unique_ptr<T,std::function<void(T*)>>;
 
 class MonoManager {
 public:
@@ -20,7 +24,7 @@ public:
     
 
 private:
-    std::unique_ptr<mono::mono_domain> _domain;
+    deleted_unique_ptr<mono::mono_domain> _domain;
     bool _initialized = false;
 
 public:
