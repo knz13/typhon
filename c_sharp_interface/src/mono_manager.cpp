@@ -11,6 +11,11 @@ MonoManager::MonoManager()  {
 
     _domain = std::unique_ptr<mono::mono_domain>(new mono::mono_domain("typhon_domain"));
 
+    shaderc_compiler_t compiler =  shaderc_compiler_initialize();
+    
+    if(compiler == NULL){
+        std::cout << "compiler is null!" << std::endl;
+    }
 
 };
 

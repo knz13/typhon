@@ -20,27 +20,26 @@ if not os.path.exists("vendor"):
 
 if not os.path.exists("vendor/shaderc"):
     os.mkdir("vendor/shaderc")
-if not os.path.exists(os.path.join(current_dir,f"/assets/lib/{'libshaderc.dll' if platform.system() != 'Darwin' else 'liblibshaderc.dylib'}")):
+if not os.path.exists(os.path.join(current_dir,f"/assets/lib/{'shaderc.lib ' if platform.system() != 'Darwin' else 'libshaderc.a'}")):
     if not os.path.exists("vendor/shaderc/utils"):
         os.system('echo "Building spirv compiler library..."')
         os.system("git clone https://github.com/google/shaderc vendor/shaderc")
-        os.system("vendor/shaderc/utils/git-sync-deps")
-        os.system("cmake -B build/shaderc_compiler vendor/shaderc")
-    if os.path.exists("build/shaderc_compiler/glslc") and not os.path.exists(os.path.abspath("libglslc.a" if platform.system() == "Darwin" else "glslc.lib")):
-        os.chdir("build/shaderc_compiler/glslc")
-        os.system(f'{"make" if platform.system() == "Darwin" else "msbuild project_typhon.sln /p:Configuration=" + ("Release" if args.Release else "Debug")}')
-        os.chdir("../../../")
-    os.chdir("build/shaderc_compiler/glslc")
+        os.system(("python " if platform.system() != "Darwin" else "") + "vendor/shaderc/utils/git-sync-deps")
+        os.system("cmake -B build/shaderc_compiler vendor/shaderc -DSHADERC_SKIP_EXAMPLES=ON -DSHADERC_SKIP_TESTS=ON")
+    if os.path.exists("build/shaderc_compiler") and not os.path.exists(os.path.abspath("libshaderc.a" if platform.system() == "Darwin" else ("Debug/shaderc.lib" if not args.Release else "Release/shaderc.lib"))):
+        os.chdir("build/shaderc_compiler" if platform.system() == "Darwin" else "build/shaderc_compiler")
+        os.system(f'{"make" if platform.system() == "Darwin" else "msbuild shaderc.sln /p:Configuration=" + ("Release" if args.Release else "Debug")}')
+        os.chdir("../../../" if platform.system() == "Darwin" else "../../")
+    os.chdir("build/shaderc_compiler/libshaderc")
     if platform.system() == "Darwin":
-        if os.path.exists(os.path.abspath(os.path.join(current_dir,"assets/lib/libglslc.a"))) and os.path.exists(os.path.abspath("libglslc.a")):
-            os.remove(os.path.abspath(os.path.join(current_dir,"assets/lib/libglslc.a")))
-        os.rename(os.path.abspath("libglslc.a"),os.path.abspath(os.path.join(current_dir,"assets/lib/libglslc.a")))
+        if os.path.exists(os.path.abspath(os.path.join(current_dir,"assets/lib/libshaderc.a"))) and os.path.exists(os.path.abspath("libshaderc.a")):
+            os.remove(os.path.abspath(os.path.join(current_dir,"assets/lib/libshaderc.a")))
+        os.rename(os.path.abspath("libshaderc.a"),os.path.abspath(os.path.join(current_dir,"assets/lib/libshaderc.a")))
     else:
-        #TODO
-        quit()
-        if os.path.exists(os.path.abspath("../../assets/lib/typhon.dll")):
-            os.remove(os.path.abspath("../../assets/lib/typhon.dll"))
-        os.rename(os.path.abspath("Debug/typhon.dll" if not args.Release else "Release/typhon.dll"),os.path.abspath("../../assets/lib/typhon.dll"))
+        
+        if os.path.exists(os.path.abspath(os.path.join(current_dir,"assets/lib/shaderc.lib"))):
+            os.remove(os.path.abspath(os.path.join(current_dir,"assets/lib/shaderc.lib")))
+        os.rename(os.path.abspath("Debug/shaderc.lib" if not args.Release else "Release/shaderc.lib"),os.path.abspath(os.path.join(current_dir,"assets/lib/shaderc.lib")))
         
 
     os.chdir(os.path.join(current_dir,"c_sharp_interface"))

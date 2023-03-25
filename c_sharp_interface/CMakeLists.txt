@@ -70,12 +70,12 @@ project(project_typhon)
     )
 
     if(APPLE)
-      target_link_libraries(typhon PUBLIC ${PROJECT_SOURCE_DIR}/../assets/lib/libglslc.a)
+      target_link_libraries(typhon PUBLIC ${PROJECT_SOURCE_DIR}/../assets/lib/libshaderc.a)
     else()
-      target_link_libraries(typhon PUBLIC ${PROJECT_SOURCE_DIR}/../assets/lib/glslc.lib)
+      target_link_libraries(typhon PUBLIC ${PROJECT_SOURCE_DIR}/../assets/lib/shaderc.lib)
     endif()
 
-      target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/glslc/src)
+      target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc/include)
     
 
 
