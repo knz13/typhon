@@ -9,6 +9,8 @@ MonoManager::MonoManager() {
         return;
     }
 
+    std::cout << "using domain!!" << std::endl;
+
     _domain = deleted_unique_ptr<mono::mono_domain>(new mono::mono_domain("typhon_domain"),[](mono::mono_domain* ptr){});
 
     shaderc_compiler_t compiler = shaderc_compiler_initialize();
@@ -21,7 +23,7 @@ MonoManager::MonoManager() {
         shaderc_shader_kind::shaderc_glsl_vertex_shader, "main.vert", "main", nullptr);
     
 
-    
+
     if(result->num_errors == 0){
         std::cout << "compiled succesfully!" << std::endl;
     }
