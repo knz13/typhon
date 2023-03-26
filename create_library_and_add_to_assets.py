@@ -1,3 +1,4 @@
+import sys
 import subprocess
 import platform
 import argparse
@@ -13,6 +14,9 @@ parser.add_argument("--Release",action='store_true')
 
 args = parser.parse_args()
 
+
+is_64bits = sys.maxsize > 2**32
+
 current_dir = os.path.abspath(os.curdir)
 os.chdir("c_sharp_interface")
 if not os.path.exists("vendor"):
@@ -24,7 +28,7 @@ if not os.path.exists("vendor/shaderc"):
     os.system(("python " if platform.system() != "Darwin" else "") + "vendor/shaderc/utils/git-sync-deps")
 
 os.system('echo "Creating c++ library..."')
-os.system(f'cmake {"-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug") if platform.system() == "Darwin" else ""} -B build ./')
+os.system(f'cmake {("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")) if platform.system() == "Darwin" else ("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86"))} -B build ./ ')
 os.system('echo "CMake run finished!')
 os.system('echo "Compiling..."')
 os.chdir("build")
