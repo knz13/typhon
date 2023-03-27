@@ -3,7 +3,11 @@
 #include "yael.h"
 
 
-class Player : public NPC, UsesStaticDefaults<Player>,AddObjectToHierarchy<Player>{
+class Player : public NPC,
+    UsesStaticDefaults<Player>,
+    AddObjectToHierarchy<Player>,
+    HasKeyCallbacks<Player>
+    {
 public:
     static yael::event_sink<void(Player&)> OnPlayerCreated() {
         return {onPlayerCreatedLauncher};
@@ -16,7 +20,6 @@ public:
     static void SetStaticDefaults() {
         std::cout << "Static default for player!!" << std::endl;
 
-        
     };
 
     void SetDefaults() override {
@@ -26,7 +29,27 @@ public:
 
     void OnRemove() override {
         onPlayerRemovedLauncher.EmitEvent(*this);
+        
+    }
 
+    void OnKeyPressed(InputKey key) override {
+        //std::cout << "on key pressed position " << position.x << "," << position.y << "!" << std::endl;
+        switch(key){
+        case InputKey::A:
+            position.x -= 2;
+            break;
+        case InputKey::D:
+            position.x += 2;
+            break;
+        case InputKey::W:
+            position.y += 2;
+            break;
+        case InputKey::S:
+            position.y -= 2;
+            break;
+        default:
+            break;
+        }
     }
 
 private:

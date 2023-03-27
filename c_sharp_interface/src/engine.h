@@ -4,7 +4,6 @@
 
 class Engine {
 public:
-
     static void Initialize() {
         Player::OnPlayerCreated().Connect([](Player& plr){
             std::cout << "Created player!" << std::endl;
@@ -17,6 +16,7 @@ public:
         });
     }
 
+    static inline Vector2f mousePosition;
 private:
     static inline std::vector<Player*> players = {};
 

@@ -13,7 +13,7 @@ import 'package:flame/flame.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:flutter/services.dart' show ByteData, rootBundle;
+import 'package:flutter/services.dart' show ByteData, Clipboard, ClipboardData, rootBundle;
 import 'package:flutter/src/services/keyboard_key.g.dart';
 import 'package:path/path.dart' as path;
 import 'package:flame/components.dart';
@@ -28,7 +28,7 @@ import 'game_object.dart';
 
 
 
-class Engine extends FlameGame with KeyboardEvents, TapDetector {
+class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDetector {
 
   static Random rng = Random();
   static Engine? instance;
@@ -43,8 +43,21 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector {
   }
 
   @override
+  void onMouseMove(PointerHoverInfo info) {
+    // TODO: implement onMouseMove
+
+    getCppFunctions().onMouseMove(info.eventPosition.game.x, info.eventPosition.game.y);
+
+    super.onMouseMove(info);
+  }
+
+  @override
   KeyEventResult onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    
+
+    keysPressed.forEach((element) {
+      
+      getCppFunctions().onKeyboardKeyDown(element.keyId);
+    });
 
     return super.onKeyEvent(event, keysPressed);
   }
@@ -70,6 +83,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector {
   FutureOr<void> onLoad() {
 
     instance = this;
+
 
     initializeLibraryAndGetBindings().then((library) {
       library.initializeCppLibrary();

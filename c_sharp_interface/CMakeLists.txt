@@ -77,16 +77,27 @@ project(project_typhon)
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/yael/include)
     
-    FetchContent_Declare(UUID
+    FetchContent_Declare(RANDOM
     GIT_REPOSITORY https://github.com/effolkronium/random
     GIT_TAG v1.4.1
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/random
     ) 
     
     
-    FetchContent_MakeAvailable(UUID)
-
+    FetchContent_MakeAvailable(RANDOM)
+    
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/random/include)
+    
+    FetchContent_Declare(GLM
+    GIT_REPOSITORY https://github.com/g-truc/glm
+    GIT_TAG 0.9.9.8
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/glm
+    ) 
+    
+    
+    FetchContent_MakeAvailable(GLM)
+    
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/glm/)
 
 
 # --------------------- Targets ------------------------

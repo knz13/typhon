@@ -16,17 +16,6 @@
 #define FFI_PLUGIN_EXPORT
 #endif
 
-struct ClassesArray {
-    int64_t* array;
-    const char** stringArray;
-    int64_t stringArraySize;
-    int64_t size;
-};
-
-enum InputType {
-    
-};
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,8 +34,11 @@ extern "C" {
     FFI_PLUGIN_EXPORT UpdateFunc attachUpdateFunction();
     FFI_PLUGIN_EXPORT PreDrawFunc attachPreDrawFunction();
     FFI_PLUGIN_EXPORT PostDrawFunc attachPostDrawFunction();
-    FFI_PLUGIN_EXPORT void attachScalePointerToGameObject(int id,double* scalePointerX,double* scalePointerY);
-    FFI_PLUGIN_EXPORT void attachPositionPointersToGameObject(int id,double* positionX,double* positionY);
+    FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
+    FFI_PLUGIN_EXPORT void onKeyboardKeyDown(InputKey input);
+    FFI_PLUGIN_EXPORT void attachPointersToObject(AttachPointersToObjectFunc func);
+    FFI_PLUGIN_EXPORT void attachScalePointerToGameObject(int64_t id,double* scalePointerX,double* scalePointerY);
+    FFI_PLUGIN_EXPORT void attachPositionPointersToGameObject(int64_t id,double* positionX,double* positionY);
 
     //Related to Engine Menus
 

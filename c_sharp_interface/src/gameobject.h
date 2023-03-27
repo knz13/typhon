@@ -16,6 +16,17 @@ public:
         if(GameObject::aliveObjects.find(id) == GameObject::aliveObjects.end()){
             GameObject::aliveObjects[id] = std::unique_ptr<GameObjectMiddleMan>(new T());
             GameObject::aliveObjects[id].get()->identifier = id;
+            GameObject::aliveObjects[id].get()->className = HelperFunctions::GetClassNameString<T>();
+
+            
+            std::cout << "Created player! Checking if keys callback registered!" << std::endl;
+            GameObjectMiddleMan::attachPointersToObject(id);
+
+            if(GameObjectMiddleMan::classesThatHaveHasKeyCallbacks.find(HelperFunctions::GetClassNameString<T>())
+                != GameObjectMiddleMan::classesThatHaveHasKeyCallbacks.end()){
+                std::cout << "Registering keys callback!" << std::endl;
+                GameObjectMiddleMan::objectsToCallKeysCallback[id] = GameObject::aliveObjects[id].get();
+            }
         }
         else{
             std::cout << "Tried to create gameobject with id " << id << " but some other with this id already exists!!" << std::endl;
@@ -23,13 +34,30 @@ public:
         return (T&)(*GameObject::aliveObjects[id].get());
     }
 
-    template<typename T>
     static void RemoveGameObject(GameObject other){
-        int64_t id = other.identifier;
+        int64_t id = other.identifier;  
         if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){
             std::cout << "removing object with id = " << id << std::endl;
+            if(GameObjectMiddleMan::objectsToCallKeysCallback.find(id) != GameObjectMiddleMan::objectsToCallKeysCallback.end()){
+                GameObjectMiddleMan::objectsToCallKeysCallback.erase(id);
+            }
             GameObjectMiddleMan::aliveObjects[id].get()->OnRemove();
             GameObjectMiddleMan::aliveObjects.erase(id);
+        }
+    }
+
+    static void RemoveGameObjectByID(int64_t id){
+        if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){
+            std::cout << "removing object with id = " << id << std::endl;
+            if(GameObjectMiddleMan::objectsToCallKeysCallback.find(id) != GameObjectMiddleMan::objectsToCallKeysCallback.end()){
+                GameObjectMiddleMan::objectsToCallKeysCallback.erase(id);
+            }
+            GameObjectMiddleMan::aliveObjects[id].get()->OnRemove();
+            GameObjectMiddleMan::aliveObjects.erase(id);
+        }
+        else{
+            std::cout << "Trying to delete an object with an invalid id!" << std::endl;
+            std::cout << "id = " << id << std::endl;
         }
     }
 
@@ -49,7 +77,11 @@ public:
     }
 
 
+    
+
+
 private:
+    using GameObjectMiddleMan::className;
     using GameObjectMiddleMan::OnRemove;
     using GameObjectMiddleMan::aliveObjects;
     using GameObjectMiddleMan::menuOptionsIDtoString;

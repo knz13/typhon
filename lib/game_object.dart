@@ -33,6 +33,7 @@ class GameObject extends PositionComponent {
     // ex. OnUpdate(dt), OnLoad(), OnFindFrame(), OnSetDefaults(), OnAI(),OnPreDraw(), OnPostDraw()
     library.attachCreateGameObjectFunction(Pointer.fromFunction(createNewGameObject,0));
     library.attachRemoveGameObjectFunction(Pointer.fromFunction(removeGameObject));
+    library.attachPointersToObject(Pointer.fromFunction(attachPointersToObject));
     onDeleteFunction = library.attachOnRemoveObjectFunction().asFunction();
     onUpdateFunc = library.attachUpdateFunction().asFunction();
     onAIFunction = library.attachAIFunction().asFunction();
@@ -62,12 +63,19 @@ class GameObject extends PositionComponent {
     obj.positionYPointer!.value = obj.position.y;
     obj.scaleXPointer!.value = obj.scale.x;
     obj.scaleYPointer!.value = obj.scale.y;
-    getCppFunctions().attachPositionPointersToGameObject(id,obj.positionXPointer!,obj.positionYPointer!);
-    getCppFunctions().attachScalePointerToGameObject(id,obj.scaleXPointer!,obj.scaleYPointer!);
     Engine.instance!.childrenChangedNotifier.value++;
     Engine.aliveObjects[id] = obj;
 
+  
+    
     return id;
+  }
+
+  static void attachPointersToObject(int id){
+    print("calling from flutter with id $id");
+    GameObject obj = Engine.aliveObjects[id]!;
+    getCppFunctions().attachPositionPointersToGameObject(id,obj.positionXPointer!,obj.positionYPointer!);
+    getCppFunctions().attachScalePointerToGameObject(id,obj.scaleXPointer!,obj.scaleYPointer!);
   }
 
   static void removeGameObject(int id) {

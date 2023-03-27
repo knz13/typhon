@@ -9,6 +9,7 @@
 #include "player.h"
 #include "engine.h"
 
+
 bool initializeCppLibrary() {
     
     MonoManager::getInstance();
@@ -55,7 +56,7 @@ ClassesArray getClassesToAddToHierarchyMenu() {
     static std::vector<const char*> charVec;
 
     if(vec.size() == 0){
-        std::cout << "Trying to get hierarchy menu stuff" << std::endl;
+        std::cout << "Trying to get hierarchy menu options" << std::endl;
         std::cout << "Current hierarchy pool size: " << GameObjectMiddleMan::menuOptionsStringToOnClick.size() << " and id to string: " << GameObjectMiddleMan::menuOptionsIDtoString.size() << std::endl;
         for(const auto& [id,str] : GameObjectMiddleMan::menuOptionsIDtoString){
             vec.push_back(id);
@@ -115,17 +116,44 @@ PostDrawFunc attachPostDrawFunction()
     return &GameObjectMiddleMan::onCallPostDraw;
 }
 
-void attachScalePointerToGameObject(int id, double * scalePointerX,double* scalePointerY)
+void onMouseMove(double positionX, double positionY)
+{
+    //std::cout << "Receiving mouse move event!" << positionX << " , " << positionY << std::endl;
+    Engine::mousePosition = Vector2f(positionX,positionY);
+}
+
+void onKeyboardKeyDown(InputKey input)
+{
+    //std::cout << "receiving keyboard event! id = " << input << " registered number " << GameObjectMiddleMan::objectsToCallKeysCallback.size() << std::endl;
+    for(auto& [id,obj] : GameObjectMiddleMan::objectsToCallKeysCallback){
+        GameObjectMiddleMan::classesThatHaveHasKeyCallbacks[obj->GetClassName()](obj,input);
+    }
+}
+
+void attachPointersToObject(AttachPointersToObjectFunc func)
+{
+    GameObjectMiddleMan::attachPointersToObject = [=](int64_t id){
+        std::cout << "Calling attach pointers to object with id " << id << std::endl;
+        func(id);
+    };
+}
+
+
+void attachScalePointerToGameObject(int64_t id, double *scalePointerX, double *scalePointerY)
 {   
+    std::cout << "trying to attach scale pointers to object " << id << std::endl;
     if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){
+        std::cout << "attaching scale pointers to object!" << std::endl;
         GameObjectMiddleMan::aliveObjects[id].get()->_scalePointerX = scalePointerX;
         GameObjectMiddleMan::aliveObjects[id].get()->_scalePointerY = scalePointerY;
     }
 }
 
-void attachPositionPointersToGameObject(int id, double *positionX, double *positionY)
+void attachPositionPointersToGameObject(int64_t id, double *positionX, double *positionY)
 {
+    std::cout << "trying to attach position pointers to object " << id << std::endl;
     if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){    
+        std::cout << "attaching position pointers to object!" << std::endl;
         GameObjectMiddleMan::aliveObjects[id].get()->_positionX = positionX;
         GameObjectMiddleMan::aliveObjects[id].get()->_positionY = positionY;
     }

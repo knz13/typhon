@@ -7,4 +7,9 @@ public:
     static void SetStaticDefaults() {
         std::cout << "Static default for npc!" << std::endl;
     };
+
+    
+
+protected:
+    Vector2f velocity = Vector2f(0,0);
 };
