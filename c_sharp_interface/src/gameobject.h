@@ -1,6 +1,7 @@
 #pragma once
 #include "gameobject_middle_man.h"
 #include <chrono>
+#include "entt/entt.hpp"
 
 
 class GameObject : public GameObjectMiddleMan {
@@ -21,15 +22,15 @@ public:
 
     template<typename T>
     static void AddToHierarchyMenu() {
-
-        if(GameObjectMiddleMan::menuOptionsStringToOnClick.find(typeid(T).name()) != GameObjectMiddleMan::menuOptionsStringToOnClick.end()){
+        std::string name = HelperFunctions::GetClassName<T>();
+        if(GameObjectMiddleMan::menuOptionsStringToOnClick.find(name) != GameObjectMiddleMan::menuOptionsStringToOnClick.end()){
             return;
         }
 
-        std::cout << "adding to hierarchy menu: " << typeid(T).name() << std::endl;
+        std::cout << "adding to hierarchy menu: " << name << std::endl;
 
-        GameObjectMiddleMan::menuOptionsIDtoString[std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()] = typeid(T).name();
-        GameObjectMiddleMan::menuOptionsStringToOnClick[typeid(T).name()] = [](){
+        GameObjectMiddleMan::menuOptionsIDtoString[std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()] = name;
+        GameObjectMiddleMan::menuOptionsStringToOnClick[name] = [](){
             GameObject::CreateNewGameObject<T>();
         };
     }

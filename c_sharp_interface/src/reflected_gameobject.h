@@ -3,13 +3,12 @@
 
 
 
-
 template<typename Derived>
 class ReflectedGameObject : public GameObject {
     static inline int m = ([](){
         
         GameObject::AddToHierarchyMenu<Derived>();
-
+        
 
         return 0;
     })();

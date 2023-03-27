@@ -53,24 +53,19 @@ project(project_typhon)
     # repository download and settings for shaderc
 
     
-    #FetchContent_Declare(MONO
-    #    GIT_REPOSITORY https://github.com/volcoma/monopp
-    #    GIT_TAG origin/master
-    #    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/mono
-    #  
-    #) 
+    FetchContent_Declare(ENTT
+        GIT_REPOSITORY https://github.com/skypjack/entt
+        GIT_TAG v3.11.1
+        SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/entt
+    ) 
     
 
-    #FetchContent_MakeAvailable(MONO)
-    # includes for target typhon...
-
-      #list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/mono/)
-
-    # libraries for target typhon...
+    FetchContent_MakeAvailable(ENTT)
+    #includes for target typhon...
     
-   # list(APPEND typhon_LIBRARIES monopp)
+      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/entt/single_include)
+
     
-    # repository download and settings for shaderc
 
 
 # --------------------- Targets ------------------------
