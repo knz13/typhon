@@ -1,13 +1,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "general.h"
 
 #if _WIN32
 #include <windows.h>
 #else
 #include <pthread.h>
 #include <unistd.h>
-#include "general.h"
 #endif
 
 #if _WIN32
