@@ -2,13 +2,22 @@
 #include <stdint.h>
 #include "typhon.h"
 #include "mono_manager.h"
-#include "monopp/mono_domain.h"
+#include "shader_compiler.h"
+#include "gameobject.h"
 
 
-
-bool initializeMono() {
+bool initializeCppLibrary() {
     
-    return MonoManager::getInstance().initialized();
+    MonoManager::getInstance();
+    ShaderCompiler::getInstance();
+
+    return true;
 
 }
 
+void attachCreateGameObjectFunction(CreateGameObjectFunc func)
+{
+    GameObject::addGameObject = [=](std::string value){
+        return GameObject(func(value.c_str()));
+    };
+}

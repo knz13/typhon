@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:typhon/NPC.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/tree_viewer.dart';
 
@@ -39,28 +40,9 @@ class HierarchyPanelTop extends StatelessWidget {
               ],
             ),
             menuItems: [
-              ContextMenuOption(title: "Create Empty"),
               ContextMenuOption(
-                title: "Objects",
-                subOptions: [
-                  ContextMenuOption(
-                    title: "Square",
-                    callback: () {
-                      print("adding object!");
-                      Engine.instance?.add(GameObject(name: "Generic name")
-                      ..add(PolygonComponent([
-                        Vector2(0, 0),
-                        Vector2(0, 1),
-                        Vector2(1, 0),
-                        Vector2(1, 1)
-                      ])));
-                    }
-                  ),
-                  ContextMenuOption(title: "Circle"),
-                  ContextMenuOption(title: "Triangle"),
-                ],
+                title: "NPC Derived",
               )
-
             ],
           ),
           SizedBox(

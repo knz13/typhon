@@ -33,22 +33,22 @@ project(project_typhon)
 # repository download and settings for mono...
 
 
-    FetchContent_Declare(MONO
-        GIT_REPOSITORY https://github.com/volcoma/monopp
-        GIT_TAG origin/master
-        SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/mono
-      
-    ) 
+    #FetchContent_Declare(MONO
+    #    GIT_REPOSITORY https://github.com/volcoma/monopp
+    #    GIT_TAG origin/master
+    #    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/mono
+    #  
+    #) 
     
 
-    FetchContent_MakeAvailable(MONO)
+    #FetchContent_MakeAvailable(MONO)
     # includes for target typhon...
 
-      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/mono/)
+      #list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/mono/)
 
     # libraries for target typhon...
     
-    list(APPEND typhon_LIBRARIES monopp)
+   # list(APPEND typhon_LIBRARIES monopp)
     
     # repository download and settings for shaderc
 
@@ -60,6 +60,8 @@ project(project_typhon)
     # adding sources
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/mono_manager.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/shader_compiler.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/gameobject.cpp)
     # creating target
 
     

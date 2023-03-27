@@ -25,11 +25,12 @@ class TyphonBindings {
           lookup)
       : _lookup = lookup;
 
-  int initializeMono() {
-    return _initializeMono();
+  int initializeCppLibrary() {
+    return _initializeCppLibrary();
   }
 
-  late final _initializeMonoPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function()>>('initializeMono');
-  late final _initializeMono = _initializeMonoPtr.asFunction<int Function()>();
+  late final _initializeCppLibraryPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('initializeCppLibrary');
+  late final _initializeCppLibrary =
+      _initializeCppLibraryPtr.asFunction<int Function()>();
 }

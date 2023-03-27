@@ -16,12 +16,15 @@
 #define FFI_PLUGIN_EXPORT
 #endif
 
+typedef int (*CreateGameObjectFunc)(const char*);
+
 
 
 #ifdef __cplusplus
 extern"C" {
 #endif
-    FFI_PLUGIN_EXPORT bool initializeMono();
+    FFI_PLUGIN_EXPORT bool initializeCppLibrary();
+    FFI_PLUGIN_EXPORT void attachCreateGameObjectFunction(CreateGameObjectFunc func);
 
 
 #ifdef __cplusplus

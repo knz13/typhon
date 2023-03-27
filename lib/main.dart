@@ -1,5 +1,6 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
+import 'package:typhon/NPC.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/file_viewer_panel_test.dart';
@@ -10,7 +11,6 @@ import 'package:typhon/scene_viewer_panel.dart';
 import 'engine.dart';
 import 'file_viewer_panel.dart';
 
-
 double contextWidth(var context){
   return MediaQuery.of(context).size.width;
 }
@@ -19,7 +19,6 @@ double contextHeight(var context){
 }
 
 void main() {
-  
   runApp(const MyApp());
 }
 

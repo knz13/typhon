@@ -61,7 +61,8 @@ class Engine extends FlameGame {
     instance = this;
 
     initializeLibraryAndGetBindings().then((library) {
-      library.initializeMono();
+      library.initializeCppLibrary();
+      GameObject.initializeWithCppLibrary(library);
     });
     
 
