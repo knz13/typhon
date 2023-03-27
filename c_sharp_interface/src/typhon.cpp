@@ -18,18 +18,14 @@ bool initializeCppLibrary() {
 void attachCreateGameObjectFunction(CreateGameObjectFunc func)
 {   
     std::cout << "attaching create game object func!" <<std::endl;
-    GameObject::addGameObject = [=](){
-        int id = func();
-        if(GameObject::aliveObjects.find(id) == GameObject::aliveObjects.end()){
-            GameObject::aliveObjects[id] = GameObject();
-        }
-        else{
-            std::cout << "Tried to create gameobject with id " << id << " but some other with this id already exists!!" << std::endl;
-        }
-        return GameObject::aliveObjects[id];
+    GameObject::createGameObjectAndGetID = [=](){
+        return func();
     };
 
-    GameObject::addGameObject();
+
+    GameObject::CreateNewGameObject<GameObjectTestOne>();
+    GameObject::CreateNewGameObject<GameObjectTestTwo>();
+
 }
 
 FindFrameFunc attachFindFrameFunction()
@@ -65,15 +61,15 @@ PostDrawFunc attachPostDrawFunction()
 void attachScalePointerToGameObject(int id, double * scalePointerX,double* scalePointerY)
 {   
     if(GameObject::aliveObjects.find(id) != GameObject::aliveObjects.end()){
-        GameObject::aliveObjects[id]._scalePointerX = scalePointerX;
-        GameObject::aliveObjects[id]._scalePointerY = scalePointerY;
+        GameObject::aliveObjects[id].get()->_scalePointerX = scalePointerX;
+        GameObject::aliveObjects[id].get()->_scalePointerY = scalePointerY;
     }
 }
 
 void attachPositionPointersToGameObject(int id, double *positionX, double *positionY)
 {
     if(GameObject::aliveObjects.find(id) != GameObject::aliveObjects.end()){    
-        GameObject::aliveObjects[id]._positionX = positionX;
-        GameObject::aliveObjects[id]._positionY = positionY;
+        GameObject::aliveObjects[id].get()->_positionX = positionX;
+        GameObject::aliveObjects[id].get()->_positionY = positionY;
     }
 }

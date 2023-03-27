@@ -8,40 +8,33 @@
 
 class GameObjectMiddleMan {
 public:
-    inline static std::function<GameObjectMiddleMan()> addGameObject;
-    
+    inline static std::function<int64_t()> createGameObjectAndGetID;
 
-    inline static std::unordered_map<int,GameObjectMiddleMan> aliveObjects;
+    inline static std::unordered_map<int64_t,std::unique_ptr<GameObjectMiddleMan>> aliveObjects;
 
-    GameObjectMiddleMan();
 
     static void onCallUpdate(int64_t id,double dt) {
-        std::cout << "Called onCallUpdate!" << std::endl;
+        aliveObjects[id].get()->Update(dt);
     }
 
     static void onCallSetDefaults(int64_t id){
-        std::cout << "Called onCallSetDefaults!" << std::endl;
-
+        aliveObjects[id].get()->SetDefaults();
     }
 
     static void onCallFindFrame(int64_t id){
-        std::cout << "Called onCallFindFrame!" << std::endl;
-
-    }
+        aliveObjects[id].get()->FindFrame();
+    }  
 
     static void onCallAI(int64_t id){
-        std::cout << "Called onCallAI!" << std::endl;
-
+        aliveObjects[id].get()->AI();
     } 
 
     static void onCallPreDraw(int64_t id) {
-        std::cout << "Called onCallPreDraw!" << std::endl;
-
+        aliveObjects[id].get()->PreDraw();
     }
 
     static void onCallPostDraw(int64_t id){
-        std::cout << "Called onCallPostDraw!" << std::endl;
-
+        aliveObjects[id].get()->PostDraw();
     }
 
     double* _positionX;
@@ -49,6 +42,19 @@ public:
     double* _scalePointerX;
     double* _scalePointerY;
 protected:
+
+    virtual void Update(double dt) {}
+
+    virtual void AI() {};
+
+    virtual void PreDraw() {};
+
+    virtual void PostDraw() {};
+
+    virtual void FindFrame() {};
+
+    virtual void SetDefaults() {};
+
 
 private:
     
