@@ -1,6 +1,5 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
-import 'package:typhon/NPC.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/file_viewer_panel_test.dart';

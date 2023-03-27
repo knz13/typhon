@@ -5,7 +5,6 @@ import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:typhon/NPC.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/tree_viewer.dart';
 

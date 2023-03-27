@@ -1,18 +1,12 @@
 #pragma once
-#include <iostream>
-#include <functional>
-#include "general.h"
+#include "gameobject_middle_man.h"
 
 
-
-class GameObject {
-public:
-    inline static std::function<GameObject(std::string name)> addGameObject;
-    
-
-    GameObject(int identifier);
+class GameObject : public GameObjectMiddleMan {
 
 private:
-    int identifier;
-
+    using GameObjectMiddleMan::_positionX;
+    using GameObjectMiddleMan::_positionY;
+    using GameObjectMiddleMan::_scalePointerX;
+    using GameObjectMiddleMan::_scalePointerY;
 };

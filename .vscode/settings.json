@@ -1,6 +1,7 @@
 {
     "cmake.sourceDirectory": "${workspaceFolder}/c_sharp_interface",
     "files.associations": {
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "unordered_map": "cpp"
     }
 }

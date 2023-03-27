@@ -33,4 +33,134 @@ class TyphonBindings {
       _lookup<ffi.NativeFunction<ffi.Int Function()>>('initializeCppLibrary');
   late final _initializeCppLibrary =
       _initializeCppLibraryPtr.asFunction<int Function()>();
+
+  void attachCreateGameObjectFunction(
+    CreateGameObjectFunc func,
+  ) {
+    return _attachCreateGameObjectFunction(
+      func,
+    );
+  }
+
+  late final _attachCreateGameObjectFunctionPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(CreateGameObjectFunc)>>(
+          'attachCreateGameObjectFunction');
+  late final _attachCreateGameObjectFunction =
+      _attachCreateGameObjectFunctionPtr
+          .asFunction<void Function(CreateGameObjectFunc)>();
+
+  FindFrameFunc attachFindFrameFunction() {
+    return _attachFindFrameFunction();
+  }
+
+  late final _attachFindFrameFunctionPtr =
+      _lookup<ffi.NativeFunction<FindFrameFunc Function()>>(
+          'attachFindFrameFunction');
+  late final _attachFindFrameFunction =
+      _attachFindFrameFunctionPtr.asFunction<FindFrameFunc Function()>();
+
+  AIFunc attachAIFunction() {
+    return _attachAIFunction();
+  }
+
+  late final _attachAIFunctionPtr =
+      _lookup<ffi.NativeFunction<AIFunc Function()>>('attachAIFunction');
+  late final _attachAIFunction =
+      _attachAIFunctionPtr.asFunction<AIFunc Function()>();
+
+  SetDefaultsFunc attachSetDefaultsFunction() {
+    return _attachSetDefaultsFunction();
+  }
+
+  late final _attachSetDefaultsFunctionPtr =
+      _lookup<ffi.NativeFunction<SetDefaultsFunc Function()>>(
+          'attachSetDefaultsFunction');
+  late final _attachSetDefaultsFunction =
+      _attachSetDefaultsFunctionPtr.asFunction<SetDefaultsFunc Function()>();
+
+  UpdateFunc attachUpdateFunction() {
+    return _attachUpdateFunction();
+  }
+
+  late final _attachUpdateFunctionPtr =
+      _lookup<ffi.NativeFunction<UpdateFunc Function()>>(
+          'attachUpdateFunction');
+  late final _attachUpdateFunction =
+      _attachUpdateFunctionPtr.asFunction<UpdateFunc Function()>();
+
+  PreDrawFunc attachPreDrawFunction() {
+    return _attachPreDrawFunction();
+  }
+
+  late final _attachPreDrawFunctionPtr =
+      _lookup<ffi.NativeFunction<PreDrawFunc Function()>>(
+          'attachPreDrawFunction');
+  late final _attachPreDrawFunction =
+      _attachPreDrawFunctionPtr.asFunction<PreDrawFunc Function()>();
+
+  PostDrawFunc attachPostDrawFunction() {
+    return _attachPostDrawFunction();
+  }
+
+  late final _attachPostDrawFunctionPtr =
+      _lookup<ffi.NativeFunction<PostDrawFunc Function()>>(
+          'attachPostDrawFunction');
+  late final _attachPostDrawFunction =
+      _attachPostDrawFunctionPtr.asFunction<PostDrawFunc Function()>();
+
+  void attachScalePointerToGameObject(
+    int id,
+    ffi.Pointer<ffi.Double> scalePointerX,
+    ffi.Pointer<ffi.Double> scalePointerY,
+  ) {
+    return _attachScalePointerToGameObject(
+      id,
+      scalePointerX,
+      scalePointerY,
+    );
+  }
+
+  late final _attachScalePointerToGameObjectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int, ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>)>>('attachScalePointerToGameObject');
+  late final _attachScalePointerToGameObject =
+      _attachScalePointerToGameObjectPtr.asFunction<
+          void Function(
+              int, ffi.Pointer<ffi.Double>, ffi.Pointer<ffi.Double>)>();
+
+  void attachPositionPointersToGameObject(
+    int id,
+    ffi.Pointer<ffi.Double> positionX,
+    ffi.Pointer<ffi.Double> positionY,
+  ) {
+    return _attachPositionPointersToGameObject(
+      id,
+      positionX,
+      positionY,
+    );
+  }
+
+  late final _attachPositionPointersToGameObjectPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Int, ffi.Pointer<ffi.Double>,
+              ffi.Pointer<ffi.Double>)>>('attachPositionPointersToGameObject');
+  late final _attachPositionPointersToGameObject =
+      _attachPositionPointersToGameObjectPtr.asFunction<
+          void Function(
+              int, ffi.Pointer<ffi.Double>, ffi.Pointer<ffi.Double>)>();
 }
+
+typedef CreateGameObjectFunc
+    = ffi.Pointer<ffi.NativeFunction<ffi.Int64 Function()>>;
+typedef FindFrameFunc
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
+typedef AIFunc = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
+typedef SetDefaultsFunc
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
+typedef UpdateFunc
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Double)>>;
+typedef PreDrawFunc
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
+typedef PostDrawFunc
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
