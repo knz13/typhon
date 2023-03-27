@@ -35,7 +35,7 @@ namespace HelperFunctions {
 
 
     template<typename T>
-    static std::string GetClassName() {
+    static std::string GetClassNameString() {
         std::string name = std::string(entt::type_id<T>().name());
         HelperFunctions::EraseWordFromString(name, "class ");
         HelperFunctions::EraseWordFromString(name, "struct ");

@@ -9,7 +9,7 @@ public:
     template<typename T>
     static T& CreateNewGameObject() {
         int64_t id = GameObjectMiddleMan::createGameObjectAndGetID();
-        std::cout << "Creating object with id " << id << " and type " << HelperFunctions::GetClassName<T>() <<  std::endl;
+        std::cout << "Creating object with id " << id << " and type " << HelperFunctions::GetClassNameString<T>() <<  std::endl;
 
         if(GameObject::aliveObjects.find(id) == GameObject::aliveObjects.end()){
             GameObject::aliveObjects[id] = std::unique_ptr<GameObjectMiddleMan>(new T());
@@ -22,7 +22,7 @@ public:
 
     template<typename T>
     static void AddToHierarchyMenu() {
-        std::string name = HelperFunctions::GetClassName<T>();
+        std::string name = HelperFunctions::GetClassNameString<T>();
         if(GameObjectMiddleMan::menuOptionsStringToOnClick.find(name) != GameObjectMiddleMan::menuOptionsStringToOnClick.end()){
             return;
         }
