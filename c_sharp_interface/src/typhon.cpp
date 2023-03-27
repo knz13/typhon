@@ -22,10 +22,6 @@ void attachCreateGameObjectFunction(CreateGameObjectFunc func)
         return func();
     };
 
-
-    GameObject::CreateNewGameObject<GameObjectTestOne>();
-    GameObject::CreateNewGameObject<GameObjectTestTwo>();
-
 }
 
 FindFrameFunc attachFindFrameFunction()
