@@ -3,6 +3,7 @@
 #include <functional>
 #include "general.h"
 #include <unordered_map>
+#include <vector>
 
 struct HierarchyMenuObject {
     std::function<void()> onClick;
@@ -13,7 +14,7 @@ public:
     inline static std::function<int64_t()> createGameObjectAndGetID;
     inline static std::unordered_map<uint64_t,std::string> menuOptionsIDtoString;
     inline static std::unordered_map<std::string,std::function<void()>> menuOptionsStringToOnClick;
-
+    inline static std::vector<std::function<void()>> staticDefaultsFuncs;
     inline static std::unordered_map<int64_t,std::unique_ptr<GameObjectMiddleMan>> aliveObjects;
 
 

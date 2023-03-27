@@ -1,40 +1,45 @@
 #pragma once
 #include "gameobject.h"
 
+class NullClassHelper {
 
+};
 
 template<typename Derived>
-class AddObjectToHierarchy : public GameObject {
-    static inline int m = ([](){
-        
-        GameObject::AddToHierarchyMenu<Derived>();
-        
-
-        return 0;
-    })();
+class AddObjectToHierarchy {
+    static int m;
 
 public:
-    AddToObjectHierarchy()
+    AddObjectToHierarchy()
     {
         (void)m;
     }
     
 };
 
+template<typename Derived>
+int AddObjectToHierarchy<Derived>::m = ([](){
+    GameObject::AddToHierarchyMenu<Derived>();
+        
+    return 0;
+})();
+
 template<typename T>
 class UsesStaticDefaults { 
 
-    static inline int m = ([](){
-        
-
-
-        return 0;
-    })();
+    static int m;
 
 public:
     UsesStaticDefaults()
     {
         (void)m;
     }
+};
 
-}
+template<typename T>
+int UsesStaticDefaults<T>::m = ([](){
+        
+    GameObject::staticDefaultsFuncs.push_back([](){T::SetStaticDefaults();});
+
+    return 0;
+})();

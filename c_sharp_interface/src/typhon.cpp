@@ -5,13 +5,17 @@
 #include "shader_compiler.h"
 #include "gameobject.h"
 #include "npc.h"
+#include "reflection.h"
+#include "player.h"
 
 bool initializeCppLibrary() {
     
     MonoManager::getInstance();
     ShaderCompiler::getInstance();
 
-    return true;
+   
+
+    return true;    
 
 }
 
@@ -22,8 +26,13 @@ void attachCreateGameObjectFunction(CreateGameObjectFunc func)
         return func();
     };
 
+    //Initialize one of each object (for compiler reasons...)
+    Player();
+    NPC();
 
-    GameObject::AddToHierarchyMenu<NPC>();
+    for(const auto& func : GameObjectMiddleMan::staticDefaultsFuncs){
+        func();
+    }
 
 }
 
@@ -37,6 +46,8 @@ ClassesArray getClassesToAddToHierarchyMenu() {
             charVec.push_back(str.c_str());
         }
     }
+
+    
 
     ClassesArray arr;
     arr.array = vec.data();
