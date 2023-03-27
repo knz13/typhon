@@ -51,7 +51,6 @@ class HierarchyPanelTop extends StatelessWidget {
                 ClassesArray arr = getCppFunctions().getClassesToAddToHierarchyMenu();
           
                 List<ContextMenuOption> options = [];
-          
                 for(int index in List.generate(arr.size, (index) => index)){
                   var val = arr.array.elementAt(index).value;
                   final Pointer<Utf8> str = arr.stringArray.elementAt(index).value.cast();
@@ -63,7 +62,6 @@ class HierarchyPanelTop extends StatelessWidget {
                     )
                   );
                 }
-                
                 
                 return options;
               })()

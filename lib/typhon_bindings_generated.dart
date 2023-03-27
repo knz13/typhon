@@ -214,6 +214,8 @@ class ClassesArray extends ffi.Struct {
   external int size;
 }
 
+abstract class InputType {}
+
 typedef CreateGameObjectFunc
     = ffi.Pointer<ffi.NativeFunction<ffi.Int64 Function()>>;
 typedef RemoveGameObjectFunc

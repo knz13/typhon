@@ -1,5 +1,9 @@
 #pragma once
 #include "entt/entt.hpp"
+#include "effolkronium/random.hpp"
+
+using Random = effolkronium::random_static;
+
 
 template<typename T>
 using deleted_unique_ptr = std::unique_ptr<T,std::function<void(T*)>>;

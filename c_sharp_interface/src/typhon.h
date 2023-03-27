@@ -23,7 +23,9 @@ struct ClassesArray {
     int64_t size;
 };
 
-
+enum InputType {
+    
+};
 
 
 #ifdef __cplusplus

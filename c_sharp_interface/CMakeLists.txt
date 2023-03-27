@@ -63,9 +63,30 @@ project(project_typhon)
     FetchContent_MakeAvailable(ENTT)
     #includes for target typhon...
     
-      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/entt/single_include)
-
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/entt/single_include)
     
+    FetchContent_Declare(YAEL
+    GIT_REPOSITORY https://github.com/knz13/YAEL
+    GIT_TAG origin/main
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/yael
+    ) 
+    
+    
+    FetchContent_MakeAvailable(YAEL)
+    
+    
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/yael/include)
+    
+    FetchContent_Declare(UUID
+    GIT_REPOSITORY https://github.com/effolkronium/random
+    GIT_TAG v1.4.1
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/random
+    ) 
+    
+    
+    FetchContent_MakeAvailable(UUID)
+
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/random/include)
 
 
 # --------------------- Targets ------------------------

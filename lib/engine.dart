@@ -9,9 +9,12 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
 import 'package:ffi/ffi.dart';
+import 'package:flame/flame.dart';
+import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:flutter/services.dart' show ByteData, rootBundle;
+import 'package:flutter/src/services/keyboard_key.g.dart';
 import 'package:path/path.dart' as path;
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
@@ -25,7 +28,7 @@ import 'game_object.dart';
 
 
 
-class Engine extends FlameGame {
+class Engine extends FlameGame with KeyboardEvents, TapDetector {
 
   static Random rng = Random();
   static Engine? instance;
@@ -37,6 +40,13 @@ class Engine extends FlameGame {
 
   static List<GameObject> getChildren() {
     return instance?.children.toList().whereType<GameObject>().toList() ?? [];
+  }
+
+  @override
+  KeyEventResult onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    
+
+    return super.onKeyEvent(event, keysPressed);
   }
 
 
@@ -75,10 +85,11 @@ class Engine extends FlameGame {
 
   @override
   void onRemove() {
-    
+
     aliveObjects.forEach((key, value) { 
       GameObject.removeGameObject(key);
     });
+
 
 
     super.onRemove();

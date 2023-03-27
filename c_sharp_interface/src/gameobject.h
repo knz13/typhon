@@ -42,7 +42,7 @@ public:
 
         std::cout << "adding to hierarchy menu: " << name << std::endl;
 
-        GameObjectMiddleMan::menuOptionsIDtoString[std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()] = name;
+        GameObjectMiddleMan::menuOptionsIDtoString[Random::get()] = name;
         GameObjectMiddleMan::menuOptionsStringToOnClick[name] = [](){
             GameObject::CreateNewGameObject<T>();
         };

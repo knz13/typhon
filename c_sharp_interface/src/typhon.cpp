@@ -7,12 +7,13 @@
 #include "npc.h"
 #include "reflection.h"
 #include "player.h"
+#include "engine.h"
 
 bool initializeCppLibrary() {
     
     MonoManager::getInstance();
     ShaderCompiler::getInstance();
-
+    Engine::Initialize();
     
 
     return true;    
@@ -54,6 +55,8 @@ ClassesArray getClassesToAddToHierarchyMenu() {
     static std::vector<const char*> charVec;
 
     if(vec.size() == 0){
+        std::cout << "Trying to get hierarchy menu stuff" << std::endl;
+        std::cout << "Current hierarchy pool size: " << GameObjectMiddleMan::menuOptionsStringToOnClick.size() << " and id to string: " << GameObjectMiddleMan::menuOptionsIDtoString.size() << std::endl;
         for(const auto& [id,str] : GameObjectMiddleMan::menuOptionsIDtoString){
             vec.push_back(id);
             charVec.push_back(str.c_str());
