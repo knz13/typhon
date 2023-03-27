@@ -50,6 +50,31 @@ class TyphonBindings {
       _attachCreateGameObjectFunctionPtr
           .asFunction<void Function(CreateGameObjectFunc)>();
 
+  void attachRemoveGameObjectFunction(
+    RemoveGameObjectFunc func,
+  ) {
+    return _attachRemoveGameObjectFunction(
+      func,
+    );
+  }
+
+  late final _attachRemoveGameObjectFunctionPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(RemoveGameObjectFunc)>>(
+          'attachRemoveGameObjectFunction');
+  late final _attachRemoveGameObjectFunction =
+      _attachRemoveGameObjectFunctionPtr
+          .asFunction<void Function(RemoveGameObjectFunc)>();
+
+  RemoveObjectFunc attachOnRemoveObjectFunction() {
+    return _attachOnRemoveObjectFunction();
+  }
+
+  late final _attachOnRemoveObjectFunctionPtr =
+      _lookup<ffi.NativeFunction<RemoveObjectFunc Function()>>(
+          'attachOnRemoveObjectFunction');
+  late final _attachOnRemoveObjectFunction = _attachOnRemoveObjectFunctionPtr
+      .asFunction<RemoveObjectFunc Function()>();
+
   FindFrameFunc attachFindFrameFunction() {
     return _attachFindFrameFunction();
   }
@@ -191,6 +216,10 @@ class ClassesArray extends ffi.Struct {
 
 typedef CreateGameObjectFunc
     = ffi.Pointer<ffi.NativeFunction<ffi.Int64 Function()>>;
+typedef RemoveGameObjectFunc
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
+typedef RemoveObjectFunc
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
 typedef FindFrameFunc
     = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
 typedef AIFunc = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;

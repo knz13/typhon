@@ -13,7 +13,7 @@ bool initializeCppLibrary() {
     MonoManager::getInstance();
     ShaderCompiler::getInstance();
 
-   
+    
 
     return true;    
 
@@ -22,7 +22,7 @@ bool initializeCppLibrary() {
 void attachCreateGameObjectFunction(CreateGameObjectFunc func)
 {   
     std::cout << "attaching create game object func!" <<std::endl;
-    GameObject::createGameObjectAndGetID = [=](){
+    GameObjectMiddleMan::createGameObjectAndGetID = [=](){
         return func();
     };
 
@@ -34,6 +34,19 @@ void attachCreateGameObjectFunction(CreateGameObjectFunc func)
         func();
     }
 
+}
+
+void attachRemoveGameObjectFunction(RemoveGameObjectFunc func)
+{
+    GameObjectMiddleMan::removeGameObjectFromID = [=](int64_t id){
+        func(id);
+    };
+}
+
+
+RemoveObjectFunc attachOnRemoveObjectFunction()
+{
+    return &GameObjectMiddleMan::onCallToRemoveObject;
 }
 
 ClassesArray getClassesToAddToHierarchyMenu() {
@@ -60,9 +73,9 @@ ClassesArray getClassesToAddToHierarchyMenu() {
 
 void addGameObjectFromClassID(int64_t id)
 {
-    if(GameObject::menuOptionsIDtoString.find(id) != GameObject::menuOptionsIDtoString.end()){
-        std::cout << "Creating object from id " << id << std::endl;
-        GameObject::menuOptionsStringToOnClick[GameObject::menuOptionsIDtoString[id]]();
+    if(GameObjectMiddleMan::menuOptionsIDtoString.find(id) != GameObjectMiddleMan::menuOptionsIDtoString.end()){
+        std::cout << "Creating object from class id " << id << std::endl;
+        GameObjectMiddleMan::menuOptionsStringToOnClick[GameObjectMiddleMan::menuOptionsIDtoString[id]]();
     }
     else{
         std::cout << "Could not create object from id " << id << std::endl;
@@ -101,16 +114,16 @@ PostDrawFunc attachPostDrawFunction()
 
 void attachScalePointerToGameObject(int id, double * scalePointerX,double* scalePointerY)
 {   
-    if(GameObject::aliveObjects.find(id) != GameObject::aliveObjects.end()){
-        GameObject::aliveObjects[id].get()->_scalePointerX = scalePointerX;
-        GameObject::aliveObjects[id].get()->_scalePointerY = scalePointerY;
+    if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){
+        GameObjectMiddleMan::aliveObjects[id].get()->_scalePointerX = scalePointerX;
+        GameObjectMiddleMan::aliveObjects[id].get()->_scalePointerY = scalePointerY;
     }
 }
 
 void attachPositionPointersToGameObject(int id, double *positionX, double *positionY)
 {
-    if(GameObject::aliveObjects.find(id) != GameObject::aliveObjects.end()){    
-        GameObject::aliveObjects[id].get()->_positionX = positionX;
-        GameObject::aliveObjects[id].get()->_positionY = positionY;
+    if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){    
+        GameObjectMiddleMan::aliveObjects[id].get()->_positionX = positionX;
+        GameObjectMiddleMan::aliveObjects[id].get()->_positionY = positionY;
     }
 }

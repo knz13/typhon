@@ -8,6 +8,13 @@ public:
 
     static void SetStaticDefaults() {
         std::cout << "Static default for player!!" << std::endl;
+
+        
+    };
+
+    void SetDefaults() override {
+
+
     };
 
 };

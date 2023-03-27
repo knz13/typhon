@@ -39,7 +39,7 @@ public:
 template<typename T>
 int UsesStaticDefaults<T>::m = ([](){
         
-    GameObject::staticDefaultsFuncs.push_back([](){T::SetStaticDefaults();});
+    GameObjectMiddleMan::staticDefaultsFuncs.push_back([](){T::SetStaticDefaults();});
 
     return 0;
 })();

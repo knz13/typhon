@@ -12,11 +12,11 @@ struct HierarchyMenuObject {
 class GameObjectMiddleMan {
 public:
     inline static std::function<int64_t()> createGameObjectAndGetID;
+    inline static std::function<void(int64_t)> removeGameObjectFromID;
     inline static std::unordered_map<uint64_t,std::string> menuOptionsIDtoString;
     inline static std::unordered_map<std::string,std::function<void()>> menuOptionsStringToOnClick;
     inline static std::vector<std::function<void()>> staticDefaultsFuncs;
     inline static std::unordered_map<int64_t,std::unique_ptr<GameObjectMiddleMan>> aliveObjects;
-
 
     static void onCallUpdate(int64_t id,double dt) {
         aliveObjects[id].get()->Update(dt);
@@ -42,11 +42,25 @@ public:
         aliveObjects[id].get()->PostDraw();
     }
 
+    static void onCallToRemoveObject(int64_t id){
+        if(aliveObjects.find(id) == aliveObjects.end()){
+            std::cout << "tried to delete object with invalid id = "  << id << std::endl;
+            return;
+        }
+        std::cout << "removing object with id = " << id << std::endl;
+        aliveObjects[id].get()->OnRemove();
+        aliveObjects.erase(id);
+    }
+
     double* _positionX;
     double* _positionY;
     double* _scalePointerX;
     double* _scalePointerY;
+    int64_t identifier;
+    
+    virtual void OnRemove() {};
 protected:
+
 
     virtual void Update(double dt) {}
 
@@ -59,6 +73,7 @@ protected:
     virtual void FindFrame() {};
 
     virtual void SetDefaults() {};
+
 
 
 private:

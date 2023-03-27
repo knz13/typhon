@@ -29,6 +29,7 @@ class Engine extends FlameGame {
 
   static Random rng = Random();
   static Engine? instance;
+  static Map<int,GameObject> aliveObjects = {};
 
   static int generateRandomID() {
     return Engine.rng.nextInt(1 << 32);
@@ -70,6 +71,17 @@ class Engine extends FlameGame {
 
     
     return super.onLoad();
+  }
+
+  @override
+  void onRemove() {
+    
+    aliveObjects.forEach((key, value) { 
+      GameObject.removeGameObject(key);
+    });
+
+
+    super.onRemove();
   }
 
 }

@@ -7,5 +7,4 @@ public:
     static void SetStaticDefaults() {
         std::cout << "Static default for npc!" << std::endl;
     };
-
 };

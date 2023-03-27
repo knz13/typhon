@@ -175,7 +175,19 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
       physics: NeverScrollableScrollPhysics(),
       child: Column(
         children: currentObjects.map((e) =>
-          GeneralText(e.identifier.toString())
+          Row(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: GeneralText(e.identifier.toString()),
+            ),
+            InkWell(
+              onTap: () {
+                GameObject.removeGameObject(e.identifier);
+              },
+              child: Icon(Icons.delete),
+            )
+
+          ],)
         ).toList(),
       ),
     );

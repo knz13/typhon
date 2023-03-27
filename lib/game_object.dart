@@ -32,6 +32,8 @@ class GameObject extends PositionComponent {
     // create all the OnEventHappenned type things
     // ex. OnUpdate(dt), OnLoad(), OnFindFrame(), OnSetDefaults(), OnAI(),OnPreDraw(), OnPostDraw()
     library.attachCreateGameObjectFunction(Pointer.fromFunction(createNewGameObject,0));
+    library.attachRemoveGameObjectFunction(Pointer.fromFunction(removeGameObject));
+    onDeleteFunction = library.attachOnRemoveObjectFunction().asFunction();
     onUpdateFunc = library.attachUpdateFunction().asFunction();
     onAIFunction = library.attachAIFunction().asFunction();
     onSetDefaultsFunc = library.attachSetDefaultsFunction().asFunction();
@@ -46,6 +48,7 @@ class GameObject extends PositionComponent {
   static void Function(int) onAIFunction = (v) {};
   static void Function(int) onPreDrawFunction = (v) {};
   static void Function(int) onPostDrawFunction = (v) {};
+  static void Function(int) onDeleteFunction = (v) {};
   static int createNewGameObject() {
     int id = Engine.generateRandomID();
 
@@ -62,8 +65,14 @@ class GameObject extends PositionComponent {
     getCppFunctions().attachPositionPointersToGameObject(id,obj.positionXPointer!,obj.positionYPointer!);
     getCppFunctions().attachScalePointerToGameObject(id,obj.scaleXPointer!,obj.scaleYPointer!);
     Engine.instance!.childrenChangedNotifier.value++;
+    Engine.aliveObjects[id] = obj;
 
     return id;
+  }
+
+  static void removeGameObject(int id) {
+    onDeleteFunction(id);
+    Engine.instance!.remove(Engine.aliveObjects[id]!);
   }
 
 
