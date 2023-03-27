@@ -1,7 +1,11 @@
 #pragma once
-#include "reflected_gameobject.h"
+#include "reflection.h"
 
 
-class NPC : public ReflectedGameObject<NPC> {
+class NPC : public GameObject, UsesStaticDefaults<NPC>, AddObjectToHierarchy<NPC> {
+    
+
+
+
 
 };
