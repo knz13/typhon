@@ -34,6 +34,7 @@ class TyphonBindings {
   late final _initializeCppLibrary =
       _initializeCppLibraryPtr.asFunction<int Function()>();
 
+  /// Related to GameObject
   void attachCreateGameObjectFunction(
     CreateGameObjectFunc func,
   ) {
@@ -149,6 +150,43 @@ class TyphonBindings {
       _attachPositionPointersToGameObjectPtr.asFunction<
           void Function(
               int, ffi.Pointer<ffi.Double>, ffi.Pointer<ffi.Double>)>();
+
+  /// Related to Engine Menus
+  ClassesArray getClassesToAddToHierarchyMenu() {
+    return _getClassesToAddToHierarchyMenu();
+  }
+
+  late final _getClassesToAddToHierarchyMenuPtr =
+      _lookup<ffi.NativeFunction<ClassesArray Function()>>(
+          'getClassesToAddToHierarchyMenu');
+  late final _getClassesToAddToHierarchyMenu =
+      _getClassesToAddToHierarchyMenuPtr.asFunction<ClassesArray Function()>();
+
+  void addGameObjectFromClassID(
+    int id,
+  ) {
+    return _addGameObjectFromClassID(
+      id,
+    );
+  }
+
+  late final _addGameObjectFromClassIDPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'addGameObjectFromClassID');
+  late final _addGameObjectFromClassID =
+      _addGameObjectFromClassIDPtr.asFunction<void Function(int)>();
+}
+
+class ClassesArray extends ffi.Struct {
+  external ffi.Pointer<ffi.Int64> array;
+
+  external ffi.Pointer<ffi.Pointer<ffi.Char>> stringArray;
+
+  @ffi.Int64()
+  external int stringArraySize;
+
+  @ffi.Int64()
+  external int size;
 }
 
 typedef CreateGameObjectFunc

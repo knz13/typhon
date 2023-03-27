@@ -24,7 +24,38 @@ void attachCreateGameObjectFunction(CreateGameObjectFunc func)
 
 
     GameObject::AddToHierarchyMenu<NPC>();
-    
+
+}
+
+ClassesArray getClassesToAddToHierarchyMenu() {
+    static std::vector<int64_t> vec;
+    static std::vector<const char*> charVec;
+
+    if(vec.size() == 0){
+        for(const auto& [id,str] : GameObjectMiddleMan::menuOptionsIDtoString){
+            vec.push_back(id);
+            charVec.push_back(str.c_str());
+        }
+    }
+
+    ClassesArray arr;
+    arr.array = vec.data();
+    arr.size = vec.size();
+    arr.stringArray = charVec.data();
+    arr.stringArraySize = charVec.size();
+
+    return arr;
+}
+
+void addGameObjectFromClassID(int64_t id)
+{
+    if(GameObject::menuOptionsIDtoString.find(id) != GameObject::menuOptionsIDtoString.end()){
+        std::cout << "Creating object from id " << id << std::endl;
+        GameObject::menuOptionsStringToOnClick[GameObject::menuOptionsIDtoString[id]]();
+    }
+    else{
+        std::cout << "Could not create object from id " << id << std::endl;
+    }
 }
 
 FindFrameFunc attachFindFrameFunction()

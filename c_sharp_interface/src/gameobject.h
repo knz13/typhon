@@ -9,7 +9,7 @@ public:
     template<typename T>
     static T& CreateNewGameObject() {
         int64_t id = GameObjectMiddleMan::createGameObjectAndGetID();
-        std::cout << "Creating object with id " << id << " and type " << typeid(T).name() <<  std::endl;
+        std::cout << "Creating object with id " << id << " and type " << HelperFunctions::GetClassName<T>() <<  std::endl;
 
         if(GameObject::aliveObjects.find(id) == GameObject::aliveObjects.end()){
             GameObject::aliveObjects[id] = std::unique_ptr<GameObjectMiddleMan>(new T());

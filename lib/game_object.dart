@@ -61,7 +61,7 @@ class GameObject extends PositionComponent {
     obj.scaleYPointer!.value = obj.scale.y;
     getCppFunctions().attachPositionPointersToGameObject(id,obj.positionXPointer!,obj.positionYPointer!);
     getCppFunctions().attachScalePointerToGameObject(id,obj.scaleXPointer!,obj.scaleYPointer!);
-
+    Engine.instance!.childrenChangedNotifier.value++;
 
     return id;
   }

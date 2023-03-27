@@ -16,15 +16,24 @@
 #define FFI_PLUGIN_EXPORT
 #endif
 
-
+struct ClassesArray {
+    int64_t* array;
+    const char** stringArray;
+    int64_t stringArraySize;
+    int64_t size;
+};
 
 
 
 
 #ifdef __cplusplus
-extern"C" {
+extern "C" {
 #endif
+
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
+    
+    
+    //Related to GameObject
     FFI_PLUGIN_EXPORT void attachCreateGameObjectFunction(CreateGameObjectFunc func);
     FFI_PLUGIN_EXPORT FindFrameFunc attachFindFrameFunction();
     FFI_PLUGIN_EXPORT AIFunc attachAIFunction();
@@ -35,6 +44,11 @@ extern"C" {
     FFI_PLUGIN_EXPORT void attachScalePointerToGameObject(int id,double* scalePointerX,double* scalePointerY);
     FFI_PLUGIN_EXPORT void attachPositionPointersToGameObject(int id,double* positionX,double* positionY);
 
+    //Related to Engine Menus
+
+    FFI_PLUGIN_EXPORT ClassesArray getClassesToAddToHierarchyMenu();
+
+    FFI_PLUGIN_EXPORT void addGameObjectFromClassID(int64_t id);
 
 #ifdef __cplusplus
 }

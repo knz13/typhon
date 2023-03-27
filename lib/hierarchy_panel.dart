@@ -1,12 +1,18 @@
 
+import 'dart:ffi';
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
+import 'package:ffi/ffi.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/tree_viewer.dart';
+import 'package:typhon/typhon_bindings.dart';
+import 'package:typhon/typhon_bindings_generated.dart';
 
 import 'engine.dart';
 import 'game_object.dart';
@@ -31,18 +37,39 @@ class HierarchyPanelTop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
         children: [
-          NativeContextMenuButton(
-            child: Row(
-              children: [
-                Icon(MdiIcons.plus,color:Colors.white),
-                Icon(MdiIcons.menuDown,color:Colors.white)
-              ],
+          FutureBuilder(
+            future: initializeLibraryAndGetBindings(),
+            builder: (context,snapshot) => NativeContextMenuButton(
+              child: Row(
+                children: [
+                  Icon(MdiIcons.plus,color:Colors.white),
+                  Icon(MdiIcons.menuDown,color:Colors.white)
+                ],
+              ),
+              menuItems: snapshot.hasData ? 
+              (() {
+                ClassesArray arr = getCppFunctions().getClassesToAddToHierarchyMenu();
+          
+                List<ContextMenuOption> options = [];
+          
+                for(int index in List.generate(arr.size, (index) => index)){
+                  var val = arr.array.elementAt(index).value;
+                  final Pointer<Utf8> str = arr.stringArray.elementAt(index).value.cast();
+
+                  options.add(
+                    ContextMenuOption(
+                      title: str.toDartString(),
+                      callback: () {getCppFunctions().addGameObjectFromClassID(val);}
+                    )
+                  );
+                }
+                
+                
+                return options;
+              })()
+              :
+              [],
             ),
-            menuItems: [
-              ContextMenuOption(
-                title: "NPC Derived",
-              )
-            ],
           ),
           SizedBox(
             width: 10,
@@ -146,7 +173,11 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: NeverScrollableScrollPhysics(),
-      child: Container(),
+      child: Column(
+        children: currentObjects.map((e) =>
+          GeneralText(e.identifier.toString())
+        ).toList(),
+      ),
     );
   }
 }

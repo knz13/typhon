@@ -67,3 +67,7 @@ TyphonBindings getCppFunctions() {
   return _bindings!;
 }
 
+bool checkIfLibraryLoaded() {
+  return _bindings != null;
+}
+
