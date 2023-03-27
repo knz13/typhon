@@ -4,7 +4,7 @@
 #include "mono_manager.h"
 #include "shader_compiler.h"
 #include "gameobject.h"
-
+#include "npc.h"
 
 bool initializeCppLibrary() {
     
@@ -22,6 +22,9 @@ void attachCreateGameObjectFunction(CreateGameObjectFunc func)
         return func();
     };
 
+
+    GameObject::AddToHierarchyMenu<NPC>();
+    
 }
 
 FindFrameFunc attachFindFrameFunction()

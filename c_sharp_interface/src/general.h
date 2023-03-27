@@ -13,3 +13,4 @@ typedef void (*AIFunc)(int64_t);
 typedef void (*UpdateFunc)(int64_t,double);
 typedef void (*PreDrawFunc)(int64_t);
 typedef void (*PostDrawFunc)(int64_t);
+typedef const char* (*AddToEntityMenuFunc)(void);

@@ -1,16 +1,7 @@
 #pragma once
-#include <iostream>
-#include <functional>
-#include "general.h"
+#include "reflected_gameobject.h"
 
 
-
-
-class NPC {
-public:
-    static std::function<
-
-
-
+class NPC : public ReflectedGameObject<NPC> {
 
 };
