@@ -4,9 +4,9 @@
 
 
 class Player : public NPC,
-    UsesStaticDefaults<Player>,
-    AddObjectToHierarchy<Player>,
-    HasKeyCallbacks<Player>
+    Reflection::UsesStaticDefaults<Player>,
+    Reflection::AddToHierarchyMenu<Player>,
+    Reflection::HasKeyCallbacks<Player>
     {
 public:
     static yael::event_sink<void(Player&)> OnPlayerCreated() {

@@ -1,3 +1,6 @@
+/*
+GENERATED FILE - DO NOT MODIFY!
+*/
 #include <iostream>
 #include <stdint.h>
 #include "typhon.h"
@@ -8,7 +11,7 @@
 #include "reflection.h"
 #include "player.h"
 #include "engine.h"
-// -- INCLUDE CREATED CLASSES -- //
+#include "TerrariaLikeGame/FlyingTreant.h"
 
 bool initializeCppLibrary() {
     
@@ -32,7 +35,7 @@ void attachCreateGameObjectFunction(CreateGameObjectFunc func)
     
     Player();
     NPC();
-    // -- INITIALIZE EACH OBJECT -- //    
+    FlyingTreant();
 
     for(const auto& func : GameObjectMiddleMan::staticDefaultsFuncs){
         func();

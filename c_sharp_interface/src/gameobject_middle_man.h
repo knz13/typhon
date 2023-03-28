@@ -29,27 +29,19 @@ public:
         *aliveObjects[id].get()->_scalePointerX = aliveObjects[id].get()->scale.x;
         *aliveObjects[id].get()->_scalePointerY = aliveObjects[id].get()->scale.y;
         
-        aliveObjects[id].get()->Update(dt);
+        aliveObjects[id].get()->GameObjectUpdate(dt);
     }
 
     static void onCallSetDefaults(int64_t id){
-        aliveObjects[id].get()->SetDefaults();
+        aliveObjects[id].get()->GameObjectSetDefaults();
     }
 
-    static void onCallFindFrame(int64_t id){
-        aliveObjects[id].get()->FindFrame();
-    }  
-
-    static void onCallAI(int64_t id){
-        aliveObjects[id].get()->AI();
-    } 
-
     static void onCallPreDraw(int64_t id) {
-        aliveObjects[id].get()->PreDraw();
+        aliveObjects[id].get()->GameObjectPreDraw();
     }
 
     static void onCallPostDraw(int64_t id){
-        aliveObjects[id].get()->PostDraw();
+        aliveObjects[id].get()->GameObjectPostDraw();
     }
 
     static void onCallToRemoveObject(int64_t id);
@@ -70,17 +62,14 @@ protected:
     Vector2f scale = Vector2f(1,1);
 
 
-    virtual void Update(double dt) {}
+    virtual void GameObjectUpdate(double dt) {}
 
-    virtual void AI() {};
 
-    virtual void PreDraw() {};
+    virtual void GameObjectPreDraw() {};
 
-    virtual void PostDraw() {};
+    virtual void GameObjectPostDraw() {};
 
-    virtual void FindFrame() {};
-
-    virtual void SetDefaults() {};
+    virtual void GameObjectSetDefaults() {};
 
 
 

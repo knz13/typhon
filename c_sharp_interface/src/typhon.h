@@ -28,8 +28,6 @@ extern "C" {
     FFI_PLUGIN_EXPORT void attachCreateGameObjectFunction(CreateGameObjectFunc func);
     FFI_PLUGIN_EXPORT void attachRemoveGameObjectFunction(RemoveGameObjectFunc func);
     FFI_PLUGIN_EXPORT RemoveObjectFunc attachOnRemoveObjectFunction();
-    FFI_PLUGIN_EXPORT FindFrameFunc attachFindFrameFunction();
-    FFI_PLUGIN_EXPORT AIFunc attachAIFunction();
     FFI_PLUGIN_EXPORT SetDefaultsFunc attachSetDefaultsFunction();
     FFI_PLUGIN_EXPORT UpdateFunc attachUpdateFunction();
     FFI_PLUGIN_EXPORT PreDrawFunc attachPreDrawFunction();

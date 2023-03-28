@@ -4,9 +4,18 @@
 #include "entt/entt.hpp"
 
 
+struct GameObjectStats {
+    float maxSpeedUp;
+    float maxSpeedDown;
+    float maxSpeedHorizontal;
+    float hp;
+    float damage;
+    bool hasContactDamage = true;
+    bool expires = false;
+};
+
 class GameObject : public GameObjectMiddleMan {
 public:
-
 
     template<typename T>
     static T& CreateNewGameObject() {
@@ -61,34 +70,93 @@ public:
         }
     }
 
-    template<typename T>
-    static void AddToHierarchyMenu() {
-        std::string name = HelperFunctions::GetClassNameString<T>();
-        if(GameObjectMiddleMan::menuOptionsStringToOnClick.find(name) != GameObjectMiddleMan::menuOptionsStringToOnClick.end()){
-            return;
-        }
-
-        std::cout << "adding to hierarchy menu: " << name << std::endl;
-
-        GameObjectMiddleMan::menuOptionsIDtoString[Random::get()] = name;
-        GameObjectMiddleMan::menuOptionsStringToOnClick[name] = [](){
-            GameObject::CreateNewGameObject<T>();
-        };
-    }
-
-
     
 
+    void Move(Vector2f direction) {
+        oldPos = this->position;
+        position += direction;
+    }
+    
+    void SetPosition(Vector2f position) {
+        oldPos = this->position;
+        this->position = position;
+    }
+
+    void AddVelocity(Vector2f velocity){
+        oldVelocity = this->velocity;
+        this->velocity += velocity;
+    }
+    
+    void SetVelocity(Vector2f velocity){
+        oldVelocity = this->velocity;
+        this->velocity = velocity;
+    }
+
+    void AddScale(Vector2f addition) {
+        oldScale = scale;
+        scale += addition;
+    }
+
+    void SetScale(Vector2f newScale) {
+        oldScale = scale;
+        scale = newScale;
+    }
+
+    const GameObjectStats& Stats() {
+        return currentStats;
+    }
+
+protected:
+
+    virtual void Update(double dt) {};
+
+    virtual void PreDraw() {};
+
+    virtual void PostDraw() {};
+
+    virtual void FindFrame() {};
+
+    virtual void SetDefaults() {};
 
 private:
+
+    GameObjectStats currentStats;
+
+    void GameObjectUpdate(double dt) override {
+
+        this->Update(dt);
+    }
+
+    void GameObjectPreDraw() override {
+        this->FindFrame();
+
+        this->PreDraw();
+    };
+
+    void GameObjectPostDraw() override {
+
+        this->PostDraw();
+    };
+
+
+    void GameObjectSetDefaults() override {
+
+        this->SetDefaults();
+    };
+
+    Vector2f velocity = Vector2f(0,0);
+    Vector2f oldPos = Vector2f(0,0);
+    Vector2f oldScale = Vector2f(1,1);
+    Vector2f oldVelocity = Vector2f(0,0);
+
+
+
     using GameObjectMiddleMan::className;
     using GameObjectMiddleMan::OnRemove;
     using GameObjectMiddleMan::aliveObjects;
     using GameObjectMiddleMan::menuOptionsIDtoString;
     using GameObjectMiddleMan::menuOptionsStringToOnClick;
     using GameObjectMiddleMan::staticDefaultsFuncs;
-    using GameObjectMiddleMan::onCallAI;
-    using GameObjectMiddleMan::onCallFindFrame;
     using GameObjectMiddleMan::onCallUpdate;
     using GameObjectMiddleMan::onCallPostDraw;
     using GameObjectMiddleMan::onCallPreDraw;

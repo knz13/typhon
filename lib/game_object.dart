@@ -36,17 +36,13 @@ class GameObject extends PositionComponent {
     library.attachPointersToObject(Pointer.fromFunction(attachPointersToObject));
     onDeleteFunction = library.attachOnRemoveObjectFunction().asFunction();
     onUpdateFunc = library.attachUpdateFunction().asFunction();
-    onAIFunction = library.attachAIFunction().asFunction();
     onSetDefaultsFunc = library.attachSetDefaultsFunction().asFunction();
-    onFindFrameFunc = library.attachFindFrameFunction().asFunction();
     onPreDrawFunction = library.attachPreDrawFunction().asFunction();
     onPostDrawFunction = library.attachPostDrawFunction().asFunction();
   } 
 
   static void Function(int) onSetDefaultsFunc = (v) {};
   static void Function(int,double) onUpdateFunc = (v,dt) {};
-  static void Function(int) onFindFrameFunc = (v) {};
-  static void Function(int) onAIFunction = (v) {};
   static void Function(int) onPreDrawFunction = (v) {};
   static void Function(int) onPostDrawFunction = (v) {};
   static void Function(int) onDeleteFunction = (v) {};
@@ -72,7 +68,6 @@ class GameObject extends PositionComponent {
   }
 
   static void attachPointersToObject(int id){
-    print("calling from flutter with id $id");
     GameObject obj = Engine.aliveObjects[id]!;
     getCppFunctions().attachPositionPointersToGameObject(id,obj.positionXPointer!,obj.positionYPointer!);
     getCppFunctions().attachScalePointerToGameObject(id,obj.scaleXPointer!,obj.scaleYPointer!);
@@ -130,7 +125,6 @@ class GameObject extends PositionComponent {
     
 
     GameObject.onUpdateFunc(identifier,dt);
-    GameObject.onAIFunction(identifier);
   }
 
   @override
@@ -142,7 +136,6 @@ class GameObject extends PositionComponent {
     scaleXPointer!.value = scale.x;
     scaleYPointer!.value = scale.y;
     
-    GameObject.onFindFrameFunc(identifier);
 
     GameObject.onPreDrawFunction(identifier);
     _sprite?.render(canvas,position: position,size: Vector2(width,height),overridePaint: paint);

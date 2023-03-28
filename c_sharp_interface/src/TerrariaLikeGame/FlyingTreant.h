@@ -4,10 +4,10 @@
 
 
 
-class FlyingTreant : public Player {
-
+class FlyingTreant : public Player, Reflection::UsesTexture<FlyingTreant> {
 
     
+
 
 
 };

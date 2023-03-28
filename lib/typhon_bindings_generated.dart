@@ -75,25 +75,6 @@ class TyphonBindings {
   late final _attachOnRemoveObjectFunction = _attachOnRemoveObjectFunctionPtr
       .asFunction<RemoveObjectFunc Function()>();
 
-  FindFrameFunc attachFindFrameFunction() {
-    return _attachFindFrameFunction();
-  }
-
-  late final _attachFindFrameFunctionPtr =
-      _lookup<ffi.NativeFunction<FindFrameFunc Function()>>(
-          'attachFindFrameFunction');
-  late final _attachFindFrameFunction =
-      _attachFindFrameFunctionPtr.asFunction<FindFrameFunc Function()>();
-
-  AIFunc attachAIFunction() {
-    return _attachAIFunction();
-  }
-
-  late final _attachAIFunctionPtr =
-      _lookup<ffi.NativeFunction<AIFunc Function()>>('attachAIFunction');
-  late final _attachAIFunction =
-      _attachAIFunctionPtr.asFunction<AIFunc Function()>();
-
   SetDefaultsFunc attachSetDefaultsFunction() {
     return _attachSetDefaultsFunction();
   }
@@ -252,9 +233,6 @@ typedef RemoveGameObjectFunc
     = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
 typedef RemoveObjectFunc
     = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
-typedef FindFrameFunc
-    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
-typedef AIFunc = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
 typedef SetDefaultsFunc
     = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
 typedef UpdateFunc
