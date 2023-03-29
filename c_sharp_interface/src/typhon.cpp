@@ -148,3 +148,11 @@ void attachPositionPointersToGameObject(int64_t id, double *positionX, double *p
         GameObjectMiddleMan::aliveObjects[id].get()->_positionY = positionY;
     }
 }
+
+void attachAddTextureToObjectFunction(LoadTextureToObject func)
+{   
+    GameObjectMiddleMan::loadTextureToObjectFunc = [=](int64_t id,const char* texturePath){
+        func(id,texturePath);
+    };
+
+}

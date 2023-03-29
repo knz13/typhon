@@ -37,7 +37,8 @@ extern "C" {
     FFI_PLUGIN_EXPORT void attachPointersToObject(AttachPointersToObjectFunc func);
     FFI_PLUGIN_EXPORT void attachScalePointerToGameObject(int64_t id,double* scalePointerX,double* scalePointerY);
     FFI_PLUGIN_EXPORT void attachPositionPointersToGameObject(int64_t id,double* positionX,double* positionY);
-
+    FFI_PLUGIN_EXPORT void attachAddTextureToObjectFunction(LoadTextureToObject func);
+    
     //Related to Engine Menus
 
     FFI_PLUGIN_EXPORT ClassesArray getClassesToAddToHierarchyMenu();

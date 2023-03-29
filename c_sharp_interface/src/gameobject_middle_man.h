@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <map>
 #include <vector>
+#include "generic_reflection.h"
 
 struct HierarchyMenuObject {
     std::function<void()> onClick;
@@ -15,6 +16,7 @@ public:
     inline static std::function<int64_t()> createGameObjectAndGetID;
     inline static std::function<void(int64_t)> removeGameObjectFromID;
     inline static std::function<void(int64_t)> attachPointersToObject;
+    inline static std::function<void(int64_t,const char*)> loadTextureToObjectFunc;
     inline static std::unordered_map<uint64_t,std::string> menuOptionsIDtoString;
     inline static std::unordered_map<int64_t,GameObjectMiddleMan*> objectsToCallKeysCallback;
     inline static std::map<std::string,std::function<void(GameObjectMiddleMan*,InputKey)>> classesThatHaveHasKeyCallbacks;
@@ -42,6 +44,13 @@ public:
                 std::cout << "Registering keys callback!" << std::endl;
                 GameObjectMiddleMan::objectsToCallKeysCallback[id] = GameObjectMiddleMan::aliveObjects[id].get();
             }
+
+            if constexpr (std::is_base_of<Reflection::UsesTexture<T>,T>::value) {
+                std::cout << "adding texture to: " << HelperFunctions::GetClassNameString<T>() << std::endl;
+
+                loadTextureToObjectFunc(id,static_cast<Reflection::UsesTexture<T>*>(static_cast<T*>(GameObjectMiddleMan::aliveObjects[id].get()))->texturePath.c_str());
+            }
+
         }
         else{
             std::cout << "Tried to create GameObjectMiddleMan with id " << id << " but some other with this id already exists!!" << std::endl;

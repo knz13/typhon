@@ -23,6 +23,7 @@ typedef void (*UpdateFunc)(int64_t,double);
 typedef void (*PreDrawFunc)(int64_t);
 typedef void (*PostDrawFunc)(int64_t);
 typedef void (*RemoveObjectFunc)(int64_t);
+typedef void (*LoadTextureToObject)(int64_t,const char*);
 typedef const char* (*AddToEntityMenuFunc)(void);
 
 
@@ -55,6 +56,18 @@ namespace HelperFunctions {
         }
         return name;
     }
+
+    template<typename T>
+    static int64_t GetIDFromString() {
+        static std::hash<std::string> hasher;
+            
+
+        return static_cast<int64_t>(hasher(GetClassNameString<T>()));
+
+
+    };
+
+
 };
 
 

@@ -4,4 +4,7 @@
 
 namespace Reflection {
     std::vector<std::function<void()>> InitializedStaticallyStorage::functionsFromDerivedClasses;
+    
+
+    
 }

@@ -5,17 +5,25 @@
 
 
 class FlyingTreant : public Player<FlyingTreant>,
-    Reflection::UsesTexture<FlyingTreant>,
-    Reflection::AddToHierarchyMenu<FlyingTreant>,
-    Reflection::HasKeyCallbacks<FlyingTreant>
+    public Reflection::UsesTexture<FlyingTreant>,
+    public Reflection::AddToHierarchyMenu<FlyingTreant>,
+    public Reflection::HasKeyCallbacks<FlyingTreant>
     {
 
 
 public:
+
+    void SetDefaults() {
+
+        
+
+
+    }
+
     void Update(double dt)  {
     }
 
-     void OnKeyPressed(InputKey key) override {
+    void OnKeyPressed(InputKey key) override {
         std::cout << "on key pressed from flying treant position " << CurrentPosition().x << "," << CurrentPosition().y << "!" << std::endl;
         switch(key){
         case InputKey::A:

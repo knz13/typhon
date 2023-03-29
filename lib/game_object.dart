@@ -9,6 +9,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:flame/cache.dart';
 import 'package:flame/components.dart';
+import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame/image_composition.dart';
 import 'package:flutter/material.dart';
@@ -34,12 +35,14 @@ class GameObject extends PositionComponent {
     library.attachCreateGameObjectFunction(Pointer.fromFunction(createNewGameObject,0));
     library.attachRemoveGameObjectFunction(Pointer.fromFunction(removeGameObject));
     library.attachPointersToObject(Pointer.fromFunction(attachPointersToObject));
+    library.attachAddTextureToObjectFunction(Pointer.fromFunction(loadTextureToGameObject));
     onDeleteFunction = library.attachOnRemoveObjectFunction().asFunction();
     onUpdateFunc = library.attachUpdateFunction().asFunction();
     onSetDefaultsFunc = library.attachSetDefaultsFunction().asFunction();
     onPreDrawFunction = library.attachPreDrawFunction().asFunction();
     onPostDrawFunction = library.attachPostDrawFunction().asFunction();
   } 
+
 
   static void Function(int) onSetDefaultsFunc = (v) {};
   static void Function(int,double) onUpdateFunc = (v,dt) {};
@@ -59,12 +62,23 @@ class GameObject extends PositionComponent {
     obj.positionYPointer!.value = obj.position.y;
     obj.scaleXPointer!.value = obj.scale.x;
     obj.scaleYPointer!.value = obj.scale.y;
-    Engine.instance.childrenChangedNotifier.value++;
     Engine.aliveObjects[id] = obj;
 
   
     
     return id;
+  }
+
+  static void loadTextureToGameObject(int gameObjectID,Pointer<Char> value) {
+    String stringValue = value.cast<Utf8>().toDartString();
+    print("loading texture to object with id $gameObjectID");
+    if(Engine.aliveObjects.containsKey(gameObjectID)){
+      Flame.images.load(stringValue).then((value) {
+        print("loaded texture to object with id $gameObjectID");
+        Engine.aliveObjects[gameObjectID]!._sprite = Sprite(value);
+      });
+
+    }
   }
 
   static void attachPointersToObject(int id){
@@ -75,7 +89,6 @@ class GameObject extends PositionComponent {
 
   static void removeGameObject(int id) {
     onDeleteFunction(id);
-    Engine.instance.remove(Engine.aliveObjects[id]!);
   }
 
 
@@ -97,6 +110,8 @@ class GameObject extends PositionComponent {
     malloc.free(positionYPointer!);
     malloc.free(scaleXPointer!);
     malloc.free(scaleYPointer!);
+
+    Engine.aliveObjects.remove(identifier);
   }
 
   //each object should be called with a specific

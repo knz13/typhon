@@ -1,58 +1,12 @@
 #pragma once
 #include "gameobject.h"
-#include "reflection_checks.h"
-DEFINE_HAS_SIGNATURE(has_initialize_statically, T::InitializeStatically, void (*)(void));
+#include "generic_reflection.h"
+#include <map>
+
+
 
 namespace Reflection {
 
-
-
-    class NullClassHelper {
-
-
-    };
-
-
-
-    class InitializedStaticallyStorage {
-    public:
-        static std::vector<std::function<void()>> functionsFromDerivedClasses;
-    };
-
-
-    template<typename Derived>
-    class IsInitializedStatically {
-        static inline int m = [](){
-            if constexpr (has_initialize_statically<Derived>::value){
-                InitializedStaticallyStorage::functionsFromDerivedClasses.push_back(
-                    [](){
-                        Derived::InitializeStatically();
-                    }
-                );
-            }
-            return 0;   
-        }();
-
-
-    protected:
-
-
-    public:
-        static void InitializeDerivedClasses() {
-            std::cout << "initializing static classes! len = " << InitializedStaticallyStorage::functionsFromDerivedClasses.size()<< std::endl;
-            for(const auto& func : InitializedStaticallyStorage::functionsFromDerivedClasses){
-                func();
-            }
-        }
-
-        IsInitializedStatically()
-        {
-            
-            (void)m;
-        }
-        
-
-    };
 
     template<typename T>
     class UsesStaticDefaults { 
@@ -101,21 +55,8 @@ namespace Reflection {
         return 0;
     }();
 
-    template<typename T>
-    class UsesTexture : public IsInitializedStatically<UsesTexture<T>> { 
-        
-    public:
-        static void InitializeStatically() {
-            std::cout << "Initializing statically for uses texture with class " << HelperFunctions::GetClassNameString<T>() << std::endl;
-        }
 
-
-        UsesTexture() {
-            static_assert(std::is_base_of<GameObject,T>::value,"Can only derive from UsesTexture if already derived from GameObject");
-        }
-
-    };
-
+    
 
 
     template<typename T>
@@ -129,8 +70,8 @@ namespace Reflection {
             } 
 
             std::cout << "adding to hierarchy menu: " << name << std::endl;
-
-            GameObjectMiddleMan::menuOptionsIDtoString[Random::get()] = name;
+            
+            GameObjectMiddleMan::menuOptionsIDtoString[HelperFunctions::GetIDFromString<T>()] = name;
             GameObjectMiddleMan::menuOptionsStringToOnClick[name] = [](){
                 GameObject::CreateNewGameObject<T>();
             };

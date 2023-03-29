@@ -201,6 +201,21 @@ class TyphonBindings {
           void Function(
               int, ffi.Pointer<ffi.Double>, ffi.Pointer<ffi.Double>)>();
 
+  void attachAddTextureToObjectFunction(
+    LoadTextureToObject func,
+  ) {
+    return _attachAddTextureToObjectFunction(
+      func,
+    );
+  }
+
+  late final _attachAddTextureToObjectFunctionPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(LoadTextureToObject)>>(
+          'attachAddTextureToObjectFunction');
+  late final _attachAddTextureToObjectFunction =
+      _attachAddTextureToObjectFunctionPtr
+          .asFunction<void Function(LoadTextureToObject)>();
+
   /// Related to Engine Menus
   ClassesArray getClassesToAddToHierarchyMenu() {
     return _getClassesToAddToHierarchyMenu();
@@ -691,6 +706,8 @@ abstract class InputKey {
 
 typedef AttachPointersToObjectFunc
     = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
+typedef LoadTextureToObject = ffi.Pointer<
+    ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<ffi.Char>)>>;
 
 class ClassesArray extends ffi.Struct {
   external ffi.Pointer<ffi.Int64> array;

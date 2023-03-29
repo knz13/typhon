@@ -138,7 +138,6 @@ void attachScalePointerToGameObject(int64_t id, double *scalePointerX, double *s
 {   
     std::cout << "trying to attach scale pointers to object " << id << std::endl;
     if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){
-        std::cout << "attaching scale pointers to object!" << std::endl;
         GameObjectMiddleMan::aliveObjects[id].get()->_scalePointerX = scalePointerX;
         GameObjectMiddleMan::aliveObjects[id].get()->_scalePointerY = scalePointerY;
     }
@@ -148,8 +147,15 @@ void attachPositionPointersToGameObject(int64_t id, double *positionX, double *p
 {
     std::cout << "trying to attach position pointers to object " << id << std::endl;
     if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){    
-        std::cout << "attaching position pointers to object!" << std::endl;
         GameObjectMiddleMan::aliveObjects[id].get()->_positionX = positionX;
         GameObjectMiddleMan::aliveObjects[id].get()->_positionY = positionY;
     }
+}
+
+void attachAddTextureToObjectFunction(LoadTextureToObject func)
+{   
+    GameObjectMiddleMan::loadTextureToObjectFunc = [=](int64_t id,const char* texturePath){
+        func(id,texturePath);
+    };
+
 }
