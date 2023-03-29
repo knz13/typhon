@@ -1,6 +1,7 @@
 #pragma once
 #include "gameobject.h"
 #include "reflection_checks.h"
+DEFINE_HAS_SIGNATURE(has_initialize_statically, T::InitializeStatically, void (*)(void));
 
 namespace Reflection {
 
@@ -12,9 +13,6 @@ namespace Reflection {
     };
 
 
-
-
-    DEFINE_HAS_SIGNATURE(has_initialize_statically, T::InitializeStatically, void (*)(void));
 
     class InitializedStaticallyStorage {
     public:
