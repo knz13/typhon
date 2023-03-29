@@ -22,7 +22,9 @@ public:
     inline static std::map<std::string,std::function<void(GameObjectMiddleMan*,InputKey)>> classesThatHaveHasKeyCallbacks;
     inline static std::unordered_map<std::string,std::function<void()>> menuOptionsStringToOnClick;
     inline static std::vector<std::function<void()>> staticDefaultsFuncs;
-    inline static std::unordered_map<int64_t,std::unique_ptr<GameObjectMiddleMan>> aliveObjects;
+    inline static std::unordered_map<int64_t,std::shared_ptr<GameObjectMiddleMan>> aliveObjects;
+    inline static std::unordered_map<int64_t,std::shared_ptr<GameObjectMiddleMan>> objectsBeingDeleted;
+
 
 
     template<typename T>
@@ -31,7 +33,7 @@ public:
         std::cout << "Creating object with id " << id << " and type " << HelperFunctions::GetClassNameString<T>() <<  std::endl;
         
         if(GameObjectMiddleMan::aliveObjects.find(id) == GameObjectMiddleMan::aliveObjects.end()){
-            GameObjectMiddleMan::aliveObjects[id] = std::unique_ptr<GameObjectMiddleMan>(static_cast<GameObjectMiddleMan*>(new T()));
+            GameObjectMiddleMan::aliveObjects[id] = std::shared_ptr<GameObjectMiddleMan>(static_cast<GameObjectMiddleMan*>(new T()));
             GameObjectMiddleMan::aliveObjects[id].get()->identifier = id;
             GameObjectMiddleMan::aliveObjects[id].get()->className = HelperFunctions::GetClassNameString<T>();
 
@@ -61,23 +63,27 @@ public:
     static void RemoveGameObject(GameObjectMiddleMan other){
         int64_t id = other.identifier;  
         if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){
-            std::cout << "removing object with id = " << id << std::endl;
             if(GameObjectMiddleMan::objectsToCallKeysCallback.find(id) != GameObjectMiddleMan::objectsToCallKeysCallback.end()){
                 GameObjectMiddleMan::objectsToCallKeysCallback.erase(id);
             }
             GameObjectMiddleMan::aliveObjects[id].get()->GameObjectOnRemove();
+            std::shared_ptr<GameObjectMiddleMan> ptr = GameObjectMiddleMan::aliveObjects[id];
             GameObjectMiddleMan::aliveObjects.erase(id);
+            GameObjectMiddleMan::objectsBeingDeleted[id] = ptr;
+
         }
     }
 
     static void RemoveGameObjectByID(int64_t id){
         if(GameObjectMiddleMan::aliveObjects.find(id) != GameObjectMiddleMan::aliveObjects.end()){
-            std::cout << "removing object with id = " << id << std::endl;
             if(GameObjectMiddleMan::objectsToCallKeysCallback.find(id) != GameObjectMiddleMan::objectsToCallKeysCallback.end()){
                 GameObjectMiddleMan::objectsToCallKeysCallback.erase(id);
             }
+
             GameObjectMiddleMan::aliveObjects[id].get()->GameObjectOnRemove();
+            std::shared_ptr<GameObjectMiddleMan> ptr = GameObjectMiddleMan::aliveObjects[id];
             GameObjectMiddleMan::aliveObjects.erase(id);
+            GameObjectMiddleMan::objectsBeingDeleted[id] = ptr;
         }
         else{
             std::cout << "Trying to delete an object with an invalid id!" << std::endl;
@@ -86,6 +92,10 @@ public:
     }
 
     static void onCallUpdate(int64_t id,double dt) {
+        if(GameObjectMiddleMan::objectsBeingDeleted.find(id) != GameObjectMiddleMan::objectsBeingDeleted.end()){
+            return;
+        }
+        
         //std::cout << "calling update!" << std::endl;
         *aliveObjects[id].get()->_positionX  = aliveObjects[id].get()->position.x;
         *aliveObjects[id].get()->_positionY  = aliveObjects[id].get()->position.y;
@@ -96,14 +106,26 @@ public:
     }
 
     static void onCallSetDefaults(int64_t id){
+        if(GameObjectMiddleMan::objectsBeingDeleted.find(id) != GameObjectMiddleMan::objectsBeingDeleted.end()){
+            return;
+        }
+
         aliveObjects[id].get()->GameObjectSetDefaults();
     }
 
     static void onCallPreDraw(int64_t id) {
+        if(GameObjectMiddleMan::objectsBeingDeleted.find(id) != GameObjectMiddleMan::objectsBeingDeleted.end()){
+            return;
+        }
+
         aliveObjects[id].get()->GameObjectPreDraw();
     }
 
     static void onCallPostDraw(int64_t id){
+        if(GameObjectMiddleMan::objectsBeingDeleted.find(id) != GameObjectMiddleMan::objectsBeingDeleted.end()){
+            return;
+        }
+
         aliveObjects[id].get()->GameObjectPostDraw();
     }
 

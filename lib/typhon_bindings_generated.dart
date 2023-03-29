@@ -216,6 +216,20 @@ class TyphonBindings {
       _attachAddTextureToObjectFunctionPtr
           .asFunction<void Function(LoadTextureToObject)>();
 
+  void removeObjectFromObjectsBeingDeleted(
+    int id,
+  ) {
+    return _removeObjectFromObjectsBeingDeleted(
+      id,
+    );
+  }
+
+  late final _removeObjectFromObjectsBeingDeletedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'removeObjectFromObjectsBeingDeleted');
+  late final _removeObjectFromObjectsBeingDeleted =
+      _removeObjectFromObjectsBeingDeletedPtr.asFunction<void Function(int)>();
+
   /// Related to Engine Menus
   ClassesArray getClassesToAddToHierarchyMenu() {
     return _getClassesToAddToHierarchyMenu();

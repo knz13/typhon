@@ -159,3 +159,13 @@ void attachAddTextureToObjectFunction(LoadTextureToObject func)
     };
 
 }
+
+void removeObjectFromObjectsBeingDeleted(int64_t id)
+{
+    if(GameObjectMiddleMan::objectsBeingDeleted.find(id) != GameObjectMiddleMan::objectsBeingDeleted.end()){
+        GameObjectMiddleMan::objectsBeingDeleted.erase(id);
+    }
+    else {
+        std::cout << "Tried to delete object with id " << id <<  " from the list of objects being deleted!" << std::endl;
+    }
+}

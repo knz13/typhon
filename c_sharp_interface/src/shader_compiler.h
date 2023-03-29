@@ -6,12 +6,12 @@
 class ShaderCompiler {
 public:
 
-    inline static std::unique_ptr<ShaderCompiler> instance = std::unique_ptr<ShaderCompiler>();
+    inline static std::shared_ptr<ShaderCompiler> instance = std::shared_ptr<ShaderCompiler>();
 
     static ShaderCompiler& getInstance() {
         if(!ShaderCompiler::instance){
             std::cout << "initializing shader compiler!" << std::endl;
-            ShaderCompiler::instance = std::unique_ptr<ShaderCompiler>(new ShaderCompiler());
+            ShaderCompiler::instance = std::shared_ptr<ShaderCompiler>(new ShaderCompiler());
         }  
         return *ShaderCompiler::instance.get();
     }

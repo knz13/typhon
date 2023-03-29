@@ -76,6 +76,9 @@ class GameObject extends PositionComponent {
       Flame.images.load(stringValue).then((value) {
         print("loaded texture to object with id $gameObjectID");
         Engine.aliveObjects[gameObjectID]!._sprite = Sprite(value);
+        Engine.aliveObjects[gameObjectID]!.width = value.width.toDouble();
+        Engine.aliveObjects[gameObjectID]!.height = value.height.toDouble();
+
       });
 
     }
@@ -88,7 +91,14 @@ class GameObject extends PositionComponent {
   }
 
   static void removeGameObject(int id) {
+    if(!Engine.aliveObjects.containsKey(id)) {
+      print("trying to delete an object with an invalid id! Check if calling Engine.aliveObjects for addition");
+      return;
+    }
+
     onDeleteFunction(id);
+    Engine.instance.remove(Engine.aliveObjects[id]!);
+    Engine.aliveObjects.remove(id);
   }
 
 
@@ -104,14 +114,16 @@ class GameObject extends PositionComponent {
   @override
   void onRemove() {
     // TODO: implement onRemove
-    super.onRemove();
-
     malloc.free(positionXPointer!);
     malloc.free(positionYPointer!);
     malloc.free(scaleXPointer!);
     malloc.free(scaleYPointer!);
 
-    Engine.aliveObjects.remove(identifier);
+    
+    getCppFunctions().removeObjectFromObjectsBeingDeleted(identifier);
+    
+    super.onRemove();
+
   }
 
   //each object should be called with a specific
@@ -145,12 +157,6 @@ class GameObject extends PositionComponent {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
-
-    positionXPointer!.value = position.x;
-    positionYPointer!.value = position.y;
-    scaleXPointer!.value = scale.x;
-    scaleYPointer!.value = scale.y;
-    
 
     GameObject.onPreDrawFunction(identifier);
     _sprite?.render(canvas,position: position,size: Vector2(width,height),overridePaint: paint);

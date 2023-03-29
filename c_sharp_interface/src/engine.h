@@ -16,7 +16,7 @@ public:
         });
     }
 
-    
+
 
     template<typename T>
     static T& CreateNewGameObject() {

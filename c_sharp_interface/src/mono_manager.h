@@ -8,12 +8,12 @@
 class MonoManager {
 public:
 
-    inline static std::unique_ptr<MonoManager> instance = std::unique_ptr<MonoManager>();
+    inline static std::shared_ptr<MonoManager> instance = std::shared_ptr<MonoManager>();
 
     static MonoManager& getInstance() {
         if(!MonoManager::instance){
             std::cout << "initializing mono!" << std::endl;
-            MonoManager::instance = std::unique_ptr<MonoManager>(new MonoManager());
+            MonoManager::instance = std::shared_ptr<MonoManager>(new MonoManager());
         }  
         return *MonoManager::instance.get();
     }

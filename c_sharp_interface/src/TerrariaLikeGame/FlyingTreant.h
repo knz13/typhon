@@ -14,10 +14,6 @@ class FlyingTreant : public Player<FlyingTreant>,
 public:
 
     void SetDefaults() {
-
-        
-
-
     }
 
     void Update(double dt)  {
