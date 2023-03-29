@@ -80,5 +80,6 @@
         "codecvt": "cpp",
         "condition_variable": "cpp",
         "future": "cpp"
-    }
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

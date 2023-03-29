@@ -50,7 +50,6 @@ namespace Reflection {
         IsInitializedStatically()
         {
             
-            
             (void)m;
         }
         

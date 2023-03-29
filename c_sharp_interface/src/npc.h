@@ -1,18 +1,30 @@
 #pragma once
+#include "gameobject.h"
 #include "reflection.h"
+#include "reflection_checks.h"
 
 
-class NPC : public GameObject, 
-    public Reflection::UsesStaticDefaults<NPC>,
-    Reflection::AddToHierarchyMenu<NPC>
+DEFINE_HAS_SIGNATURE(has_ai_func,T::AI, void (T::*)());
+
+
+
+template<typename... DerivedClasses>
+class NPC : public DeriveFromGameObject<NPC<DerivedClasses...>,DerivedClasses...>
 {
 public:
-    static void SetStaticDefaults() {
-        std::cout << "Static default for npc!" << std::endl;
+
+private:
+    template<typename A>
+    void CallAIOnDerived() {
+        if constexpr (has_ai_func<A>::value){
+            A::AI();
+        }
+    }
+
+    void Update(double dt){
+
+
+        (CallAIOnDerived<DerivedClasses>(),...);
     };
-
-
-protected:
     
-    virtual void AI() {};
 };

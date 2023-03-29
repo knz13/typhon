@@ -33,8 +33,8 @@ void attachCreateGameObjectFunction(CreateGameObjectFunc func)
     };
 
     
-    Player();
-    NPC();
+    Player<>();
+    NPC<>();
     FlyingTreant();
 
     for(const auto& func : GameObjectMiddleMan::staticDefaultsFuncs){
