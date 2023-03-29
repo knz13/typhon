@@ -13,6 +13,8 @@ import 'engine.dart';
 
 
 class SceneViewerPanel extends WidgetPanel {
+
+
   @override
   EngineSubWindowData subWindowData() {
     // TODO: implement subWindowData
@@ -33,10 +35,27 @@ class SceneViewerTop extends StatelessWidget {
 }
 
 
-class SceneViewerContents extends StatelessWidget {
+class SceneViewerContents extends StatefulWidget {
 
-  Widget build(BuildContext context) {
-    return GameWidget(game: Engine());
+
+  SceneViewerContents();
+
+  @override
+  State<SceneViewerContents> createState() => _SceneViewerContentsState();
+}
+
+class _SceneViewerContentsState extends State<SceneViewerContents> {
+  late GameWidget gameWidget;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    gameWidget = GameWidget(game: Engine.instance);
   }
 
+  Widget build(BuildContext context) {
+    return gameWidget;
+  }
 }

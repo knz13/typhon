@@ -50,7 +50,7 @@ class GameObject extends PositionComponent {
     int id = Engine.generateRandomID();
 
     GameObject obj = GameObject(identifier: id);
-    Engine.instance!.add(obj);
+    Engine.instance.add(obj);
     obj.positionXPointer = malloc.allocate(64);
     obj.positionYPointer = malloc.allocate(64);
     obj.scaleXPointer = malloc.allocate(64);
@@ -59,7 +59,7 @@ class GameObject extends PositionComponent {
     obj.positionYPointer!.value = obj.position.y;
     obj.scaleXPointer!.value = obj.scale.x;
     obj.scaleYPointer!.value = obj.scale.y;
-    Engine.instance!.childrenChangedNotifier.value++;
+    Engine.instance.childrenChangedNotifier.value++;
     Engine.aliveObjects[id] = obj;
 
   
@@ -75,7 +75,7 @@ class GameObject extends PositionComponent {
 
   static void removeGameObject(int id) {
     onDeleteFunction(id);
-    Engine.instance!.remove(Engine.aliveObjects[id]!);
+    Engine.instance.remove(Engine.aliveObjects[id]!);
   }
 
 

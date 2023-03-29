@@ -30,6 +30,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
+
   @override
   void initState() {
     // TODO: implement initState
@@ -57,15 +58,16 @@ class _MyAppState extends State<MyApp> {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MainEngineFrontend(),
+      home: MainEngineFrontend(),
     );
   }
 }
 
 class MainEngineFrontend extends StatefulWidget {
-  const MainEngineFrontend({super.key});
+
 
   static bool isEditing = true; 
+
 
   @override
   State<MainEngineFrontend> createState() => _MainEngineFrontendState();
@@ -74,7 +76,6 @@ class MainEngineFrontend extends StatefulWidget {
 class _MainEngineFrontendState extends State<MainEngineFrontend> {
 
 
-  late final Engine engine;
 
   @override
   void initState() {
@@ -82,7 +83,6 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
     super.initState();
 
 
-    engine = Engine();
   }
 
   @override

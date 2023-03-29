@@ -143,30 +143,40 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
 
   List<GameObject> currentObjects = [];
 
-  void tryAddListenerToEngine() async {
-    while(true) {
-      ValueNotifier? notifier = Engine.getChildrenChangedNotifier();
-      if(notifier != null){
-        notifier.addListener(() {
-          setState(() {
-            currentObjects = Engine.getChildren();
-          });
-        });
-        break;
-      }
-      await Future.delayed(Duration(milliseconds: 300));
-    }
+
+  void callbackToEngineChanges() async {
+
+    
+    setState(() {
+      currentObjects = Engine.getChildren();
+    });
   }
+
+  
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    tryAddListenerToEngine();
+
+    Engine.getChildrenChangedNotifier().addListener(callbackToEngineChanges);
+  }
+
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    Engine.getChildrenChangedNotifier().removeListener(callbackToEngineChanges);
+    super.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
+
+    setState(() {
+      currentObjects = Engine.getChildren();
+    });
+
     // TODO: implement build
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,

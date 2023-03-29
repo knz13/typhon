@@ -31,16 +31,19 @@ import 'game_object.dart';
 class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDetector {
 
   static Random rng = Random();
-  static Engine? instance;
+  static Engine instance = Engine();
   static Map<int,GameObject> aliveObjects = {};
+
 
   static int generateRandomID() {
     return Engine.rng.nextInt(1 << 32);
   }
 
   static List<GameObject> getChildren() {
-    return instance?.children.toList().whereType<GameObject>().toList() ?? [];
+    return instance.children.whereType<GameObject>().toList();
   }
+
+  bool isInitialized = false;
 
   @override
   void onMouseMove(PointerHoverInfo info) {
@@ -60,12 +63,12 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     });
 
     return super.onKeyEvent(event, keysPressed);
-  }
+  } 
 
 
   @override
   void onChildrenChanged(Component child, ChildrenChangeType type) {
-    
+    print("children changed!");
     childrenChangedNotifier.value++;
 
 
@@ -73,8 +76,9 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   }
 
 
-  static ValueNotifier? getChildrenChangedNotifier() {
-    return instance?.childrenChangedNotifier;
+
+  static ValueNotifier getChildrenChangedNotifier() {
+    return instance.childrenChangedNotifier;
   }
 
   ValueNotifier childrenChangedNotifier = ValueNotifier(0);
@@ -82,31 +86,36 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   @override
   FutureOr<void> onLoad() {
 
-    instance = this;
+    if(!isInitialized){
+      print("initializing engine!");
 
+      initializeLibraryAndGetBindings().then((library) {
+        library.initializeCppLibrary();
+        GameObject.initializeWithCppLibrary(library);
+        
+      });
 
-    initializeLibraryAndGetBindings().then((library) {
-      library.initializeCppLibrary();
-      GameObject.initializeWithCppLibrary(library);
-      
-    });
-    
-
-
+      isInitialized = true;
+    }
     
     return super.onLoad();
   }
 
+
+
   @override
   void onRemove() {
 
-    aliveObjects.forEach((key, value) { 
+    
+    /* aliveObjects.forEach((key, value) { 
       GameObject.removeGameObject(key);
     });
-
+ */
 
 
     super.onRemove();
   }
+
+  
 
 }
