@@ -12,16 +12,17 @@ public:
     template<typename T>
     static T& CreateNewGameObject() {
         static_assert(std::is_base_of<GameObject,T>::value,"Can only create Game Objects that are derived from GameObject");
+        std::cout << "Trying to create game object with type " << HelperFunctions::GetClassNameString<T>()<<std::endl;
         entt::entity e = ECSRegistry::Get().create();
-        aliveObjects[e] = T();
-        static_cast<GameObject*>(&(aliveObjects[e]))->handle = e;
-        static_cast<GameObject*>(&(aliveObjects[e]))->GameObjectOnCreate();
+        aliveObjects[e] = std::shared_ptr<GameObject>(new T());
+        aliveObjects[e].get()->handle = e;
+        aliveObjects[e].get()->GameObjectOnCreate();
 
         if constexpr (std::is_base_of<OnBeignBaseOfObjectInternal,T>::value) {
-            static_cast<OnBeignBaseOfObjectInternal*>(&(aliveObjects[e]))->ExecuteOnObjectCreationInternal();
+            static_cast<OnBeignBaseOfObjectInternal*>(static_cast<T*>(aliveObjects[e].get()))->ExecuteOnObjectCreationInternal(aliveObjects[e].get());
         }
 
-        return aliveObjects[e];
+        return *static_cast<T*>(aliveObjects[e].get());
     };
 
     static bool RemoveGameObject(GameObject obj) {
@@ -46,9 +47,10 @@ public:
         return true;
     }
 
+    static void Update(double dt);
     
 private:
-    static std::unordered_map<entt::entity,GameObject> aliveObjects;
+    static std::unordered_map<entt::entity,std::shared_ptr<GameObject>> aliveObjects;
     static Vector2f mousePosition;
 
 

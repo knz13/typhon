@@ -70,5 +70,12 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     return super.onLoad();
   }
   
+  @override
+  void update(double dt) {
+    super.update(dt);
+
+    getCppFunctions().onUpdateCall(dt);
+
+  }
 
 }

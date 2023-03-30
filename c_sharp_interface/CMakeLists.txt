@@ -110,6 +110,8 @@ project(project_typhon)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/shader_compiler.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/ecs_registry.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object_traits.cpp)
     # creating target
 
     

@@ -63,6 +63,20 @@ class TyphonBindings {
           'onKeyboardKeyDown');
   late final _onKeyboardKeyDown =
       _onKeyboardKeyDownPtr.asFunction<void Function(int)>();
+
+  void onUpdateCall(
+    double dt,
+  ) {
+    return _onUpdateCall(
+      dt,
+    );
+  }
+
+  late final _onUpdateCallPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Double)>>(
+          'onUpdateCall');
+  late final _onUpdateCall =
+      _onUpdateCallPtr.asFunction<void Function(double)>();
 }
 
 abstract class InputKey {

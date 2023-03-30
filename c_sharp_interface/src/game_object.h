@@ -3,27 +3,32 @@
 #include "reflection_checks.h"
 #include "ecs_registry.h"
 
+template<typename... DerivedClasses> 
+class DerivedFromGameObject;
 
 class GameObject {
 public:
 
     bool Valid();
+    entt::entity Handle(){
+        return handle;
+    }
 
     yael::event_sink<void()> OnBeingDestroyed() {
         return onDestroyEvent.Sink();
     }
 
-protected:
-    yael::event_launcher<void()> onDestroyEvent;
 private:
+    yael::event_launcher<void()> onDestroyEvent;
     entt::entity handle = entt::null;
 
     virtual void GameObjectOnCreate() {};
     virtual void GameObjectOnDestroy() {
-
-
+        onDestroyEvent.EmitEvent();
     };
 
+    template<typename... DerivedClasses> 
+    friend class DerivedFromGameObject;
     friend class Engine;
 };
 
@@ -40,15 +45,17 @@ private:
 
     template<typename A>
     void GameObjectOnCreateForOne() {
+        std::cout << "executing on create for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
         if constexpr (has_on_create<A>::value){
-            A::OnCreate();
+            static_cast<A*>(this)->OnCreate();
         }
     }
 
     template<typename A>
     void GameObjectOnDestroyForOne() {
+        std::cout << "executing on create for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
         if constexpr (has_on_destroy<A>::value){
-            A::OnDestroy();
+            static_cast<A*>(this)->OnDestroy();
         }
     }
 
@@ -60,12 +67,11 @@ private:
 
     void GameObjectOnDestroy() override {
 
-        onDestroyEvent.update();
+        GameObject::GameObjectOnDestroy();
         
         (GameObjectOnDestroyForOne<DerivedClasses>(),...);
     };
 private:
-    using GameObject::onDestroyEvent;
     
     friend class Engine;
 };
@@ -82,19 +88,26 @@ protected:
 DEFINE_HAS_SIGNATURE(has_execute_on_object_creation,T::ExecuteOnObjectCreation, void (T::*) (GameObject*));
 
 template<typename... DerivedClasses>
-class HasOnBeingBaseOfObject {
+class HasOnBeingBaseOfObject : public OnBeignBaseOfObjectInternal {
 
-    void ExecuteOnObjectCreationInternal(GameObject* ptr) {
+    void ExecuteOnObjectCreationInternal(GameObject* ptr) override {
 
         (ExecuteForOneClass<DerivedClasses>(ptr),...);
     }
+
+
+public:
+    HasOnBeingBaseOfObject() {
+    }
+
 private:
 
     template<typename A>
     void ExecuteForOneClass(GameObject* ptr) {
+        //std::cout << "trying to execute on beign base on object of type " << HelperFunctions::GetClassNameString<A>() << std::endl;
         if constexpr (has_execute_on_object_creation<A>::value){
 
-            A::ExecuteOnObjectCreation(ptr);
+            static_cast<A*>(this)->ExecuteOnObjectCreation(ptr);
         }
     }
 

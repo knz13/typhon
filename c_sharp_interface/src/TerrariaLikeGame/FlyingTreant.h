@@ -1,6 +1,6 @@
 #pragma once
-#include "engine.h"
+#include "../engine.h"
 
-class FlyingTreant : public Traits::HasUpdate<FlyingTreant> {
+class FlyingTreant : public DerivedFromGameObject<FlyingTreant>, public Traits::HasUpdate<FlyingTreant> {
     
 };
