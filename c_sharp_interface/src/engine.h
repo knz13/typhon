@@ -15,6 +15,11 @@ public:
         aliveObjects[e] = T();
         static_cast<GameObject*>(&aliveObjects[e])->handle = e;
         static_cast<GameObject*>(&aliveObjects[e])->GameObjectOnCreate();
+
+        if(std::is_base_of<OnBeignBaseOfObjectInternal,T>::value) {
+            static_cast<OnBeignBaseOfObjectInternal*>(&aliveObjects[e])->ExecuteOnObjectCreationInternal();
+        }
+
         return aliveObjects[e];
     };
 
