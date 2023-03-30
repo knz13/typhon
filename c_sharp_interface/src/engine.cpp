@@ -1,7 +1,7 @@
 #include "engine.h"
 
-entt::registry Engine::registry;
 Vector2f Engine::mousePosition;
+std::unordered_map<entt::entity,GameObject> Engine::aliveObjects
 
 
 void Engine::Initialize()
