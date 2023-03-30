@@ -23,7 +23,6 @@ import 'package:typhon/general_widgets.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
-import 'game_object.dart';
 
 
 
@@ -32,16 +31,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   static Random rng = Random();
   static Engine instance = Engine();
-  static Map<int,GameObject> aliveObjects = {};
-
-
-  static int generateRandomID() {
-    return Engine.rng.nextInt(1 << 32);
-  }
-
-  static List<GameObject> getChildren() {
-    return instance.children.whereType<GameObject>().toList();
-  }
+  
 
   bool isInitialized = false;
 
@@ -56,7 +46,6 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   @override
   KeyEventResult onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-
     keysPressed.forEach((element) {
       
       getCppFunctions().onKeyboardKeyDown(element.keyId);
@@ -64,24 +53,6 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
     return super.onKeyEvent(event, keysPressed);
   } 
-
-
-  @override
-  void onChildrenChanged(Component child, ChildrenChangeType type) {
-    print("children changed!");
-    childrenChangedNotifier.value++;
-
-
-    super.onChildrenChanged(child, type);
-  }
-
-
-
-  static ValueNotifier getChildrenChangedNotifier() {
-    return instance.childrenChangedNotifier;
-  }
-
-  ValueNotifier childrenChangedNotifier = ValueNotifier(0);
 
   @override
   FutureOr<void> onLoad() {
@@ -91,8 +62,6 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
       initializeLibraryAndGetBindings().then((library) {
         library.initializeCppLibrary();
-        GameObject.initializeWithCppLibrary(library);
-        
       });
 
       isInitialized = true;
@@ -100,22 +69,6 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     
     return super.onLoad();
   }
-
-
-
-  @override
-  void onRemove() {
-
-    
-    /* aliveObjects.forEach((key, value) { 
-      GameObject.removeGameObject(key);
-    });
- */
-
-
-    super.onRemove();
-  }
-
   
 
 }
