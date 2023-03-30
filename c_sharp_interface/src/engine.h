@@ -3,6 +3,7 @@
 #include "generic_reflection.h"
 #include "game_object.h"
 #include "ecs_registry.h"
+#include "game_object_traits.h"
 
 class Engine {
 public:
@@ -13,11 +14,11 @@ public:
         static_assert(std::is_base_of<GameObject,T>::value,"Can only create Game Objects that are derived from GameObject");
         entt::entity e = ECSRegistry::Get().create();
         aliveObjects[e] = T();
-        static_cast<GameObject*>(&aliveObjects[e])->handle = e;
-        static_cast<GameObject*>(&aliveObjects[e])->GameObjectOnCreate();
+        static_cast<GameObject*>(&(aliveObjects[e]))->handle = e;
+        static_cast<GameObject*>(&(aliveObjects[e]))->GameObjectOnCreate();
 
-        if(std::is_base_of<OnBeignBaseOfObjectInternal,T>::value) {
-            static_cast<OnBeignBaseOfObjectInternal*>(&aliveObjects[e])->ExecuteOnObjectCreationInternal();
+        if constexpr (std::is_base_of<OnBeignBaseOfObjectInternal,T>::value) {
+            static_cast<OnBeignBaseOfObjectInternal*>(&(aliveObjects[e]))->ExecuteOnObjectCreationInternal();
         }
 
         return aliveObjects[e];

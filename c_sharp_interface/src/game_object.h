@@ -9,12 +9,12 @@ public:
 
     bool Valid();
 
-    entt::sink<entt::sigh<void (void (&)()), std::__1::allocator<void>>> OnBeingDestroyed() {
-        return onDestroyEvent.sink<void()>();
+    yael::event_sink<void()> OnBeingDestroyed() {
+        return onDestroyEvent.Sink();
     }
 
 protected:
-    entt::dispatcher onDestroyEvent;
+    yael::event_launcher<void()> onDestroyEvent;
 private:
     entt::entity handle = entt::null;
 
@@ -41,14 +41,14 @@ private:
     template<typename A>
     void GameObjectOnCreateForOne() {
         if constexpr (has_on_create<A>::value){
-            A::OnCreate():
+            A::OnCreate();
         }
     }
 
     template<typename A>
     void GameObjectOnDestroyForOne() {
         if constexpr (has_on_destroy<A>::value){
-            A::OnDestroy():
+            A::OnDestroy();
         }
     }
 
@@ -77,7 +77,7 @@ protected:
 
 
     friend class Engine;
-}
+};
 
 DEFINE_HAS_SIGNATURE(has_execute_on_object_creation,T::ExecuteOnObjectCreation, void (T::*) (GameObject*));
 
@@ -100,4 +100,4 @@ private:
 
 
 
-}
+};

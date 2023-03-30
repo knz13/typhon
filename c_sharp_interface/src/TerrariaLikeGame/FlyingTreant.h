@@ -1,6 +1,6 @@
 #pragma once
+#include "engine.h"
 
-
-class FlyingTreant {
-
+class FlyingTreant : public Traits::HasUpdate<FlyingTreant> {
+    
 };
