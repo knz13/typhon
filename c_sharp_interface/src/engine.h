@@ -4,11 +4,11 @@
 
 class Engine {
 public:
-    static void Initialize() {
-        
-    }
+    static void Initialize();
 
-    static inline Vector2f mousePosition;
+    
 private:
+    static Vector2f mousePosition;
+    static entt::registry registry;
 
 };

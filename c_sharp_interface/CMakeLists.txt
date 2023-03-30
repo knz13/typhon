@@ -63,7 +63,7 @@ project(project_typhon)
     FetchContent_MakeAvailable(ENTT)
     #includes for target typhon...
     
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/entt/single_include)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/entt/src/)
     
     FetchContent_Declare(YAEL
     GIT_REPOSITORY https://github.com/knz13/YAEL

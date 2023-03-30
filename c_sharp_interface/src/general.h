@@ -1,7 +1,8 @@
 #pragma once
-#include "entt/entt.hpp"
-#include "effolkronium/random.hpp"
-#include "glm/glm.hpp"
+#include "../vendor/entt/src/entt/entt.hpp"
+#include "../vendor/random/include/effolkronium/random.hpp"
+#include "../vendor/glm/glm/glm.hpp"
+#include "../vendor/yael/include/yael.h"
 
 using Random = effolkronium::random_static;
 
