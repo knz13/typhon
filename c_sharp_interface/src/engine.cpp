@@ -5,7 +5,6 @@
 Vector2f Engine::mousePosition;
 std::unordered_map<entt::entity,std::shared_ptr<GameObject>> Engine::aliveObjects;
 
-
 void Engine::Initialize()
 {
     std::cout << "initializing engine in c++" << std::endl;
@@ -14,6 +13,8 @@ void Engine::Initialize()
 
 void Engine::Update(double dt)
 {
-    
+    for(const auto& [handle,func] : Traits::HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate) {
+        func(dt);
+    } 
 
 }

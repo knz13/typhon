@@ -71,7 +71,8 @@ namespace HelperFunctions {
 
 };
 
-
+template<int N, typename... Ts> using NthTypeOf =
+        typename std::tuple_element<N, std::tuple<Ts...>>::type;
 
 struct ClassesArray {
     int64_t* array;

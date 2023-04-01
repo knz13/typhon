@@ -4,6 +4,6 @@
 
 namespace Traits {
 
-    std::vector<entt::entity> HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate;
-    
+    std::map<entt::entity,UpdatePayload> HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate;
+
 }

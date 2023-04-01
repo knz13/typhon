@@ -25,6 +25,8 @@ public:
         return *static_cast<T*>(aliveObjects[e].get());
     };
 
+   
+
     static bool RemoveGameObject(GameObject obj) {
         if(!obj.Valid()){
             std::cout << "Could not remove gameobject, invalid id!" << std::endl;
