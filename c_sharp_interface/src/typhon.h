@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "general.h"
+#include "keyboard_adaptations.h"
 
 #if _WIN32
 #include <windows.h>
@@ -21,11 +22,13 @@
 extern "C" {
 #endif
 
+
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
     FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
     FFI_PLUGIN_EXPORT void onKeyboardKeyDown(InputKey input);
+    FFI_PLUGIN_EXPORT void onKeyboardKeyUp(InputKey input);
     FFI_PLUGIN_EXPORT void onUpdateCall(double dt);
-   
+
 #ifdef __cplusplus
 }
 #endif

@@ -13,7 +13,7 @@ import 'package:flame/flame.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:flutter/services.dart' show ByteData, Clipboard, ClipboardData, rootBundle;
+import 'package:flutter/services.dart' show ByteData, Clipboard, ClipboardData, RawKeyDownEvent, RawKeyUpEvent, rootBundle;
 import 'package:flutter/src/services/keyboard_key.g.dart';
 import 'package:path/path.dart' as path;
 import 'package:flame/components.dart';
@@ -46,10 +46,12 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   @override
   KeyEventResult onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    keysPressed.forEach((element) {
-      
-      getCppFunctions().onKeyboardKeyDown(element.keyId);
-    });
+      if(event is RawKeyDownEvent) {
+        getCppFunctions().onKeyboardKeyDown(event.logicalKey.keyId);
+      }
+      if(event is RawKeyUpEvent){
+        getCppFunctions().onKeyboardKeyUp(event.logicalKey.keyId);
+      }
 
     return super.onKeyEvent(event, keysPressed);
   } 

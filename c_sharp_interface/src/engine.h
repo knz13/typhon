@@ -4,6 +4,7 @@
 #include "game_object.h"
 #include "ecs_registry.h"
 #include "game_object_traits.h"
+#include "keyboard_adaptations.h"
 
 class Engine {
 public:
@@ -50,12 +51,29 @@ public:
     }
 
     static void Update(double dt);
+
+    static const Vector2f& GetMousePosition() {
+        return mousePosition;
+    }
     
+    static void PushKeyDown(int64_t key);
+    static void PushKeyUp(int64_t key);
+
+    static bool IsKeyPressed(InputKey key);
 private:
+    static std::bitset<std::size(Keys::IndicesOfKeys)> keysPressed;
     static std::unordered_map<entt::entity,std::shared_ptr<GameObject>> aliveObjects;
     static Vector2f mousePosition;
 
 
     friend class GameObject;
+    friend class EngineInternals;
+};
 
+
+class EngineInternals {
+public:
+    static void SetMousePosition(Vector2f mousePos) {
+        Engine::mousePosition = mousePos;
+    }
 };

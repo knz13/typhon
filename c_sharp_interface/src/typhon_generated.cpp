@@ -24,12 +24,18 @@ bool initializeCppLibrary() {
 
 void onMouseMove(double positionX, double positionY)
 {
-   
+    EngineInternals::SetMousePosition(Vector2f(positionX,positionY));
 }
 
 void onKeyboardKeyDown(InputKey input)
 {
-    
+    Engine::PushKeyDown(input);
+}
+
+void onKeyboardKeyUp(InputKey input)
+{
+    Engine::PushKeyUp(input);
+
 }
 
 void onUpdateCall(double dt)
@@ -38,3 +44,4 @@ void onUpdateCall(double dt)
 
 
 }
+

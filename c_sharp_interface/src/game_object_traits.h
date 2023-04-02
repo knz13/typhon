@@ -99,7 +99,7 @@ namespace Traits {
 
         template<typename T,typename... Others>
         constexpr bool DerivedFromAllOthers() {
-            return (std::is_base_of<T,Others>::value && ...);
+            return (std::is_base_of<Others,T>::value && ...);
         }
 
         template<typename T,typename... Others>
@@ -136,7 +136,7 @@ namespace Traits {
 
     template<typename... DerivedClasses>
     class UsesAI : 
-        public ConditionedOnUpdate<DerivedClasses...>
+        public ConditionedOnUpdate<UsesAI<DerivedClasses...>,DerivedClasses...>
     {
         public:
 
@@ -167,7 +167,47 @@ namespace Traits {
                 }
             }
 
+    };  
+
+    class HasPosition {
+    protected:
+        Vector2f position = Vector2f(0,0);
+
+
+        template<typename T>
+        friend class HasVelocity;
     };
+
+    template <typename T>
+    class HasVelocity : public ConditionedOnUpdate<HasVelocity<T>,T> {
+        public:
+            void Create() {
+                std::cout << "Calling on create for HasVelocity!" << std::endl;
+                functionHash = this->OnUpdate().Connect([this](double dt){
+                    static_cast<HasPosition*>(static_cast<T*>(this))->position += this->velocity;
+                });
+
+            }
+            
+
+            HasVelocity() {
+                static_assert(std::is_base_of<HasPosition,T>::value,"To use HasVelocity you need to also derive from HasPosition");
+            }
+
+
+            void Destroy() {
+                this->OnUpdate().Disconnect(functionHash);
+                std::cout << "Calling destroy for HasVelocity!" << std::endl;
+            }
+        protected:
+            Vector2f velocity = Vector2f(0,0);
+        private:
+            size_t functionHash = -1;
+
+    };
+
+
+   
 
 
     template<typename... DerivedClasses>
