@@ -98,6 +98,19 @@ project(project_typhon)
     FetchContent_MakeAvailable(GLM)
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/glm/)
+    
+    FetchContent_Declare(CRUNCH
+    GIT_REPOSITORY https://github.com/johnfredcee/crunch
+    GIT_TAG origin/master
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/crunch
+    ) 
+    
+    
+    FetchContent_MakeAvailable(CRUNCH)
+    
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/crunch/crunch/)
+    list(APPEND typhon_LIBRARIES libcrunch)
+
 
 
 # --------------------- Targets ------------------------
@@ -109,6 +122,7 @@ project(project_typhon)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/mono_manager.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/shader_compiler.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/general.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/ecs_registry.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object_traits.cpp)

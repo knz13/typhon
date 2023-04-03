@@ -63,6 +63,8 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       print("initializing engine!");
 
       initializeLibraryAndGetBindings().then((library) {
+        String executablePath = Platform.resolvedExecutable.replaceAll('\\', '/');
+        library.passExecutablePath(executablePath.substring(0,executablePath.lastIndexOf('/')).toNativeUtf8().cast());
         library.initializeCppLibrary();
       });
 
@@ -70,6 +72,13 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     }
     
     return super.onLoad();
+  }
+
+  @override
+  void render(Canvas canvas) {
+    // TODO: implement render
+    super.render(canvas);
+
   }
   
   @override

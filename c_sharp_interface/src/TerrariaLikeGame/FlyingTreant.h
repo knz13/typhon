@@ -12,7 +12,7 @@ public:
     void Update(double dt) {
         std::cout << "my position now is " << position.x << "," << position.y << std::endl;
     }
-
+    
     void AI() {
         if(Engine::IsKeyPressed(InputKey::D)) {
             position += Vector2f(0.1,0);

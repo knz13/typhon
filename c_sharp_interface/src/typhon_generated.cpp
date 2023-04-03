@@ -45,3 +45,8 @@ void onUpdateCall(double dt)
 
 }
 
+void passExecutablePath(const char *path)
+{
+    HelperStatics::executablePath = std::string(path);
+
+}

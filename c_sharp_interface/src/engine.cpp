@@ -1,6 +1,8 @@
 #include "engine.h"
 #include "TerrariaLikeGame/FlyingTreant.h"
 #include "game_object_traits.h"
+#include "crunch_texture_packer.h"
+#include <filesystem>
 
 Vector2f Engine::mousePosition;
 std::unordered_map<entt::entity,std::shared_ptr<GameObject>> Engine::aliveObjects;
@@ -11,6 +13,10 @@ void Engine::Initialize()
 {
     std::cout << "initializing engine in c++" << std::endl;
     Engine::CreateNewGameObject<FlyingTreant>();
+
+    std::cout << "trying texture packer" << std::endl;
+    std::cout << HelperStatics::executablePath << std::endl;
+
 }
 
 void Engine::Update(double dt)
