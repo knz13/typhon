@@ -54,7 +54,7 @@ void passProjectPath(const char *path)
 
 void attachEnqueueRender(EnqueueObjectRender func)
 {
-    EngineInternals::enqueueRenderFunc = [=](double x,double y,int64_t width,int64_t height,int64_t imageX,int64_t imageY){
-        func(x,y,width,height,imageX,imageY);
+    EngineInternals::enqueueRenderFunc = [=](double x,double y,int64_t width,int64_t height,int64_t imageX,int64_t imageY,double anchorX,double anchorY,double scale,double angle){
+        func(x,y,width,height,imageX,imageY,anchorX,anchorY,scale,angle);
     };
 }

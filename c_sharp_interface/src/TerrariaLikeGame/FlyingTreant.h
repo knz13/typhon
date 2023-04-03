@@ -15,6 +15,8 @@ public:
         std::cout << "calling set defaults for flying treant!" << std::endl;
         width = 32;
         height = 32;
+        scale = 2;
+        anchor = Anchor::Center;
     }
 
     void Update(double dt) {

@@ -88,7 +88,7 @@ private:
 
 class EngineInternals {
 public:
-    static std::function<void(double,double,int64_t,int64_t,int64_t,int64_t)> enqueueRenderFunc;
+    static std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> enqueueRenderFunc;
 
     static void SetMousePosition(Vector2f mousePos) {
         Engine::mousePosition = mousePos;

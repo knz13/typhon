@@ -570,5 +570,14 @@ abstract class InputKey {
 
 typedef EnqueueObjectRender = ffi.Pointer<
     ffi.NativeFunction<
-        ffi.Void Function(ffi.Double, ffi.Double, ffi.Int64, ffi.Int64,
-            ffi.Int64, ffi.Int64)>>;
+        ffi.Void Function(
+            ffi.Double,
+            ffi.Double,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double)>>;

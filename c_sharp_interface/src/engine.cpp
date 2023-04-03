@@ -11,7 +11,7 @@ Vector2f Engine::mousePosition;
 std::map<std::string,TextureAtlasImageProperties> Engine::textureAtlas;
 std::unordered_map<entt::entity,std::shared_ptr<GameObject>> Engine::aliveObjects;
 std::bitset<std::size(Keys::IndicesOfKeys)> Engine::keysPressed;
-std::function<void(double,double,int64_t,int64_t,int64_t,int64_t)> EngineInternals::enqueueRenderFunc;
+std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> EngineInternals::enqueueRenderFunc;
 
 
 void Engine::Initialize()
@@ -58,6 +58,50 @@ void Engine::Update(double dt)
     for(const auto& [handle,spriteData] : Traits::UsesSpriteAnimationInternals::objectsToBeRendered) {
         auto& properties = Engine::textureAtlas[spriteData.objectPointer->className];
         
+        double anchorX,anchorY;
+
+        if(spriteData.anchor->type == "TopLeft") {
+            anchorX = 0;
+            anchorY = 0;
+        }
+        else if (spriteData.anchor->type == "Top") {
+            anchorX = (*spriteData.width)/2;
+            anchorY = 0;
+        }
+        else if (spriteData.anchor->type == "TopRight") {
+            anchorX = (*spriteData.width);
+            anchorY = 0;
+        }
+        else if (spriteData.anchor->type == "CenterLeft") {
+            anchorX = 0;
+            anchorY = (*spriteData.height)/2;
+        }
+        else if (spriteData.anchor->type == "Center") {
+            anchorX = (*spriteData.width)/2;
+            anchorY = (*spriteData.height)/2;
+        }
+        else if (spriteData.anchor->type == "CenterRight") {
+            anchorX = (*spriteData.width);
+            anchorY = (*spriteData.height)/2;
+        }
+        else if (spriteData.anchor->type == "BottomLeft") {
+            anchorX = 0;
+            anchorY = (*spriteData.height);
+        }
+        else if (spriteData.anchor->type == "Bottom") {
+            anchorX = (*spriteData.width)/2;
+            anchorY = (*spriteData.height);
+        }
+        else if (spriteData.anchor->type == "BottomRight") {
+            anchorX = (*spriteData.width);
+            anchorY = (*spriteData.height);
+        }
+        else {
+            anchorX = 0;
+            anchorY = 0;
+        }
+
+
 
         const Vector2f& position = dynamic_cast<Traits::HasPosition*>(spriteData.objectPointer)->GetPosition();
         EngineInternals::enqueueRenderFunc(
@@ -66,7 +110,11 @@ void Engine::Update(double dt)
             (*spriteData.width) == -1? properties.width : *spriteData.width,
             (*spriteData.height) == -1? properties.height : *spriteData.height,
             properties.xPos + (*spriteData.x),
-            properties.yPos + (*spriteData.y)
+            properties.yPos + (*spriteData.y),
+            anchorX,
+            anchorY,
+            *spriteData.scale,
+            *spriteData.angle
         );
     }
 

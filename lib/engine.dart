@@ -34,13 +34,21 @@ class EngineRenderingDataFromAtlas {
   Vector2 position;
   int imageX;
   int imageY;
+  double anchorX;
+  double anchorY;
+  double scale;
+  double angle;
 
   EngineRenderingDataFromAtlas({
     required this.width,
     required this.height,
     required this.position,
     required this.imageX,
-    required this.imageY
+    required this.imageY,
+    required this.anchorX,
+    required this.anchorY,
+    required this.scale,
+    required this.angle
   });
 }
 
@@ -79,14 +87,18 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     return super.onKeyEvent(event, keysPressed);
   } 
 
-  static void enqueueRender(double x,double y, int width,int height, int imageX, int imageY) {
+  static void enqueueRender(double x,double y, int width,int height, int imageX, int imageY,double anchorX,double anchorY,double scale,double angle) {
     
     renderingObjects.add(EngineRenderingDataFromAtlas(
       width: width,
       height: height,
       position: Vector2(x,y),
       imageX: imageX,
-      imageY: imageY
+      imageY: imageY,
+      anchorX: anchorX,
+      anchorY: anchorX,
+      scale: scale,
+      angle: angle
     ));
   }
 
@@ -132,10 +144,10 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
             RSTransform.fromComponents(
               translateX: e.position.x,
               translateY: e.position.y,
-              rotation: 0,
-              anchorX: 0,
-              anchorY: 0,
-              scale: 1
+              rotation: e.angle,
+              anchorX: e.anchorX,
+              anchorY: e.anchorY,
+              scale: e.scale
             )).toList(),
           renderingObjects.map((e) => Rect.fromLTWH(
             e.imageX.toDouble(),

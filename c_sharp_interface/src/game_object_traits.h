@@ -192,8 +192,11 @@ namespace Traits {
         int* height = nullptr;
         int* x = nullptr;
         int* y = nullptr;
+        Anchor* anchor = nullptr;
+        double* scale = nullptr;
+        double* angle = nullptr;
 
-        SpriteAnimationData(GameObject* ptr,int* w,int* h,int* x,int* y) : objectPointer(ptr),width(w),height(h),x(x),y(y) {};
+        SpriteAnimationData(GameObject* ptr,int* w,int* h,int* x,int* y,Anchor* anchor,double* scale,double* angle) : objectPointer(ptr),width(w),height(h),x(x),y(y),anchor(anchor),scale(scale),angle(angle) {};
         SpriteAnimationData() {};
     };
 
@@ -223,7 +226,10 @@ namespace Traits {
                     &width,
                     &height,
                     &frame.x,
-                    &frame.y
+                    &frame.y,
+                    &anchor,
+                    &scale,
+                    &angle
                 );
             };
 
@@ -240,6 +246,10 @@ namespace Traits {
             SpriteAnimationFrame frame;
             int width = -1;
             int height = -1;
+            double scale = 1.0f;
+            double angle = 0.0f;
+            Anchor anchor = Anchor::TopLeft;
+
 
         private:
             size_t functionHash = 0;

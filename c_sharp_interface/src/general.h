@@ -15,6 +15,33 @@ using Vector3f = glm::vec3;
 template<typename T>
 using deleted_unique_ptr = std::unique_ptr<T,std::function<void(T*)>>;
 
+struct Anchor {
+    static Anchor TopLeft;
+    static Anchor Top;
+    static Anchor TopRight;
+    static Anchor CenterLeft;
+    static Anchor Center;
+    static Anchor CenterRight;
+    static Anchor BottomLeft;
+    static Anchor Bottom;
+    static Anchor BottomRight;
+
+
+    double x = 0;
+    double y = 0;
+
+    Anchor() {};
+    Anchor(std::string type) {
+        this->type = type;
+    };
+    Anchor(double x,double y) : x(x),y(y) {};
+
+private:
+    std::string type = "None";
+
+    friend class Engine;
+
+};
 
 typedef int64_t (*CreateGameObjectFunc)();
 typedef void (*RemoveGameObjectFunc)(int64_t);
@@ -25,7 +52,7 @@ typedef void (*AIFunc)(int64_t);
 typedef void (*UpdateFunc)(int64_t,double);
 typedef void (*PreDrawFunc)(int64_t);
 typedef void (*PostDrawFunc)(int64_t);
-typedef void (*EnqueueObjectRender)(double,double,int64_t,int64_t,int64_t,int64_t);
+typedef void (*EnqueueObjectRender)(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double);
 typedef void (*RemoveObjectFunc)(int64_t);
 typedef void (*LoadTextureToObject)(int64_t,const char*);
 typedef const char* (*AddToEntityMenuFunc)(void);
