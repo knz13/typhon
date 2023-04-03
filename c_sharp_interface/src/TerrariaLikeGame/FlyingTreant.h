@@ -16,7 +16,8 @@ public:
         width = 32;
         height = 32;
         scale = 2;
-        anchor = Anchor::Center;
+        //anchor = Anchor::Center;
+        //angle = HelperFunctions::Radians(-45);
     }
 
     void Update(double dt) {
@@ -29,6 +30,12 @@ public:
         }
         if(Engine::IsKeyPressed(InputKey::A)) {
             position += Vector2f(-1,0);
+        }
+        if(Engine::IsKeyPressed(InputKey::W)) {
+            position += Vector2f(0,-1);
+        }
+        if(Engine::IsKeyPressed(InputKey::S)) {
+            position += Vector2f(0,1);
         }
 
     }

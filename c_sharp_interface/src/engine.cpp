@@ -101,7 +101,7 @@ void Engine::Update(double dt)
             anchorY = 0;
         }
 
-
+        
 
         const Vector2f& position = dynamic_cast<Traits::HasPosition*>(spriteData.objectPointer)->GetPosition();
         EngineInternals::enqueueRenderFunc(

@@ -4,6 +4,8 @@
 #include "../vendor/glm/glm/glm.hpp"
 #include "../vendor/yael/include/yael.h"
 #include "../vendor/json/single_include/nlohmann/json.hpp"
+#include <math.h>
+
 
 using json = nlohmann::json;
 using Random = effolkronium::random_static;
@@ -82,6 +84,10 @@ constexpr int IndexOfTopClass() {
 } 
 
 namespace HelperFunctions {
+
+    static double Radians(double degrees) {
+        return (M_PI/180)*degrees;
+    }
 
     static bool EraseWordFromString(std::string& mainWord, std::string wordToLookFor) {
         auto iter = mainWord.find(wordToLookFor);
