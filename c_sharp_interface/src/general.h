@@ -30,6 +30,29 @@ typedef void (*RemoveObjectFunc)(int64_t);
 typedef void (*LoadTextureToObject)(int64_t,const char*);
 typedef const char* (*AddToEntityMenuFunc)(void);
 
+namespace {
+
+    template<typename T,typename... Others>
+    constexpr bool DerivedFromAllOthers() {
+        return (std::is_base_of<Others,T>::value && ...);
+    }
+
+    template<typename T,typename... Others>
+    constexpr int IndexOfTopClassInternal(const int i) {
+        if (i > sizeof...(Others)){
+            return -1;
+        }
+        if constexpr (DerivedFromAllOthers<T,Others...>()) {
+            return i;
+        }
+        return IndexOfTopClassInternal<Others...,T>(i+1);
+    }
+}
+
+template<typename... Others>
+constexpr int IndexOfTopClass() {
+    return IndexOfTopClassInternal<Others...>(0);
+} 
 
 namespace HelperFunctions {
 

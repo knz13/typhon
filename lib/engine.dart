@@ -5,6 +5,7 @@
 
 
 import 'dart:async';
+import 'dart:collection';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
@@ -30,14 +31,16 @@ import 'package:typhon/typhon_bindings_generated.dart';
 class EngineRenderingDataFromAtlas {
   int width;
   int height;
-  int x;
-  int y;
+  Vector2 position;
+  int imageX;
+  int imageY;
 
   EngineRenderingDataFromAtlas({
     required this.width,
     required this.height,
-    required this.x,
-    required this.y
+    required this.position,
+    required this.imageX,
+    required this.imageY
   });
 }
 
@@ -51,7 +54,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   
   Image? atlasImage;
-  List<EngineRenderingDataFromAtlas> renderingObjects = [];
+  static Queue<EngineRenderingDataFromAtlas> renderingObjects = Queue();
 
   bool isInitialized = false;
 
@@ -76,17 +79,15 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     return super.onKeyEvent(event, keysPressed);
   } 
 
-  void updateRenderingDataFromCpp(Pointer<Pointer<Int64>> data,int numberOfItems) {
-    renderingObjects.clear();
-
-    for(int number in List.generate(numberOfItems, (index) => index)) {
-      renderingObjects.add(EngineRenderingDataFromAtlas(
-        width: data.elementAt(number).cast<Int64>().elementAt(0).value,
-        height: data.elementAt(number).cast<Int64>().elementAt(1).value,
-        x: data.elementAt(number).cast<Int64>().elementAt(2).value,
-        y: data.elementAt(number).cast<Int64>().elementAt(3).value
-      ));
-    }
+  static void enqueueRender(double x,double y, int width,int height, int imageX, int imageY) {
+    
+    renderingObjects.add(EngineRenderingDataFromAtlas(
+      width: width,
+      height: height,
+      position: Vector2(x,y),
+      imageX: imageX,
+      imageY: imageY
+    ));
   }
 
   @override
@@ -98,6 +99,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       initializeLibraryAndGetBindings().then((library) async {
         await extractImagesFromAssets();
         library.passProjectPath((await getApplicationDocumentsDirectory()).path.toNativeUtf8().cast());
+        library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
         library.initializeCppLibrary();
         await Future.delayed(Duration(milliseconds: 500));
         File atlasImageFile = File(path.join((await getApplicationDocumentsDirectory()).path,"Typhon","lib","texture_atlas","atlas0.png"));
@@ -124,10 +126,23 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     super.render(canvas);
 
     if(atlasImage != null){
-      canvas.renderAt(Vector2(100,0), (canvas) {
-        canvas.rotate(radians(-45));
-        canvas.drawImage(atlasImage!, Offset.zero, Paint());
-      });
+      canvas.drawAtlas(
+          atlasImage!, 
+          renderingObjects.map((e) => 
+            RSTransform.fromComponents(
+              translateX: e.position.x,
+              translateY: e.position.y,
+              rotation: 0,
+              anchorX: 0,
+              anchorY: 0,
+              scale: 1
+            )).toList(),
+          renderingObjects.map((e) => Rect.fromLTWH(
+            e.imageX.toDouble(),
+            e.imageY.toDouble(), 
+            e.width.toDouble(), 
+            e.height.toDouble())).toList(),null,null,null,Paint());
+      renderingObjects.clear();
     }
 
   }

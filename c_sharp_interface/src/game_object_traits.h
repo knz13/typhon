@@ -4,6 +4,7 @@
 
 DEFINE_HAS_SIGNATURE(has_update_function,T::Update,void (T::*) (double));
 DEFINE_HAS_SIGNATURE(has_ai_function,T::AI, void (T::*) ());
+DEFINE_HAS_SIGNATURE(has_find_frame_function,T::FindFrame,void (T::*)(int));
 
 namespace Traits {
 
@@ -44,7 +45,7 @@ namespace Traits {
         void CallUpdateForOneType(double dt) {
             //std::cout << "Calling update for " << HelperFunctions::GetClassNameString<A>() << std::endl;
             if constexpr (has_update_function<A>::value) {
-                static_cast<A*>(this)->Update(dt);
+                static_cast<A*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Update(dt);
             }
         }
 
@@ -95,30 +96,7 @@ namespace Traits {
         
     }
 
-    namespace {
-
-        template<typename T,typename... Others>
-        constexpr bool DerivedFromAllOthers() {
-            return (std::is_base_of<Others,T>::value && ...);
-        }
-
-        template<typename T,typename... Others>
-        constexpr int IndexOfTopClassInternal(const int i) {
-            if (i > sizeof...(Others)){
-                return -1;
-            }
-            if constexpr (DerivedFromAllOthers<T,Others...>()) {
-                return i;
-            }
-            return IndexOfTopClassInternal<Others...,T>(i+1);
-        }
-    }
-
-    template<typename... Others>
-    constexpr int IndexOfTopClass() {
-        return IndexOfTopClassInternal<Others...>(0);
-    } 
-   
+    
     template<typename... DerivedClasses>
     class ConditionedOnUpdate {
     public:
@@ -163,7 +141,7 @@ namespace Traits {
             template<typename A>
             void CheckIfHasFunction() {
                 if constexpr (has_ai_function<A>::value){
-                    static_cast<A*>(this)->AI();
+                    static_cast<A*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->AI();
                 }
             }
 
@@ -208,35 +186,74 @@ namespace Traits {
 
     };
 
+    struct SpriteAnimationData {
+        GameObject* objectPointer = nullptr;
+        int* width = nullptr;
+        int* height = nullptr;
+        int* x = nullptr;
+        int* y = nullptr;
+
+        SpriteAnimationData(GameObject* ptr,int* w,int* h,int* x,int* y) : objectPointer(ptr),width(w),height(h),x(x),y(y) {};
+        SpriteAnimationData() {};
+    };
 
    
     struct UsesSpriteAnimationInternals {
-        static std::map<entt::entity,GameObject*> objectsToBeRendered;
+        static std::map<entt::entity,SpriteAnimationData> objectsToBeRendered;
     };  
 
-    template<typename T>
-    class UsesSpriteAnimation 
+    struct SpriteAnimationFrame {
+        int x = 0;
+        int y = 0;
+    };
+
+
+
+    template<typename... DerivedClasses>
+    class UsesSpriteAnimation : public ConditionedOnUpdate<UsesSpriteAnimation<DerivedClasses...>,DerivedClasses...>
     {
         public:
 
-            void Create() {
-                UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<T*>(this))->Handle()] = static_cast<GameObject*>(static_cast<T*>(this));;
+            void Create() { 
+                functionHash = this->OnUpdate().Connect([=](double dt){
+                    (CallFindFrameForOne<DerivedClasses>(),...);
+                });
+                UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle()] = SpriteAnimationData(
+                    static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this)),
+                    &width,
+                    &height,
+                    &frame.x,
+                    &frame.y
+                );
             };
 
 
             void Destroy() {
-                UsesSpriteAnimationInternals::objectsToBeRendered.erase(static_cast<GameObject*>(static_cast<T*>(this))->Handle());
+                this->OnUpdate().Disconnect(functionHash);
+                UsesSpriteAnimationInternals::objectsToBeRendered.erase(static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle());
             }
 
             UsesSpriteAnimation() {
-                static_assert(std::is_base_of<HasPosition,T>::value,"In order to use sprite animation, please derive from HasPosition");
+                static_assert(std::is_base_of<HasPosition,NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>>::value,"In order to use sprite animation, please derive from HasPosition");
             }
-        private:
+        protected:
+            SpriteAnimationFrame frame;
+            int width = -1;
+            int height = -1;
 
+        private:
+            size_t functionHash = 0;
+
+            template<typename A>
+            void CallFindFrameForOne() {
+                if constexpr (has_find_frame_function<A>::value){
+                    static_cast<A*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->FindFrame(height);
+                }
+            }
+
+            friend class Engine;
 
     };
-
-
 
 
 

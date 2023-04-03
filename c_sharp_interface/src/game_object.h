@@ -40,6 +40,10 @@ DEFINE_HAS_SIGNATURE(has_on_create,T::Create,void (T::*) ());
 DEFINE_HAS_SIGNATURE(has_on_destroy,T::Destroy,void (T::*) ());
 
 
+
+   
+
+
 template<typename MainClass,typename... DerivedClasses> 
 class DerivedFromGameObject : public GameObject,public DerivedClasses... {
 public:
@@ -51,7 +55,7 @@ private:
     void GameObjectOnCreateForOne() {
         std::cout << "executing on create for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
         if constexpr (has_on_create<A>::value){
-            static_cast<A*>(this)->Create();
+            static_cast<A*>(static_cast<MainClass*>(this))->Create();
         }
     }
 
@@ -59,7 +63,7 @@ private:
     void GameObjectOnDestroyForOne() {
         std::cout << "executing on destroy for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
         if constexpr (has_on_destroy<A>::value){
-            static_cast<A*>(this)->Destroy();
+            static_cast<A*>(static_cast<MainClass*>(this))->Destroy();
         }
     }
 
@@ -137,7 +141,7 @@ private:
         if constexpr (has_execute_on_object_creation){
 
             //std::cout << "trying to executing on beign base on object of type " << HelperFunctions::GetClassNameString<A>() << std::endl;
-            static_cast<A*>(this)->ExecuteOnObjectCreation(ptr);
+            static_cast<A*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->ExecuteOnObjectCreation(ptr);
         }
     }
 

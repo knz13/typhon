@@ -7,7 +7,7 @@
 #include "keyboard_adaptations.h"
 #include "crunch_texture_packer.h"
 
-
+DEFINE_HAS_SIGNATURE(has_set_defaults_function,T::SetDefaults,void (T::*)());
 
 class Engine {
 public:
@@ -30,6 +30,10 @@ public:
 
         if constexpr (std::is_base_of<OnBeignBaseOfObjectInternal,T>::value) {
             static_cast<OnBeignBaseOfObjectInternal*>(static_cast<T*>(aliveObjects[e].get()))->ExecuteOnObjectCreationInternal(aliveObjects[e].get());
+        }
+
+        if constexpr (has_set_defaults_function<T>::value){
+            static_cast<T*>(aliveObjects[e].get())->SetDefaults();
         }
 
         return *static_cast<T*>(aliveObjects[e].get());

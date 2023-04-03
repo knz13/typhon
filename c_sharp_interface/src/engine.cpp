@@ -55,10 +55,19 @@ void Engine::Update(double dt)
         func(dt);
     } 
 
-    for(const auto& [handle,objPtr] : Traits::UsesSpriteAnimationInternals::objectsToBeRendered) {
-        auto& properties = Engine::textureAtlas[objPtr->className];
-        const Vector2f& position = dynamic_cast<Traits::HasPosition*>(objPtr)->GetPosition();
-        EngineInternals::enqueueRenderFunc(position.x,position.y,properties.width,properties.height,properties.xPos,properties.yPos);
+    for(const auto& [handle,spriteData] : Traits::UsesSpriteAnimationInternals::objectsToBeRendered) {
+        auto& properties = Engine::textureAtlas[spriteData.objectPointer->className];
+        
+
+        const Vector2f& position = dynamic_cast<Traits::HasPosition*>(spriteData.objectPointer)->GetPosition();
+        EngineInternals::enqueueRenderFunc(
+            position.x,
+            position.y,
+            (*spriteData.width) == -1? properties.width : *spriteData.width,
+            (*spriteData.height) == -1? properties.height : *spriteData.height,
+            properties.xPos + (*spriteData.x),
+            properties.yPos + (*spriteData.y)
+        );
     }
 
 }
