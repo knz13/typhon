@@ -5,6 +5,9 @@
 #include "ecs_registry.h"
 #include "game_object_traits.h"
 #include "keyboard_adaptations.h"
+#include "crunch_texture_packer.h"
+
+
 
 class Engine {
 public:
@@ -12,6 +15,7 @@ public:
     
 
     static std::vector<std::string> GetImagePathsFromLibrary();
+    static const std::map<std::string,TextureAtlasImageProperties>& GetTextureAtlas();
     static std::string GetPathToAtlas();
 
 
@@ -66,8 +70,8 @@ public:
 
     static bool IsKeyPressed(InputKey key);
 private:
-    static void CreateTextureAtlasFromImages();
-
+    static std::map<std::string,TextureAtlasImageProperties> CreateTextureAtlasFromImages();
+    static std::map<std::string,TextureAtlasImageProperties> textureAtlas;
     static std::bitset<std::size(Keys::IndicesOfKeys)> keysPressed;
     static std::unordered_map<entt::entity,std::shared_ptr<GameObject>> aliveObjects;
     static Vector2f mousePosition;
@@ -80,6 +84,8 @@ private:
 
 class EngineInternals {
 public:
+    static std::function<void(double,double,int64_t,int64_t,int64_t,int64_t)> enqueueRenderFunc;
+
     static void SetMousePosition(Vector2f mousePos) {
         Engine::mousePosition = mousePos;
     }

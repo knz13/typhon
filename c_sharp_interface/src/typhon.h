@@ -29,6 +29,7 @@ extern "C" {
     FFI_PLUGIN_EXPORT void onKeyboardKeyUp(InputKey input);
     FFI_PLUGIN_EXPORT void onUpdateCall(double dt);
     FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
+    FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
 
 #ifdef __cplusplus
 }

@@ -3,12 +3,15 @@
 #include "game_object_traits.h"
 #include "crunch_texture_packer.h"
 #include <filesystem>
+#include <fstream>
 
 namespace fs = std::filesystem;
 
 Vector2f Engine::mousePosition;
+std::map<std::string,TextureAtlasImageProperties> Engine::textureAtlas;
 std::unordered_map<entt::entity,std::shared_ptr<GameObject>> Engine::aliveObjects;
 std::bitset<std::size(Keys::IndicesOfKeys)> Engine::keysPressed;
+std::function<void(double,double,int64_t,int64_t,int64_t,int64_t)> EngineInternals::enqueueRenderFunc;
 
 
 void Engine::Initialize()
@@ -17,7 +20,7 @@ void Engine::Initialize()
     Engine::CreateNewGameObject<FlyingTreant>();
 
     std::cout << "trying texture packer" << std::endl;
-
+    textureAtlas = CreateTextureAtlasFromImages();
     
 }
 
@@ -30,6 +33,11 @@ std::vector<std::string> Engine::GetImagePathsFromLibrary()
         inputs.push_back(file.path());
     }
     return inputs;
+}
+
+const std::map<std::string, TextureAtlasImageProperties> &Engine::GetTextureAtlas()
+{
+    return textureAtlas;
 }
 
 std::string Engine::GetPathToAtlas()
@@ -46,6 +54,12 @@ void Engine::Update(double dt)
     for(const auto& [handle,func] : Traits::HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate) {
         func(dt);
     } 
+
+    for(const auto& [handle,objPtr] : Traits::UsesSpriteAnimationInternals::objectsToBeRendered) {
+        auto& properties = Engine::textureAtlas[objPtr->className];
+        const Vector2f& position = dynamic_cast<Traits::HasPosition*>(objPtr)->GetPosition();
+        EngineInternals::enqueueRenderFunc(position.x,position.y,properties.width,properties.height,properties.xPos,properties.yPos);
+    }
 
 }
 
@@ -76,11 +90,28 @@ bool Engine::IsKeyPressed(InputKey key)
     return keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()];
 }
 
-void Engine::CreateTextureAtlasFromImages()
+std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFromImages()
 {
     std::vector<std::string> inputs = Engine::GetImagePathsFromLibrary();
     
     Crunch::PackFromFolder(inputs,GetPathToAtlas(),"atlas",Crunch::CrunchOptions::optVerbose | Crunch::CrunchOptions::optJson);
     
-    std::filesystem::
+    std::ifstream stream(GetPathToAtlas() + "atlas.json");
+
+    json data = json::parse(stream);
+
+    std::map<std::string,TextureAtlasImageProperties> outMap;
+
+    for(auto& texture : data["textures"][0]["images"]){
+        outMap[texture["n"]] = TextureAtlasImageProperties(
+            texture["n"].get<std::string>(),
+            texture["w"].get<int>(),
+            texture["h"].get<int>(),
+            texture["x"].get<int>(),
+            texture["y"].get<int>()
+        );
+    }
+
+    return outMap;
+
 }

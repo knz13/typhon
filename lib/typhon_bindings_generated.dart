@@ -105,6 +105,20 @@ class TyphonBindings {
           'passProjectPath');
   late final _passProjectPath =
       _passProjectPathPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void attachEnqueueRender(
+    EnqueueObjectRender func,
+  ) {
+    return _attachEnqueueRender(
+      func,
+    );
+  }
+
+  late final _attachEnqueueRenderPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(EnqueueObjectRender)>>(
+          'attachEnqueueRender');
+  late final _attachEnqueueRender =
+      _attachEnqueueRenderPtr.asFunction<void Function(EnqueueObjectRender)>();
 }
 
 abstract class InputKey {
@@ -553,3 +567,8 @@ abstract class InputKey {
   static const int Game_Button_Y = 8589935390;
   static const int Game_Button_Z = 8589935391;
 }
+
+typedef EnqueueObjectRender = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Void Function(ffi.Double, ffi.Double, ffi.Int64, ffi.Int64,
+            ffi.Int64, ffi.Int64)>>;

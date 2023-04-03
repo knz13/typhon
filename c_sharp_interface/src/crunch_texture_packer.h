@@ -15,6 +15,19 @@
 
 using namespace std;
 
+
+struct TextureAtlasImageProperties {
+    int width;
+    int height;
+    std::string name;
+    int xPos;
+    int yPos;
+
+    TextureAtlasImageProperties(std::string name,int width,int height,int xpos,int ypos) : name(name),width(width),height(height),xPos(xpos),yPos(ypos) {};
+
+    TextureAtlasImageProperties() : width(0),height(0),xPos(0),yPos(0),name("") {};
+};
+
 namespace Crunch {
 
     enum CrunchOptions {
@@ -167,7 +180,7 @@ namespace Crunch {
             if (!(options & CrunchOptions::optForce) && newHash == oldHash)
             {
                 cout << "atlas is unchanged: " << name << endl;
-                return EXIT_SUCCESS;
+                return true;
             }
         }
         

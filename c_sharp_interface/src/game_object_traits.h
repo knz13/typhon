@@ -170,6 +170,8 @@ namespace Traits {
     };  
 
     class HasPosition {
+    public:
+        const Vector2f& GetPosition() {return position;};
     protected:
         Vector2f position = Vector2f(0,0);
 
@@ -208,14 +210,30 @@ namespace Traits {
 
 
    
+    struct UsesSpriteAnimationInternals {
+        static std::map<entt::entity,GameObject*> objectsToBeRendered;
+    };  
 
-
-    template<typename... DerivedClasses>
-    class UsesSpriteAnimation
+    template<typename T>
+    class UsesSpriteAnimation 
     {
         public:
-            void ExecuteOnObjectCreation(GameObject* ptr);
-        
+
+            void Create() {
+                UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<T*>(this))->Handle()] = static_cast<GameObject*>(static_cast<T*>(this));;
+            };
+
+
+            void Destroy() {
+                UsesSpriteAnimationInternals::objectsToBeRendered.erase(static_cast<GameObject*>(static_cast<T*>(this))->Handle());
+            }
+
+            UsesSpriteAnimation() {
+                static_assert(std::is_base_of<HasPosition,T>::value,"In order to use sprite animation, please derive from HasPosition");
+            }
+        private:
+
+
     };
 
 

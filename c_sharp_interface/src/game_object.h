@@ -18,9 +18,13 @@ public:
         return onDestroyEvent.Sink();
     }
 
+protected:
+
 private:
+    std::string className = "";
     yael::event_launcher<void()> onDestroyEvent;
     entt::entity handle = entt::null;
+    
 
     virtual void GameObjectOnCreate() {};
     virtual void GameObjectOnDestroy() {
@@ -61,6 +65,8 @@ private:
 
 
     void GameObjectOnCreate() override{
+        className = HelperFunctions::GetClassNameString<MainClass>();
+
         (GameObjectOnCreateForOne<DerivedClasses>(),...);
     };
     

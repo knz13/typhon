@@ -3,7 +3,9 @@
 #include "../vendor/random/include/effolkronium/random.hpp"
 #include "../vendor/glm/glm/glm.hpp"
 #include "../vendor/yael/include/yael.h"
+#include "../vendor/json/single_include/nlohmann/json.hpp"
 
+using json = nlohmann::json;
 using Random = effolkronium::random_static;
 
 
@@ -23,6 +25,7 @@ typedef void (*AIFunc)(int64_t);
 typedef void (*UpdateFunc)(int64_t,double);
 typedef void (*PreDrawFunc)(int64_t);
 typedef void (*PostDrawFunc)(int64_t);
+typedef void (*EnqueueObjectRender)(double,double,int64_t,int64_t,int64_t,int64_t);
 typedef void (*RemoveObjectFunc)(int64_t);
 typedef void (*LoadTextureToObject)(int64_t,const char*);
 typedef const char* (*AddToEntityMenuFunc)(void);
