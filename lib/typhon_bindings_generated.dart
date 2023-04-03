@@ -92,19 +92,19 @@ class TyphonBindings {
   late final _onUpdateCall =
       _onUpdateCallPtr.asFunction<void Function(double)>();
 
-  void passExecutablePath(
+  void passProjectPath(
     ffi.Pointer<ffi.Char> path,
   ) {
-    return _passExecutablePath(
+    return _passProjectPath(
       path,
     );
   }
 
-  late final _passExecutablePathPtr =
+  late final _passProjectPathPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
-          'passExecutablePath');
-  late final _passExecutablePath =
-      _passExecutablePathPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+          'passProjectPath');
+  late final _passProjectPath =
+      _passProjectPathPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
 }
 
 abstract class InputKey {

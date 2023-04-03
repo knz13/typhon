@@ -9,6 +9,11 @@
 class Engine {
 public:
     static void Initialize();
+    
+
+    static std::vector<std::string> GetImagePathsFromLibrary();
+    static std::string GetPathToAtlas();
+
 
     template<typename T>
     static T& CreateNewGameObject() {
@@ -61,6 +66,8 @@ public:
 
     static bool IsKeyPressed(InputKey key);
 private:
+    static void CreateTextureAtlasFromImages();
+
     static std::bitset<std::size(Keys::IndicesOfKeys)> keysPressed;
     static std::unordered_map<entt::entity,std::shared_ptr<GameObject>> aliveObjects;
     static Vector2f mousePosition;

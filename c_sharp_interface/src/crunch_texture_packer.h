@@ -139,15 +139,12 @@ namespace Crunch {
 
 
 
-    static bool PackFromFolder(std::vector<std::string> inputs,std::string outputDir,int options = CrunchOptions::optNone) {
+    static bool PackFromFolder(std::vector<std::string> inputs,std::string outputDir,std::string name,int options = CrunchOptions::optNone) {
 
 
         vector<Bitmap*> bitmaps;
         vector<Packer*> packers;
 
-        std::string name;
-        SplitFileName(outputDir, &outputDir, &name, nullptr);
-        
         
         //Get the options
         int optSize = 4096;

@@ -45,8 +45,8 @@ void onUpdateCall(double dt)
 
 }
 
-void passExecutablePath(const char *path)
+void passProjectPath(const char *path)
 {
-    HelperStatics::executablePath = std::string(path);
+    HelperStatics::projectPath = std::string(path);
 
 }

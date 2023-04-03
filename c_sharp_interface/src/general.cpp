@@ -3,4 +3,4 @@
 
 
 
-std::string HelperStatics::executablePath = "";
+std::string HelperStatics::projectPath = "";

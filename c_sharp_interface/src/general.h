@@ -73,7 +73,7 @@ namespace HelperFunctions {
 
 class HelperStatics {
 public:
-    static std::string executablePath;
+    static std::string projectPath;
 
 };
 
