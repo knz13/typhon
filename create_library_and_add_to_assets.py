@@ -5,6 +5,7 @@ import argparse
 import os
 import subprocess
 from glob import glob
+import shutil
 
 
 parser = argparse.ArgumentParser("create library")
@@ -80,11 +81,21 @@ else:
         os.remove(os.path.abspath("../../assets/lib/typhon.dll"))
     os.rename(os.path.abspath("Debug/typhon.dll" if not args.Release else "Release/typhon.dll"),os.path.abspath("../../assets/lib/typhon.dll"))
     
+os.chdir(os.path.join(current_dir,"c_sharp_interface"))
+
+for file in os.listdir(os.path.join(current_dir,"assets/lib/include")):
+    os.remove(os.path.join(current_dir,"assets/lib/include",file))
+
+for file in os.listdir('src'):
+    if file.endswith(".h"):
+        shutil.copyfile(os.path.join("src",file),os.path.join("../assets/lib/include",file))
+
+
 
 os.system('echo "Build finished!"')
 
 os.system('echo "Updating dart bindings file..."')
 
-os.system('cd ../../ && dart run ffigen --config ffigen.yaml')
+os.system(f'cd {current_dir} && dart run ffigen --config ffigen.yaml')
 
 os.system('echo "Done updating dart bindings file!"')

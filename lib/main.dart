@@ -6,9 +6,11 @@ import 'package:typhon/file_viewer_panel_test.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/hierarchy_panel.dart';
 import 'package:typhon/inspector_panel.dart';
+import 'package:typhon/project_choice_window.dart';
 import 'package:typhon/scene_viewer_panel.dart';
 import 'engine.dart';
 import 'file_viewer_panel.dart';
+import 'main_engine_frontend.dart';
 
 double contextWidth(var context){
   return MediaQuery.of(context).size.width;
@@ -58,81 +60,7 @@ class _MyAppState extends State<MyApp> {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MainEngineFrontend(),
-    );
-  }
-}
-
-class MainEngineFrontend extends StatefulWidget {
-
-
-  static bool isEditing = true; 
-
-
-  @override
-  State<MainEngineFrontend> createState() => _MainEngineFrontendState();
-}
-
-class _MainEngineFrontendState extends State<MainEngineFrontend> {
-
-
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-
-  }
-
-  @override
-  Widget build(BuildContext context) {
-  
-    return SafeArea(
-      child: Scaffold(
-        body: MainEngineFrontend.isEditing ? EngineSubWindow(
-          division: SubWindowDivision.left,
-          mainChildProportion: 0.75,
-          mainSubWindow: EngineSubWindow(
-            mainChildProportion: 0.7,
-            division: SubWindowDivision.top,
-            mainSubWindow: EngineSubWindow(
-              division: SubWindowDivision.right,
-              mainChildProportion: 0.75,
-              mainSubWindow: EngineSubWindow(
-                tabs: [
-                  SceneViewerPanel().subWindowData()
-                ]
-              ),
-              splitSubWindow: EngineSubWindow(
-                tabs: [
-                  HierarchyPanel().subWindowData()
-                ],
-              ),
-            ),
-            splitSubWindow: EngineSubWindow(
-              tabs: [
-                EngineSubWindowData(
-                  title: "File Viewer",
-                  child: FileViewerPanel()
-                ),
-                EngineSubWindowData(
-                  title: "Console",
-                  child: ConsolePanel(),
-                )
-              ],
-            ),
-          ),
-          splitSubWindow: EngineSubWindow(
-            tabs: [
-              EngineSubWindowData(
-                title: "Inspector",
-                child: InspectorPanel()
-              )
-            ],
-          ),
-        ) : SceneViewerPanel().subWindowData().child
-      ) ,
+      home: ProjectChoiceWindow(),
     );
   }
 }

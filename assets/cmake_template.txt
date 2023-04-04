@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION __CMAKE__VERSION__)
+
+
+
+project(__PROJECT__NAME__)
+
+
+
+add_executable
