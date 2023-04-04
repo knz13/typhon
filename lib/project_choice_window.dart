@@ -253,10 +253,177 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                   ),
                   Expanded(
                     flex: 4,
-                    child: SingleChildScrollView(
-                      child: Column(
-
-                      )
+                    child: Container(
+                      color: const Color.fromRGBO(20, 20, 20, 1),
+                      height: MediaQuery.of(context).size.height,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 300,
+                              width: MediaQuery.of(context).size.width,
+                              color: const Color.fromRGBO(36, 36, 36, 1),
+                              child: Transform.rotate(
+                                angle: 155,
+                                child: Icon(
+                                  selectedMiddleOptionMenu == 0? MdiIcons.cubeOutline:MdiIcons.cube,
+                                  color: Colors.white.withOpacity(0.8),
+                                  size: 42,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              color: const Color.fromRGBO(20, 20, 20, 1),
+                              width: MediaQuery.of(context).size.width,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 22.5,vertical: 10),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: const [
+                                        Text(
+                                          "XD",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 18
+                                          )
+                                        ),
+                                        Text(
+                                          "This is a XD project template.",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 16
+                                            )
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                                      child: SizedBox(
+                                        width: 135,
+                                        child: RawMaterialButton(
+                                          onPressed: (){},
+                                          child: Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Icon(
+                                                  MdiIcons.package,
+                                                  color: Colors.white.withOpacity(0.8),
+                                                ),
+                                              ),
+                                              Column(
+                                                children: [
+                                                  const FittedBox(
+                                                    child: Text(
+                                                      "Read More",
+                                                      style: TextStyle(color: Colors.white70)
+                                                    )
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.only(top: 4),
+                                                    child: Container(
+                                                      height: 2,
+                                                      width: 67,
+                                                      color: Colors.white12,
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Divider(
+                              height: 0.75,
+                              color: dividerColor,
+                            ),
+                            Container(
+                              color: const Color.fromRGBO(20, 20, 20, 1),
+                              width: MediaQuery.of(context).size.width,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 22.5,vertical: 10),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "PROJECT SETTINGS",
+                                      style: TextStyle(
+                                        color: Colors.white38,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 2
+                                      ),
+                                    ),
+                                    const SizedBox(height: 7.5),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 7.5),
+                                      child: Container(
+                                        height: 75,
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromRGBO(36, 36, 36, 1),
+                                          borderRadius: BorderRadius.circular(5),
+                                        ),
+                                        child: Center(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                                            child: TextFormField(
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w600
+                                              ),
+                                              decoration: InputDecoration(
+                                                label: const Text("Project Name",style: TextStyle(color: Colors.white38)),
+                                                hoverColor: Colors.white,
+                                                hintStyle: TextStyle(
+                                                    color: searchColor
+                                                ),
+                                                border: InputBorder.none,
+                                              ),
+                                              cursorColor: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 7.5),
+                                      child: Container(
+                                        height: 75,
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromRGBO(36, 36, 36, 1),
+                                          borderRadius: BorderRadius.circular(5),
+                                        ),
+                                        child: RawMaterialButton(
+                                          onPressed: (){},
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                                            child: ListTile(
+                                              title: Text("Location",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),),
+                                              trailing: Icon(MdiIcons.folder,color: Colors.white,),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     )
                   ),
                 ],
@@ -268,51 +435,6 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
     );
   }
 }
-
-
-
-
-
-// class ProjectChoiceWindow extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return SafeArea(
-//       child: Scaffold(
-//         body: Container(
-//           width: MediaQuery.of(context).size.width,
-//           height: MediaQuery.of(context).size.height,
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               SizedBox(
-//                 width: MediaQuery.of(context).size.width*0.2,
-//                 child: InkWell(
-//                   onTap: () {
-//                     Navigator.of(context).push(MaterialPageRoute(builder:(context) {
-//                       return ProjectCreationWindow();
-//                     },));
-//                   },
-//                   child: Row(
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       GeneralText("New Project"),
-//                       SizedBox(
-//                         width: MediaQuery.of(context).size.width*0.05,
-//                       ),
-//                       const Icon(Icons.check),
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       )
-//     );
-//   }
-//
-// }
-//
 
 class ProjectCreationWindow extends StatelessWidget { 
   @override
