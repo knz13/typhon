@@ -62,6 +62,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
 
   String projectPath = "";
+  String projectName = "";
   Image? atlasImage;
   static Queue<EngineRenderingDataFromAtlas> renderingObjects = Queue();
 
@@ -69,23 +70,23 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
 
   Future<Map<String,dynamic>> getProjectsJSON() async {
-    Directory privateDir = await getApplicationDocumentsDirectory();
-    File projectsFile = File(path.join(privateDir.path,"projects.json"));
+    Directory privateDir = await getApplicationSupportDirectory();
+    File projectsFile = File(path.join(privateDir.path,"Typhon","projects.json"));
     if(projectsFile.existsSync()){
       String fileData = projectsFile.readAsStringSync();
       var map = jsonDecode(fileData);
       return map;
     }
     else {
-      projectsFile.createSync();
+      projectsFile.writeAsStringSync("{}");
       
       return <String,dynamic>{};
     }
   }
 
   Future<void> saveProjectsJSON(Map<String,dynamic> projects) async {
-    Directory privateDir = await getApplicationDocumentsDirectory();
-    File projectsFile = File(path.join(privateDir.path,"projects.json"));
+    Directory privateDir = await getApplicationSupportDirectory();
+    File projectsFile = File(path.join(privateDir.path,"Typhon","projects.json"));
     projectsFile.writeAsStringSync(jsonEncode(projects));
   } 
 
@@ -94,13 +95,30 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     //testing if project exists and loading it if true
     var map = await getProjectsJSON();
 
-    if(!map.containsKey(projectPath)) {
-      map[projectPath] = {
-        "name":projectName
-      };
+    if(map.containsKey(projectPath)) {
+      this.projectPath = projectPath;
+      this.projectName = projectName;
 
-      
+      if(TyphonCPPInterface.checkIfLibraryLoaded()){
+        TyphonCPPInterface.getCppFunctions().unloadLibrary();
+      }
+      var library = await TyphonCPPInterface.initializeLibraryAndGetBindings();
+      await TyphonCPPInterface.extractImagesFromAssets();
+      library.passProjectPath((await getApplicationSupportDirectory()).path.toNativeUtf8().cast());
+      library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
+      library.initializeCppLibrary();
+      await Future.delayed(Duration(milliseconds: 500));
+      await loadAtlasImage();
+
+      return;
+
     }
+    
+    map[projectPath] = {
+      "name":projectName
+    };
+
+    Directory documentsDir = await getApplicationSupportDirectory();
 
     if(!Directory(projectPath).existsSync()) {
       Directory(projectPath).createSync(recursive: true);
@@ -108,25 +126,38 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
     Directory(path.join(projectPath,"assets")).createSync(recursive: true);
 
+    await TyphonCPPInterface.extractIncludesFromAssets(path.join(projectPath,"includes"));
+
+    ByteData cmakeTemplateData = await rootBundle.load("assets/cmake_template.txt");
+    String cmakeTemplateString = utf8.decode(cmakeTemplateData.buffer.asUint8List(cmakeTemplateData.offsetInBytes,cmakeTemplateData.lengthInBytes));
+
+
+
+    cmakeTemplateString = cmakeTemplateString.replaceAll('__CMAKE__VERSION__','3.16')
+    .replaceAll('__PROJECT__NAME__',projectName)
+    .replaceAll('__TYPHON__LIBRARY__LOCATION__',await TyphonCPPInterface.getLibraryPath())
+    .replaceAll('__TYPHON__INCLUDE__DIRECTORIES__',path.join(projectPath,'includes'));
     
-    //improve this later in order to speed up loading times...
-    initializeLibraryAndGetBindings().then((library) async {
-        await extractImagesFromAssets();
-        library.passProjectPath((await getApplicationDocumentsDirectory()).path.toNativeUtf8().cast());
-        library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
-        library.initializeCppLibrary();
-        await Future.delayed(Duration(milliseconds: 500));
-        File atlasImageFile = File(path.join((await getApplicationDocumentsDirectory()).path,"Typhon","lib","texture_atlas","atlas0.png"));
-        if(!atlasImageFile.existsSync()){
-          print("could not load atlas image!");
-        }
-        else {
-          
-          Uint8List bytes = await atlasImageFile.readAsBytes();
-          atlasImage = (await (await instantiateImageCodec(bytes)).getNextFrame()).image;
-          print("loaded atlas image!");
-        }
-      });
+
+    await File(path.join(projectPath,"CMakeLists.txt")).writeAsString(cmakeTemplateString);
+
+    await saveProjectsJSON(map);
+
+    return await initializeProject(projectPath, projectName);
+
+  }
+
+  Future<void> loadAtlasImage() async {
+    File atlasImageFile = File(path.join((await getApplicationSupportDirectory()).path,"Typhon","lib","texture_atlas","atlas0.png"));
+    if(!atlasImageFile.existsSync()){
+      print("could not load atlas image!");
+    }
+    else {
+      
+      Uint8List bytes = await atlasImageFile.readAsBytes();
+      atlasImage = (await (await instantiateImageCodec(bytes)).getNextFrame()).image;
+      print("loaded atlas image!");
+    }
 
   }
 
@@ -134,7 +165,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   void onMouseMove(PointerHoverInfo info) {
     // TODO: implement onMouseMove
 
-    getCppFunctions().onMouseMove(info.eventPosition.game.x, info.eventPosition.game.y);
+    TyphonCPPInterface.getCppFunctions().onMouseMove(info.eventPosition.game.x, info.eventPosition.game.y);
 
     super.onMouseMove(info);
   }
@@ -142,10 +173,10 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   @override
   KeyEventResult onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
       if(event is RawKeyDownEvent) {
-        getCppFunctions().onKeyboardKeyDown(event.logicalKey.keyId);
+        TyphonCPPInterface.getCppFunctions().onKeyboardKeyDown(event.logicalKey.keyId);
       }
       if(event is RawKeyUpEvent){
-        getCppFunctions().onKeyboardKeyUp(event.logicalKey.keyId);
+        TyphonCPPInterface.getCppFunctions().onKeyboardKeyUp(event.logicalKey.keyId);
       }
 
     return super.onKeyEvent(event, keysPressed);
@@ -167,12 +198,17 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   }
 
   @override
-  FutureOr<void> onLoad() {
+  FutureOr<void> onLoad() async {
 
     if(!isInitialized){
       print("initializing engine!");
-
       
+      //var map = (await getProjectsJSON());
+      //map.clear();
+      //await saveProjectsJSON(map);
+      //Directory("/Users/otaviomaya/Documents/testTyphon").deleteSync(recursive: true);
+      //Directory("/Users/otaviomaya/Documents/testTyphon").createSync();
+      //initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
 
       isInitialized = true;
     }
@@ -211,7 +247,9 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   void update(double dt) {
     super.update(dt);
 
-    getCppFunctions().onUpdateCall(dt);
+    if(TyphonCPPInterface.checkIfLibraryLoaded()){
+      TyphonCPPInterface.getCppFunctions().onUpdateCall(dt);
+    }
 
   }
 

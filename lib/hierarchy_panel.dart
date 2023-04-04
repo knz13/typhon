@@ -36,8 +36,8 @@ class HierarchyPanelTop extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
         children: [
-          FutureBuilder(
-            future: initializeLibraryAndGetBindings(),
+          /* FutureBuilder(
+            future: TyphonCPPInterface.initializeLibraryAndGetBindings(),
             builder: (context,snapshot) => NativeContextMenuButton(
               child: Row(
                 children: [
@@ -67,7 +67,7 @@ class HierarchyPanelTop extends StatelessWidget {
               :
               [],
             ),
-          ),
+          ), */
           SizedBox(
             width: 10,
           ),
