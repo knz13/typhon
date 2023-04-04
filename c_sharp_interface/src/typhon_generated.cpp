@@ -58,3 +58,9 @@ void attachEnqueueRender(EnqueueObjectRender func)
         func(x,y,width,height,imageX,imageY,anchorX,anchorY,scale,angle);
     };
 }
+
+void unloadLibrary()
+{
+    Engine::Unload();
+
+}

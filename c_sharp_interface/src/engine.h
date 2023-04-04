@@ -12,7 +12,7 @@ DEFINE_HAS_SIGNATURE(has_set_defaults_function,T::SetDefaults,void (T::*)());
 class Engine {
 public:
     static void Initialize();
-    
+    static void Unload();
 
     static std::vector<std::string> GetImagePathsFromLibrary();
     static const std::map<std::string,TextureAtlasImageProperties>& GetTextureAtlas();
@@ -47,6 +47,7 @@ public:
             return false;
         }
         
+        aliveObjects[obj.Handle()]->GameObjectOnDestroy();
 
         aliveObjects.erase(obj.handle);
         ECSRegistry::Get().destroy(obj.handle);
@@ -58,6 +59,7 @@ public:
             std::cout << "Could not remove gameobject, invalid id!" << std::endl;
             return false;
         }
+        aliveObjects[e]->GameObjectOnDestroy();
         aliveObjects.erase(e);
         ECSRegistry::Get().destroy(e);
         return true;

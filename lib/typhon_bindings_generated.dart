@@ -119,6 +119,14 @@ class TyphonBindings {
           'attachEnqueueRender');
   late final _attachEnqueueRender =
       _attachEnqueueRenderPtr.asFunction<void Function(EnqueueObjectRender)>();
+
+  void unloadLibrary() {
+    return _unloadLibrary();
+  }
+
+  late final _unloadLibraryPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function()>>('unloadLibrary');
+  late final _unloadLibrary = _unloadLibraryPtr.asFunction<void Function()>();
 }
 
 abstract class InputKey {

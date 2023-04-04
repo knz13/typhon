@@ -24,6 +24,13 @@ void Engine::Initialize()
     
 }
 
+void Engine::Unload()
+{
+    for(const auto& [key,value] : aliveObjects){
+        RemoveGameObjectFromHandle(key);
+    }
+}
+
 std::vector<std::string> Engine::GetImagePathsFromLibrary()
 {
     std::vector<std::string> inputs;
@@ -101,7 +108,7 @@ void Engine::Update(double dt)
             anchorY = 0;
         }
 
-        
+
 
         const Vector2f& position = dynamic_cast<Traits::HasPosition*>(spriteData.objectPointer)->GetPosition();
         EngineInternals::enqueueRenderFunc(

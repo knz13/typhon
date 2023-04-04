@@ -6,6 +6,7 @@
 
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:async';
@@ -60,11 +61,74 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   static Engine instance = Engine();
 
 
-  
+  String projectPath = "";
   Image? atlasImage;
   static Queue<EngineRenderingDataFromAtlas> renderingObjects = Queue();
 
   bool isInitialized = false;
+
+
+  Future<Map<String,dynamic>> getProjectsJSON() async {
+    Directory privateDir = await getApplicationDocumentsDirectory();
+    File projectsFile = File(path.join(privateDir.path,"projects.json"));
+    if(projectsFile.existsSync()){
+      String fileData = projectsFile.readAsStringSync();
+      var map = jsonDecode(fileData);
+      return map;
+    }
+    else {
+      projectsFile.createSync();
+      
+      return <String,dynamic>{};
+    }
+  }
+
+  Future<void> saveProjectsJSON(Map<String,dynamic> projects) async {
+    Directory privateDir = await getApplicationDocumentsDirectory();
+    File projectsFile = File(path.join(privateDir.path,"projects.json"));
+    projectsFile.writeAsStringSync(jsonEncode(projects));
+  } 
+
+  Future<void> initializeProject(String projectPath,String projectName) async {
+    
+    //testing if project exists and loading it if true
+    var map = await getProjectsJSON();
+
+    if(!map.containsKey(projectPath)) {
+      map[projectPath] = {
+        "name":projectName
+      };
+
+      
+    }
+
+    if(!Directory(projectPath).existsSync()) {
+      Directory(projectPath).createSync(recursive: true);
+    }
+
+    Directory(path.join(projectPath,"assets")).createSync(recursive: true);
+
+    
+    //improve this later in order to speed up loading times...
+    initializeLibraryAndGetBindings().then((library) async {
+        await extractImagesFromAssets();
+        library.passProjectPath((await getApplicationDocumentsDirectory()).path.toNativeUtf8().cast());
+        library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
+        library.initializeCppLibrary();
+        await Future.delayed(Duration(milliseconds: 500));
+        File atlasImageFile = File(path.join((await getApplicationDocumentsDirectory()).path,"Typhon","lib","texture_atlas","atlas0.png"));
+        if(!atlasImageFile.existsSync()){
+          print("could not load atlas image!");
+        }
+        else {
+          
+          Uint8List bytes = await atlasImageFile.readAsBytes();
+          atlasImage = (await (await instantiateImageCodec(bytes)).getNextFrame()).image;
+          print("loaded atlas image!");
+        }
+      });
+
+  }
 
   @override
   void onMouseMove(PointerHoverInfo info) {
@@ -108,23 +172,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     if(!isInitialized){
       print("initializing engine!");
 
-      initializeLibraryAndGetBindings().then((library) async {
-        await extractImagesFromAssets();
-        library.passProjectPath((await getApplicationDocumentsDirectory()).path.toNativeUtf8().cast());
-        library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
-        library.initializeCppLibrary();
-        await Future.delayed(Duration(milliseconds: 500));
-        File atlasImageFile = File(path.join((await getApplicationDocumentsDirectory()).path,"Typhon","lib","texture_atlas","atlas0.png"));
-        if(!atlasImageFile.existsSync()){
-          print("could not load atlas image!");
-        }
-        else {
-          
-          Uint8List bytes = await atlasImageFile.readAsBytes();
-          atlasImage = (await (await instantiateImageCodec(bytes)).getNextFrame()).image;
-          print("loaded atlas image!");
-        }
-      });
+      
 
       isInitialized = true;
     }

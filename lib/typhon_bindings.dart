@@ -98,7 +98,7 @@ Future<void> extractIncludesFromAssets(String destination) async {
     // Get the executable directory
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String imagesDirPath = path.join(appDocDir.path,"Typhon","lib",'images');
-    
+
     // Create the 'images' directory if it doesn't exist
     Directory imagesDir = Directory(imagesDirPath);
     if (!await imagesDir.exists()) {
@@ -142,12 +142,11 @@ DynamicLibrary? _lib;
 TyphonBindings? _bindings;
 
 Future<TyphonBindings> initializeLibraryAndGetBindings() async {
-  if(_lib == null){
-    String libraryPath = await _extractLib();
-    
-
-    _lib ??= DynamicLibrary.open(libraryPath);
+  if(_lib != null){
+      _bindings!.unloadLibrary();
   }
+  String libraryPath = await _extractLib();
+  _lib ??= DynamicLibrary.open(libraryPath);
 
   _bindings = TyphonBindings(_lib!);
 
