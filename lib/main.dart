@@ -44,15 +44,14 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initializeContextMenu();
 
-    
   }
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
       title: 'Typhon',
       debugShowCheckedModeBanner: false,
-      home: ProjectChoiceWindow(),
+      home: MainEngineFrontend(),
     );
   }
 }

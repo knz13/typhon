@@ -88,7 +88,7 @@ for file in os.listdir(os.path.join(current_dir,"assets/lib/include")):
 
 for file in os.listdir('src'):
     if file.endswith(".h"):
-        shutil.copyfile(os.path.join("src",file),os.path.join("../assets/lib/include",file))
+        shutil.copyfile(os.path.join("src",file),os.path.join("../assets/lib/includes",file))
 
 
 

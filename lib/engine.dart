@@ -59,7 +59,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   static Random rng = Random();
   static Engine instance = Engine();
-
+  
 
   String projectPath = "";
   String projectName = "";
@@ -89,6 +89,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     File projectsFile = File(path.join(privateDir.path,"Typhon","projects.json"));
     projectsFile.writeAsStringSync(jsonEncode(projects));
   } 
+
 
   Future<void> initializeProject(String projectPath,String projectName) async {
     
@@ -182,6 +183,15 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     return super.onKeyEvent(event, keysPressed);
   } 
 
+  Future<void> waitingForInitialization() async {
+    while(true) {
+      if(isInitialized) {
+        return;
+      }
+      await Future.delayed(Duration(milliseconds: 100));
+    }
+  }
+
   static void enqueueRender(double x,double y, int width,int height, int imageX, int imageY,double anchorX,double anchorY,double scale,double angle) {
     
     renderingObjects.add(EngineRenderingDataFromAtlas(
@@ -202,13 +212,15 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
     if(!isInitialized){
       print("initializing engine!");
-      
+
       //var map = (await getProjectsJSON());
       //map.clear();
       //await saveProjectsJSON(map);
       //Directory("/Users/otaviomaya/Documents/testTyphon").deleteSync(recursive: true);
       //Directory("/Users/otaviomaya/Documents/testTyphon").createSync();
-      //initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
+
+      
+      initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
 
       isInitialized = true;
     }
