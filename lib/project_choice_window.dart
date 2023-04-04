@@ -78,17 +78,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
           title: Column(
             children: [
               const Text("New Project",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w700)),
-              Container(
-                height: 20,
-                width: MediaQuery.of(context).size.width*0.1,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(3)
-                ),
-                child: Row(
-                  children: [],
-                ),
-              )
+
             ],
           ),
           backgroundColor: Colors.black,
@@ -105,20 +95,20 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                   Expanded(
                     flex: 2,
                     child: Container(
+                      height: MediaQuery.of(context).size.height,
                       color: const Color.fromRGBO(36,36,36,1),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          children: [
-                            const SizedBox(
-                              height: 20-7.5,
-                            ),
-                            for(Tile tile in listOfTiles)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 7.5),
-                                child: tileLeftMenu(tile),
-                              ),
-                          ],
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              for(Tile tile in listOfTiles)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 7.5),
+                                  child: tileLeftMenu(tile),
+                                ),
+                            ],
+                          ),
                         ),
                       )
                     )
@@ -133,40 +123,105 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                       height: MediaQuery.of(context).size.height,
                       color: const Color.fromRGBO(20,20,20,1),
                       child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 7.5,horizontal: 22.5),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  border: Border.all(
-                                    color: Colors.white10,
-                                    width: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 22.5),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 7.5),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    border: Border.all(
+                                      color: Colors.white10,
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(5)
                                   ),
-                                  borderRadius: BorderRadius.circular(5)
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                                  child: TextFormField(
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600
-                                    ),
-                                    decoration: InputDecoration(
-                                      icon: Icon(Icons.search,color: searchColor),
-                                      hintText: "Search all templates",
-                                      hintStyle: TextStyle(
-                                        color: searchColor
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                                    child: TextFormField(
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600
                                       ),
-                                      border: InputBorder.none,
+                                      decoration: InputDecoration(
+                                        icon: Icon(Icons.search,color: searchColor),
+                                        hintText: "Search all templates",
+                                        hoverColor: Colors.white,
+                                        hintStyle: TextStyle(
+                                          color: searchColor
+                                        ),
+                                        border: InputBorder.none,
+                                      ),
+                                      cursorColor: Colors.white,
                                     ),
-                                    cursorColor: Colors.white,
                                   ),
                                 ),
                               ),
-                            )
-                          ]
+                              // SizedBox(
+                              //   height: MediaQuery.of(context).size.height*0.9,
+                              //   child: GridView.count(
+                              //     crossAxisCount: 10,
+                              //     children: [
+                              //       for(int i = 0; i < 361; i++)
+                              //         Column(
+                              //           children: [
+                              //             Transform.rotate(
+                              //                 angle: i.toDouble(),
+                              //                 child: Icon(
+                              //                   MdiIcons.cube,
+                              //                   color: Colors.white.withOpacity(0.8),
+                              //                   size: 36,
+                              //                 )
+                              //             ),
+                              //             Text("$i",style: const TextStyle(color: Colors.white),)
+                              //           ],
+                              //         ),
+                              //     ],
+                              //   ),
+                              // )
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 7.5),
+                                child: Container(
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromRGBO(36, 36, 36, 1),
+                                    borderRadius: BorderRadius.circular(5)
+                                  ),
+                                  child: Center(
+                                    child: ListTile(
+                                      onTap: (){
+                                        print('TAPOY');
+                                      },
+                                      leading: Transform.rotate(
+                                        angle: 155,
+                                        child: Icon(
+                                          MdiIcons.cube,
+                                          color: Colors.white.withOpacity(0.8),
+                                          size: 42,
+                                        ),
+                                      ),
+                                      title: const Text("3D",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20
+                                        )
+                                      ),
+                                      subtitle: const Text("Core",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          letterSpacing: 0,
+                                          color: Colors.white54
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ]
+                          ),
                         ),
                       ),
                     )
