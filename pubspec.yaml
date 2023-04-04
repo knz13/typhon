@@ -30,14 +30,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   flame: ^1.6.0
   window_size:
     git:
       url: https://github.com/google/flutter-desktop-embedding
       path: plugins/window_size
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   tabbed_view: ^1.16.0+1
   font_awesome_flutter: ^10.4.0
@@ -72,5 +70,4 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/lib/
-    - assets/images/
+    - assets/

@@ -25,7 +25,8 @@ void Engine::Initialize()
 }
 
 void Engine::Unload()
-{
+{   
+    std::cout << "calling unload!" << std::endl;
     for(const auto& [key,value] : aliveObjects){
         RemoveGameObjectFromHandle(key);
     }

@@ -6,4 +6,25 @@ project(__PROJECT__NAME__)
 
 
 
-add_executable
+add_executable(${PROJECT_NAME}
+    #__PROJECT__SOURCES__
+)
+
+# setting c++ standard
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    CXX_STANDARD 20
+)
+
+# setting c standard
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    C_STANDARD 20
+)
+
+link_directories(__TYPHON__LIBRARY__LOCATION__)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC typhon)
+
+target_include_directories(${PROJECT_NAME} PUBLIC __TYPHON__INCLUDE__DIRECTORIES__)
+
+
