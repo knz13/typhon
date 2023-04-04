@@ -15,7 +15,6 @@ import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
 import 'engine.dart';
-import 'game_object.dart';
 import 'general_widgets.dart';
 
 
@@ -48,10 +47,10 @@ class HierarchyPanelTop extends StatelessWidget {
               ),
               menuItems: snapshot.hasData ? 
               (() {
-                ClassesArray arr = getCppFunctions().getClassesToAddToHierarchyMenu();
+                //ClassesArray arr = getCppFunctions().getClassesToAddToHierarchyMenu();
           
                 List<ContextMenuOption> options = [];
-                for(int index in List.generate(arr.size, (index) => index)){
+                /* for(int index in List.generate(arr.size, (index) => index)){
                   var val = arr.array.elementAt(index).value;
                   final Pointer<Utf8> str = arr.stringArray.elementAt(index).value.cast();
 
@@ -62,7 +61,7 @@ class HierarchyPanelTop extends StatelessWidget {
                     )
                   );
                 }
-                
+                 */
                 return options;
               })()
               :
@@ -141,14 +140,13 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
       return children;
   } */
 
-  List<GameObject> currentObjects = [];
+  List<String> currentObjects = [];
 
 
   void callbackToEngineChanges() async {
 
     
     setState(() {
-      currentObjects = Engine.getChildren();
     });
   }
 
@@ -159,14 +157,12 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
     // TODO: implement initState
     super.initState();
 
-    Engine.getChildrenChangedNotifier().addListener(callbackToEngineChanges);
   }
 
 
   @override
   void dispose() {
     // TODO: implement dispose
-    Engine.getChildrenChangedNotifier().removeListener(callbackToEngineChanges);
     super.dispose();
   }
   
@@ -174,7 +170,6 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   Widget build(BuildContext context) {
 
     setState(() {
-      currentObjects = Engine.getChildren();
     });
 
     // TODO: implement build
@@ -186,11 +181,10 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
           Row(children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: GeneralText(e.identifier.toString()),
+              child: GeneralText(e),
             ),
             InkWell(
               onTap: () {
-                GameObject.removeGameObject(e.identifier);
               },
               child: Icon(Icons.delete),
             )

@@ -63,7 +63,7 @@ project(project_typhon)
     FetchContent_MakeAvailable(ENTT)
     #includes for target typhon...
     
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/entt/single_include)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/entt/src/)
     
     FetchContent_Declare(YAEL
     GIT_REPOSITORY https://github.com/knz13/YAEL
@@ -98,18 +98,44 @@ project(project_typhon)
     FetchContent_MakeAvailable(GLM)
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/glm/)
+    
+    FetchContent_Declare(CRUNCH
+    GIT_REPOSITORY https://github.com/johnfredcee/crunch
+    GIT_TAG origin/master
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/crunch
+    ) 
+    
+    
+    FetchContent_MakeAvailable(CRUNCH)
+    
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/crunch/crunch/)
+    list(APPEND typhon_LIBRARIES libcrunch)
+    
+    
+    FetchContent_Declare(JSON
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG v3.11.2
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/json
+    ) 
+    
+    FetchContent_MakeAvailable(JSON)
 
-
-# --------------------- Targets ------------------------
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/json/single_include)
+    
+    
+    # --------------------- Targets ------------------------
 
   # settings for target typhon...
 
     # adding sources
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/reflection.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon_generated.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/mono_manager.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/shader_compiler.cpp)
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/gameobject_middle_man.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/general.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/ecs_registry.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object_traits.cpp)
     # creating target
 
     

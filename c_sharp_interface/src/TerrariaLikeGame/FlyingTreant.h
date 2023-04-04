@@ -1,44 +1,47 @@
 #pragma once
-
-#include "../player.h"
-
+#include "../engine.h"
 
 
-class FlyingTreant : public Player<FlyingTreant>,
-    public Reflection::UsesTexture<FlyingTreant>,
-    public Reflection::AddToHierarchyMenu<FlyingTreant>,
-    public Reflection::HasKeyCallbacks<FlyingTreant>
-    {
-
-
+class FlyingTreant : public DerivedFromGameObject<FlyingTreant,
+        Traits::HasUpdate<FlyingTreant>,
+        Traits::UsesAI<FlyingTreant>,
+        Traits::HasVelocity<FlyingTreant>,
+        Traits::HasPosition,
+        Traits::UsesSpriteAnimation<FlyingTreant>
+    > {
 public:
 
     void SetDefaults() {
+        std::cout << "calling set defaults for flying treant!" << std::endl;
+        width = 32;
+        height = 32;
+        scale = 2;
+        //anchor = Anchor::Center;
+        //angle = HelperFunctions::Radians(-45);
     }
 
-    void Update(double dt)  {
+    void Update(double dt) {
+        std::cout << "my position now is " << position.x << "," << position.y << std::endl;
     }
-
-    void OnKeyPressed(InputKey key) override {
-        std::cout << "on key pressed from flying treant position " << CurrentPosition().x << "," << CurrentPosition().y << "!" << std::endl;
-        switch(key){
-        case InputKey::A:
-            Move(Vector2f(-2,0));
-            break;
-        case InputKey::D:
-            Move(Vector2f(2,0));
-            break;
-        case InputKey::W:
-            Move(Vector2f(0,2));
-            break;
-        case InputKey::S:
-            Move(Vector2f(0,-2));
-            break;
-        default:
-            break;
+    
+    void AI() {
+        if(Engine::IsKeyPressed(InputKey::D)) {
+            position += Vector2f(1,0);
         }
+        if(Engine::IsKeyPressed(InputKey::A)) {
+            position += Vector2f(-1,0);
+        }
+        if(Engine::IsKeyPressed(InputKey::W)) {
+            position += Vector2f(0,-1);
+        }
+        if(Engine::IsKeyPressed(InputKey::S)) {
+            position += Vector2f(0,1);
+        }
+
     }
 
+    void FindFrame(int frameHeight) {
 
+    };
 
 };

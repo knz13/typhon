@@ -45,8 +45,7 @@ dependencies:
   ffi:
   native_context_menu:
   material_design_icons_flutter:
-
-
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

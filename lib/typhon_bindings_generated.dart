@@ -34,87 +34,6 @@ class TyphonBindings {
   late final _initializeCppLibrary =
       _initializeCppLibraryPtr.asFunction<int Function()>();
 
-  /// Related to GameObject
-  void attachCreateGameObjectFunction(
-    CreateGameObjectFunc func,
-  ) {
-    return _attachCreateGameObjectFunction(
-      func,
-    );
-  }
-
-  late final _attachCreateGameObjectFunctionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(CreateGameObjectFunc)>>(
-          'attachCreateGameObjectFunction');
-  late final _attachCreateGameObjectFunction =
-      _attachCreateGameObjectFunctionPtr
-          .asFunction<void Function(CreateGameObjectFunc)>();
-
-  void attachRemoveGameObjectFunction(
-    RemoveGameObjectFunc func,
-  ) {
-    return _attachRemoveGameObjectFunction(
-      func,
-    );
-  }
-
-  late final _attachRemoveGameObjectFunctionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(RemoveGameObjectFunc)>>(
-          'attachRemoveGameObjectFunction');
-  late final _attachRemoveGameObjectFunction =
-      _attachRemoveGameObjectFunctionPtr
-          .asFunction<void Function(RemoveGameObjectFunc)>();
-
-  RemoveObjectFunc attachOnRemoveObjectFunction() {
-    return _attachOnRemoveObjectFunction();
-  }
-
-  late final _attachOnRemoveObjectFunctionPtr =
-      _lookup<ffi.NativeFunction<RemoveObjectFunc Function()>>(
-          'attachOnRemoveObjectFunction');
-  late final _attachOnRemoveObjectFunction = _attachOnRemoveObjectFunctionPtr
-      .asFunction<RemoveObjectFunc Function()>();
-
-  SetDefaultsFunc attachSetDefaultsFunction() {
-    return _attachSetDefaultsFunction();
-  }
-
-  late final _attachSetDefaultsFunctionPtr =
-      _lookup<ffi.NativeFunction<SetDefaultsFunc Function()>>(
-          'attachSetDefaultsFunction');
-  late final _attachSetDefaultsFunction =
-      _attachSetDefaultsFunctionPtr.asFunction<SetDefaultsFunc Function()>();
-
-  UpdateFunc attachUpdateFunction() {
-    return _attachUpdateFunction();
-  }
-
-  late final _attachUpdateFunctionPtr =
-      _lookup<ffi.NativeFunction<UpdateFunc Function()>>(
-          'attachUpdateFunction');
-  late final _attachUpdateFunction =
-      _attachUpdateFunctionPtr.asFunction<UpdateFunc Function()>();
-
-  PreDrawFunc attachPreDrawFunction() {
-    return _attachPreDrawFunction();
-  }
-
-  late final _attachPreDrawFunctionPtr =
-      _lookup<ffi.NativeFunction<PreDrawFunc Function()>>(
-          'attachPreDrawFunction');
-  late final _attachPreDrawFunction =
-      _attachPreDrawFunctionPtr.asFunction<PreDrawFunc Function()>();
-
-  PostDrawFunc attachPostDrawFunction() {
-    return _attachPostDrawFunction();
-  }
-
-  late final _attachPostDrawFunctionPtr =
-      _lookup<ffi.NativeFunction<PostDrawFunc Function()>>(
-          'attachPostDrawFunction');
-  late final _attachPostDrawFunction =
-      _attachPostDrawFunctionPtr.asFunction<PostDrawFunc Function()>();
-
   void onMouseMove(
     double positionX,
     double positionY,
@@ -145,131 +64,62 @@ class TyphonBindings {
   late final _onKeyboardKeyDown =
       _onKeyboardKeyDownPtr.asFunction<void Function(int)>();
 
-  void attachPointersToObject(
-    AttachPointersToObjectFunc func,
+  void onKeyboardKeyUp(
+    int input,
   ) {
-    return _attachPointersToObject(
+    return _onKeyboardKeyUp(
+      input,
+    );
+  }
+
+  late final _onKeyboardKeyUpPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int32)>>(
+          'onKeyboardKeyUp');
+  late final _onKeyboardKeyUp =
+      _onKeyboardKeyUpPtr.asFunction<void Function(int)>();
+
+  void onUpdateCall(
+    double dt,
+  ) {
+    return _onUpdateCall(
+      dt,
+    );
+  }
+
+  late final _onUpdateCallPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Double)>>(
+          'onUpdateCall');
+  late final _onUpdateCall =
+      _onUpdateCallPtr.asFunction<void Function(double)>();
+
+  void passProjectPath(
+    ffi.Pointer<ffi.Char> path,
+  ) {
+    return _passProjectPath(
+      path,
+    );
+  }
+
+  late final _passProjectPathPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>)>>(
+          'passProjectPath');
+  late final _passProjectPath =
+      _passProjectPathPtr.asFunction<void Function(ffi.Pointer<ffi.Char>)>();
+
+  void attachEnqueueRender(
+    EnqueueObjectRender func,
+  ) {
+    return _attachEnqueueRender(
       func,
     );
   }
 
-  late final _attachPointersToObjectPtr = _lookup<
-          ffi.NativeFunction<ffi.Void Function(AttachPointersToObjectFunc)>>(
-      'attachPointersToObject');
-  late final _attachPointersToObject = _attachPointersToObjectPtr
-      .asFunction<void Function(AttachPointersToObjectFunc)>();
-
-  void attachScalePointerToGameObject(
-    int id,
-    ffi.Pointer<ffi.Double> scalePointerX,
-    ffi.Pointer<ffi.Double> scalePointerY,
-  ) {
-    return _attachScalePointerToGameObject(
-      id,
-      scalePointerX,
-      scalePointerY,
-    );
-  }
-
-  late final _attachScalePointerToGameObjectPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Pointer<ffi.Double>,
-              ffi.Pointer<ffi.Double>)>>('attachScalePointerToGameObject');
-  late final _attachScalePointerToGameObject =
-      _attachScalePointerToGameObjectPtr.asFunction<
-          void Function(
-              int, ffi.Pointer<ffi.Double>, ffi.Pointer<ffi.Double>)>();
-
-  void attachPositionPointersToGameObject(
-    int id,
-    ffi.Pointer<ffi.Double> positionX,
-    ffi.Pointer<ffi.Double> positionY,
-  ) {
-    return _attachPositionPointersToGameObject(
-      id,
-      positionX,
-      positionY,
-    );
-  }
-
-  late final _attachPositionPointersToGameObjectPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.Int64, ffi.Pointer<ffi.Double>,
-              ffi.Pointer<ffi.Double>)>>('attachPositionPointersToGameObject');
-  late final _attachPositionPointersToGameObject =
-      _attachPositionPointersToGameObjectPtr.asFunction<
-          void Function(
-              int, ffi.Pointer<ffi.Double>, ffi.Pointer<ffi.Double>)>();
-
-  void attachAddTextureToObjectFunction(
-    LoadTextureToObject func,
-  ) {
-    return _attachAddTextureToObjectFunction(
-      func,
-    );
-  }
-
-  late final _attachAddTextureToObjectFunctionPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(LoadTextureToObject)>>(
-          'attachAddTextureToObjectFunction');
-  late final _attachAddTextureToObjectFunction =
-      _attachAddTextureToObjectFunctionPtr
-          .asFunction<void Function(LoadTextureToObject)>();
-
-  void removeObjectFromObjectsBeingDeleted(
-    int id,
-  ) {
-    return _removeObjectFromObjectsBeingDeleted(
-      id,
-    );
-  }
-
-  late final _removeObjectFromObjectsBeingDeletedPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'removeObjectFromObjectsBeingDeleted');
-  late final _removeObjectFromObjectsBeingDeleted =
-      _removeObjectFromObjectsBeingDeletedPtr.asFunction<void Function(int)>();
-
-  /// Related to Engine Menus
-  ClassesArray getClassesToAddToHierarchyMenu() {
-    return _getClassesToAddToHierarchyMenu();
-  }
-
-  late final _getClassesToAddToHierarchyMenuPtr =
-      _lookup<ffi.NativeFunction<ClassesArray Function()>>(
-          'getClassesToAddToHierarchyMenu');
-  late final _getClassesToAddToHierarchyMenu =
-      _getClassesToAddToHierarchyMenuPtr.asFunction<ClassesArray Function()>();
-
-  void addGameObjectFromClassID(
-    int id,
-  ) {
-    return _addGameObjectFromClassID(
-      id,
-    );
-  }
-
-  late final _addGameObjectFromClassIDPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
-          'addGameObjectFromClassID');
-  late final _addGameObjectFromClassID =
-      _addGameObjectFromClassIDPtr.asFunction<void Function(int)>();
+  late final _attachEnqueueRenderPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(EnqueueObjectRender)>>(
+          'attachEnqueueRender');
+  late final _attachEnqueueRender =
+      _attachEnqueueRenderPtr.asFunction<void Function(EnqueueObjectRender)>();
 }
-
-typedef CreateGameObjectFunc
-    = ffi.Pointer<ffi.NativeFunction<ffi.Int64 Function()>>;
-typedef RemoveGameObjectFunc
-    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
-typedef RemoveObjectFunc
-    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
-typedef SetDefaultsFunc
-    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
-typedef UpdateFunc
-    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Double)>>;
-typedef PreDrawFunc
-    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
-typedef PostDrawFunc
-    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
 
 abstract class InputKey {
   static const int Underline = 32;
@@ -718,19 +568,16 @@ abstract class InputKey {
   static const int Game_Button_Z = 8589935391;
 }
 
-typedef AttachPointersToObjectFunc
-    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>;
-typedef LoadTextureToObject = ffi.Pointer<
-    ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Pointer<ffi.Char>)>>;
-
-class ClassesArray extends ffi.Struct {
-  external ffi.Pointer<ffi.Int64> array;
-
-  external ffi.Pointer<ffi.Pointer<ffi.Char>> stringArray;
-
-  @ffi.Int64()
-  external int stringArraySize;
-
-  @ffi.Int64()
-  external int size;
-}
+typedef EnqueueObjectRender = ffi.Pointer<
+    ffi.NativeFunction<
+        ffi.Void Function(
+            ffi.Double,
+            ffi.Double,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Int64,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double,
+            ffi.Double)>>;
