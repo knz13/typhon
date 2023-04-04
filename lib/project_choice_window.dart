@@ -284,18 +284,18 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                     Column(
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: const [
+                                      children: [
                                         Text(
-                                          "XD",
-                                          style: TextStyle(
+                                            selectedMiddleOptionMenu == 0? '2D':'3D',
+                                          style: const TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w600,
                                             fontSize: 18
                                           )
                                         ),
                                         Text(
-                                          "This is a XD project template.",
-                                            style: TextStyle(
+                                          "This is a ${selectedMiddleOptionMenu == 0? '2D':'3D'} project template.",
+                                            style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w400,
                                               fontSize: 16
@@ -407,8 +407,8 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                         ),
                                         child: RawMaterialButton(
                                           onPressed: (){},
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(horizontal: 15),
                                             child: ListTile(
                                               title: Text("Location",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),),
                                               trailing: Icon(MdiIcons.folder,color: Colors.white,),
