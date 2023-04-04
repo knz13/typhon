@@ -2,14 +2,25 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-class Tile{
+
+class Tile {
   int idx = 0;
   String title = "All templates";
   Widget leading = const Icon(Icons.menu,color: Colors.white70);
 }
 
-void CreateNewProject(String path) {
-
+class MiddleTile {
+  int idx = 0;
+  String title = "3D";
+  String subtitle = "Core";
+  Widget leading = Transform.rotate(
+    angle: 155,
+    child: Icon(
+      MdiIcons.cube,
+      color: Colors.white.withOpacity(0.8),
+      size: 42,
+    ),
+  );
 }
 
 class ProjectChoiceWindow extends StatefulWidget {
@@ -20,11 +31,16 @@ class ProjectChoiceWindow extends StatefulWidget {
 }
 
 class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
+  // Controllers
+  int selectedMiddleOptionMenu = 0;
   int selectedOptionSideMenu = 0;
+
+  // Colors
   Color leadingIconColor = Colors.white.withOpacity(0.8);
   Color activeColor = const Color.fromRGBO(62,62,62,1);
   Color dividerColor = Colors.black26;
   Color searchColor = const Color.fromRGBO(159, 159, 159  , 1);
+
   Container tileLeftMenu(Tile tile){
     return Container(
       height: 50,
@@ -41,6 +57,43 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
           },
           leading: tile.leading,
           title: Text(tile.title,style: const TextStyle(color: Colors.white,fontWeight: FontWeight.w600)),
+        ),
+      ),
+    );
+  }
+
+  Container middleTileMenu(MiddleTile middleTile){
+    return Container(
+      height: 100,
+      decoration: BoxDecoration(
+        color: const Color.fromRGBO(36, 36, 36, 1),
+        borderRadius: BorderRadius.circular(5),
+        border: selectedMiddleOptionMenu == middleTile.idx? Border.all(width: 3,color: Colors.blue) : Border.all(width: 3,color: Colors.transparent)
+      ),
+      child: RawMaterialButton(
+        onPressed: (){
+          setState(() {
+            selectedMiddleOptionMenu = selectedMiddleOptionMenu == middleTile.idx? -1 : middleTile.idx;
+          });
+        },
+        child: Center(
+          child: ListTile(
+            leading: middleTile.leading,
+            title: Text(middleTile.title,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20
+                )
+            ),
+            subtitle: Text(middleTile.subtitle,
+              style: const TextStyle(
+                  fontSize: 16,
+                  letterSpacing: 0,
+                  color: Colors.white54
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -70,17 +123,28 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
         ..title = "Learning"
         ..leading = Icon(Icons.school,color: leadingIconColor),
     ];
+
+    List<MiddleTile> middleTileList = [
+      MiddleTile()
+        ..idx = 0
+        ..title = "3D"
+        ..subtitle = "Core"
+        ..leading = Transform.rotate(
+          angle: 155,
+          child: Icon(
+            MdiIcons.cube,
+            color: Colors.white.withOpacity(0.8),
+            size: 42,
+          ),
+        ),
+    ];
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
           centerTitle: true,
-          title: Column(
-            children: [
-              const Text("New Project",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w700)),
-
-            ],
-          ),
+          title: const Text("New Project",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w700)),
           backgroundColor: Colors.black,
         ),
         body: Column(
@@ -183,42 +247,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                               // )
                               Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 7.5),
-                                child: Container(
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromRGBO(36, 36, 36, 1),
-                                    borderRadius: BorderRadius.circular(5)
-                                  ),
-                                  child: Center(
-                                    child: ListTile(
-                                      onTap: (){
-                                        print('TAPOY');
-                                      },
-                                      leading: Transform.rotate(
-                                        angle: 155,
-                                        child: Icon(
-                                          MdiIcons.cube,
-                                          color: Colors.white.withOpacity(0.8),
-                                          size: 42,
-                                        ),
-                                      ),
-                                      title: const Text("3D",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 20
-                                        )
-                                      ),
-                                      subtitle: const Text("Core",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          letterSpacing: 0,
-                                          color: Colors.white54
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                child: middleTileMenu(middleTileList[0]),
                               )
                             ]
                           ),
