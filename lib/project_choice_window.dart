@@ -127,6 +127,32 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
     List<MiddleTile> middleTileList = [
       MiddleTile()
         ..idx = 0
+        ..title = "2D"
+        ..subtitle = "Core"
+        ..leading = Transform.rotate(
+          angle: 155,
+          child: Icon(
+            MdiIcons.cubeOutline,
+            color: Colors.white.withOpacity(0.8),
+            size: 42,
+          ),
+        ),
+
+      MiddleTile()
+        ..idx = 1
+        ..title = "3D"
+        ..subtitle = "Core"
+        ..leading = Transform.rotate(
+          angle: 155,
+          child: Icon(
+            MdiIcons.cube,
+            color: Colors.white.withOpacity(0.8),
+            size: 42,
+          ),
+        ),
+
+      MiddleTile()
+        ..idx = 1
         ..title = "3D"
         ..subtitle = "Core"
         ..leading = Transform.rotate(
@@ -223,32 +249,11 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                   ),
                                 ),
                               ),
-                              // SizedBox(
-                              //   height: MediaQuery.of(context).size.height*0.9,
-                              //   child: GridView.count(
-                              //     crossAxisCount: 10,
-                              //     children: [
-                              //       for(int i = 0; i < 361; i++)
-                              //         Column(
-                              //           children: [
-                              //             Transform.rotate(
-                              //                 angle: i.toDouble(),
-                              //                 child: Icon(
-                              //                   MdiIcons.cube,
-                              //                   color: Colors.white.withOpacity(0.8),
-                              //                   size: 36,
-                              //                 )
-                              //             ),
-                              //             Text("$i",style: const TextStyle(color: Colors.white),)
-                              //           ],
-                              //         ),
-                              //     ],
-                              //   ),
-                              // )
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 7.5),
-                                child: middleTileMenu(middleTileList[0]),
-                              )
+                              for(MiddleTile middleTile in middleTileList)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 6),
+                                  child: middleTileMenu(middleTile),
+                                )
                             ]
                           ),
                         ),
