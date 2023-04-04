@@ -150,19 +150,6 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
             size: 42,
           ),
         ),
-
-      MiddleTile()
-        ..idx = 1
-        ..title = "3D"
-        ..subtitle = "Core"
-        ..leading = Transform.rotate(
-          angle: 155,
-          child: Icon(
-            MdiIcons.cube,
-            color: Colors.white.withOpacity(0.8),
-            size: 42,
-          ),
-        ),
     ];
 
     return SafeArea(
