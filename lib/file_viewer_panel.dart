@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 
 import 'dart:async';
@@ -12,10 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'general_widgets.dart';
 
-
-
 class FileViewerPanel extends StatefulWidget {
-
   static ValueNotifier<Directory> currentDirectory = ValueNotifier(Directory.current);
   static ValueNotifier<Directory> leftInitialDirectory = ValueNotifier(Directory.current);
 
@@ -175,6 +171,8 @@ Widget _buildBreadcrumbTrail() {
               ),
             ),
           ),
+
+          // Right
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
