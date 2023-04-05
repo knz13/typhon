@@ -38,7 +38,7 @@ std::vector<std::string> Engine::GetImagePathsFromLibrary()
     for(const auto& file : fs::directory_iterator(
         fs::path(HelperStatics::projectPath) / fs::path("Typhon") / fs::path("lib") / fs::path("images")))
     {
-        inputs.push_back(file.path());
+        inputs.push_back(file.path().string());
     }
     return inputs;
 }

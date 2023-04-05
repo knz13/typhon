@@ -218,7 +218,7 @@ namespace Traits {
         public:
 
             void Create() { 
-                functionHash = this->OnUpdate().Connect([=](double dt){
+                functionHash = this->OnUpdate().Connect([this](double dt) {
                     (CallFindFrameForOne<DerivedClasses>(),...);
                 });
                 UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle()] = SpriteAnimationData(
