@@ -104,6 +104,19 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       FileViewerPanelGPT.leftInitialDirectory.value = Directory(projectPath);
       FileViewerPanelGPT.currentDirectory.value = Directory(path.join(projectPath,"assets"));
 
+      String cmakeFileData = "";
+      File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"))
+      List<String> lines = cmakeFile.readAsLinesSync();
+      for(String line in lines) {
+        if(line.contains("__TYPHON__LIBRARY_LOCATION__LINE__")){
+          cmakeFileData += "link_directories(${await TyphonCPPInterface.getLibraryPath()}) #__TYPHON__LIBRARY_LOCATION__LINE__";
+          continue;
+        }
+        cmakeFileData += line;
+      }
+
+      await cmakeFile.writeAsString(cmakeFileData);
+
       if(TyphonCPPInterface.checkIfLibraryLoaded()){
         TyphonCPPInterface.getCppFunctions().unloadLibrary();
       }
@@ -228,7 +241,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       //Directory("/Users/otaviomaya/Documents/testTyphon").createSync();
 
 
-      //initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
+      initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
 
       isInitialized = true;
     }

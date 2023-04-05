@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION __CMAKE__VERSION__)
 
 
 
+
+
 project(__PROJECT__NAME__)
 
 
@@ -21,7 +23,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 20
 )
 
-link_directories(__TYPHON__LIBRARY__LOCATION__)
+link_directories(__TYPHON__LIBRARY__LOCATION__) #__TYPHON__LIBRARY_LOCATION__LINE__
 
 target_link_libraries(${PROJECT_NAME} PUBLIC typhon)
 
