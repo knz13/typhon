@@ -215,11 +215,16 @@ namespace Traits {
     template<typename... DerivedClasses>
     class UsesSpriteAnimation : public ConditionedOnUpdate<UsesSpriteAnimation<DerivedClasses...>,DerivedClasses...>
     {
+
+        private:
+            void functionToCallOnUpdate(double dt) {
+                (CallFindFrameForOne<DerivedClasses>(),...);
+            }
         public:
 
             void Create() { 
-                functionHash = this->OnUpdate().Connect([=](double dt){
-                    (CallFindFrameForOne<DerivedClasses>(),...);
+                functionHash = this->OnUpdate().Connect([this](double dt){
+                    this->functionToCallOnUpdate(dt);
                 });
                 UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle()] = SpriteAnimationData(
                     static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this)),
