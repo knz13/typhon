@@ -47,6 +47,12 @@ bool FlutterWindow::OnCreate() {
             json data =  json::parse(*str);
             std::cout << data["x"].get<float>() << " " << data["y"].get<float>() << std::endl;
           
+            HMENU hPopupMenu = CreatePopupMenu();
+            InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, ID_CLOSE, (LPCWSTR)"Exit");
+            InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, ID_EXIT, (LPCWSTR)"Play");
+            SetForegroundWindow(hWnd);
+            TrackPopupMenu(hPopupMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, (int)(data["x"].get<float>()), (int)(data["y"].get<float>()), 0, hWnd, NULL);
+
             return result->Success();
           }
           return result->Error("Error BAD CALL","Make sure your arguments are a json encoded string with x,y coordinates");
