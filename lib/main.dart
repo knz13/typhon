@@ -1,5 +1,6 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/general_widgets.dart';
@@ -44,13 +45,40 @@ class _MyAppState extends State<MyApp> {
     initializeContextMenu();
 
   }
-
+  int page = 0;
   @override
   Widget build(BuildContext context) {
     return  MaterialApp(
       title: 'Typhon',
       debugShowCheckedModeBanner: false,
-      home: ProjectChoiceWindow(),
+      home: Scaffold(
+        body: Stack(
+          children: [
+            if(page == 0)
+              MainEngineFrontend(),
+            if(page == 1)
+              const ProjectChoiceWindow(),
+
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                height: 50,
+                width: 50,
+                color: Colors.black,
+                child: RawMaterialButton(
+                  onPressed: (){
+                    setState(() {
+                      page = page == 0? 1:0;
+                    });
+                  },
+                  child: Icon(MdiIcons.reload,color: Colors.white,),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
