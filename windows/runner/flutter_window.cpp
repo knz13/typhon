@@ -39,7 +39,7 @@ bool FlutterWindow::OnCreate() {
       flutter_controller_->engine()->messenger(), "context_menu",
       &flutter::StandardMethodCodec::GetInstance());
   channel.SetMethodCallHandler(
-      [](const flutter::MethodCall<>& call,
+      [=](const flutter::MethodCall<>& call,
          std::unique_ptr<flutter::MethodResult<>> result) {
         if (call.method_name() == "showContextMenu") {
           const std::string* str = std::get_if<std::string>(call.arguments());
@@ -48,10 +48,10 @@ bool FlutterWindow::OnCreate() {
             std::cout << data["x"].get<float>() << " " << data["y"].get<float>() << std::endl;
           
             HMENU hPopupMenu = CreatePopupMenu();
-            InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, ID_CLOSE, (LPCWSTR)"Exit");
-            InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, ID_EXIT, (LPCWSTR)"Play");
-            SetForegroundWindow(hWnd);
-            TrackPopupMenu(hPopupMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, (int)(data["x"].get<float>()), (int)(data["y"].get<float>()), 0, hWnd, NULL);
+            InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING, 0, L"Exit");
+            InsertMenu(hPopupMenu, 0, MF_BYPOSITION | MF_STRING,1, L"Play");
+            
+            TrackPopupMenu(hPopupMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN, (int)(data["x"].get<float>()), (int)(data["y"].get<float>()), 0, GetHandle(), NULL);
 
             return result->Success();
           }
