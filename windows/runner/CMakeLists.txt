@@ -6,6 +6,16 @@ project(runner LANGUAGES CXX)
 # work.
 #
 # Any new source files that you add to the application should be added here.
+
+
+FetchContent_Declare(JSON
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG v3.11.2
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/json
+) 
+
+FetchContent_MakeAvailable(JSON)
+
 add_executable(${BINARY_NAME} WIN32
   "flutter_window.cpp"
   "main.cpp"
@@ -34,6 +44,7 @@ target_compile_definitions(${BINARY_NAME} PRIVATE "NOMINMAX")
 # dependencies here.
 target_link_libraries(${BINARY_NAME} PRIVATE flutter flutter_wrapper_app)
 target_link_libraries(${BINARY_NAME} PRIVATE "dwmapi.lib")
+target_include_directories(${BINARY_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/vendor/json/single_include)
 target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 
 # Run the Flutter tool portions of the build. This must not be removed.
