@@ -6,6 +6,9 @@
 #include <flutter/standard_method_codec.h>
 #include <windows.h>
 #include <optional>
+#include "vendor/json/single_include/nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 #include "flutter/generated_plugin_registrant.h"
 
@@ -39,7 +42,14 @@ bool FlutterWindow::OnCreate() {
       [](const flutter::MethodCall<>& call,
          std::unique_ptr<flutter::MethodResult<>> result) {
         if (call.method_name() == "showContextMenu") {
-           
+          const std::string* str = std::get_if<std::string>(call.arguments());
+          if(str != nullptr){
+            json data =  json::parse(*str);
+            std::cout << data["x"].get<float>() << " " << data["y"].get<float>() << std::endl;
+
+            return result->Success();
+          }
+          return result->Error("Error BAD CALL","Make sure your arguments are a json encoded string with x,y coordinates");
         } else {
           result->NotImplemented();
         }
