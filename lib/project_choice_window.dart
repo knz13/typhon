@@ -195,7 +195,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                     color: dividerColor,
                   ),
                   Expanded(
-                    flex: 5,
+                    flex: 6,
                     child: Container(
                       height: MediaQuery.of(context).size.height,
                       color: const Color.fromRGBO(20,20,20,1),
@@ -252,7 +252,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                     color: dividerColor,
                   ),
                   Expanded(
-                    flex: 4,
+                    flex: 3,
                     child: Container(
                       color: const Color.fromRGBO(20, 20, 20, 1),
                       height: MediaQuery.of(context).size.height,
