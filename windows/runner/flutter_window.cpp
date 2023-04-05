@@ -46,7 +46,7 @@ bool FlutterWindow::OnCreate() {
           if(str != nullptr){
             json data =  json::parse(*str);
             std::cout << data["x"].get<float>() << " " << data["y"].get<float>() << std::endl;
-
+          
             return result->Success();
           }
           return result->Error("Error BAD CALL","Make sure your arguments are a json encoded string with x,y coordinates");
