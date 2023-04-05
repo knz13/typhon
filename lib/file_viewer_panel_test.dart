@@ -7,50 +7,51 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:typhon/engine.dart';
 
 import 'general_widgets.dart';
 
 
 
 class FileViewerPanelGPT extends StatefulWidget {
+
+  static ValueNotifier<Directory> currentDirectory = ValueNotifier(Directory.current);
+  static ValueNotifier<Directory> leftInitialDirectory = ValueNotifier(Directory.current);
+
   @override
   _FileViewerPanelGPTState createState() => _FileViewerPanelGPTState();
 }
 
 class _FileViewerPanelGPTState extends State<FileViewerPanelGPT> {
-  Directory? _currentDirectory;
-  Directory? _initialDirectory;
   List<FileSystemEntity> _files = [];
 
   @override
   void initState() {
     super.initState();
 
-    
+
+    FileViewerPanelGPT.currentDirectory.addListener(() {
+      if(mounted){
+        setState(() {
+          _refreshFiles();
+        });
+      }
+    });
+
+    FileViewerPanelGPT.leftInitialDirectory.addListener(() {
+      if(mounted) {
+        setState(() {
+          _refreshFiles();
+        });
+      }
+    });
 
     _refreshFiles();
   }
 
-
-
-
   Future<void> _refreshFiles() async {
-    if(_currentDirectory == null){
-      
-      _currentDirectory = await getApplicationDocumentsDirectory();
-      Directory directory = Directory(path.join(_currentDirectory!.path,"Projects","Project_Teste","Assets"));
-      if (!(await directory.exists())) {
-        await directory.create(recursive: true);
-      }
-      _currentDirectory = directory;
-
-    }
-    if(_initialDirectory == null){
-      _initialDirectory = Directory(path.normalize(path.join(_currentDirectory!.path,'../')));
-    }
-    final files = await _currentDirectory!.list().toList();
+    final files = await FileViewerPanelGPT.currentDirectory.value.list().toList();
     if(mounted){
-
     setState(() {
       _files = files;
     });
@@ -58,10 +59,7 @@ class _FileViewerPanelGPTState extends State<FileViewerPanelGPT> {
   }
 
   Future<void> _navigateToDirectory(Directory directory) async {
-    setState(() {
-      _currentDirectory = directory;
-    });
-    await _refreshFiles();
+    FileViewerPanelGPT.currentDirectory.value = directory;
   }
 
   Future<void> _showFileContents(File file) async {
@@ -110,15 +108,12 @@ class _FileViewerPanelGPTState extends State<FileViewerPanelGPT> {
 }
 
 Widget _buildBreadcrumbTrail() {
-  if (_initialDirectory == null || _currentDirectory == null) {
-    return SizedBox.shrink();
-  }
 
   final breadcrumbs = <Widget>[  SizedBox(width: 10,)  ];
 
   
-  final breadCrumbs = path.split(path.relative(_initialDirectory!.path,from: _currentDirectory!.path));
-  var currentPath = _initialDirectory!.path;
+  final breadCrumbs = path.split(path.relative(FileViewerPanelGPT.currentDirectory.value.path,from: FileViewerPanelGPT.leftInitialDirectory.value.path));
+  var currentPath = FileViewerPanelGPT.leftInitialDirectory.value.path;
   for (final component in breadCrumbs) {
     currentPath = path.join(currentPath, component);
     breadcrumbs.add(GeneralText('>'));
@@ -150,18 +145,17 @@ Widget _buildBreadcrumbTrail() {
     return LayoutBuilder(
       builder: (context,constraints) => Row(
         children: [
-          if (_initialDirectory != null)
-            Container(
-              width: leftWidthPercent*constraints.maxWidth,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildFolderTree(_initialDirectory!),
-                  ],
-                ),
+          Container(
+            width: leftWidthPercent*constraints.maxWidth,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildFolderTree(FileViewerPanelGPT.leftInitialDirectory.value),
+                ],
               ),
             ),
+          ),
           MouseRegion(
             cursor: SystemMouseCursors.resizeLeftRight,
             child: Draggable(
@@ -207,9 +201,6 @@ Widget _buildBreadcrumbTrail() {
                             ? Icon(MdiIcons.file)
                             : Icon(Icons.folder),
                         title: GeneralText(path.basename(entity.path)),
-                        subtitle: entity is File
-                            ? GeneralText('${(entity.lengthSync() / 1024).toStringAsFixed(2)} KB')
-                            : null,
                         onTap: () async {
                           if (entity is File) {
                             await _showFileContents(entity);
