@@ -24,6 +24,7 @@ import 'package:path/path.dart' as path;
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:typhon/file_viewer_panel_test.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
@@ -100,6 +101,9 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       this.projectPath = projectPath;
       this.projectName = projectName;
 
+      FileViewerPanelGPT.leftInitialDirectory.value = Directory(projectPath);
+      FileViewerPanelGPT.currentDirectory.value = Directory(path.join(projectPath,"assets"));
+
       if(TyphonCPPInterface.checkIfLibraryLoaded()){
         TyphonCPPInterface.getCppFunctions().unloadLibrary();
       }
@@ -166,18 +170,22 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   void onMouseMove(PointerHoverInfo info) {
     // TODO: implement onMouseMove
 
-    TyphonCPPInterface.getCppFunctions().onMouseMove(info.eventPosition.game.x, info.eventPosition.game.y);
+    if(TyphonCPPInterface.checkIfLibraryLoaded()){
+      TyphonCPPInterface.getCppFunctions().onMouseMove(info.eventPosition.game.x, info.eventPosition.game.y);
+    }
 
     super.onMouseMove(info);
   }
 
   @override
   KeyEventResult onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-      if(event is RawKeyDownEvent) {
-        TyphonCPPInterface.getCppFunctions().onKeyboardKeyDown(event.logicalKey.keyId);
-      }
-      if(event is RawKeyUpEvent){
-        TyphonCPPInterface.getCppFunctions().onKeyboardKeyUp(event.logicalKey.keyId);
+      if(TyphonCPPInterface.checkIfLibraryLoaded()){
+        if(event is RawKeyDownEvent) {
+          TyphonCPPInterface.getCppFunctions().onKeyboardKeyDown(event.logicalKey.keyId);
+        }
+        if(event is RawKeyUpEvent){
+          TyphonCPPInterface.getCppFunctions().onKeyboardKeyUp(event.logicalKey.keyId);
+        }
       }
 
     return super.onKeyEvent(event, keysPressed);
