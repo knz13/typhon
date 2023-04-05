@@ -83,8 +83,9 @@ else:
     
 os.chdir(os.path.join(current_dir,"c_sharp_interface"))
 
-for file in os.listdir(os.path.join(current_dir,"assets/lib/include")):
-    os.remove(os.path.join(current_dir,"assets/lib/include",file))
+if(os.path.exists(os.path.join(current_dir,"assets/lib/include"))):
+    for file in os.listdir(os.path.join(current_dir,"assets/lib/include")):
+        os.remove(os.path.join(current_dir,"assets/lib/include",file))
 
 for file in os.listdir('src'):
     if file.endswith(".h"):

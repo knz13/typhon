@@ -7,6 +7,7 @@
 #include "keyboard_adaptations.h"
 #include "crunch_texture_packer.h"
 
+
 DEFINE_HAS_SIGNATURE(has_set_defaults_function,T::SetDefaults,void (T::*)());
 
 class Engine {
