@@ -11,10 +11,18 @@
 #include "packer.hpp"
 #include "binary.hpp"
 #include "hash.hpp"
-#include "str.hpp"
+
 
 using namespace std;
 
+const string& StrToPath(const string& str)
+{
+    return str;
+}
+const string& PathToStr(const string& str)
+{
+    return str;
+}
 
 struct TextureAtlasImageProperties {
     int width;
@@ -81,7 +89,7 @@ namespace Crunch {
         return name;
     }
 
-    static void LoadSingleBitmap(std::vector<Bitmap*>& bitmaps,const string& prefix, const string& path,int options = CrunchOptions::optNone)
+    static void LoadSingleBitmap(std::vector<Bitmap*>& bitmaps,const string& prefix, const std::string& path,int options = CrunchOptions::optNone)
     {
         if (options & CrunchOptions::optVerbose)
             cout << '\t' << PathToStr(path) << endl;

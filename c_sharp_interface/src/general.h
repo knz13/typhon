@@ -7,7 +7,7 @@
 #include "../vendor/glm/glm/glm.hpp"
 #include "../vendor/yael/include/yael.h"
 #include "../vendor/json/single_include/nlohmann/json.hpp"
-
+#include <bitset>
 
 
 
