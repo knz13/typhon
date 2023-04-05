@@ -8,6 +8,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/engine.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'general_widgets.dart';
 
@@ -203,7 +204,7 @@ Widget _buildBreadcrumbTrail() {
                         title: GeneralText(path.basename(entity.path)),
                         onTap: () async {
                           if (entity is File) {
-                            await _showFileContents(entity);
+                            
                           } else if (entity is Directory) {
                             await _navigateToDirectory(entity);
                           }

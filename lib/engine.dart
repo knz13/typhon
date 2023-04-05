@@ -105,7 +105,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       FileViewerPanelGPT.currentDirectory.value = Directory(path.join(projectPath,"assets"));
 
       String cmakeFileData = "";
-      File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"))
+      File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"));
       List<String> lines = cmakeFile.readAsLinesSync();
       for(String line in lines) {
         if(line.contains("__TYPHON__LIBRARY_LOCATION__LINE__")){
