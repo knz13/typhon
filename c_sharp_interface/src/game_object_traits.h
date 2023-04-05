@@ -89,7 +89,7 @@ namespace Traits {
 
         HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate[ptr->Handle()] = payload;
 
-        ptr->OnBeingDestroyed().Connect([=](){
+        ptr->OnBeingDestroyed().Connect([=]() mutable {
             HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate.erase(ptr->Handle());
         });
 
@@ -120,7 +120,7 @@ namespace Traits {
 
             void Create() {
                 std::cout << "Calling on create for UsesAI!" << std::endl;
-                functionHash = this->OnUpdate().Connect([this](double dt){
+                functionHash = this->OnUpdate().Connect([this](double dt) mutable {
                     (CheckIfHasFunction<DerivedClasses>(),...);
                 });
 
@@ -163,7 +163,7 @@ namespace Traits {
         public:
             void Create() {
                 std::cout << "Calling on create for HasVelocity!" << std::endl;
-                functionHash = this->OnUpdate().Connect([this](double dt){
+                functionHash = this->OnUpdate().Connect([this](double dt) mutable {
                     static_cast<HasPosition*>(static_cast<T*>(this))->position += this->velocity;
                 });
 
@@ -217,14 +217,12 @@ namespace Traits {
     {
 
         private:
-            void functionToCallOnUpdate(double dt) {
-                (CallFindFrameForOne<DerivedClasses>(),...);
-            }
+                
         public:
 
             void Create() { 
-                functionHash = this->OnUpdate().Connect([this](double dt){
-                    this->functionToCallOnUpdate(dt);
+                functionHash = this->OnUpdate().Connect([this](double dt) mutable {
+                    (CallFindFrameForOne<DerivedClasses>(),...);
                 });
                 UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle()] = SpriteAnimationData(
                     static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this)),
