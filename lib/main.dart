@@ -2,7 +2,6 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
-import 'package:typhon/file_viewer_panel_test.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/hierarchy_panel.dart';
 import 'package:typhon/inspector_panel.dart';
@@ -48,7 +47,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
       title: 'Typhon',
       debugShowCheckedModeBanner: false,
       home: ProjectChoiceWindow(),

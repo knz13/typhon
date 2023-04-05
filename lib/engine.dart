@@ -24,10 +24,11 @@ import 'package:path/path.dart' as path;
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:typhon/file_viewer_panel_test.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
+
+import 'file_viewer_panel.dart';
 
 
 class EngineRenderingDataFromAtlas {
@@ -101,8 +102,8 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       this.projectPath = projectPath;
       this.projectName = projectName;
 
-      FileViewerPanelGPT.leftInitialDirectory.value = Directory(projectPath);
-      FileViewerPanelGPT.currentDirectory.value = Directory(path.join(projectPath,"assets"));
+      FileViewerPanel.leftInitialDirectory.value = Directory(projectPath);
+      FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
 
       String cmakeFileData = "";
       File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"));
