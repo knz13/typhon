@@ -25,6 +25,22 @@ bool FlutterWindow::OnCreate() {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
+
+
+  flutter::MethodChannel<> channel(
+      flutter_controller_->engine()->messenger(), "context_menu",
+      &flutter::StandardMethodCodec::GetInstance());
+  channel.SetMethodCallHandler(
+      [](const flutter::MethodCall<>& call,
+         std::unique_ptr<flutter::MethodResult<>> result) {
+        if (call.method_name() == "showContextMenu") {
+          
+        } else {
+          result->NotImplemented();
+        }
+      });
+
+
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {

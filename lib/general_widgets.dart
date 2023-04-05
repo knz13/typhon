@@ -68,7 +68,7 @@ class GeneralText extends StatelessWidget {
 }
 
 void showNativeContextMenu(BuildContext context,double x,double y, List<ContextMenuOption> options) {
-  if(Platform.isMacOS){
+  if(Platform.isMacOS || Platform.isWindows){
     contextMenuChannel.invokeMethod('showContextMenu', buildJSONNativeMessage(options, x,MediaQuery.of(context).size.height - y));
   }
   else{

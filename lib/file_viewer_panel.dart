@@ -139,7 +139,7 @@ Widget _buildBreadcrumbTrail() {
   );
 }
 
-  double leftWidthPercent = 0.5;
+  double leftWidthPercent = 0.3;
 
   @override
   Widget build(BuildContext context) {
