@@ -241,7 +241,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       //Directory("/Users/otaviomaya/Documents/testTyphon").createSync();
 
 
-      initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
+      //initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
 
       isInitialized = true;
     }
