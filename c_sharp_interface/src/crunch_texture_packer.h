@@ -15,14 +15,19 @@
 
 using namespace std;
 
-const string& StrToPath(const string& str)
-{
-    return str;
-}
-const string& PathToStr(const string& str)
-{
-    return str;
-}
+class PathStrConversion {
+public:
+    static const string& StrToPath(const string& str)
+    {
+        return str;
+    }
+    static const string& PathToStr(const string& str)
+    {
+        return str;
+    }
+
+};
+
 
 struct TextureAtlasImageProperties {
     int width;
@@ -92,9 +97,9 @@ namespace Crunch {
     static void LoadSingleBitmap(std::vector<Bitmap*>& bitmaps,const string& prefix, const std::string& path,int options = CrunchOptions::optNone)
     {
         if (options & CrunchOptions::optVerbose)
-            cout << '\t' << PathToStr(path) << endl;
+            cout << '\t' << PathStrConversion::PathToStr(path) << endl;
         
-        bitmaps.push_back(new Bitmap(PathToStr(path), prefix + GetFileName(PathToStr(path)),options & CrunchOptions::optPremultiply,options & CrunchOptions::optTrim));
+        bitmaps.push_back(new Bitmap(PathStrConversion::PathToStr(path), prefix + GetFileName(PathStrConversion::PathToStr(path)),options & CrunchOptions::optPremultiply,options & CrunchOptions::optTrim));
     }
 
     static void LoadBitmaps(std::vector<Bitmap*>& bitmaps,const string& root, const string& prefix,int options = CrunchOptions::optNone)
@@ -103,7 +108,7 @@ namespace Crunch {
         static string dot2 = "..";
         
         tinydir_dir dir;
-        tinydir_open(&dir, StrToPath(root).data());
+        tinydir_open(&dir, PathStrConversion::StrToPath(root).data());
         
         while (dir.has_next)
         {
@@ -112,10 +117,10 @@ namespace Crunch {
             
             if (file.is_dir)
             {
-                if (dot1 != PathToStr(file.name) && dot2 != PathToStr(file.name))
-                    LoadBitmaps(bitmaps,PathToStr(file.path), prefix + PathToStr(file.name) + "/");
+                if (dot1 != PathStrConversion::PathToStr(file.name) && dot2 != PathStrConversion::PathToStr(file.name))
+                    LoadBitmaps(bitmaps,PathStrConversion::PathToStr(file.path), prefix + PathStrConversion::PathToStr(file.name) + "/");
             }
-            else if (PathToStr(file.extension) == "png")
+            else if (PathStrConversion::PathToStr(file.extension) == "png")
                 LoadSingleBitmap(bitmaps,prefix, file.path);
             
             tinydir_next(&dir);
@@ -203,7 +208,7 @@ namespace Crunch {
         for (size_t i = 0; i < inputs.size(); ++i)
         {
             if (inputs[i].rfind('.') != string::npos)
-                LoadSingleBitmap(bitmaps,"", StrToPath(inputs[i]));
+                LoadSingleBitmap(bitmaps,"", PathStrConversion::StrToPath(inputs[i]));
             else
                 LoadBitmaps(bitmaps,inputs[i], "");
         }

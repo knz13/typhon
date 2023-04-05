@@ -75,7 +75,7 @@ public:
     static void PushKeyDown(int64_t key);
     static void PushKeyUp(int64_t key);
 
-    static bool IsKeyPressed(InputKey key);
+    static bool IsKeyPressed(Keys::Key key);
 private:
     static std::map<std::string,TextureAtlasImageProperties> CreateTextureAtlasFromImages();
     static std::map<std::string,TextureAtlasImageProperties> textureAtlas;

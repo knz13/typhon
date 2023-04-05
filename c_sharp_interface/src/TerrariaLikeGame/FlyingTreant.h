@@ -57,16 +57,16 @@ public:
     }
     
     void AI() {
-        if(Engine::IsKeyPressed(InputKey::D)) {
+        if(Engine::IsKeyPressed(Keys::Key::D)) {
             position += Vector2f(4,0);
         }
-        if(Engine::IsKeyPressed(InputKey::A)) {
+        if(Engine::IsKeyPressed(Keys::Key::A)) {
             position += Vector2f(-4,0);
         }
-        if(Engine::IsKeyPressed(InputKey::W)) {
+        if(Engine::IsKeyPressed(Keys::Key::W)) {
             position += Vector2f(0,-4);
         }
-        if(Engine::IsKeyPressed(InputKey::S)) {
+        if(Engine::IsKeyPressed(Keys::Key::S)) {
             position += Vector2f(0,4);
         }
 

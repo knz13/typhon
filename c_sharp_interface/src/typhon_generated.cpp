@@ -7,7 +7,7 @@ GENERATED FILE - DO NOT MODIFY!
 #include "mono_manager.h"
 #include "shader_compiler.h"
 #include "engine.h"
-#include "TerrariaLikeGame\FlyingTreant.h"
+#include "TerrariaLikeGame/FlyingTreant.h"
 
 bool initializeCppLibrary() {
     
@@ -27,12 +27,12 @@ void onMouseMove(double positionX, double positionY)
     EngineInternals::SetMousePosition(Vector2f(positionX,positionY));
 }
 
-void onKeyboardKeyDown(InputKey input)
+void onKeyboardKeyDown(int64_t input)
 {
     Engine::PushKeyDown(input);
 }
 
-void onKeyboardKeyUp(InputKey input)
+void onKeyboardKeyUp(int64_t input)
 {
     Engine::PushKeyUp(input);
 

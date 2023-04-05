@@ -24,12 +24,12 @@ void onMouseMove(double positionX, double positionY)
     EngineInternals::SetMousePosition(Vector2f(positionX,positionY));
 }
 
-void onKeyboardKeyDown(InputKey input)
+void onKeyboardKeyDown(int64_t input)
 {
     Engine::PushKeyDown(input);
 }
 
-void onKeyboardKeyUp(InputKey input)
+void onKeyboardKeyUp(int64_t input)
 {
     Engine::PushKeyUp(input);
 

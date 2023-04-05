@@ -1,10 +1,13 @@
 #pragma once
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <iostream>
 #include "../vendor/entt/src/entt/entt.hpp"
 #include "../vendor/random/include/effolkronium/random.hpp"
 #include "../vendor/glm/glm/glm.hpp"
 #include "../vendor/yael/include/yael.h"
 #include "../vendor/json/single_include/nlohmann/json.hpp"
-#include <math.h>
+#include <bitset>
 
 
 

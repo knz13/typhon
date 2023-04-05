@@ -148,7 +148,7 @@ void Engine::PushKeyUp(int64_t key)
     keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()] = 0;
 }
 
-bool Engine::IsKeyPressed(InputKey key)
+bool Engine::IsKeyPressed(Keys::Key key)
 {
     auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(),Keys::IndicesOfKeys.end(),key);
 

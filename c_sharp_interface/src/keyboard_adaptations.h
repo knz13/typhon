@@ -301,7 +301,7 @@ namespace Keys {
 
   /// Represents the logical "Delete" key on the keyboard.
   
-  static constexpr int64_t Delete = int64_t(0x0010000007f);
+  static constexpr int64_t delete_ = int64_t(0x0010000007f);
 
   /// Represents the logical "Accel" key on the keyboard.
   
@@ -1867,7 +1867,7 @@ namespace Keys {
     tab,
     enter,
     escape,
-    Delete,
+    delete_,
     accel,
     altGraph,
     capsLock,
@@ -2239,7 +2239,8 @@ namespace Keys {
     gameButtonZ
   };
   
-  enum InputKey {
+
+  enum Key {
       Underline = 32,
       Exclamation_Symbol = 33,
       Double_Quotes = 34,

@@ -25,8 +25,8 @@ extern "C" {
 
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
     FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
-    FFI_PLUGIN_EXPORT void onKeyboardKeyDown(InputKey input);
-    FFI_PLUGIN_EXPORT void onKeyboardKeyUp(InputKey input);
+    FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);
+    FFI_PLUGIN_EXPORT void onKeyboardKeyUp(int64_t input);
     FFI_PLUGIN_EXPORT void onUpdateCall(double dt);
     FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
     FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
