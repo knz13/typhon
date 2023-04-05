@@ -89,7 +89,7 @@ namespace Traits {
 
         HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate[ptr->Handle()] = payload;
 
-        ptr->OnBeingDestroyed().Connect([=]() mutable {
+        ptr->OnBeingDestroyed().Connect([=](){
             HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate.erase(ptr->Handle());
         });
 
@@ -116,12 +116,17 @@ namespace Traits {
     class UsesAI : 
         public ConditionedOnUpdate<UsesAI<DerivedClasses...>,DerivedClasses...>
     {
+
+        private:
+            void functionToCallOnUpdate(double dt) {
+                (CheckIfHasFunction<DerivedClasses>(),...);
+            }
         public:
 
             void Create() {
                 std::cout << "Calling on create for UsesAI!" << std::endl;
-                functionHash = this->OnUpdate().Connect([this](double dt) mutable {
-                    (CheckIfHasFunction<DerivedClasses>(),...);
+                functionHash = this->OnUpdate().Connect([this](double dt){
+                    this->functionToCallOnUpdate(dt);
                 });
 
             }
@@ -163,7 +168,7 @@ namespace Traits {
         public:
             void Create() {
                 std::cout << "Calling on create for HasVelocity!" << std::endl;
-                functionHash = this->OnUpdate().Connect([this](double dt) mutable {
+                functionHash = this->OnUpdate().Connect([this](double dt) {
                     static_cast<HasPosition*>(static_cast<T*>(this))->position += this->velocity;
                 });
 
@@ -217,12 +222,14 @@ namespace Traits {
     {
 
         private:
-                
+            void functionToCallOnUpdate(double dt) {
+                (CallFindFrameForOne<DerivedClasses>(),...);
+            }
         public:
 
             void Create() { 
                 functionHash = this->OnUpdate().Connect([this](double dt) mutable {
-                    (CallFindFrameForOne<DerivedClasses>(),...);
+                    this->functionToCallOnUpdate(dt);
                 });
                 UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle()] = SpriteAnimationData(
                     static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this)),
