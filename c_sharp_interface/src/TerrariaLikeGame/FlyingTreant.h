@@ -58,16 +58,16 @@ public:
     
     void AI() {
         if(Engine::IsKeyPressed(InputKey::D)) {
-            position += Vector2f(1,0);
+            position += Vector2f(4,0);
         }
         if(Engine::IsKeyPressed(InputKey::A)) {
-            position += Vector2f(-1,0);
+            position += Vector2f(-4,0);
         }
         if(Engine::IsKeyPressed(InputKey::W)) {
-            position += Vector2f(0,-1);
+            position += Vector2f(0,-4);
         }
         if(Engine::IsKeyPressed(InputKey::S)) {
-            position += Vector2f(0,1);
+            position += Vector2f(0,4);
         }
 
     }
