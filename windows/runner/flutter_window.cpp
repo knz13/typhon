@@ -5,7 +5,10 @@
 #include <flutter/method_channel.h>
 #include <flutter/standard_method_codec.h>
 #include <windows.h>
+#include "vendor/json/single_include/nlohmann/json.hpp"
 #include <optional>
+
+using json = nlohmann::json;
 
 #include "flutter/generated_plugin_registrant.h"
 
@@ -39,7 +42,7 @@ bool FlutterWindow::OnCreate() {
       [](const flutter::MethodCall<>& call,
          std::unique_ptr<flutter::MethodResult<>> result) {
         if (call.method_name() == "showContextMenu") {
-           
+          
         } else {
           result->NotImplemented();
         }
