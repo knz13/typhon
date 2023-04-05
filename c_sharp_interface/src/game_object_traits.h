@@ -41,6 +41,10 @@ namespace Traits {
         void ExecuteOnObjectCreation(GameObject* ptr);
 
 
+        void functionToCallOnUpdate(double dt) {
+            (CallUpdateForOneType<DerivedClasses>(dt),...);
+        }
+
         template<typename A>
         void CallUpdateForOneType(double dt) {
             //std::cout << "Calling update for " << HelperFunctions::GetClassNameString<A>() << std::endl;
@@ -84,7 +88,7 @@ namespace Traits {
             this->onUpdateLauncher.EmitEvent(dt);
             
 
-            (CallUpdateForOneType<DerivedClasses>(dt),...);
+            this->functionToCallOnUpdate(dt);
         };
 
         HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate[ptr->Handle()] = payload;
