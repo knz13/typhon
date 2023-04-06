@@ -41,6 +41,10 @@ namespace Traits {
         void ExecuteOnObjectCreation(GameObject* ptr);
 
 
+        void functionToCallOnUpdate(double dt) {
+            (CallUpdateForOneType<DerivedClasses>(dt),...);
+        }
+
         template<typename A>
         void CallUpdateForOneType(double dt) {
             //std::cout << "Calling update for " << HelperFunctions::GetClassNameString<A>() << std::endl;
@@ -84,7 +88,7 @@ namespace Traits {
             this->onUpdateLauncher.EmitEvent(dt);
             
 
-            (CallUpdateForOneType<DerivedClasses>(dt),...);
+            this->functionToCallOnUpdate(dt);
         };
 
         HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate[ptr->Handle()] = payload;
@@ -116,12 +120,17 @@ namespace Traits {
     class UsesAI : 
         public ConditionedOnUpdate<UsesAI<DerivedClasses...>,DerivedClasses...>
     {
+
+        private:
+            void functionToCallOnUpdate(double dt) {
+                (CheckIfHasFunction<DerivedClasses>(),...);
+            }
         public:
 
             void Create() {
                 std::cout << "Calling on create for UsesAI!" << std::endl;
                 functionHash = this->OnUpdate().Connect([this](double dt){
-                    (CheckIfHasFunction<DerivedClasses>(),...);
+                    this->functionToCallOnUpdate(dt);
                 });
 
             }
@@ -163,7 +172,7 @@ namespace Traits {
         public:
             void Create() {
                 std::cout << "Calling on create for HasVelocity!" << std::endl;
-                functionHash = this->OnUpdate().Connect([this](double dt){
+                functionHash = this->OnUpdate().Connect([this](double dt) {
                     static_cast<HasPosition*>(static_cast<T*>(this))->position += this->velocity;
                 });
 
@@ -223,7 +232,7 @@ namespace Traits {
         public:
 
             void Create() { 
-                functionHash = this->OnUpdate().Connect([this](double dt){
+                functionHash = this->OnUpdate().Connect([this](double dt) mutable {
                     this->functionToCallOnUpdate(dt);
                 });
                 UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle()] = SpriteAnimationData(

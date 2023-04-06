@@ -41,7 +41,7 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
             
             let menuItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
             let subOptionsJson = try? JSONSerialization.jsonObject(with: (option["subOptions"] as? String ?? "").data(using: .utf8) ?? Data(), options: [])
-           
+            
             
             if let subOptions = subOptionsJson as? [[String:Any]] {
                 

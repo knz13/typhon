@@ -26,9 +26,21 @@ int _callbackId = 0;
 Map<int, Function> _callbackMap = {};
 
 Future<dynamic> _handleCallback(MethodCall methodCall) async {
-  int callbackId = methodCall.arguments['callbackId'];
-  if (_callbackMap.containsKey(callbackId)) {
-    _callbackMap[callbackId]!();
+  if(Platform.isWindows){
+    if(methodCall.arguments is int){
+      int callbackId = methodCall.arguments;
+      if (_callbackMap.containsKey(callbackId)) {
+        _callbackMap[callbackId]!();
+      }
+    }
+    
+  }
+  else{
+
+    int callbackId = methodCall.arguments['callbackId'];
+    if (_callbackMap.containsKey(callbackId)) {
+      _callbackMap[callbackId]!();
+    }
   }
 }
 
@@ -68,8 +80,12 @@ class GeneralText extends StatelessWidget {
 }
 
 void showNativeContextMenu(BuildContext context,double x,double y, List<ContextMenuOption> options) {
-  if(Platform.isMacOS || Platform.isWindows){
+  if(Platform.isMacOS){
     contextMenuChannel.invokeMethod('showContextMenu', buildJSONNativeMessage(options, x,MediaQuery.of(context).size.height - y));
+  }
+  else if(Platform.isWindows){
+    contextMenuChannel.invokeMethod('showContextMenu', buildJSONNativeMessage(options, x,y));
+
   }
   else{
     showContextMenu(
