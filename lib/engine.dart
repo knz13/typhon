@@ -92,6 +92,28 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     projectsFile.writeAsStringSync(jsonEncode(projects));
   } 
 
+  bool hasInitializedProject() {
+    return projectName != "" && projectPath != "";
+  }
+
+  Future<void> reloadProject() async {
+    if(TyphonCPPInterface.checkIfLibraryLoaded()){
+      TyphonCPPInterface.getCppFunctions().unloadLibrary();
+    }
+    var library = await TyphonCPPInterface.initializeLibraryAndGetBindings();
+    await TyphonCPPInterface.extractImagesFromAssets();
+    library.passProjectPath((await getApplicationSupportDirectory()).path.toNativeUtf8().cast());
+    library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
+    library.initializeCppLibrary();
+    await Future.delayed(Duration(milliseconds: 500));
+    await loadAtlasImage();
+  }
+
+  void unload() {
+    if(TyphonCPPInterface.checkIfLibraryLoaded()){
+      TyphonCPPInterface.getCppFunctions().unloadLibrary();
+    }
+  }
 
   Future<void> initializeProject(String projectPath,String projectName) async {
     
@@ -118,16 +140,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
       await cmakeFile.writeAsString(cmakeFileData);
 
-      if(TyphonCPPInterface.checkIfLibraryLoaded()){
-        TyphonCPPInterface.getCppFunctions().unloadLibrary();
-      }
-      var library = await TyphonCPPInterface.initializeLibraryAndGetBindings();
-      await TyphonCPPInterface.extractImagesFromAssets();
-      library.passProjectPath((await getApplicationSupportDirectory()).path.toNativeUtf8().cast());
-      library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
-      library.initializeCppLibrary();
-      await Future.delayed(Duration(milliseconds: 500));
-      await loadAtlasImage();
+      await reloadProject();
 
       return;
 
@@ -231,21 +244,6 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   @override
   FutureOr<void> onLoad() async {
-
-    if(!isInitialized){
-      print("initializing engine!");
-
-      //var map = (await getProjectsJSON());
-      //map.clear();
-      //await saveProjectsJSON(map);
-      //Directory("/Users/otaviomaya/Documents/testTyphon").deleteSync(recursive: true);
-      //Directory("/Users/otaviomaya/Documents/testTyphon").createSync();
-
-
-      //initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
-
-      isInitialized = true;
-    }
     
     return super.onLoad();
   }

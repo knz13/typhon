@@ -5,6 +5,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:typhon/engine.dart';
 import 'package:typhon/scene_viewer_panel.dart';
 
 import 'console_panel.dart';
@@ -31,7 +32,17 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    if(Engine.instance.hasInitializedProject()){
+      Engine.instance.reloadProject();
+    }
+  }
 
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    Engine.instance.unload();
 
   }
 
