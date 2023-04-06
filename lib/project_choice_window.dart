@@ -429,6 +429,58 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                 ],
               ),
             ),
+            Divider(
+              height: 0.5,
+              color: dividerColor,
+            ),
+            Container(
+              color: const Color.fromRGBO(20,20,20,1),
+              height: 75,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 22.5),
+                    child: Row(
+                      children: [
+                        RawMaterialButton(
+                          onPressed: (){},
+                          child: Container(
+                            height: 40,
+                            width: 100,
+                            decoration: BoxDecoration(
+                              color: activeColor,
+                              borderRadius: BorderRadius.circular(4)
+                            ),
+                            child: const Center(
+                              child: Text("Cancel",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500),),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 12.5,
+                        ),
+                        RawMaterialButton(
+                          onPressed: (){},
+                          child: Container(
+                            height: 40,
+                            width: 120,
+                            decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(4)
+                            ),
+                            child: const Center(
+                              child: Text("Create Project",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w500),),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
