@@ -145,7 +145,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
         ..leading = Transform.rotate(
           angle: 155,
           child: Icon(
-            MdiIcons.cube,
+            MdiIcons.webpack,
             color: Colors.white.withOpacity(0.8),
             size: 42,
           ),
@@ -266,7 +266,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                               child: Transform.rotate(
                                 angle: 155,
                                 child: Icon(
-                                  selectedMiddleOptionMenu == 0? MdiIcons.cubeOutline:MdiIcons.cube,
+                                  selectedMiddleOptionMenu == 0? MdiIcons.cubeOutline:MdiIcons.webpack,
                                   color: Colors.white.withOpacity(0.8),
                                   size: 42,
                                 ),
@@ -370,7 +370,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                     Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 7.5),
                                       child: Container(
-                                        height: 75,
+                                        height: 60,
                                         decoration: BoxDecoration(
                                           color: const Color.fromRGBO(36, 36, 36, 1),
                                           borderRadius: BorderRadius.circular(5),
@@ -400,7 +400,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                     Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 7.5),
                                       child: Container(
-                                        height: 75,
+                                        height: 60,
                                         decoration: BoxDecoration(
                                           color: const Color.fromRGBO(36, 36, 36, 1),
                                           borderRadius: BorderRadius.circular(5),
