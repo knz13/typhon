@@ -3,8 +3,20 @@
 
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
+#include <flutter/event_channel.h>
+#include <flutter/event_sink.h>
+#include <flutter/event_stream_handler_functions.h>
+#include <flutter/method_channel.h>
+#include <flutter/standard_method_codec.h>
+#include <future>
+#include <map>
+
+#include <Windows.h>
+#include <WinUser.h>
 
 #include <memory>
+#include "vendor/json/single_include/nlohmann/json.hpp"
+using json = nlohmann::json;
 
 #include "win32_window.h"
 
@@ -23,6 +35,11 @@ class FlutterWindow : public Win32Window {
                          LPARAM const lparam) noexcept override;
  
  private:
+
+  void CreateMenuInternal(HMENU menu,std::vector<json>& arguments);
+
+  std::unique_ptr<flutter::MethodChannel<>> channel;
+
   // The project to run.
   flutter::DartProject project_;
 
