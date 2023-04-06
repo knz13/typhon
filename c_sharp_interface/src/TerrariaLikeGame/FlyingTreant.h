@@ -47,8 +47,8 @@ public:
         std::cout << "calling set defaults for flying treant!" << std::endl;
         width = 32;
         height = 32;
-        scale = 2;
-        //anchor = Anchor::Center;
+        scale = 1;
+        anchor = Anchor::Center;
         //angle = HelperFunctions::Radians(-45);
     }
 

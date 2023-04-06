@@ -156,7 +156,7 @@ class TyphonCPPInterface {
     }
     String libraryPath = await _extractLib();
     _lib ??= DynamicLibrary.open(libraryPath);
-
+    
     _bindings = TyphonBindings(_lib!);
 
     return _bindings!;
