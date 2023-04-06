@@ -132,10 +132,11 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       List<String> lines = cmakeFile.readAsLinesSync();
       for(String line in lines) {
         if(line.contains("__TYPHON__LIBRARY_LOCATION__LINE__")){
-          cmakeFileData += "link_directories(${await TyphonCPPInterface.getLibraryPath()}) #__TYPHON__LIBRARY_LOCATION__LINE__";
+          cmakeFileData += "link_directories(${await TyphonCPPInterface.getLibraryPath()}) #__TYPHON__LIBRARY_LOCATION__LINE__\n";
           continue;
         }
         cmakeFileData += line;
+        cmakeFileData += "\n";
       }
 
       await cmakeFile.writeAsString(cmakeFileData);
