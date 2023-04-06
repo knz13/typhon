@@ -222,7 +222,6 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                   showNativeContextMenu(context, mousePosition.dx, mousePosition.dy, [
                     if((widget.tabs[_controller.selectedIndex!].closable && EngineSubWindow.aliveWindows.length != 1) || widget.tabs.length != 1)
                     ContextMenuOption(title: "Close Tab",callback: () {
-                      print("hi");
                       if(widget.tabs.length == 1){
                         setState(() {
                           widget.emptyNotifier.value++;
