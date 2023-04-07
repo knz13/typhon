@@ -47,6 +47,7 @@ dependencies:
   material_design_icons_flutter:
   file_picker:
   url_launcher:
+  focus_detector:
   
 dev_dependencies:
   flutter_test:

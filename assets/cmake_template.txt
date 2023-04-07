@@ -9,6 +9,7 @@ project(__PROJECT__NAME__)
 
 
 add_executable(${PROJECT_NAME}
+    bindings_generated.cpp
     #__PROJECT__SOURCES__
 )
 

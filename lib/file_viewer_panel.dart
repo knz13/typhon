@@ -7,6 +7,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/engine.dart';
+import 'package:typhon/main_engine_frontend.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'general_widgets.dart';
@@ -80,7 +81,7 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
       }
       final children = <Widget>[];
       for (final entity in snapshot.data!) {
-        if (entity is Directory) {
+        if (entity is Directory && entity.path.substring(entity.path.lastIndexOf("/")-1) != "build") {
           bool isExpanded = false;
           children.add(ExpansionTile(
             collapsedIconColor: platinumGray,
@@ -190,25 +191,37 @@ Widget _buildBreadcrumbTrail() {
                   child: _buildBreadcrumbTrail(),
                 ),
                 Expanded(
-                  child: ListView.separated(
-                    separatorBuilder: (BuildContext context, int index) => Divider(),
-                    itemCount: _files.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final entity = _files[index];
-                      return ListTile(
-                        leading: entity is File
-                            ? Icon(MdiIcons.file)
-                            : Icon(Icons.folder),
-                        title: GeneralText(path.basename(entity.path)),
-                        onTap: () async {
-                          if (entity is File) {
-                            
-                          } else if (entity is Directory) {
-                            await _navigateToDirectory(entity);
+                  child: GestureDetector(
+                    onSecondaryTap: () {
+                      showNativeContextMenu(context, MainEngineFrontend.mousePosition.dx, MainEngineFrontend.mousePosition.dy, [
+                        ContextMenuOption(
+                          title: "Open Folder In Explorer",
+                          callback: () {
+                            launchUrl(Uri.parse("file:" + FileViewerPanel.currentDirectory.value.absolute.path));
                           }
-                        },
-                      );
+                        )
+                      ]);
                     },
+                    child: ListView.separated(
+                      separatorBuilder: (BuildContext context, int index) => Divider(),
+                      itemCount: _files.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final entity = _files[index];
+                        return ListTile(
+                          leading: entity is File
+                              ? Icon(MdiIcons.file)
+                              : Icon(Icons.folder),
+                          title: GeneralText(path.basename(entity.path)),
+                          onTap: () async {
+                            if (entity is File) {
+                              
+                            } else if (entity is Directory) {
+                              await _navigateToDirectory(entity);
+                            }
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
                 

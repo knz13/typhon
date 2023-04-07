@@ -132,7 +132,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       List<String> lines = cmakeFile.readAsLinesSync();
       for(String line in lines) {
         if(line.contains("__TYPHON__LIBRARY_LOCATION__LINE__")){
-          cmakeFileData += "link_directories(${await TyphonCPPInterface.getLibraryPath()}) #__TYPHON__LIBRARY_LOCATION__LINE__\n";
+          cmakeFileData += "link_directories(${(await TyphonCPPInterface.getLibraryPath()).replaceAll(r" ", r"\ ")}) #__TYPHON__LIBRARY_LOCATION__LINE__\n";
           continue;
         }
         cmakeFileData += line;
@@ -140,6 +140,57 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       }
 
       await cmakeFile.writeAsString(cmakeFileData);
+
+      File entryFile = File(path.join(projectPath,"assets","entry.h"));
+
+      await entryFile.writeAsString("""#pragma once
+
+class Entry {
+  /*
+  * This function will be called once when your project is created (the start of the game basically)
+  * 
+  * Use it to initialize anything you wish here
+  */
+  static void OnInitializeProject() {
+
+  };
+};
+""");
+
+      File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
+
+      await bindingsFile.writeAsString("""#include "includes/engine.h"
+#include "assets/entry.h"
+//__INCLUDE__USER__DEFINED__CLASSES__
+
+#if _WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
+#include <unistd.h>
+#endif
+
+#if _WIN32
+#define FFI_PLUGIN_EXPORT __declspec(dllexport)
+#else
+#define FFI_PLUGIN_EXPORT
+#endif
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+  FFI_PLUGIN_EXPORT bool onInitializeProject() {
+    //__INITIALIZE__USER__DEFINED__CLASSES__
+    Entry::OnInitializeProject();
+  };
+
+#ifdef __cplusplus
+}
+#endif
+""");
+
 
       await reloadProject();
 
@@ -177,6 +228,40 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     await saveProjectsJSON(map);
 
     return await initializeProject(projectPath, projectName);
+
+  }
+
+  Future<List<String>> __findPathsToInclude(Directory directory) async {
+    List<String> paths = [];
+    for(var maybeFile in await directory.list().toList()){
+      if(maybeFile is File) {
+        print(maybeFile.path.substring(maybeFile.path.lastIndexOf(".")));
+      }
+    } 
+    return paths;
+
+  }
+
+  Future<void> recompileProject() async {
+    if(!hasInitializedProject()){
+      return;
+    }
+    print("recompiling...");
+
+    //finding includes
+    List<String> includes = await __findPathsToInclude(Directory(projectPath));
+
+    return;
+    File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
+    String bindingsGeneratedData = "";
+    List<String> lines = bindingsFile.readAsLinesSync();
+    for(String line in lines) {
+      
+      bindingsGeneratedData += line;
+      bindingsGeneratedData += "\n";
+    }
+
+    Process.run("cmake", ["-B build"],workingDirectory: projectPath,runInShell: true);
 
   }
 
