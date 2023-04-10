@@ -153,6 +153,8 @@ class TyphonCPPInterface {
   static Future<TyphonBindings> initializeLibraryAndGetBindings() async {
     if(_lib != null){
         _bindings!.unloadLibrary();
+        
+        _lib = null;
     }
     String libraryPath = await _extractLib();
     _lib ??= DynamicLibrary.open(libraryPath);

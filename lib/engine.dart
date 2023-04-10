@@ -235,8 +235,9 @@ extern "C" {
   Future<List<String>> __findPathsToInclude(Directory directory) async {
     List<String> paths = [];
     for(var maybeFile in await directory.list().toList()){
+      print(path.basename(maybeFile.path));
       if(maybeFile is File && maybeFile.path.substring(maybeFile.path.lastIndexOf(".")) == ".h") {
-        paths.add(maybeFile.path);
+        paths.add(path.relative(maybeFile.path,from:projectPath));
       }
       if(maybeFile is Directory){
         __findPathsToInclude(maybeFile);
@@ -253,8 +254,8 @@ extern "C" {
     print("recompiling...");
 
     //finding includes
-    List<String> includes = await __findPathsToInclude(Directory(projectPath));
-
+    List<String> includes = await __findPathsToInclude(Directory(path.join(projectPath,"assets")));
+    print("includes found: ${includes}");
     
     File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
     String bindingsGeneratedData = "";
@@ -263,7 +264,19 @@ extern "C" {
       
       if(line.contains("//__INCLUDE__USER__DEFINED__CLASSES__")){
         includes.forEach((element) { 
+          if(element == "assets/entry.h"){
+            return;
+          }
           bindingsGeneratedData += '#include "${element}"\n';
+        });
+        continue;
+      }
+      if(line.contains("//__INITIALIZE__USER__DEFINED__CLASSES__")){
+        includes.forEach((element) {
+          if(element == "assets/entry.h"){
+            return;
+          }
+          bindingsGeneratedData += "    ${path.basenameWithoutExtension(element)}()\n";
         });
         continue;
       }
@@ -272,11 +285,32 @@ extern "C" {
       bindingsGeneratedData += "\n";
 
     }
-    print(bindingsGeneratedData);
-    return;
+    
+    File bindingsGenerated = File(path.join(projectPath,"bindings_generated.cpp"));
+    bindingsGenerated.createSync();
+    bindingsGenerated.writeAsStringSync(bindingsGeneratedData);
+  
 
-    Process.run("cmake", ["-B build"],workingDirectory: projectPath,runInShell: true);
+    var result = Process.run("cmake", ["-B build"],workingDirectory: projectPath,runInShell: true);
+    result.then((value) {
+        LineSplitter ls = LineSplitter();
+        String cppCompilerPath = "";
+        List<String> lines = ls.convert(value.stdout as String);
+        for(var line in lines){
+          if(line.contains("__current__project__compiler__")){
+            cppCompilerPath = line.replaceAll("__current__project__compiler__ ", "");
+          }
+        }
 
+        if(cppCompilerPath == ""){
+          //TODO DEAL WITH IT
+          return;
+        }
+        print("Found c++ compiler: ${cppCompilerPath}");
+        //TODO
+      }
+    );
+    
   }
 
   Future<void> loadAtlasImage() async {

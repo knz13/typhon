@@ -13,10 +13,23 @@ import 'package:watcher/watcher.dart';
 
 import 'general_widgets.dart';
 
+class FileViewerFileToCreate {
+  Icon? icon;
+  String Function(String)? fileData;
+
+  FileViewerFileToCreate(
+    {
+      this.icon,
+      this.fileData
+    }
+  );
+}
+
 class FileViewerPanel extends StatefulWidget {
   static ValueNotifier<Directory> currentDirectory = ValueNotifier(Directory.current);
   static ValueNotifier<Directory> leftInitialDirectory = ValueNotifier(Directory.current);
   static ValueNotifier<bool> reAddWatchers = ValueNotifier(false);
+  static ValueNotifier<FileViewerFileToCreate?> fileToCreate = ValueNotifier(null);
 
   @override
   _FileViewerPanelState createState() => _FileViewerPanelState();
@@ -25,16 +38,34 @@ class FileViewerPanel extends StatefulWidget {
 class _FileViewerPanelState extends State<FileViewerPanel> {
   List<FileSystemEntity> _files = [];
   List<FileWatcher> _watchers = [];
+  FileViewerFileToCreate? tempFileData;
+  FocusNode tempFileFocus = FocusNode();
+
 
   @override
   void initState() {
     super.initState();
 
+    FileViewerPanel.fileToCreate.addListener(() {
+
+      if(FileViewerPanel.fileToCreate.value != null){
+
+        if(mounted) {
+          setState(() {
+            tempFileData = FileViewerPanel.fileToCreate.value;
+          });
+        }
+
+        FileViewerPanel.fileToCreate.value = null;
+      }
+    });
+
     FileViewerPanel.reAddWatchers.addListener(() {
       if(FileViewerPanel.reAddWatchers.value == true) {
-
-        _watchers.clear();
-        _refreshWatchers(FileViewerPanel.currentDirectory.value);
+        if(mounted){
+          _watchers.clear();
+          _refreshWatchers(FileViewerPanel.currentDirectory.value);
+        }
 
         FileViewerPanel.reAddWatchers.value = false;
       }
@@ -239,17 +270,81 @@ Widget _buildBreadcrumbTrail() {
                     onSecondaryTap: () {
                       showNativeContextMenu(context, MainEngineFrontend.mousePosition.dx, MainEngineFrontend.mousePosition.dy, [
                         ContextMenuOption(
+                          title: "Create",
+                          subOptions: [
+                            ContextMenuOption(
+                              title: "Empty GameObject",
+                              callback: () {
+                                FileViewerPanel.fileToCreate.value = FileViewerFileToCreate(
+                                  fileData: (str) => """#pragma once
+#include <iostream>
+#include "../includes/engine.h"
+
+class ${str} : public DerivedFromGameObject<${str},
+  //Here you can add the class traits you wish to use
+  //for example: Traits::HasUpdate<${str}>,Traits::HasPosition...
+
+  > {
+private:
+  //Add your private variables here
+
+public:
+  //Function called when the object is created
+  void Create() {};
+
+  //Function called when the object is destroyed
+  void Destroy() {};
+
+};
+"""
+                                );
+                              }
+                            )
+                          ]
+                        ),
+                        ContextMenuOption(
                           title: "Open Folder In Explorer",
                           callback: () {
                             launchUrl(Uri.parse("file:" + FileViewerPanel.currentDirectory.value.absolute.path));
                           }
-                        )
+                        ),
                       ]);
                     },
                     child: ListView.separated(
                       separatorBuilder: (BuildContext context, int index) => Divider(),
-                      itemCount: _files.length,
+                      itemCount: _files.length + (tempFileData == null? 0 : 1),
                       itemBuilder: (BuildContext context, int index) {
+                        if(tempFileData != null && index == _files.length) {
+                          tempFileFocus.requestFocus();
+                          return ListTile(
+                            leading: tempFileData!.icon ?? const Icon(MdiIcons.file),
+                            title: TextField(
+                              focusNode: tempFileFocus,
+                              onSubmitted: (value) {
+                                File file = File(path.join(FileViewerPanel.currentDirectory.value.path,"$value.h"));
+                                  
+                                file.createSync();
+                                
+                                FileViewerPanel.reAddWatchers.value = true;
+                                
+                                file.writeAsStringSync(tempFileData!.fileData != null ? tempFileData!.fileData!.call(value) : "");
+                                
+                                _refreshFiles();
+
+                                setState(() {
+                                  tempFileData = null;
+                                });
+                              },
+                              onTapOutside: (event) {
+                                setState(() {
+                                  tempFileData = null;
+                                });
+                              },
+
+                              autofocus: true,
+                            ),
+                          );
+                        }
                         final entity = _files[index];
                         return ListTile(
                           leading: entity is File
