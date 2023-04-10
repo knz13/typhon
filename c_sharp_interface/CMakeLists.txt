@@ -103,21 +103,20 @@ project(project_typhon)
     GIT_REPOSITORY https://github.com/johnfredcee/crunch
     GIT_TAG origin/master
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/crunch
-    ) 
-    
-    
+    )
+
     FetchContent_MakeAvailable(CRUNCH)
-    
+
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/crunch/crunch/)
     list(APPEND typhon_LIBRARIES libcrunch)
-    
-    
+
+
     FetchContent_Declare(JSON
     GIT_REPOSITORY https://github.com/nlohmann/json
     GIT_TAG v3.11.2
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/json
     ) 
-    
+
     FetchContent_MakeAvailable(JSON)
 
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/json/single_include)
@@ -138,7 +137,6 @@ project(project_typhon)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object_traits.cpp)
     # creating target
 
-    
 
     add_library(typhon SHARED
 
@@ -152,7 +150,7 @@ project(project_typhon)
     add_subdirectory(${PROJECT_SOURCE_DIR}/vendor/shaderc)
 
     target_link_libraries(typhon PUBLIC shaderc)
-
+    
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc/include)
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc/src)
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc_util/include)
@@ -162,8 +160,6 @@ project(project_typhon)
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/re2)
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/spirv-headers/include)
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/spirv-tools/include)
-    
-
 
     # setting c++ standard
     set_target_properties(typhon PROPERTIES

@@ -69,7 +69,7 @@ os.system(f'cmake {("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Deb
 os.system('echo "CMake run finished!')
 os.system('echo "Compiling..."')
 os.chdir("build")
-os.system(f'{"make" if platform.system() == "Darwin" else "msbuild project_typhon.sln /p:Configuration=" + ("Release" if args.Release else "Debug")}')
+os.system(f'{"make typhon" if platform.system() == "Darwin" else "msbuild project_typhon.sln /target:typhon /p:Configuration=" + ("Release" if args.Release else "Debug")}')
 os.system('echo "Moving library to assets..."')
 
 if platform.system() == "Darwin":

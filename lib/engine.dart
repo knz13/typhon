@@ -124,9 +124,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       this.projectPath = projectPath;
       this.projectName = projectName;
 
-      FileViewerPanel.leftInitialDirectory.value = Directory(projectPath);
-      FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
-
+      
       String cmakeFileData = "";
       File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"));
       List<String> lines = cmakeFile.readAsLinesSync();
@@ -191,6 +189,9 @@ extern "C" {
 #endif
 """);
 
+      FileViewerPanel.leftInitialDirectory.value = Directory(projectPath);
+      FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
+
 
       await reloadProject();
 
@@ -234,8 +235,11 @@ extern "C" {
   Future<List<String>> __findPathsToInclude(Directory directory) async {
     List<String> paths = [];
     for(var maybeFile in await directory.list().toList()){
-      if(maybeFile is File) {
-        print(maybeFile.path.substring(maybeFile.path.lastIndexOf(".")));
+      if(maybeFile is File && maybeFile.path.substring(maybeFile.path.lastIndexOf(".")) == ".h") {
+        paths.add(maybeFile.path);
+      }
+      if(maybeFile is Directory){
+        __findPathsToInclude(maybeFile);
       }
     } 
     return paths;
@@ -251,15 +255,25 @@ extern "C" {
     //finding includes
     List<String> includes = await __findPathsToInclude(Directory(projectPath));
 
-    return;
+    
     File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
     String bindingsGeneratedData = "";
     List<String> lines = bindingsFile.readAsLinesSync();
     for(String line in lines) {
       
+      if(line.contains("//__INCLUDE__USER__DEFINED__CLASSES__")){
+        includes.forEach((element) { 
+          bindingsGeneratedData += '#include "${element}"\n';
+        });
+        continue;
+      }
       bindingsGeneratedData += line;
+
       bindingsGeneratedData += "\n";
+
     }
+    print(bindingsGeneratedData);
+    return;
 
     Process.run("cmake", ["-B build"],workingDirectory: projectPath,runInShell: true);
 

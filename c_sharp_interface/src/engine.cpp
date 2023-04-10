@@ -17,7 +17,7 @@ std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,d
 void Engine::Initialize()
 {
     std::cout << "initializing engine in c++" << std::endl;
-    Engine::CreateNewGameObject<FlyingTreant>();
+    //Engine::CreateNewGameObject<FlyingTreant>();
     
     std::cout << "trying texture packer" << std::endl;
     textureAtlas = CreateTextureAtlasFromImages();

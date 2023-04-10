@@ -5,7 +5,6 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:focus_detector/focus_detector.dart';
 import 'package:typhon/engine.dart';
 import 'package:typhon/scene_viewer_panel.dart';
 

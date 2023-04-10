@@ -9,12 +9,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:typhon/engine.dart';
 import 'package:typhon/main_engine_frontend.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:watcher/watcher.dart';
 
 import 'general_widgets.dart';
 
 class FileViewerPanel extends StatefulWidget {
   static ValueNotifier<Directory> currentDirectory = ValueNotifier(Directory.current);
   static ValueNotifier<Directory> leftInitialDirectory = ValueNotifier(Directory.current);
+  static ValueNotifier<bool> reAddWatchers = ValueNotifier(false);
 
   @override
   _FileViewerPanelState createState() => _FileViewerPanelState();
@@ -22,14 +24,26 @@ class FileViewerPanel extends StatefulWidget {
 
 class _FileViewerPanelState extends State<FileViewerPanel> {
   List<FileSystemEntity> _files = [];
+  List<FileWatcher> _watchers = [];
 
   @override
   void initState() {
     super.initState();
 
+    FileViewerPanel.reAddWatchers.addListener(() {
+      if(FileViewerPanel.reAddWatchers.value == true) {
+
+        _watchers.clear();
+        _refreshWatchers(FileViewerPanel.currentDirectory.value);
+
+        FileViewerPanel.reAddWatchers.value = false;
+      }
+    });
 
     FileViewerPanel.currentDirectory.addListener(() {
       if(mounted){
+        _watchers.clear();
+        _refreshWatchers(FileViewerPanel.currentDirectory.value);
         setState(() {
           _refreshFiles();
         });
@@ -39,12 +53,42 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
     FileViewerPanel.leftInitialDirectory.addListener(() {
       if(mounted) {
         setState(() {
+
           _refreshFiles();
         });
       }
     });
 
-    _refreshFiles();
+    /* (() async {
+      print("recreating project!");
+      var map = (await Engine.instance.getProjectsJSON());
+      map.clear();
+      await Engine.instance.saveProjectsJSON(map);
+      Directory("/Users/otaviomaya/Documents/testTyphon").deleteSync(recursive: true);
+      Directory("/Users/otaviomaya/Documents/testTyphon").createSync();
+      await Engine.instance.initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
+    })(); */
+
+    //_refreshFiles();
+  }
+
+  Future<void> _refreshWatchers(Directory dir) async {
+    var dirs = await dir.list().toList();
+    for (var file in dirs){
+      if(file is File && [".h",".cpp",".c",".cc"].contains(file.path.substring(file.path.lastIndexOf(".")))){
+        
+        var fileWatcher = FileWatcher(file.absolute.path,pollingDelay: Duration(seconds: 2));
+        fileWatcher.events.listen((event) {
+          Engine.instance.recompileProject();
+        });
+        _watchers.add(fileWatcher);
+      }
+      if(file is Directory){
+        _refreshWatchers(file);
+      }
+    }
+
+
   }
 
   Future<void> _refreshFiles() async {
