@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "../vendor/shaderc/libshaderc/include/shaderc/shaderc.hpp"
+#include "vendor/shaderc/libshaderc/include/shaderc/shaderc.hpp"
 
 class ShaderCompiler {
 public:

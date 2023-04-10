@@ -116,15 +116,13 @@ class TyphonCPPInterface {
       List<String> assetManifest = assetManifestMap.keys.toList();
 
       List<String> imageAssets = assetManifest
-          .where((p) => path.extension(p).toLowerCase() == '.h')
+          .where((p) => path.extension(p).toLowerCase() == '.h' || path.extension(p).toLowerCase() == ".hpp" || path.extension(p).toLowerCase() == ".inl")
           .toList();
 
       Directory(destination).create(recursive: true);
 
-      // Extract images
       for (String assetPath in imageAssets) {
-
-        String imageName = path.basename(assetPath);
+        String imageName = path.relative(assetPath,from:"assets/lib/includes");
         File includeFile = File(path.join(destination, imageName));
 
         if(includeFile.existsSync()){
@@ -138,7 +136,7 @@ class TyphonCPPInterface {
         List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
         await includeFile.writeAsBytes(bytes, flush: true);
-        print("Created ${includeFile.path}!");
+        //print("Created ${includeFile.path}!");
       }
     } catch (e) {
       print("Error extracting include from assets: $e");
@@ -153,7 +151,7 @@ class TyphonCPPInterface {
   static Future<TyphonBindings> initializeLibraryAndGetBindings() async {
     if(_lib != null){
         _bindings!.unloadLibrary();
-        
+
         _lib = null;
     }
     String libraryPath = await _extractLib();

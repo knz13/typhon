@@ -21,8 +21,8 @@ is_64bits = sys.maxsize > 2**32
 
 current_dir = os.path.abspath(os.curdir)
 os.chdir("c_sharp_interface")
-if not os.path.exists("vendor"):
-    os.mkdir("vendor")
+if not os.path.exists("src/vendor"):
+    os.mkdir("src/vendor")
 
 
 __subdirectories = glob("src/*/", recursive = True)
@@ -59,13 +59,22 @@ GENERATED FILE - DO NOT MODIFY!
 os.system('echo "written typhon_generated.cpp"')
 
 
-if not os.path.exists("vendor/shaderc"):
+if not os.path.exists("src/vendor/shaderc"):
     os.system('echo downloading shaderc library...')
-    os.system("git clone https://github.com/google/shaderc vendor/shaderc")
-    os.system(("python " if platform.system() != "Darwin" else "") + "vendor/shaderc/utils/git-sync-deps")
+    os.system("git clone https://github.com/google/shaderc src/vendor/shaderc")
+    os.system(("python " if platform.system() != "Darwin" else "") + "src/vendor/shaderc/utils/git-sync-deps")
 
 os.system('echo "Creating c++ library..."')
-os.system(f'cmake {("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")) if platform.system() == "Darwin" else ("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86"))} -B build ./ ')
+#os.system(f'cmake {("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")) if platform.system() == "Darwin" else ("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86"))} -B build ./ ')
+proc = subprocess.Popen([f'cmake {("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")) if platform.system() == "Darwin" else ("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86"))} -B build ./ '], stdout=subprocess.PIPE, shell=True)
+(out,err) = proc.communicate()
+out = str(out)
+""" subst_begin = out.find("BEGIN__INCLUDE__DIRS")
+subst_end = out.find("END__INCLUDE__DIRS")
+dirs_to_include = out[subst_begin+len("BEGIN__INCLUDE__DIRS "):subst_end].split(";")
+for i in dirs_to_include:
+    print(r"target_include_directories(${PROJECT_NAME} PUBLIC " + os.path.relpath(i,os.path.join(current_dir,"c_sharp_interface","src")) + ")")
+ """
 os.system('echo "CMake run finished!')
 os.system('echo "Compiling..."')
 os.chdir("build")
@@ -84,12 +93,20 @@ else:
 os.chdir(os.path.join(current_dir,"c_sharp_interface"))
 
 if(os.path.exists(os.path.join(current_dir,"assets/lib/include"))):
-    for file in os.listdir(os.path.join(current_dir,"assets/lib/include")):
-        os.remove(os.path.join(current_dir,"assets/lib/include",file))
+    for root, dirs, files in os.walk(os.path.join(current_dir,"assets/lib/include")):
+        for file in files:
+            os.remove(os.path.join(root,file))
 
-for file in os.listdir('src'):
-    if file.endswith(".h"):
-        shutil.copyfile(os.path.join("src",file),os.path.join("../assets/lib/includes",file))
+
+
+for root, dirs, files in os.walk('src'):
+    root = os.path.abspath(root)
+    for file in files:
+        if not os.path.exists(os.path.join("../assets/lib/includes",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")))):
+            os.makedirs(os.path.join("../assets/lib/includes",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src"))),exist_ok=True)
+        if file.endswith(".h") or file.endswith(".hpp") or file.endswith(".inl"):
+            #print(f"doing {os.path.join(root,file)}")
+            shutil.copyfile(os.path.join(root,file),os.path.join("../assets/lib/includes",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")),file))
 
 
 

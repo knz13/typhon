@@ -280,7 +280,7 @@ Widget _buildBreadcrumbTrail() {
 #include <iostream>
 #include "../includes/engine.h"
 
-class ${str} : public DerivedFromGameObject<${str},
+class ${str} : public DerivedFromGameObject<${str}
   //Here you can add the class traits you wish to use
   //for example: Traits::HasUpdate<${str}>,Traits::HasPosition...
 

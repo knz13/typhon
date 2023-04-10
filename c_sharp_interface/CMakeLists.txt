@@ -56,70 +56,70 @@ project(project_typhon)
     FetchContent_Declare(ENTT
         GIT_REPOSITORY https://github.com/skypjack/entt
         GIT_TAG v3.11.1
-        SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/entt
+        SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/entt
     ) 
     
 
     FetchContent_MakeAvailable(ENTT)
     #includes for target typhon...
     
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/entt/src/)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/src/)
     
     FetchContent_Declare(YAEL
     GIT_REPOSITORY https://github.com/knz13/YAEL
     GIT_TAG origin/main
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/yael
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/yael
     ) 
     
     
     FetchContent_MakeAvailable(YAEL)
     
     
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/yael/include)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/yael/include)
     
     FetchContent_Declare(RANDOM
     GIT_REPOSITORY https://github.com/effolkronium/random
     GIT_TAG v1.4.1
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/random
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/random
     ) 
     
     
     FetchContent_MakeAvailable(RANDOM)
     
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/random/include)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/random/include)
     
     FetchContent_Declare(GLM
     GIT_REPOSITORY https://github.com/g-truc/glm
     GIT_TAG 0.9.9.8
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/glm
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/glm
     ) 
     
     
     FetchContent_MakeAvailable(GLM)
     
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/glm/)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/glm/)
     
     FetchContent_Declare(CRUNCH
     GIT_REPOSITORY https://github.com/johnfredcee/crunch
     GIT_TAG origin/master
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/crunch
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/crunch
     )
 
     FetchContent_MakeAvailable(CRUNCH)
 
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/crunch/crunch/)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/crunch/crunch/)
     list(APPEND typhon_LIBRARIES libcrunch)
 
 
     FetchContent_Declare(JSON
     GIT_REPOSITORY https://github.com/nlohmann/json
     GIT_TAG v3.11.2
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/json
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/json
     ) 
 
     FetchContent_MakeAvailable(JSON)
 
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/json/single_include)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/json/single_include)
     
     
     # --------------------- Targets ------------------------
@@ -147,19 +147,19 @@ project(project_typhon)
     set(SHADERC_SKIP_TESTS ON)
     set(SHADERC_SKIP_EXAMPLES ON)
     
-    add_subdirectory(${PROJECT_SOURCE_DIR}/vendor/shaderc)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/shaderc)
 
     target_link_libraries(typhon PUBLIC shaderc)
     
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc/src)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc_util/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/libshaderc_util/src)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/glslang)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/effcee)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/re2)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/spirv-headers/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/vendor/shaderc/third_party/spirv-tools/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/src)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/src)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/glslang)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/effcee)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/re2)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-headers/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-tools/include)
 
     # setting c++ standard
     set_target_properties(typhon PROPERTIES
@@ -177,9 +177,17 @@ project(project_typhon)
 
       target_include_directories(typhon PUBLIC ${typhon_INCLUDES})
 
-    # adding internal libraries
-
+      
+      # adding internal libraries
+      
       target_link_libraries(typhon PUBLIC ${typhon_LIBRARIES})
-    
+      
+      get_target_property(TYPHON_INCLUDES_FINAL typhon INCLUDE_DIRECTORIES)
+        
+      foreach(X IN LISTS TYPHON_INCLUDES_FINAL)
+        message(STATUS "target_include_directories(SOMETHING PUBLIC ${X})")
+      endforeach()
+      
+      message(STATUS "BEGIN__INCLUDE__DIRS ${TYPHON_INCLUDES_FINAL};${} END__INCLUDE__DIRS")
     
 

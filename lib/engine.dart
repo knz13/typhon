@@ -144,11 +144,13 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       await entryFile.writeAsString("""#pragma once
 
 class Entry {
+public:
   /*
   * This function will be called once when your project is created (the start of the game basically)
   * 
   * Use it to initialize anything you wish here
   */
+
   static void OnInitializeProject() {
 
   };
@@ -179,7 +181,7 @@ class Entry {
 extern "C" {
 #endif
 
-  FFI_PLUGIN_EXPORT bool onInitializeProject() {
+  FFI_PLUGIN_EXPORT void onInitializeProject() {
     //__INITIALIZE__USER__DEFINED__CLASSES__
     Entry::OnInitializeProject();
   };
@@ -276,7 +278,7 @@ extern "C" {
           if(element == "assets/entry.h"){
             return;
           }
-          bindingsGeneratedData += "    ${path.basenameWithoutExtension(element)}()\n";
+          bindingsGeneratedData += "    ${path.basenameWithoutExtension(element)}();\n";
         });
         continue;
       }
@@ -293,21 +295,14 @@ extern "C" {
 
     var result = Process.run("cmake", ["-B build"],workingDirectory: projectPath,runInShell: true);
     result.then((value) {
-        LineSplitter ls = LineSplitter();
-        String cppCompilerPath = "";
-        List<String> lines = ls.convert(value.stdout as String);
-        for(var line in lines){
-          if(line.contains("__current__project__compiler__")){
-            cppCompilerPath = line.replaceAll("__current__project__compiler__ ", "");
-          }
+        if(Platform.isMacOS){
+          var result = Process.run("make",[projectName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
+          result.then((value) {
+              print(value.stdout);
+              print(value.stderr);
+            }
+          );
         }
-
-        if(cppCompilerPath == ""){
-          //TODO DEAL WITH IT
-          return;
-        }
-        print("Found c++ compiler: ${cppCompilerPath}");
-        //TODO
       }
     );
     

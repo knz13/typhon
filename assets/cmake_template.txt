@@ -8,7 +8,9 @@ project(__PROJECT__NAME__)
 
 message(STATUS "__current__project__compiler__ ${CMAKE_CXX_COMPILER}")
 
-add_executable(${PROJECT_NAME}
+link_directories(__TYPHON__LIBRARY__LOCATION__) #__TYPHON__LIBRARY_LOCATION__LINE__
+
+add_library(${PROJECT_NAME} SHARED
     bindings_generated.cpp
     #__PROJECT__SOURCES__
 )
@@ -24,10 +26,38 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 20
 )
 
-link_directories(__TYPHON__LIBRARY__LOCATION__) #__TYPHON__LIBRARY_LOCATION__LINE__
 
 target_link_libraries(${PROJECT_NAME} PUBLIC typhon)
 
-target_include_directories(${PROJECT_NAME} PUBLIC __TYPHON__INCLUDE__DIRECTORIES__)
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/libshaderc/include)
 
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/libshaderc/src)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/libshaderc_util/include)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/libshaderc_util/src)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/glslang)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/effcee)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/re2)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/spirv-headers/include)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/spirv-tools/include)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/entt/src/)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/yael/include)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/random/include)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/glm/)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/crunch/crunch/)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/json/single_include)
+
+target_include_directories(${PROJECT_NAME} PUBLIC vendor/cruch/crunch/)
 

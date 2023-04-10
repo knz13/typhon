@@ -6,11 +6,11 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include "tinydir.h"
-#include "bitmap.hpp"
-#include "packer.hpp"
-#include "binary.hpp"
-#include "hash.hpp"
+#include "vendor/crunch/crunch/tinydir.h"
+#include "vendor/crunch/crunch/bitmap.hpp"
+#include "vendor/crunch/crunch/packer.hpp"
+#include "vendor/crunch/crunch/binary.hpp"
+#include "vendor/crunch/crunch/hash.hpp"
 
 
 using namespace std;
