@@ -67,7 +67,7 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
               for(int index in List.generate(arr.size, (index) => index)){
                 var val = arr.array.elementAt(index).value;
                 final Pointer<Utf8> str = arr.stringArray.elementAt(index).value.cast<Utf8>();
-
+                
                 options.add(
                   ContextMenuOption(
                     title: str.toDartString(),

@@ -23,8 +23,8 @@ class TyphonCPPInterface {
 
 
   static String libPath = 
-    Platform.isMacOS? 'libtyphon.a'
-    : Platform.isWindows ? 'lib/typhon.lib'
+    Platform.isMacOS? 'libtyphon.dylib'
+    : Platform.isWindows ? 'lib/typhon.dll'
     : path.join(Directory.current.path,'lib','typhon.so');
 
   static Future<String> getLibraryPath() async {
@@ -44,10 +44,10 @@ class TyphonCPPInterface {
       Directory(path.join(docsDir.path,"Typhon","lib")).createSync(recursive: true);
         
       if(Platform.isMacOS){
-        ByteData data = await rootBundle.load("assets/lib/libtyphon.a");
+        ByteData data = await rootBundle.load("assets/lib/libtyphon.dylib");
         List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
-        await File(path.join(docsDir.path,"Typhon","lib","libtyphon.a")).writeAsBytes(bytes);
+        await File(path.join(docsDir.path,"Typhon","lib","libtyphon.dylib")).writeAsBytes(bytes);
         return libPath;
       }
       ByteData data = await rootBundle.load("assets/$libPath");
