@@ -156,7 +156,7 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
       }
       final children = <Widget>[];
       for (final entity in snapshot.data!) {
-        if (entity is Directory && entity.path.substring(entity.path.lastIndexOf("/")-1) != "build") {
+        if (entity is Directory && !(entity.parent.path == FileViewerPanel.leftInitialDirectory.value.path && (path.basename(entity.path) == "build" || path.basename(entity.path) == "includes"))) {
           bool isExpanded = false;
           children.add(ExpansionTile(
             collapsedIconColor: platinumGray,

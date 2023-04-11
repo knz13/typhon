@@ -7,6 +7,7 @@ import 'package:typhon/general_widgets.dart';
 import 'package:typhon/main_engine_frontend.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'engine.dart';
+import 'package:path/path.dart' as path;
 import 'main.dart';
 
 class Tile {
@@ -777,7 +778,25 @@ class _ProjectsPageState extends State<ProjectsPage> {
                       return ListView.builder(
                         itemCount: snapshot.hasData? snapshot.data!.length : 0,
                         itemBuilder:(context, index) {
-                          return Container();
+                          return InkWell(
+                            onTap: () {
+                              Engine.instance.initializeProject(path.dirname(snapshot.data!.keys.toList()[index]), snapshot.data![snapshot.data!.keys.toList()[index]]["name"]);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => MainEngineFrontend()));
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ProjectListItem(text:""),
+                                ProjectListItem(
+                                  text:snapshot.data![snapshot.data!.keys.toList()[index]]["name"],
+                                  flex:2,
+                                  subtitleText: snapshot.data!.keys.toList()[index]
+                                ),
+                                ProjectListItem(text:"something",flex:2),
+                                ProjectListItem(text:""),
+                              ]
+                            ),
+                          );
                       },);
                     },),
                   )
@@ -786,6 +805,41 @@ class _ProjectsPageState extends State<ProjectsPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ProjectListItem extends StatelessWidget {
+  ProjectListItem({
+    super.key,
+    required this.text,
+    this.flex,
+    this.subtitleText
+  });
+
+  String text;
+  String? subtitleText;
+  int? flex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: flex ?? 1,
+      child: Container(
+        decoration: BoxDecoration(
+          color: primaryBlack,
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GeneralText(this.text,fontSize: 18,),
+              if (subtitleText != null) GeneralText(subtitleText!) else Container(),
+            ],
+          )
+        ),
       ),
     );
   }
@@ -813,9 +867,10 @@ class ProjectHeaderItem extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.all(10),
-          child: GeneralText(this.text,fontSize: 20,)
+          child: GeneralText(this.text,fontSize: 18,)
         ),
       ),
     );
   }
 }
+
