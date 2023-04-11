@@ -30,7 +30,21 @@ class SceneViewerTop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Container();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        InkWell(
+          onTap: (){},
+          child: Icon(Icons.play_arrow_rounded),
+        ),
+        InkWell(
+          child: Icon(Icons.pause),
+        ),
+        InkWell(
+          child: Icon(Icons.stop),
+        ),
+      ],
+    );
   }
 }
 

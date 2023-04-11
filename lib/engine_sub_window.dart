@@ -330,166 +330,170 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     //secondChildWidget = secondChildWidget.runtimeType == EngineSubWindow? secondChildWidget : EngineSubWindow(mainChild: secondChildWidget,mainChildTitle: widget.secondChildTitle,);
     
     return widget.division == SubWindowDivision.top || widget.division == SubWindowDivision.bottom? 
-    LayoutBuilder(
-      builder: (context, constraints) {
-        return Column(
-          children: widget.division == SubWindowDivision.top? 
-          [
-            Expanded(
-              flex: ((widget.mainChildProportion)* 100).toInt(),
-              child: mainChildWidget
-            ),
-            Draggable(
-              onDragUpdate: (details) {
-                double delta = details.localPosition.dy/constraints.maxHeight;
-                if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
-                  setState(() {
-                    widget.mainChildProportion = delta;
-                  });
-                }
-              },
-              feedback: Container(),
-              child: MouseRegion(
-                cursor:SystemMouseCursors.resizeUpDown,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color:Colors.black,
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius:1,
-                        color: Colors.black
-                      )
-                    ]
+    Container(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            children: widget.division == SubWindowDivision.top? 
+            [
+              Expanded(
+                flex: ((widget.mainChildProportion)* 100).toInt(),
+                child: mainChildWidget
+              ),
+              Draggable(
+                onDragUpdate: (details) {
+                  double delta = details.localPosition.dy/constraints.maxHeight;
+                  if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
+                    setState(() {
+                      widget.mainChildProportion = delta;
+                    });
+                  }
+                },
+                feedback: Container(),
+                child: MouseRegion(
+                  cursor:SystemMouseCursors.resizeUpDown,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color:Colors.black,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius:1,
+                          color: Colors.black
+                        )
+                      ]
+                    ),
+                    height: EngineSubWindow.subWindowBorderWidth,
                   ),
-                  height: EngineSubWindow.subWindowBorderWidth,
                 ),
               ),
-            ),
-            Expanded(
-              flex:((1-(widget.mainChildProportion))* 100).toInt(),
-              child: secondChildWidget
-            )
-          ] 
-          :
-          [
-            Expanded(
-              flex:((1-(widget.mainChildProportion))* 100).toInt(),
-              child: secondChildWidget
-            ),
-            Draggable(
-              onDragUpdate: (details) {
-                double delta = details.localPosition.dy/constraints.maxHeight;
-                if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
-                  setState(() {
-                    widget.mainChildProportion = 1 - delta;
-                  });
-                }
-              },
-              feedback: Container(),
-              child: MouseRegion(
-                cursor:SystemMouseCursors.resizeUpDown,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color:Colors.black,
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius:1,
-                        color: Colors.black
-                      )
-                    ]
+              Expanded(
+                flex:((1-(widget.mainChildProportion))* 100).toInt(),
+                child: secondChildWidget
+              )
+            ] 
+            :
+            [
+              Expanded(
+                flex:((1-(widget.mainChildProportion))* 100).toInt(),
+                child: secondChildWidget
+              ),
+              Draggable(
+                onDragUpdate: (details) {
+                  double delta = details.localPosition.dy/constraints.maxHeight;
+                  if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
+                    setState(() {
+                      widget.mainChildProportion = 1 - delta;
+                    });
+                  }
+                },
+                feedback: Container(),
+                child: MouseRegion(
+                  cursor:SystemMouseCursors.resizeUpDown,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color:Colors.black,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius:1,
+                          color: Colors.black
+                        )
+                      ]
+                    ),
+                    height: EngineSubWindow.subWindowBorderWidth,
                   ),
-                  height: EngineSubWindow.subWindowBorderWidth,
                 ),
               ),
-            ),
-            Expanded(
-              flex: ((widget.mainChildProportion)* 100).toInt(),
-              child: mainChildWidget
-            ),
-          ]
-        );
-      }
+              Expanded(
+                flex: ((widget.mainChildProportion)* 100).toInt(),
+                child: mainChildWidget
+              ),
+            ]
+          );
+        }
+      ),
     ) 
     :
-    LayoutBuilder(
-      builder: (context, constraints) {
-        return Row(
-          children: widget.division == SubWindowDivision.left?
-          [
-            Expanded(
-              flex: ((widget.mainChildProportion)* 100).toInt(),
-              child: mainChildWidget
-            ),
-            Draggable(
-              feedback: Container(),
-              onDragUpdate: (details) {
-                double delta = details.localPosition.dx/constraints.maxWidth;
-                if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
-                  setState(() {
-                    widget.mainChildProportion = delta;
-                  });
-                }
-              },
-              child: MouseRegion(
-                cursor:SystemMouseCursors.resizeLeftRight,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color:Colors.black,
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius:1,
-                        color: Colors.black
-                      )
-                    ]
+    Container(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Row(
+            children: widget.division == SubWindowDivision.left?
+            [
+              Expanded(
+                flex: ((widget.mainChildProportion)* 100).toInt(),
+                child: mainChildWidget
+              ),
+              Draggable(
+                feedback: Container(),
+                onDragUpdate: (details) {
+                  double delta = details.localPosition.dx/constraints.maxWidth;
+                  if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
+                    setState(() {
+                      widget.mainChildProportion = delta;
+                    });
+                  }
+                },
+                child: MouseRegion(
+                  cursor:SystemMouseCursors.resizeLeftRight,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color:Colors.black,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius:1,
+                          color: Colors.black
+                        )
+                      ]
+                    ),
+                    width: EngineSubWindow.subWindowBorderWidth,
                   ),
-                  width: EngineSubWindow.subWindowBorderWidth,
                 ),
               ),
-            ),
-            Expanded(
-              flex:((1-(widget.mainChildProportion))* 100).toInt(),
-              child: secondChildWidget
-            ),
-          ] 
-          :
-          [
-            Expanded(
-              flex:((1-(widget.mainChildProportion))* 100).toInt(),
-              child: secondChildWidget
-            ),
-            Draggable(
-              onDragUpdate: (details) {
-                double delta = details.localPosition.dx/constraints.maxWidth;
-                if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
-                  setState(() {
-                    widget.mainChildProportion = 1- delta;
-                  });
-                }
-              },
-              feedback: Container(),
-              child: MouseRegion(
-                cursor:SystemMouseCursors.resizeLeftRight,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color:Colors.black,
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius:1,
-                        color: Colors.black
-                      )
-                    ]
+              Expanded(
+                flex:((1-(widget.mainChildProportion))* 100).toInt(),
+                child: secondChildWidget
+              ),
+            ] 
+            :
+            [
+              Expanded(
+                flex:((1-(widget.mainChildProportion))* 100).toInt(),
+                child: secondChildWidget
+              ),
+              Draggable(
+                onDragUpdate: (details) {
+                  double delta = details.localPosition.dx/constraints.maxWidth;
+                  if(delta > (1 - widget.proportionAllowedRange)/2 && delta < widget.proportionAllowedRange + (1 - widget.proportionAllowedRange)/2){
+                    setState(() {
+                      widget.mainChildProportion = 1- delta;
+                    });
+                  }
+                },
+                feedback: Container(),
+                child: MouseRegion(
+                  cursor:SystemMouseCursors.resizeLeftRight,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color:Colors.black,
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius:1,
+                          color: Colors.black
+                        )
+                      ]
+                    ),
+                    width: EngineSubWindow.subWindowBorderWidth,
                   ),
-                  width: EngineSubWindow.subWindowBorderWidth,
                 ),
               ),
-            ),
-            Expanded(
-              flex: ((widget.mainChildProportion)* 100).toInt(),
-              child: mainChildWidget
-            ),
-          ]
-        );
-      }
+              Expanded(
+                flex: ((widget.mainChildProportion)* 100).toInt(),
+                child: mainChildWidget
+              ),
+            ]
+          );
+        }
+      ),
     );
   }
 }

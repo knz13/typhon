@@ -128,6 +128,20 @@ class TyphonBindings {
       _lookup<ffi.NativeFunction<ffi.Void Function()>>('unloadLibrary');
   late final _unloadLibrary = _unloadLibraryPtr.asFunction<void Function()>();
 
+  void createObjectFromClassID(
+    int classID,
+  ) {
+    return _createObjectFromClassID(
+      classID,
+    );
+  }
+
+  late final _createObjectFromClassIDPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'createObjectFromClassID');
+  late final _createObjectFromClassID =
+      _createObjectFromClassIDPtr.asFunction<void Function(int)>();
+
   ClassesArray getInstantiableClasses() {
     return _getInstantiableClasses();
   }

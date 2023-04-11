@@ -86,3 +86,8 @@ ClassesArray getInstantiableClasses()
     arr.stringArraySize = names.size();
     return arr;
 }
+
+void createObjectFromClassID(int64_t classID)
+{
+    Engine::CreateNewGameObject(classID);
+}
