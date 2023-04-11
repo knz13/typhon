@@ -87,6 +87,7 @@ flutter:
     - assets/lib/includes/vendor/glm/glm/gtx/
     - assets/lib/includes/vendor/glm/glm/simd/
     - assets/lib/includes/vendor/glm/glm/
+    - assets/lib/includes/vendor/json/single_include/nlohmann/
     - assets/lib/includes/vendor/json/include/nlohmann/
     - assets/lib/includes/vendor/json/include/nlohmann/detail/
     - assets/lib/includes/vendor/json/include/nlohmann/detail/conversions/
