@@ -75,3 +75,46 @@ flutter:
 
   assets:
     - assets/
+    - assets/lib/
+    - assets/images/sprites/
+    - assets/lib/includes/
+    - assets/lib/includes/vendor/
+    - assets/lib/includes/vendor/crunch/crunch/
+    - assets/lib/includes/vendor/entt/single_include/entt/
+    - assets/lib/includes/vendor/glm/glm/detail/
+    - assets/lib/includes/vendor/glm/glm/ext/
+    - assets/lib/includes/vendor/glm/glm/gtc/
+    - assets/lib/includes/vendor/glm/glm/gtx/
+    - assets/lib/includes/vendor/glm/glm/simd/
+    - assets/lib/includes/vendor/glm/glm/
+    - assets/lib/includes/vendor/json/include/nlohmann/
+    - assets/lib/includes/vendor/json/include/nlohmann/detail/
+    - assets/lib/includes/vendor/json/include/nlohmann/detail/conversions/
+    - assets/lib/includes/vendor/json/include/nlohmann/detail/input/
+    - assets/lib/includes/vendor/json/include/nlohmann/detail/iterators/
+    - assets/lib/includes/vendor/json/include/nlohmann/detail/meta/
+    - assets/lib/includes/vendor/json/include/nlohmann/detail/meta/call_std/
+    - assets/lib/includes/vendor/json/include/nlohmann/detail/output/
+    - assets/lib/includes/vendor/json/include/nlohmann/thirdparty/hedley/
+    - assets/lib/includes/vendor/random/include/effolkronium/
+    - assets/lib/includes/vendor/shaderc/glslc/src/
+    - assets/lib/includes/vendor/shaderc/libshaderc/include/shaderc/
+    - assets/lib/includes/vendor/shaderc/libshaderc_util/include/libshaderc_util/
+    - assets/lib/includes/vendor/shaderc/libshaderc_util/src/
+    - assets/lib/includes/vendor/shaderc/third_party/effcee/effcee/
+    - assets/lib/includes/vendor/shaderc/third_party/glslang/glslang/HLSL/
+    - assets/lib/includes/vendor/shaderc/third_party/glslang/glslang/include/
+    - assets/lib/includes/vendor/shaderc/third_party/glslang/glslang/MachineIndependent/
+    - assets/lib/includes/vendor/shaderc/third_party/glslang/glslang/MachineIndependent/preprocessor/
+    - assets/lib/includes/vendor/shaderc/third_party/glslang/glslang/OSDependent/
+    - assets/lib/includes/vendor/shaderc/third_party/glslang/glslang/Public/
+    - assets/lib/includes/vendor/shaderc/third_party/glslang/SPIRV/
+    - assets/lib/includes/vendor/shaderc/third_party/glslang/StandAlone/
+    - assets/lib/includes/vendor/shaderc/third_party/re2/re2/fuzzing/compiler-rt/include/fuzzer/
+    - assets/lib/includes/vendor/shaderc/third_party/re2/re2/
+    - assets/lib/includes/vendor/shaderc/third_party/re2/util/
+    - assets/lib/includes/vendor/shaderc/third_party/spirv-headers/include/spirv/1.0/
+    - assets/lib/includes/vendor/shaderc/third_party/spirv-headers/include/spirv/1.1/
+    - assets/lib/includes/vendor/shaderc/third_party/spirv-headers/include/spirv/1.2/
+    - assets/lib/includes/vendor/shaderc/third_party/spirv-tools/include/spirv-tools/
+    - assets/lib/includes/vendor/yael/include/

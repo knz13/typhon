@@ -2,7 +2,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
-#include "vendor/entt/src/entt/entt.hpp"
+#include "vendor/entt/single_include/entt/entt.hpp"
 #include "vendor/random/include/effolkronium/random.hpp"
 #include "vendor/glm/glm/glm.hpp"
 #include "vendor/yael/include/yael.h"

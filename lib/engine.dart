@@ -139,7 +139,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       List<String> lines = cmakeFile.readAsLinesSync();
       for(String line in lines) {
         if(line.contains("__TYPHON__LIBRARY_LOCATION__LINE__")){
-          cmakeFileData += "link_directories(${(await TyphonCPPInterface.getLibraryPath()).replaceAll(r" ", r"\ ")}) #__TYPHON__LIBRARY_LOCATION__LINE__\n";
+          cmakeFileData += "link_directories(${(await TyphonCPPInterface.getLibraryPath()).replaceAll("\\", "/").replaceAll(r" ", r"\ ")}) #__TYPHON__LIBRARY_LOCATION__LINE__\n";
           continue;
         }
         cmakeFileData += line;
@@ -320,13 +320,18 @@ extern "C" {
     bindingsGenerated.writeAsStringSync(bindingsGeneratedData);
   
 
-    var result = await Process.run("cmake", ["-B build"],workingDirectory: projectPath,runInShell: true);
+    var result = await Process.run("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
     if(Platform.isMacOS){
       result = await Process.run("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
       print(result.stdout);
       print(result.stderr);
 
     } 
+    if(Platform.isWindows){
+      result = await Process.run("msbuild",["${projectFilteredName}.sln","/target:${projectFilteredName}","/p:Configuration=Debug"],workingDirectory: path.join(projectPath,"build"),runInShell: true);
+      print(result.stderr);
+      print(result.stdout);
+    }
     var library = await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
       Platform.isMacOS ? "lib${projectFilteredName}.dylib" : "" //TODO!
     ));
