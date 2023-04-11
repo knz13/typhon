@@ -72,12 +72,17 @@ class GeneralButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return MaterialButton(
-      splashColor: Colors.transparent,
-      hoverColor: Colors.white24,
-      highlightColor: Colors.white24,
-      onPressed: onPressed,
-      child: child,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: MaterialButton(
+        minWidth: 0,
+        padding: EdgeInsets.zero,
+        splashColor: Colors.transparent,
+        hoverColor: Colors.white24,
+        highlightColor: Colors.white24,
+        onPressed: onPressed,
+        child: child,
+      ),
     );
   }
 
