@@ -74,7 +74,7 @@ public:
 };
 
 class OnBeignBaseOfObjectInternal{
-protected:
+public:
     virtual void ExecuteOnObjectCreationInternal(GameObject* ptr) {};
 
 

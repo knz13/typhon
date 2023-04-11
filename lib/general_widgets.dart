@@ -12,6 +12,7 @@ import 'package:flutter/services.dart' show MethodCall, MethodChannel;
 import 'package:flutter/widgets.dart' show Offset;
 import 'package:native_context_menu/native_context_menu.dart';
 import 'package:typhon/engine_sub_window.dart';
+import 'package:typhon/main.dart';
 
 T? castOrNull<T>(dynamic x) => x is T ? x : null;
 
@@ -56,6 +57,30 @@ class ContextMenuOption {
   });
 
   
+}
+
+class GeneralButton extends StatelessWidget {
+
+  GeneralButton({
+    required this.onPressed,
+    this.child
+  });
+
+  void Function() onPressed;
+  Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return MaterialButton(
+      splashColor: Colors.transparent,
+      hoverColor: Colors.white24,
+      highlightColor: Colors.white24,
+      onPressed: onPressed,
+      child: child,
+    );
+  }
+
 }
 
 class GeneralText extends StatelessWidget {

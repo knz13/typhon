@@ -49,6 +49,7 @@ dependencies:
   url_launcher:
   watcher:
   flutter_styled_toast:
+  flutter_spinkit:
   
 dev_dependencies:
   flutter_test:

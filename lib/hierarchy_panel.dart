@@ -16,6 +16,7 @@ import 'package:typhon/typhon_bindings_generated.dart';
 
 import 'engine.dart';
 import 'general_widgets.dart';
+import 'main.dart';
 
 
 class HierarchyPanel extends WidgetPanel {
@@ -31,43 +32,63 @@ class HierarchyPanel extends WidgetPanel {
   }
 }
 
-class HierarchyPanelTop extends StatelessWidget {
+class HierarchyPanelTop extends StatefulWidget {
+
+
+
+  @override
+  State<HierarchyPanelTop> createState() => _HierarchyPanelTopState();
+}
+
+class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+
+    Engine.instance.onRecompileNotifier.addListener(() {
+      if(mounted)
+      setState(() {
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
         children: [
-          /* FutureBuilder(
-            future: TyphonCPPInterface.initializeLibraryAndGetBindings(),
-            builder: (context,snapshot) => NativeContextMenuButton(
-              child: Row(
-                children: [
-                  Icon(MdiIcons.plus,color:Colors.white),
-                  Icon(MdiIcons.menuDown,color:Colors.white)
-                ],
-              ),
-              menuItems: snapshot.hasData ? 
-              (() {
-                //ClassesArray arr = getCppFunctions().getClassesToAddToHierarchyMenu();
-          
-                List<ContextMenuOption> options = [];
-                /* for(int index in List.generate(arr.size, (index) => index)){
-                  var val = arr.array.elementAt(index).value;
-                  final Pointer<Utf8> str = arr.stringArray.elementAt(index).value.cast();
+          GeneralButton(
+            onPressed: () {
+              showNativeContextMenu(context, MyApp.globalMousePosition.dx, MyApp.globalMousePosition.dy,TyphonCPPInterface.checkIfLibraryLoaded() ? (() {
+              ClassesArray arr = TyphonCPPInterface.getCppFunctions().getInstantiableClasses();
+              List<ContextMenuOption> options = [];
+              for(int index in List.generate(arr.size, (index) => index)){
+                var val = arr.array.elementAt(index).value;
+                final Pointer<Utf8> str = arr.stringArray.elementAt(index).value.cast<Utf8>();
 
-                  options.add(
-                    ContextMenuOption(
-                      title: str.toDartString(),
-                      callback: () {getCppFunctions().addGameObjectFromClassID(val);}
-                    )
-                  );
-                }
-                 */
-                return options;
-              })()
-              :
-              [],
+                options.add(
+                  ContextMenuOption(
+                    title: str.toDartString(),
+                    callback: () {TyphonCPPInterface.getCppFunctions().createObjectFromClassID(val);}
+                  )
+                );
+              }
+              
+              return options;
+            })()
+            :
+            []);
+            },
+            child: Row(
+              children: [
+                Icon(MdiIcons.plus,color:Colors.white),
+                Icon(MdiIcons.menuDown,color:Colors.white)
+              ], 
             ),
-          ), */
+            
+          ),
           SizedBox(
             width: 10,
           ),
@@ -99,7 +120,6 @@ class HierarchyPanelTop extends StatelessWidget {
         ],
       );
   }
-
 }
 
 

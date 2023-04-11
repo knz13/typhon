@@ -36,7 +36,7 @@ class TyphonCPPInterface {
 
 
 
-  static Future<String> _extractLib() async {
+  static Future<String> extractLib() async {
 
       Directory docsDir = await getApplicationSupportDirectory();
 
@@ -148,14 +148,13 @@ class TyphonCPPInterface {
 
   static TyphonBindings? _bindings;
 
-  static Future<TyphonBindings> initializeLibraryAndGetBindings() async {
+  static Future<TyphonBindings> initializeLibraryAndGetBindings(String pathToLibrary) async {
     if(_lib != null){
         _bindings!.unloadLibrary();
 
         _lib = null;
     }
-    String libraryPath = await _extractLib();
-    _lib ??= DynamicLibrary.open(libraryPath);
+    _lib ??= DynamicLibrary.open(pathToLibrary);
     
     _bindings = TyphonBindings(_lib!);
 

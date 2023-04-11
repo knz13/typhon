@@ -13,7 +13,6 @@ namespace Reflection {
 
     };
 
-
     class InitializedStaticallyStorage {
     public:
         static std::vector<std::function<void()>> functionsFromDerivedClasses;
@@ -23,6 +22,9 @@ namespace Reflection {
     template<typename Derived>
     class IsInitializedStatically {
         static inline int m = [](){
+            
+            
+
             if constexpr (has_initialize_statically<Derived>::value){
                 InitializedStaticallyStorage::functionsFromDerivedClasses.push_back(
                     [](){
@@ -39,12 +41,7 @@ namespace Reflection {
 
 
     public:
-        static void InitializeDerivedClasses() {
-            std::cout << "initializing static classes! len = " << InitializedStaticallyStorage::functionsFromDerivedClasses.size()<< std::endl;
-            for(const auto& func : InitializedStaticallyStorage::functionsFromDerivedClasses){
-                func();
-            }
-        }
+        
 
         IsInitializedStatically()
         {

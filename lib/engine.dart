@@ -63,7 +63,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   static Random rng = Random();
   static Engine instance = Engine();
   
-
+  ValueNotifier onRecompileNotifier = ValueNotifier(0);
   String projectPath = "";
   String projectName = "";
   String projectFilteredName = "";
@@ -100,9 +100,13 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   Future<void> reloadProject() async {
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
+
       TyphonCPPInterface.getCppFunctions().unloadLibrary();
+
     }
-    var library = await TyphonCPPInterface.initializeLibraryAndGetBindings();
+    
+    await recompileProject();
+    var library = TyphonCPPInterface.getCppFunctions();
     await TyphonCPPInterface.extractImagesFromAssets();
     library.passProjectPath((await getApplicationSupportDirectory()).path.toNativeUtf8().cast());
     library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
@@ -255,6 +259,8 @@ extern "C" {
   }
 
   Future<void> recompileProject() async {
+    
+
     showDialog(context: MyApp.globalContext.currentContext!, builder:(context) {
       return BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -314,20 +320,19 @@ extern "C" {
     bindingsGenerated.writeAsStringSync(bindingsGeneratedData);
   
 
-    var result = Process.run("cmake", ["-B build"],workingDirectory: projectPath,runInShell: true);
-    result.then((value) {
-        if(Platform.isMacOS){
-          var result = Process.run("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
-          result.then((value) {
-              print(value.stdout);
-              print(value.stderr);
-              Navigator.of(MyApp.globalContext.currentContext!).pop();
-            }
-          );
-        }
+    var result = await Process.run("cmake", ["-B build"],workingDirectory: projectPath,runInShell: true);
+    if(Platform.isMacOS){
+      result = await Process.run("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
+      print(result.stdout);
+      print(result.stderr);
+
+    } 
+    var library = await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
+      Platform.isMacOS ? "lib${projectFilteredName}.dylib" : "" //TODO!
+    ));
+    onRecompileNotifier.value++;
+    Navigator.of(MyApp.globalContext.currentContext!).pop();
         
-      }
-    );
     
   }
 

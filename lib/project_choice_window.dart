@@ -490,8 +490,10 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                               showToast("Please Provide a Valid Project Location",context:context);
                               return;
                             }
-                            Engine.instance.initializeProject(projectLocationPath!, projectName!);
                             Navigator.push(context, MaterialPageRoute(builder: (context) => MainEngineFrontend()));
+                            Future.delayed(Duration(milliseconds: 500),(){
+                              Engine.instance.initializeProject(projectLocationPath!, projectName!);
+                            });
                           },
                           child: Container(
                             height: 40,
@@ -773,28 +775,66 @@ class _ProjectsPageState extends State<ProjectsPage> {
                     ProjectHeaderItem(text:"Modified",flex:2),
                     ProjectHeaderItem(text: ""),
                   ],),
+                  SizedBox(
+                    height: 15,
+                  ),
                   Expanded(
                     child: FutureBuilder(future: Engine.instance.getProjectsJSON(),builder:(context, snapshot) {
                       return ListView.builder(
                         itemCount: snapshot.hasData? snapshot.data!.length : 0,
                         itemBuilder:(context, index) {
-                          return InkWell(
-                            onTap: () {
-                              Engine.instance.initializeProject(path.dirname(snapshot.data!.keys.toList()[index]), snapshot.data![snapshot.data!.keys.toList()[index]]["name"]);
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => MainEngineFrontend()));
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ProjectListItem(text:""),
-                                ProjectListItem(
-                                  text:snapshot.data![snapshot.data!.keys.toList()[index]]["name"],
-                                  flex:2,
-                                  subtitleText: snapshot.data!.keys.toList()[index]
-                                ),
-                                ProjectListItem(text:"something",flex:2),
-                                ProjectListItem(text:""),
-                              ]
+                          if(!snapshot.hasData) {
+                            return Container();
+                          }
+                          if(snapshot.hasData && !Directory(snapshot.data!.keys.toList()[index]).existsSync()){
+                            var map = snapshot.data!;
+                            map.remove(snapshot.data!.keys.toList()[index]);
+                            Engine.instance.saveProjectsJSON(map);
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: MaterialButton(
+                              hoverColor: Colors.white12,
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => MainEngineFrontend()));
+                                Future.delayed(Duration(milliseconds: 500),(){
+                                  Engine.instance.initializeProject(path.dirname(snapshot.data!.keys.toList()[index]), snapshot.data![snapshot.data!.keys.toList()[index]]["name"]);
+                                });
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ProjectListItem(text:""),
+                                  ProjectListItem(
+                                    text:snapshot.data![snapshot.data!.keys.toList()[index]]["name"],
+                                    flex:2,
+                                    subtitleText: snapshot.data!.keys.toList()[index]
+                                  ),
+                                  ProjectListItem(text:"some date",flex:2),
+                                  ProjectListItem(
+                                    text: "",
+                                    child: MaterialButton(
+                                      minWidth: 10,
+                                      onPressed: () {
+                                        showNativeContextMenu(context,MyApp.globalMousePosition.dx , MyApp.globalMousePosition.dy, [
+                                          ContextMenuOption(
+                                            title: "Remove Project",
+                                            callback: () {
+                                              Directory(snapshot.data!.keys.toList()[index]).deleteSync(recursive: true);
+                                                var map = snapshot.data!;
+                                                map.remove(snapshot.data!.keys.toList()[index]);
+                                                setState(() {
+                                                  Engine.instance.saveProjectsJSON(map);
+                                                });
+                                            }
+                                          )
+                                        ]);
+                                      },
+                                      child: Icon(MdiIcons.dotsVertical,color: Colors.white,),
+                                    )
+                                  ),
+                                ]
+                              ),
                             ),
                           );
                       },);
@@ -815,12 +855,14 @@ class ProjectListItem extends StatelessWidget {
     super.key,
     required this.text,
     this.flex,
-    this.subtitleText
+    this.subtitleText,
+    this.child
   });
 
   String text;
   String? subtitleText;
   int? flex;
+  Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -828,11 +870,11 @@ class ProjectListItem extends StatelessWidget {
       flex: flex ?? 1,
       child: Container(
         decoration: BoxDecoration(
-          color: primaryBlack,
+          color: primaryBlack.withAlpha(0),
         ),
         child: Padding(
           padding: EdgeInsets.all(10),
-          child: Column(
+          child: child ?? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GeneralText(this.text,fontSize: 18,),

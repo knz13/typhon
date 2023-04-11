@@ -11,7 +11,10 @@ bool initializeCppLibrary() {
     MonoManager::getInstance();
     ShaderCompiler::getInstance();
     
+    
+
     Engine::Initialize();
+
     
 
     return true;    
@@ -74,6 +77,8 @@ ClassesArray getInstantiableClasses()
         names.push_back(name.c_str());
         ids.push_back(id);
     }
+
+    std::cout << "names size = " << names.size() << std::endl;
 
     ClassesArray arr;
 

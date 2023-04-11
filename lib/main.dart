@@ -8,6 +8,7 @@ import 'package:typhon/hierarchy_panel.dart';
 import 'package:typhon/inspector_panel.dart';
 import 'package:typhon/project_choice_window.dart';
 import 'package:typhon/scene_viewer_panel.dart';
+import 'package:typhon/typhon_bindings.dart';
 import 'engine.dart';
 import 'file_viewer_panel.dart';
 import 'main_engine_frontend.dart';
@@ -32,19 +33,21 @@ double contextHeight(var context){
   return MediaQuery.of(context).size.height;
 }
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowTitle('Typhon');
     setWindowMinSize(const Size(1280, 600));
     setWindowMaxSize(Size.infinite);
   }
+  await TyphonCPPInterface.extractLib();
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  static Offset globalMousePosition = Offset.zero;
   static GlobalKey<NavigatorState> globalContext = GlobalKey();
 
   @override
@@ -64,42 +67,47 @@ class _MyAppState extends State<MyApp> {
   int page = 1;
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
-      navigatorKey: MyApp.globalContext,
-      title: 'Typhon',
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: ProjectsPage(),
-        // Stack(
-        //   children: [
-        //     [
-        //       MainEngineFrontend(),
-        //       const ProjectsPage(),
-        //       const ProjectChoiceWindow(),
-        //     ][page%3],
-        //
-        //     Positioned(
-        //       top: 0,
-        //       right: 0,
-        //       child: Container(
-        //         height: 50,
-        //         width: 50,
-        //         color: Colors.black,
-        //         child: RawMaterialButton(
-        //           onPressed: (){
-        //             setState(() {
-        //               page++;
-        //               page %= 3;
-        //             });
-        //           },
-        //           child: const Icon(MdiIcons.reload,color: Colors.white,),
-        //         ),
-        //       ),
-        //     )
-        //   ],
-        // ),
+    return  MouseRegion(
+      onHover: (ev) {
+        MyApp.globalMousePosition = ev.position;
+      },
+      child: MaterialApp(
+        navigatorKey: MyApp.globalContext,
+        title: 'Typhon',
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: ProjectsPage()
+        )
       ),
     );
   }
 }
 
+          // Stack(
+          //   children: [
+          //     [
+          //       MainEngineFrontend(),
+          //       const ProjectsPage(),
+          //       const ProjectChoiceWindow(),
+          //     ][page%3],
+          //
+          //     Positioned(
+          //       top: 0,
+          //       right: 0,
+          //       child: Container(
+          //         height: 50,
+          //         width: 50,
+          //         color: Colors.black,
+          //         child: RawMaterialButton(
+          //           onPressed: (){
+          //             setState(() {
+          //               page++;
+          //               page %= 3;
+          //             });
+          //           },
+          //           child: const Icon(MdiIcons.reload,color: Colors.white,),
+          //         ),
+          //       ),
+          //     )
+          //   ],
+          // ),

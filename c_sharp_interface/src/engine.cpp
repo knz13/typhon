@@ -1,5 +1,4 @@
 #include "engine.h"
-#include "TerrariaLikeGame/FlyingTreant.h"
 #include "game_object_traits.h"
 #include "crunch_texture_packer.h"
 #include <filesystem>
@@ -17,8 +16,11 @@ std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,d
 void Engine::Initialize()
 {
     std::cout << "initializing engine in c++" << std::endl;
-    //Engine::CreateNewGameObject<FlyingTreant>();
     
+    for(auto& func : Reflection::InitializedStaticallyStorage::functionsFromDerivedClasses){
+        func();
+    }
+
     std::cout << "trying texture packer" << std::endl;
     textureAtlas = CreateTextureAtlasFromImages();
     
@@ -26,10 +28,14 @@ void Engine::Initialize()
 
 void Engine::Unload()
 {   
+
     std::cout << "calling unload!" << std::endl;
     for(const auto& [key,value] : aliveObjects){
         RemoveGameObjectFromHandle(key);
     }
+
+    Reflection::InitializedStaticallyStorage::functionsFromDerivedClasses.clear();
+
 }
 
 std::vector<std::string> Engine::GetImagePathsFromLibrary()
