@@ -302,7 +302,7 @@ extern "C" {
       }
       if(line.contains("//__INITIALIZE__USER__DEFINED__CLASSES__")){
         includes.forEach((element) {
-          if(element == "assets/entry.h"){
+          if(element == "assets/entry.h" || element == "assets\\entry.h"){
             return;
           }
           bindingsGeneratedData += "    ${path.basenameWithoutExtension(element)}();\n";
