@@ -337,13 +337,9 @@ extern "C" {
     bindingsGeneratedCPP.writeAsString("""#include <iostream>
 #include <stdint.h>
 #include "bindings_generated.h"
-#include "includes/mono_manager.h"
-#include "includes/shader_compiler.h"
 
 bool initializeCppLibrary() {
     
-    MonoManager::getInstance();
-    ShaderCompiler::getInstance();
     
     Engine::Initialize();
 

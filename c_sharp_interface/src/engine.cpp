@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "game_object_traits.h"
 #include "crunch_texture_packer.h"
+#include "shader_compiler.h"
 #include <filesystem>
 #include <fstream>
 
@@ -16,6 +17,8 @@ std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,d
 void Engine::Initialize()
 {
     std::cout << "initializing engine in c++" << std::endl;
+
+    ShaderCompiler::getInstance();    
     
     for(auto& func : Reflection::InitializedStaticallyStorage::functionsFromDerivedClasses){
         func();
@@ -38,7 +41,7 @@ void Engine::Unload()
     GameObject::instantiableClasses.clear();
     GameObject::instantiableClassesIDs.clear();
     GameObject::instantiableClassesNames.clear();
-    
+
 }
 
 std::vector<std::string> Engine::GetImagePathsFromLibrary()
