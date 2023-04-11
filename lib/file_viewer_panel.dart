@@ -90,7 +90,7 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
       }
     });
 
-    /* (() async {
+/*     (() async {
       print("recreating project!");
       var map = (await Engine.instance.getProjectsJSON());
       map.clear();

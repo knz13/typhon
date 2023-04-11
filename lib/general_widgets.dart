@@ -72,6 +72,7 @@ class GeneralText extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
+        overflow: TextOverflow.ellipsis,
         color: platinumGray,
         fontSize: fontSize
       ),

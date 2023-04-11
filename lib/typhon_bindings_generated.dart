@@ -127,6 +127,16 @@ class TyphonBindings {
   late final _unloadLibraryPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function()>>('unloadLibrary');
   late final _unloadLibrary = _unloadLibraryPtr.asFunction<void Function()>();
+
+  ClassesArray getInstantiableClasses() {
+    return _getInstantiableClasses();
+  }
+
+  late final _getInstantiableClassesPtr =
+      _lookup<ffi.NativeFunction<ClassesArray Function()>>(
+          'getInstantiableClasses');
+  late final _getInstantiableClasses =
+      _getInstantiableClassesPtr.asFunction<ClassesArray Function()>();
 }
 
 typedef EnqueueObjectRender = ffi.Pointer<
@@ -142,3 +152,15 @@ typedef EnqueueObjectRender = ffi.Pointer<
             ffi.Double,
             ffi.Double,
             ffi.Double)>>;
+
+class ClassesArray extends ffi.Struct {
+  external ffi.Pointer<ffi.Int64> array;
+
+  external ffi.Pointer<ffi.Pointer<ffi.Char>> stringArray;
+
+  @ffi.Int64()
+  external int stringArraySize;
+
+  @ffi.Int64()
+  external int size;
+}

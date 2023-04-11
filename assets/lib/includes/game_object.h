@@ -1,13 +1,24 @@
 #pragma once
 #include "general.h"
 #include "reflection_checks.h"
+#include "generic_reflection.h"
 #include "ecs_registry.h"
+
+DEFINE_HAS_SIGNATURE(has_set_defaults_function,T::SetDefaults,void (T::*)());
+
 
 template<typename MainClass,typename... DerivedClasses>
 class DerivedFromGameObject;
 
 class GameObject {
 public:
+
+    static const std::map<int64_t,std::function<std::pair<entt::entity,std::shared_ptr<GameObject>>()>>& GetInstantiableClassesFunctions() {
+        return instantiableClasses;
+    }
+    static const std::map<int64_t,std::string> GetInstantiableClassesIDsToNames() {
+        return instantiableClassesNames;
+    }
 
     bool Valid();
     entt::entity Handle(){
@@ -21,6 +32,10 @@ public:
 protected:
 
 private:
+    static std::map<int64_t,std::function<std::pair<entt::entity,std::shared_ptr<GameObject>>()>> instantiableClasses;
+    static std::map<int64_t,std::string> instantiableClassesNames;
+    static std::map<std::string,int64_t> instantiableClassesIDs;
+
     std::string className = "";
     yael::event_launcher<void()> onDestroyEvent;
     entt::entity handle = entt::null;
@@ -41,13 +56,58 @@ DEFINE_HAS_SIGNATURE(has_on_destroy,T::Destroy,void (T::*) ());
 
 
 
-   
+template<typename... Others>
+constexpr bool CheckIfDerivedFromGameObject() {
+    return (std::is_base_of<GameObject,Others>::value || ...);
+};
+
+
+template<typename... DerivedClasses>
+class ConditionedOnGameObject {
+public:
+    ConditionedOnGameObject() {
+        static_assert(CheckIfDerivedFromGameObject<DerivedClasses...>(),"You've used a class that is derived from ConditionedOnGameObject without also deriving from GameObject, please add it or one of its derived classes");
+    }
+
+
+
+};
+
+class OnBeignBaseOfObjectInternal{
+protected:
+    virtual void ExecuteOnObjectCreationInternal(GameObject* ptr) {};
+
+
+    friend class Engine;
+};
+
+
 
 
 template<typename MainClass,typename... DerivedClasses> 
-class DerivedFromGameObject : public GameObject,public DerivedClasses... {
+class DerivedFromGameObject : public GameObject,public Reflection::IsInitializedStatically<DerivedFromGameObject<MainClass,DerivedClasses...>>,public DerivedClasses... {
 public:
-    
+    static void InitializeStatically() {
+        GameObject::instantiableClasses[HelperFunctions::GetClassID<MainClass>()] = [](){
+            std::cout << "Trying to create game object with type " << HelperFunctions::GetClassNameString<MainClass>()<<std::endl;
+            entt::entity e = ECSRegistry::Get().create();
+            auto ptr = std::shared_ptr<GameObject>(new MainClass());
+            ptr.get()->handle = e;
+            ptr.get()->GameObjectOnCreate();
+
+            if constexpr (std::is_base_of<OnBeignBaseOfObjectInternal,MainClass>::value) {
+                static_cast<OnBeignBaseOfObjectInternal*>(static_cast<MainClass*>(ptr.get()))->ExecuteOnObjectCreationInternal(ptr.get());
+            }
+
+            if constexpr (has_set_defaults_function<MainClass>::value){
+                static_cast<MainClass*>(ptr.get())->SetDefaults();
+            }
+
+            return std::make_pair(e,ptr);
+        };
+        GameObject::instantiableClassesIDs[HelperFunctions::GetClassNameString<MainClass>()] = HelperFunctions::GetClassID<MainClass>();
+        GameObject::instantiableClassesNames[HelperFunctions::GetClassID<MainClass>()] = HelperFunctions::GetClassNameString<MainClass>();
+    };
 
 private:
 
@@ -83,31 +143,6 @@ private:
     };
 private:
     
-    friend class Engine;
-};
-
-template<typename... Others>
-constexpr bool CheckIfDerivedFromGameObject() {
-    return (std::is_base_of<GameObject,Others>::value || ...);
-};
-
-
-template<typename... DerivedClasses>
-class ConditionedOnGameObject {
-public:
-    ConditionedOnGameObject() {
-        static_assert(CheckIfDerivedFromGameObject<DerivedClasses...>(),"You've used a class that is derived from ConditionedOnGameObject without also deriving from GameObject, please add it or one of its derived classes");
-    }
-
-
-
-};
-
-class OnBeignBaseOfObjectInternal{
-protected:
-    virtual void ExecuteOnObjectCreationInternal(GameObject* ptr) {};
-
-
     friend class Engine;
 };
 

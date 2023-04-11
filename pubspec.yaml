@@ -48,6 +48,7 @@ dependencies:
   file_picker:
   url_launcher:
   watcher:
+  flutter_styled_toast:
   
 dev_dependencies:
   flutter_test:

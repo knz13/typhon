@@ -32,6 +32,7 @@ extern "C" {
     FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
     FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
     FFI_PLUGIN_EXPORT void unloadLibrary();
+    FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
 
 #ifdef __cplusplus
 }

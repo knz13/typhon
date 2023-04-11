@@ -25,6 +25,7 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/general_widgets.dart';
+import 'package:typhon/main.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
@@ -65,6 +66,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   String projectPath = "";
   String projectName = "";
+  String projectFilteredName = "";
   Image? atlasImage;
   static Queue<EngineRenderingDataFromAtlas> renderingObjects = Queue();
 
@@ -115,15 +117,18 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     }
   }
 
-  Future<void> initializeProject(String projectPath,String projectName) async {
+  Future<void> initializeProject(String projectDirectoryPath,String projectName) async {
     
     //testing if project exists and loading it if true
     var map = await getProjectsJSON();
+    var projectFilteredName = projectName.replaceAllMapped(RegExp(r'[^a-zA-Z0-9]'), (match) => '_');
+    var projectPath = path.join(projectDirectoryPath,projectFilteredName);
 
+    
     if(map.containsKey(projectPath)) {
       this.projectPath = projectPath;
       this.projectName = projectName;
-
+      this.projectFilteredName = projectFilteredName;
       
       String cmakeFileData = "";
       File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"));
@@ -221,7 +226,7 @@ extern "C" {
 
 
     cmakeTemplateString = cmakeTemplateString.replaceAll('__CMAKE__VERSION__','3.16')
-    .replaceAll('__PROJECT__NAME__',projectName)
+    .replaceAll('__PROJECT__NAME__',projectFilteredName)
     .replaceAll('__TYPHON__LIBRARY__LOCATION__',await TyphonCPPInterface.getLibraryPath())
     .replaceAll('__TYPHON__INCLUDE__DIRECTORIES__',path.join(projectPath,'includes'));
     
@@ -230,7 +235,7 @@ extern "C" {
 
     await saveProjectsJSON(map);
 
-    return await initializeProject(projectPath, projectName);
+    return await initializeProject(projectDirectoryPath, projectName);
 
   }
 
@@ -250,7 +255,23 @@ extern "C" {
   }
 
   Future<void> recompileProject() async {
+    showDialog(context: MyApp.globalContext.currentContext!, builder:(context) {
+      return BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+          backgroundColor: Colors.blue,
+          child: Column(
+            children: [
+              GeneralText("Recompiling..."),
+              CircularProgressIndicator()
+            ],
+          ),
+        )
+    );
+    },);
     if(!hasInitializedProject()){
+      Navigator.of(MyApp.globalContext.currentContext!).pop();
       return;
     }
     print("recompiling...");
@@ -296,13 +317,15 @@ extern "C" {
     var result = Process.run("cmake", ["-B build"],workingDirectory: projectPath,runInShell: true);
     result.then((value) {
         if(Platform.isMacOS){
-          var result = Process.run("make",[projectName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
+          var result = Process.run("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
           result.then((value) {
               print(value.stdout);
               print(value.stderr);
+              Navigator.of(MyApp.globalContext.currentContext!).pop();
             }
           );
         }
+        
       }
     );
     

@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:typhon/general_widgets.dart';
 import 'package:typhon/main_engine_frontend.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'engine.dart';
 import 'main.dart';
 
@@ -37,7 +40,8 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
   // Controllers
   int selectedMiddleOptionMenu = 0;
   int selectedOptionSideMenu = 0;
-
+  String? projectLocationPath;
+  String? projectName;
   // Colors
   Color leadingIconColor = Colors.white.withOpacity(0.8);
   Color activeColor = const Color.fromRGBO(62,62,62,1);
@@ -382,6 +386,9 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 20),
                                             child: TextFormField(
+                                              onChanged: (value) {
+                                                projectName = value;
+                                              },
                                               style: const TextStyle(
                                                   color: Colors.white,
                                                   fontWeight: FontWeight.w600
@@ -409,10 +416,16 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                           borderRadius: BorderRadius.circular(5),
                                         ),
                                         child: RawMaterialButton(
-                                          onPressed: (){},
-                                          child: const Padding(
+                                          onPressed: ()async {
+                                            var path = await FilePicker.platform.getDirectoryPath(dialogTitle: "Select Project Directory");
+                                            setState(() {
+                                              projectLocationPath = path;
+                                            });
+                                          },
+                                          child: Padding(
                                             padding: EdgeInsets.symmetric(horizontal: 15),
                                             child: ListTile(
+                                              subtitle: projectLocationPath != null ? GeneralText(projectLocationPath!) : null ,
                                               title: Text("Location",style: TextStyle(color: Colors.white,fontWeight: FontWeight.w600),),
                                               trailing: Icon(MdiIcons.folder,color: Colors.white,),
                                             ),
@@ -448,7 +461,9 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                     child: Row(
                       children: [
                         RawMaterialButton(
-                          onPressed: (){},
+                          onPressed: (){
+                            Navigator.of(context).pop();
+                          },
                           child: Container(
                             height: 40,
                             width: 100,
@@ -466,7 +481,15 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                         ),
                         RawMaterialButton(
                           onPressed: (){
-                            
+                            if(projectName == null) {
+                              showToast("Please Provide a Name For Your Project",context:context);
+                              return;
+                            }
+                            if (projectLocationPath == null) {
+                              showToast("Please Provide a Valid Project Location",context:context);
+                              return;
+                            }
+                            Engine.instance.initializeProject(projectLocationPath!, projectName!);
                             Navigator.push(context, MaterialPageRoute(builder: (context) => MainEngineFrontend()));
                           },
                           child: Container(
@@ -740,12 +763,58 @@ class _ProjectsPageState extends State<ProjectsPage> {
                       ],
                     ),
                   ),
-                  Container(),
+                  //List of projects
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                    ProjectHeaderItem(text: ""),
+                    ProjectHeaderItem(text: "Project Name",flex:2),
+                    ProjectHeaderItem(text:"Modified",flex:2),
+                    ProjectHeaderItem(text: ""),
+                  ],),
+                  Expanded(
+                    child: FutureBuilder(future: Engine.instance.getProjectsJSON(),builder:(context, snapshot) {
+                      return ListView.builder(
+                        itemCount: snapshot.hasData? snapshot.data!.length : 0,
+                        itemBuilder:(context, index) {
+                          return Container();
+                      },);
+                    },),
+                  )
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ProjectHeaderItem extends StatelessWidget {
+  ProjectHeaderItem({
+    super.key,
+    required this.text,
+    this.flex
+  });
+
+  String text;
+  int? flex;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: flex ?? 1,
+      child: Container(
+        decoration: BoxDecoration(
+          color: activeColor,
+          border: Border.all(
+          )
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: GeneralText(this.text,fontSize: 20,)
+        ),
       ),
     );
   }

@@ -45,6 +45,8 @@ void main() {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  static GlobalKey<NavigatorState> globalContext = GlobalKey();
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -62,7 +64,8 @@ class _MyAppState extends State<MyApp> {
   int page = 1;
   @override
   Widget build(BuildContext context) {
-    return  const MaterialApp(
+    return  MaterialApp(
+      navigatorKey: MyApp.globalContext,
       title: 'Typhon',
       debugShowCheckedModeBanner: false,
       home: Scaffold(

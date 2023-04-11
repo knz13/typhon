@@ -8,7 +8,6 @@
 #include "crunch_texture_packer.h"
 
 
-DEFINE_HAS_SIGNATURE(has_set_defaults_function,T::SetDefaults,void (T::*)());
 
 class Engine {
 public:
@@ -40,6 +39,26 @@ public:
         return *static_cast<T*>(aliveObjects[e].get());
     };
 
+
+    static GameObject* CreateNewGameObject(int64_t identifier) {
+        if(GameObject::GetInstantiableClassesFunctions().find(identifier) == GameObject::GetInstantiableClassesFunctions().end()){
+            return nullptr;
+        }
+        else {
+            auto [e,ptr] = GameObject::GetInstantiableClassesFunctions().at(identifier)();
+            aliveObjects[e] = ptr;
+            return ptr.get();
+        }
+    }
+    static GameObject* CreateNewGameObject(std::string className) {
+        if(GameObject::instantiableClassesIDs.find(className) == GameObject::instantiableClassesIDs.end()){
+            return nullptr;
+        }
+        int64_t identifier = GameObject::instantiableClassesIDs[className];
+        auto [e,ptr] = GameObject::GetInstantiableClassesFunctions().at(identifier)();
+        aliveObjects[e] = ptr;
+        return ptr.get();
+    }
    
 
     static bool RemoveGameObject(GameObject obj) {

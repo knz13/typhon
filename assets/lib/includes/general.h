@@ -122,7 +122,7 @@ namespace HelperFunctions {
     }
 
     template<typename T>
-    static int64_t GetIDFromString() {
+    static int64_t GetClassID() {
         static std::hash<std::string> hasher;
             
 
@@ -139,6 +139,8 @@ public:
     static std::string projectPath;
 
 };
+
+
 
 template<int N, typename... Ts> using NthTypeOf =
         typename std::tuple_element<N, std::tuple<Ts...>>::type;

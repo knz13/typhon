@@ -61,3 +61,25 @@ void unloadLibrary()
     Engine::Unload();
 
 }
+
+ClassesArray getInstantiableClasses()
+{
+    static std::vector<int64_t> ids;
+    static std::vector<const char*> names;
+
+    ids.clear();
+    names.clear();
+
+    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
+        names.push_back(name.c_str());
+        ids.push_back(id);
+    }
+
+    ClassesArray arr;
+
+    arr.array = ids.data();
+    arr.size = ids.size();
+    arr.stringArray = names.data();
+    arr.stringArraySize = names.size();
+    return arr;
+}
