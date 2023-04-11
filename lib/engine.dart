@@ -333,7 +333,7 @@ extern "C" {
       print(result.stdout);
     }
     var library = await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
-      Platform.isMacOS ? "lib${projectFilteredName}.dylib" : Platform.isWindows? "Debug/${projectFilteredName}.lib" : "" //TODO!
+      Platform.isMacOS ? "lib${projectFilteredName}.dylib" : Platform.isWindows? "Debug/${projectFilteredName}.dll" : "" //TODO!
     ));
     onRecompileNotifier.value++;
     Navigator.of(MyApp.globalContext.currentContext!).pop();
