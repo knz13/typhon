@@ -135,10 +135,11 @@ project(project_typhon)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/ecs_registry.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object_traits.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/generic_reflection.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon.cpp)
     # creating target
 
 
-    add_library(typhon
+    add_library(typhon SHARED
 
         ${typhon_SOURCE_FILES}
     )

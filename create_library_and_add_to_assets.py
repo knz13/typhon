@@ -51,13 +51,13 @@ os.system(f'{"make typhon" if platform.system() == "Darwin" else "msbuild projec
 os.system('echo "Moving library to assets..."')
 
 if platform.system() == "Darwin":
-    if os.path.exists(os.path.abspath("../../assets/lib/libtyphon.a")):
-        os.remove(os.path.abspath("../../assets/lib/libtyphon.a"))
-    os.rename(os.path.abspath("libtyphon.a"),os.path.abspath("../../assets/lib/libtyphon.a"))
+    if os.path.exists(os.path.abspath("../../assets/lib/libtyphon.dylib")):
+        os.remove(os.path.abspath("../../assets/lib/libtyphon.dylib"))
+    os.rename(os.path.abspath("libtyphon.dylib"),os.path.abspath("../../assets/lib/libtyphon.dylib"))
 else:
-    if os.path.exists(os.path.abspath("../../assets/lib/typhon.lib")):
-        os.remove(os.path.abspath("../../assets/lib/typhon.lib"))
-    os.rename(os.path.abspath("Debug/typhon.lib" if not args.Release else "Release/typhon.lib"),os.path.abspath("../../assets/lib/typhon.lib"))
+    if os.path.exists(os.path.abspath("../../assets/lib/typhon.dll")):
+        os.remove(os.path.abspath("../../assets/lib/typhon.dll"))
+    os.rename(os.path.abspath("Debug/typhon.dll" if not args.Release else "Release/typhon.dll"),os.path.abspath("../../assets/lib/typhon.dll"))
     
 os.chdir(os.path.join(current_dir,"c_sharp_interface"))
 
