@@ -139,7 +139,7 @@ project(project_typhon)
     # creating target
 
 
-    add_library(typhon SHARED
+    add_library(typhon
 
         ${typhon_SOURCE_FILES}
     )
@@ -149,7 +149,7 @@ project(project_typhon)
     set(SHADERC_SKIP_EXAMPLES ON)
     
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/shaderc)
-
+    
     target_link_libraries(typhon PUBLIC shaderc)
     
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/include)
