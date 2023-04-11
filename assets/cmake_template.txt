@@ -29,35 +29,35 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 target_link_libraries(${PROJECT_NAME} PUBLIC typhon)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/libshaderc/include)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/libshaderc/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/libshaderc/src)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/libshaderc/src)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/libshaderc_util/include)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/libshaderc_util/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/libshaderc_util/src)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/libshaderc_util/src)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/glslang)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/glslang)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/effcee)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/effcee)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/re2)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/re2)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/spirv-headers/include)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/spirv-headers/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/shaderc/third_party/spirv-tools/include)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/spirv-tools/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/entt/src/)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/entt/src/)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/yael/include)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/yael/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/random/include)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/random/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/glm/)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/glm/)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/crunch/crunch/)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/crunch/crunch/)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/json/single_include)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/json/single_include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC vendor/cruch/crunch/)
+target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/cruch/crunch/)
 

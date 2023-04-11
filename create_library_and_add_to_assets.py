@@ -25,38 +25,7 @@ if not os.path.exists("src/vendor"):
     os.mkdir("src/vendor")
 
 
-__subdirectories = glob("src/*/", recursive = True)
 
-__subdirectories = list(map(lambda x: list(map(lambda y: x + y,os.listdir(x))),__subdirectories))
-
-subdirectories_items = []
-for item in __subdirectories:
-    subdirectories_items += item
-
-subdirectories_items = list(map(lambda x: (x[x.rfind("/") + 1:-2],x[4:]),filter(lambda x: x.endswith(".h") ,subdirectories_items)))
-
-print(subdirectories_items)
-
-with open("src/typhon.cpp",'r') as f:
-
-    final_file_data = """/*
-GENERATED FILE - DO NOT MODIFY!
-*/
-"""
-    for line in f.readlines():
-        if "// -- INCLUDE CREATED CLASSES -- //" in line:
-            for klass,dir in subdirectories_items:
-                final_file_data += f'#include "{dir}"\n'
-        elif "// -- INITIALIZE EACH OBJECT -- //" in line:
-            for klass,dir in subdirectories_items:
-                final_file_data += f'    {klass}();\n'
-        else:
-            final_file_data += line
-            
-    with open("src/typhon_generated.cpp",'w') as g:
-        g.write(final_file_data)
-
-os.system('echo "written typhon_generated.cpp"')
 
 
 if not os.path.exists("src/vendor/shaderc"):

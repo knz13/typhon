@@ -35,7 +35,10 @@ void Engine::Unload()
     }
 
     Reflection::InitializedStaticallyStorage::functionsFromDerivedClasses.clear();
-
+    GameObject::instantiableClasses.clear();
+    GameObject::instantiableClassesIDs.clear();
+    GameObject::instantiableClassesNames.clear();
+    
 }
 
 std::vector<std::string> Engine::GetImagePathsFromLibrary()

@@ -127,7 +127,6 @@ project(project_typhon)
   # settings for target typhon...
 
     # adding sources
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon_generated.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/mono_manager.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/shader_compiler.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine.cpp)
@@ -149,7 +148,7 @@ project(project_typhon)
     set(SHADERC_SKIP_EXAMPLES ON)
     
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/shaderc)
-    
+
     target_link_libraries(typhon PUBLIC shaderc)
     
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/include)

@@ -166,9 +166,10 @@ public:
 };
 """);
 
-      File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
+      File bindingsFile = File(path.join(projectPath,"bindings.h"));
 
-      await bindingsFile.writeAsString("""#include "includes/engine.h"
+      await bindingsFile.writeAsString("""#pragma once
+#include "includes/engine.h"
 #include "assets/entry.h"
 //__INCLUDE__USER__DEFINED__CLASSES__
 
@@ -194,6 +195,18 @@ extern "C" {
     //__INITIALIZE__USER__DEFINED__CLASSES__
     Entry::OnInitializeProject();
   };
+  FFI_PLUGIN_EXPORT bool initializeCppLibrary();
+  FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
+  FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);
+  FFI_PLUGIN_EXPORT void onKeyboardKeyUp(int64_t input);
+  FFI_PLUGIN_EXPORT void onUpdateCall(double dt);
+  FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
+  FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
+  FFI_PLUGIN_EXPORT void unloadLibrary();
+  FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
+  FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
+
+
 
 #ifdef __cplusplus
 }
@@ -286,7 +299,7 @@ extern "C" {
     List<String> includes = await __findPathsToInclude(Directory(path.join(projectPath,"assets")));
     print("includes found: ${includes}");
     
-    File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
+    File bindingsFile = File(path.join(projectPath,"bindings.h"));
     String bindingsGeneratedData = "";
     List<String> lines = bindingsFile.readAsLinesSync();
     for(String line in lines) {
@@ -315,9 +328,102 @@ extern "C" {
 
     }
     
-    File bindingsGenerated = File(path.join(projectPath,"bindings_generated.cpp"));
+    File bindingsGenerated = File(path.join(projectPath,"bindings_generated.h"));
     bindingsGenerated.createSync();
     bindingsGenerated.writeAsStringSync(bindingsGeneratedData);
+
+    File bindingsGeneratedCPP = File(path.join(projectPath,"bindings_generated.cpp"));
+    bindingsGeneratedCPP.createSync();
+    bindingsGeneratedCPP.writeAsString("""#include <iostream>
+#include <stdint.h>
+#include "bindings_generated.h"
+#include "includes/mono_manager.h"
+#include "includes/shader_compiler.h"
+
+bool initializeCppLibrary() {
+    
+    MonoManager::getInstance();
+    ShaderCompiler::getInstance();
+    
+    Engine::Initialize();
+
+    return true;    
+
+}
+
+
+void onMouseMove(double positionX, double positionY)
+{
+    EngineInternals::SetMousePosition(Vector2f(positionX,positionY));
+}
+
+void onKeyboardKeyDown(int64_t input)
+{
+    Engine::PushKeyDown(input);
+}
+
+void onKeyboardKeyUp(int64_t input)
+{
+    Engine::PushKeyUp(input);
+
+}
+
+void onUpdateCall(double dt)
+{
+    Engine::Update(dt);
+
+
+}
+
+void passProjectPath(const char *path)
+{
+    HelperStatics::projectPath = std::string(path);
+
+}
+
+
+void attachEnqueueRender(EnqueueObjectRender func)
+{
+    EngineInternals::enqueueRenderFunc = [=](double x,double y,int64_t width,int64_t height,int64_t imageX,int64_t imageY,double anchorX,double anchorY,double scale,double angle){
+        func(x,y,width,height,imageX,imageY,anchorX,anchorY,scale,angle);
+    };
+}
+
+void unloadLibrary()
+{
+    Engine::Unload();
+
+}
+
+ClassesArray getInstantiableClasses()
+{
+    static std::vector<int64_t> ids;
+    static std::vector<const char*> names;
+
+    ids.clear();
+    names.clear();
+
+    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
+        names.push_back(name.c_str());
+        ids.push_back(id);
+    }
+
+    std::cout << "names size = " << names.size() << std::endl;
+
+    ClassesArray arr;
+
+    arr.array = ids.data();
+    arr.size = ids.size();
+    arr.stringArray = names.data();
+    arr.stringArraySize = names.size();
+    return arr;
+}
+
+void createObjectFromClassID(int64_t classID)
+{
+    Engine::CreateNewGameObject(classID);
+}
+""");
   
 
     var result = await Process.run("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
