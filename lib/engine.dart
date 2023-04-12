@@ -26,6 +26,7 @@ import 'package:flame/game.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/main.dart';
+import 'package:typhon/recompiling_dialog.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
@@ -290,22 +291,17 @@ extern "C" {
 
   Future<void> recompileProject() async {
     
+    ValueNotifier<Process?> processNotifier = ValueNotifier(null);
+    RecompilingDialog dialog = RecompilingDialog(notifier: processNotifier);
 
-    showDialog(context: MyApp.globalContext.currentContext!, builder:(context) {
-      return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-          backgroundColor: Colors.blue,
-          child: Column(
-            children: [
-              GeneralText("Recompiling..."),
-              CircularProgressIndicator()
-            ],
-          ),
-        )
-    );
+    showDialog(
+      barrierDismissible: false,
+      context: MyApp.globalContext.currentContext!, 
+      builder:(context) {
+      return dialog;
     },);
+
+    
     if(!hasInitializedProject()){
       Navigator.of(MyApp.globalContext.currentContext!).pop();
       return;
@@ -443,20 +439,22 @@ void createObjectFromClassID(int64_t classID)
 """);
   
 
-    var result = await Process.run("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
-    print(result.stderr);
-    print(result.stdout);
+    processNotifier.value = await Process.start("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
+    await processNotifier.value!.exitCode;
+    //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
     if(Platform.isMacOS){
-      result = await Process.run("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
-      print(result.stdout);
-      print(result.stderr);
+
+      processNotifier.value = await Process.start("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
+      await processNotifier.value!.exitCode;
+      //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
 
     } 
     if(Platform.isWindows){
-      result = await Process.run("msbuild",["${projectFilteredName}.sln","/target:${projectFilteredName}","/p:Configuration=Debug"],workingDirectory: path.join(projectPath,"build"),runInShell: true);
-      print(result.stderr);
-      print(result.stdout);
+      processNotifier.value = await Process.start("msbuild",["${projectFilteredName}.sln","/target:${projectFilteredName}","/p:Configuration=Debug"],workingDirectory: path.join(projectPath,"build"),runInShell: true);
+      await processNotifier.value!.exitCode;
+      //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
     }
+
     var library = await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
       Platform.isMacOS ? "lib${projectFilteredName}.dylib" : Platform.isWindows? "Debug/${projectFilteredName}.dll" : "" //TODO!
     ));

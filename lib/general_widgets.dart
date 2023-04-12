@@ -93,8 +93,10 @@ class GeneralText extends StatelessWidget {
 
   String text;
   double fontSize;
+  Color? color;
+  TextOverflow? overflow;
 
-  GeneralText(this.text,{super.key,this.fontSize = 14});
+  GeneralText(this.text,{super.key,this.fontSize = 14,this.color,this.overflow});
 
   @override
   Widget build(BuildContext context) {
@@ -102,8 +104,8 @@ class GeneralText extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        overflow: TextOverflow.ellipsis,
-        color: platinumGray,
+        overflow: overflow ?? TextOverflow.ellipsis,
+        color: color ?? platinumGray,
         fontSize: fontSize
       ),
     );
