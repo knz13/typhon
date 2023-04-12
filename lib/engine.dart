@@ -107,6 +107,9 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     }
     
     await recompileProject();
+    if(!TyphonCPPInterface.checkIfLibraryLoaded()){
+      return;
+    }
     var library = TyphonCPPInterface.getCppFunctions();
     await TyphonCPPInterface.extractImagesFromAssets();
     library.passProjectPath((await getApplicationSupportDirectory()).path.toNativeUtf8().cast());
@@ -440,19 +443,27 @@ void createObjectFromClassID(int64_t classID)
   
 
     processNotifier.value = await Process.start("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
-    await processNotifier.value!.exitCode;
+    
+    if(await processNotifier.value!.exitCode != 0){
+      return;
+    }
     //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
     if(Platform.isMacOS){
 
       processNotifier.value = await Process.start("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
       await processNotifier.value!.exitCode;
       //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
-
+      if(await processNotifier.value!.exitCode != 0){
+        return;
+      }
     } 
     if(Platform.isWindows){
       processNotifier.value = await Process.start("msbuild",["${projectFilteredName}.sln","/target:${projectFilteredName}","/p:Configuration=Debug"],workingDirectory: path.join(projectPath,"build"),runInShell: true);
       await processNotifier.value!.exitCode;
       //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
+      if(await processNotifier.value!.exitCode != 0){
+        return;
+      }
     }
 
     var library = await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
