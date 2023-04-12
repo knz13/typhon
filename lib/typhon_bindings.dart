@@ -40,34 +40,40 @@ class TyphonCPPInterface {
 
       Directory docsDir = await getApplicationSupportDirectory();
 
+      Directory libsDir = Directory(path.join(docsDir.path,"Typhon","lib"));
+      libsDir.createSync(recursive: true);
+      
 
-      Directory(path.join(docsDir.path,"Typhon","lib")).createSync(recursive: true);
-        
-      if(Platform.isMacOS){
-        ByteData data = await rootBundle.load("assets/lib/libtyphon.dylib");
+      // Get the list of asset files
+      String assetManifestJson = await rootBundle.loadString('AssetManifest.json');
+      Map<String, dynamic> assetManifestMap = json.decode(assetManifestJson);
+      List<String> assetManifest = assetManifestMap.keys.toList();
+
+      List<String> libAssets = assetManifest
+          .where((p) {
+            return path.isWithin("assets/lib", p);
+          })
+          .toList();
+      
+      // Extract images
+      for (String assetPath in libAssets) {
+
+        String srcName = path.relative(assetPath,from:"assets/lib");
+        File srcFile = File(path.join(libsDir.path, srcName));
+
+        if(srcFile.existsSync()){
+          continue;
+        }
+        srcFile.createSync(recursive: true);
+
+        ByteData data = await rootBundle.load(assetPath);
         List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
 
-        await File(path.join(docsDir.path,"Typhon","lib","libtyphon.dylib")).writeAsBytes(bytes);
-        return libPath;
+        await srcFile.writeAsBytes(bytes, flush: true);
       }
-      if(Platform.isWindows){
 
-        ByteData data = await rootBundle.load("assets/$libPath");
-        ByteData dataLib = await rootBundle.load("assets/${path.withoutExtension(libPath)}.lib");
-        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-        List<int> libBytes = data.buffer.asUint8List(dataLib.offsetInBytes, dataLib.lengthInBytes);
-        
-        String filePath =  path.join(docsDir.path,"Typhon",libPath);
-
-
-        await File(filePath).writeAsBytes(bytes);
-        await File(path.join(docsDir.path,"Typhon",path.withoutExtension(libPath) + ".lib")).writeAsBytes(libBytes);
-        return filePath;
-      }
-      //TODO LINUX
-      return "";
-
-    }
+      return libsDir.path;
+  }
 
 
   static Future<void> extractImagesFromAssets() async {

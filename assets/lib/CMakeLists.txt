@@ -26,6 +26,7 @@ include(GNUInstallDirs)
 include(ExternalProject)
 include(FetchContent)
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 #project name
 project(project_typhon)

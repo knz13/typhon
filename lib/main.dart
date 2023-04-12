@@ -40,7 +40,9 @@ void main() async {
     setWindowMinSize(const Size(1280, 600));
     setWindowMaxSize(Size.infinite);
   }
-  await TyphonCPPInterface.extractLib();
+  String libsDir = await TyphonCPPInterface.extractLib();
+  
+
   runApp(const MyApp());
 }
 
