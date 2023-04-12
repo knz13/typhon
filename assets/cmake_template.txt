@@ -9,7 +9,6 @@ project(__PROJECT__NAME__)
 
 message(STATUS "__current__project__compiler__ ${CMAKE_CXX_COMPILER}")
 
-link_directories(${PROJECT_SOURCE_DIR}/build/)
 
 add_library(${PROJECT_NAME} SHARED
     bindings_generated.cpp
@@ -27,6 +26,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 20
 )
 
+
+find_library(TYPHON_LOCATION NAMES typhon PATHS ${PROJECT_SOURCE_DIR}/build)
+
+
+add_library(typhon SHARED IMPORTED) 
+
+set_property(TARGET anyNameIsGood PROPERTY IMPORTED_LOCATION "${TYPHON_LOCATION}")
 
 
 target_link_libraries(${PROJECT_NAME} PUBLIC typhon)
