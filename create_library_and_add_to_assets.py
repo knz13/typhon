@@ -38,16 +38,17 @@ proc = subprocess.Popen([f'cmake {("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Re
 out = str(out)
 
 roots = []
+dir = os.listdir("src")
 for root, dirs, files in os.walk('src'):
     root = os.path.abspath(root)
     for file in files:
-        if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")))):
-            os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src"))),exist_ok=True)
-        if os.path.relpath(os.path.join(root,file),os.path.abspath("src/vendor/")).count("..") == 0 and os.path.relpath(os.path.join(root,file),os.path.abspath("src/vendor/shaderc")).count("..") == 0:
+        if file in dir or os.path.relpath(os.path.abspath(os.path.join(root,file)),os.path.abspath("src/vendor/")).count("..") == 0 and os.path.relpath(os.path.abspath(os.path.join(root,file)),os.path.abspath("src/vendor/shaderc")).count("..") == 0:
+            if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")))):
+                os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src"))),exist_ok=True)
             if root not in roots:
                 roots.append(root)
         #print(f"doing {os.path.join(root,file)}")
-        shutil.copyfile(os.path.join(root,file),os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")),file))
+            shutil.copyfile(os.path.join(root,file),os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")),file))
 
 for root in roots:
     path = os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")).replace("\\","/")
