@@ -134,7 +134,7 @@ class TyphonCPPInterface {
       Directory(destination).create(recursive: true);
 
       for (String assetPath in imageAssets) {
-        String imageName = path.relative(assetPath,from:"assets/lib/includes");
+        String imageName = path.relative(assetPath,from:"assets/lib/src");
         File includeFile = File(path.join(destination, imageName));
 
         if(includeFile.existsSync()){

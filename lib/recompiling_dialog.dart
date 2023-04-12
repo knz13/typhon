@@ -74,7 +74,7 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
               Expanded(
                 child: ListView.builder(itemBuilder:(context, index) {
                     return ListTile(
-                      title: GeneralText(currentMessage.elementAt(index).message,color: currentMessage.elementAt(index).type == "LOG"? platinumGray : Colors.red),
+                      title: GeneralText(currentMessage.elementAt(index).message,color: currentMessage.elementAt(index).type == "LOG"? platinumGray : Colors.red,overflow: TextOverflow.visible,),
                     );
                   },
                   itemCount: currentMessage.length,
