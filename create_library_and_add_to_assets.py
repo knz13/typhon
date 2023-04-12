@@ -33,6 +33,9 @@ if not os.path.exists("src/vendor/shaderc"):
     os.system("git clone https://github.com/google/shaderc src/vendor/shaderc")
     os.system(("python " if platform.system() != "Darwin" else "") + "src/vendor/shaderc/utils/git-sync-deps")
 
+proc = subprocess.Popen([f'cmake {("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")) if platform.system() == "Darwin" else ("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86"))} -B build ./ '], stdout=subprocess.PIPE, shell=True)
+(out,err) = proc.communicate()
+out = str(out)
 
 roots = []
 for root, dirs, files in os.walk('src'):
@@ -40,7 +43,7 @@ for root, dirs, files in os.walk('src'):
     for file in files:
         if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")))):
             os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src"))),exist_ok=True)
-        if os.path.relpath(os.path.join(root,file),os.path.abspath("src/vendor/")).count("..") == 0:
+        if os.path.relpath(os.path.join(root,file),os.path.abspath("src/vendor/")).count("..") == 0 and os.path.relpath(os.path.join(root,file),os.path.abspath("src/vendor/shaderc")).count("..") == 0:
             if root not in roots:
                 roots.append(root)
         #print(f"doing {os.path.join(root,file)}")
