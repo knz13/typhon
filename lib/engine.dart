@@ -235,8 +235,9 @@ extern "C" {
 
     await File(path.join(projectPath,"CMakeLists.txt")).writeAsString(cmakeTemplateString);
 
-    
-
+    var libPath = await TyphonCPPInterface.getLibraryPath();
+    File(path.join(projectPath,"build",path.basename(TyphonCPPInterface.libPath))).createSync(recursive: true);
+    File(path.join(libPath,path.basename(TyphonCPPInterface.libPath))).copySync(path.join(projectPath,"build",path.basename(TyphonCPPInterface.libPath)));    
     
     await saveProjectsJSON(map);
 

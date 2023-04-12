@@ -26,6 +26,11 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 20
 )
 
+IF(WIN32) 
+    add_library(typhon SHARED IMPORTED)
+    
+    set_target_properties(typhon PROPERTIES IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/build/typhon.dll)
+ENDIF()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC typhon)
 
