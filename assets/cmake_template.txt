@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION __CMAKE__VERSION__)
 
 
-set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}")
+
 
 
 project(__PROJECT__NAME__)
 
 message(STATUS "__current__project__compiler__ ${CMAKE_CXX_COMPILER}")
 
+link_directories(__TYPHON__LIBRARY__LOCATION__) #__TYPHON__LIBRARY_LOCATION__LINE__
 
 add_library(${PROJECT_NAME} SHARED
     bindings_generated.cpp
@@ -25,14 +25,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 20
 )
-
-
-find_library(TYPHON_LOCATION NAMES typhon PATHS ${PROJECT_SOURCE_DIR}/build)
-
-
-add_library(typhon SHARED IMPORTED) 
-
-set_property(TARGET anyNameIsGood PROPERTY IMPORTED_LOCATION "${TYPHON_LOCATION}")
 
 
 target_link_libraries(${PROJECT_NAME} PUBLIC typhon)

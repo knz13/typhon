@@ -57,7 +57,10 @@ if platform.system() == "Darwin":
 else:
     if os.path.exists(os.path.abspath("../../assets/lib/typhon.dll")):
         os.remove(os.path.abspath("../../assets/lib/typhon.dll"))
+    if os.path.exists(os.path.abspath("../../assets/lib/typhon.lib")):
+        os.remove(os.path.abspath("../../assets/lib/typhon.lib"))
     os.rename(os.path.abspath("Debug/typhon.dll" if not args.Release else "Release/typhon.dll"),os.path.abspath("../../assets/lib/typhon.dll"))
+    os.rename(os.path.abspath("Debug/typhon.lib" if not args.Release else "Release/typhon.lib"),os.path.abspath("../../assets/lib/typhon.lib"))
     
 os.chdir(os.path.join(current_dir,"c_sharp_interface"))
 

@@ -50,17 +50,23 @@ class TyphonCPPInterface {
         await File(path.join(docsDir.path,"Typhon","lib","libtyphon.dylib")).writeAsBytes(bytes);
         return libPath;
       }
-      ByteData data = await rootBundle.load("assets/$libPath");
-      List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-      
-      String executablePath = Platform.resolvedExecutable.replaceAll('\\', '/');
-      String filePath =  path.join(docsDir.path,"Typhon",libPath);
+      if(Platform.isWindows){
 
-      print(filePath);
+        ByteData data = await rootBundle.load("assets/$libPath");
+        ByteData dataLib = await rootBundle.load("assets/${path.withoutExtension(libPath)}.lib");
+        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+        List<int> libBytes = data.buffer.asUint8List(dataLib.offsetInBytes, dataLib.lengthInBytes);
+        
+        String filePath =  path.join(docsDir.path,"Typhon",libPath);
 
-      await File(filePath).writeAsBytes(bytes);
 
-      return filePath;
+        await File(filePath).writeAsBytes(bytes);
+        await File(path.join(docsDir.path,"Typhon",path.withoutExtension(libPath) + ".lib")).writeAsBytes(libBytes);
+        return filePath;
+      }
+      //TODO LINUX
+      return "";
+
     }
 
 

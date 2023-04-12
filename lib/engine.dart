@@ -229,16 +229,15 @@ extern "C" {
 
     cmakeTemplateString = cmakeTemplateString.replaceAll('__CMAKE__VERSION__','3.16')
     .replaceAll('__PROJECT__NAME__',projectFilteredName)
-    .replaceAll('__TYPHON__LIBRARY__LOCATION__',await TyphonCPPInterface.getLibraryPath())
+    .replaceAll('__TYPHON__LIBRARY__LOCATION__',(await TyphonCPPInterface.getLibraryPath()).replaceAll("\\", "/").replaceAll(" ", "\\ "))
     .replaceAll('__TYPHON__INCLUDE__DIRECTORIES__',path.join(projectPath,'includes'));
     
 
     await File(path.join(projectPath,"CMakeLists.txt")).writeAsString(cmakeTemplateString);
 
-    var libPath = await TyphonCPPInterface.getLibraryPath();
-    File(path.join(projectPath,"build",path.basename(TyphonCPPInterface.libPath))).createSync(recursive: true);
-    File(path.join(libPath,path.basename(TyphonCPPInterface.libPath))).copySync(path.join(projectPath,"build",path.basename(TyphonCPPInterface.libPath)));
+    
 
+    
     await saveProjectsJSON(map);
 
     return await initializeProject(projectDirectoryPath, projectName);
