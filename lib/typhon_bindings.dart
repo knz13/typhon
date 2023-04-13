@@ -65,11 +65,16 @@ class TyphonCPPInterface {
           continue;
         }
         srcFile.createSync(recursive: true);
+        try {
 
-        ByteData data = await rootBundle.load(assetPath);
-        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+          ByteData data = await rootBundle.load(assetPath);
+          List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+          await srcFile.writeAsBytes(bytes, flush: true);
+        }
+        catch(e) {
+          print("Error found while loading file ${srcName}: ${e}");
+        }
 
-        await srcFile.writeAsBytes(bytes, flush: true);
       }
 
       return libsDir.path;

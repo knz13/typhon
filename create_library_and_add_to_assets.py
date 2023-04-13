@@ -38,6 +38,7 @@ proc = subprocess.Popen(f'cmake -B build ./  {("-DCMAKE_BUILD_TYPE=" + ("Release
 out = str(out)
 
 roots = []
+os.makedirs("../assets/lib",exist_ok=True)
 shutil.copyfile("CMakeLists.txt","../assets/lib/CMakeLists.txt")
 dir = os.listdir("src")
 for root, dirs, files in os.walk('src'):
