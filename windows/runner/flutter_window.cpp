@@ -23,23 +23,40 @@ void FlutterWindow::CreateMenuInternal(HMENU menu,
     
     for (const auto& item_value : items) {
       auto item = item_value;
-      int32_t id = std::atoi(item["callbackId"].get<std::string>().c_str());
+      
       auto title = item["title"].get<std::string>();
-      UINT_PTR item_id = id;
+      UINT_PTR item_id = 0;
       UINT uFlags = MF_STRING;
-      if(!item["subOptions"].is_array()){
-        AppendMenuW(menu, uFlags, item_id, string_to_wstring(title).data());
-        break;
+      if (item.contains("callbackId")){
+          int32_t id = atoi(item["callbackId"].get<std::string>().c_str());
+          item_id = id;   
+          
+          AppendMenuW(menu, uFlags, item_id, string_to_wstring(title).data());
+          continue;
       }
-      auto sub_items = item["subOptions"].get<std::vector<json>>();
-      if (sub_items.size() > 0) {
-        uFlags |= MF_POPUP;
-        HMENU sub_menu = ::CreatePopupMenu();
-        CreateMenuInternal(sub_menu, sub_items);
-        item_id = reinterpret_cast<UINT_PTR>(sub_menu);
+      else {
+
+        if(!item.contains("subOptions")){
+          uFlags |= MF_DISABLED;
+          uFlags |= MF_GRAYED;
+          AppendMenuW(menu, uFlags, item_id, string_to_wstring(title).data());
+          continue;
+        }
+        std::string subOptions = item["subOptions"].get<std::string>();
         
+        auto sub_items = json::parse(subOptions).get<std::vector<json>>();
+        if (sub_items.size() > 0) {
+          uFlags |= MF_POPUP;
+          HMENU sub_menu = CreatePopupMenu();
+          CreateMenuInternal(sub_menu, sub_items);
+          item_id = reinterpret_cast<UINT_PTR>(sub_menu);
+          
+        }
+        
+        AppendMenuW(menu, uFlags, item_id, string_to_wstring(title).data());
+        
+
       }
-      AppendMenuW(menu, uFlags, item_id, string_to_wstring(title).data());
       
     }
 }

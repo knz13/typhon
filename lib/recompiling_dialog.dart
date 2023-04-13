@@ -54,6 +54,7 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
             );
           });
         });
+        
 
         widget.notifier.value!.stderr.listen((event) {
           setState(() {
