@@ -281,7 +281,7 @@ extern "C" {
   }
 
   Future<void> recompileProject() async {
-    
+    return;
     ValueNotifier<Process?> processNotifier = ValueNotifier(null);
     RecompilingDialog dialog = RecompilingDialog(notifier: processNotifier);
 
