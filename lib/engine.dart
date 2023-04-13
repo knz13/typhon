@@ -76,7 +76,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   Future<Map<String,dynamic>> getProjectsJSON() async {
     Directory privateDir = await getApplicationSupportDirectory();
-    File projectsFile = File(path.join(privateDir.path,"Typhon","projects.json"));
+    File projectsFile = File(path.join(privateDir.path,"projects.json"));
     if(projectsFile.existsSync()){
       String fileData = projectsFile.readAsStringSync();
       var map = jsonDecode(fileData);
@@ -91,7 +91,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   Future<void> saveProjectsJSON(Map<String,dynamic> projects) async {
     Directory privateDir = await getApplicationSupportDirectory();
-    File projectsFile = File(path.join(privateDir.path,"Typhon","projects.json"));
+    File projectsFile = File(path.join(privateDir.path,"projects.json"));
     projectsFile.writeAsStringSync(jsonEncode(projects));
   } 
 
@@ -144,7 +144,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       for(String line in lines) {
         if(line.contains("__LIBRARY__PROJECT__PATH__")){
           var projPath = (await TyphonCPPInterface.getLibraryPath()).replaceAll("\\","/").replaceAll(" ", "\\ ");
-          cmakeFileData += "add_subdirectory(${projPath} build) #__LIBRARY__PROJECT__PATH__";
+          cmakeFileData += "add_subdirectory($projPath ${path.join(projPath,"build").replaceAll("\\","/").replaceAll(" ", "\\ ")}) #__LIBRARY__PROJECT__PATH__";
           cmakeFileData += "\n";
           continue;
         }
@@ -476,7 +476,7 @@ void createObjectFromClassID(int64_t classID)
   }
 
   Future<void> loadAtlasImage() async {
-    File atlasImageFile = File(path.join((await getApplicationSupportDirectory()).path,"Typhon","lib","texture_atlas","atlas0.png"));
+    File atlasImageFile = File(path.join((await getApplicationSupportDirectory()).path,"lib","texture_atlas","atlas0.png"));
     if(!atlasImageFile.existsSync()){
       print("could not load atlas image!");
     }

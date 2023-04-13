@@ -30,7 +30,7 @@ class TyphonCPPInterface {
   static Future<String> getLibraryPath() async {
     Directory docsDir = await getApplicationSupportDirectory();
 
-    return path.join(docsDir.absolute.path,"Typhon","lib");
+    return path.join(docsDir.absolute.path,"lib");
 
   }
 
@@ -40,7 +40,7 @@ class TyphonCPPInterface {
 
       Directory docsDir = await getApplicationSupportDirectory();
 
-      Directory libsDir = Directory(path.join(docsDir.path,"Typhon","lib"));
+      Directory libsDir = Directory(path.join(docsDir.path,"lib"));
       libsDir.createSync(recursive: true);
       
 
@@ -80,7 +80,7 @@ class TyphonCPPInterface {
     try {
       // Get the executable directory
       Directory appDocDir = await getApplicationSupportDirectory();
-      String imagesDirPath = path.join(appDocDir.path,"Typhon","lib",'images');
+      String imagesDirPath = path.join(appDocDir.path,"lib",'images');
 
       // Create the 'images' directory if it doesn't exist
       Directory imagesDir = Directory(imagesDirPath);

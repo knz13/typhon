@@ -48,7 +48,7 @@ std::vector<std::string> Engine::GetImagePathsFromLibrary()
 {
     std::vector<std::string> inputs;
     for(const auto& file : fs::directory_iterator(
-        fs::path(HelperStatics::projectPath) / fs::path("Typhon") / fs::path("lib") / fs::path("images")))
+        fs::path(HelperStatics::projectPath) / fs::path("lib") / fs::path("images")))
     {
         inputs.push_back(file.path().string());
     }
@@ -63,7 +63,7 @@ const std::map<std::string, TextureAtlasImageProperties> &Engine::GetTextureAtla
 std::string Engine::GetPathToAtlas()
 {
 
-    fs::path atlasPath = fs::path(HelperStatics::projectPath) / fs::path("Typhon") / fs::path("lib") / fs::path("texture_atlas");
+    fs::path atlasPath = fs::path(HelperStatics::projectPath) / fs::path("lib") / fs::path("texture_atlas");
     std::filesystem::create_directory(atlasPath);
 
     return (atlasPath).string() + "/";
