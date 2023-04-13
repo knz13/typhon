@@ -50,7 +50,7 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
             controller.animateTo(
                 controller.position.maxScrollExtent,
                 curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 10),
             );
           });
         });
