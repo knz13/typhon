@@ -26,10 +26,11 @@ include(GNUInstallDirs)
 include(ExternalProject)
 include(FetchContent)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 #project name
 project(project_typhon)
+
+Set(FETCHCONTENT_QUIET FALSE)
 
 # --------------------- Repository declarations ------------------------
 # repository download and settings for mono...
@@ -59,6 +60,9 @@ project(project_typhon)
         GIT_REPOSITORY https://github.com/skypjack/entt
         GIT_TAG v3.11.1
         SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/entt
+        GIT_PROGRESS   TRUE
+        USES_TERMINAL_DOWNLOAD TRUE
+
     ) 
     
 
@@ -68,9 +72,12 @@ project(project_typhon)
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/src/)
     
     FetchContent_Declare(YAEL
-    GIT_REPOSITORY https://github.com/knz13/YAEL
-    GIT_TAG origin/main
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/yael
+      GIT_REPOSITORY https://github.com/knz13/YAEL
+      GIT_TAG origin/main
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/yael
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
     ) 
     
     
@@ -80,9 +87,12 @@ project(project_typhon)
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/yael/include)
     
     FetchContent_Declare(RANDOM
-    GIT_REPOSITORY https://github.com/effolkronium/random
-    GIT_TAG v1.4.1
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/random
+      GIT_REPOSITORY https://github.com/effolkronium/random
+      GIT_TAG v1.4.1
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/random
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
     ) 
     
     
@@ -91,9 +101,12 @@ project(project_typhon)
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/random/include)
     
     FetchContent_Declare(GLM
-    GIT_REPOSITORY https://github.com/g-truc/glm
-    GIT_TAG 0.9.9.8
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/glm
+      GIT_REPOSITORY https://github.com/g-truc/glm
+      GIT_TAG 0.9.9.8
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/glm
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
     ) 
     
     
@@ -102,9 +115,12 @@ project(project_typhon)
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/glm/)
     
     FetchContent_Declare(CRUNCH
-    GIT_REPOSITORY https://github.com/johnfredcee/crunch
-    GIT_TAG origin/master
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/crunch
+      GIT_REPOSITORY https://github.com/johnfredcee/crunch
+      GIT_TAG origin/master
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/crunch
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
     )
 
     FetchContent_MakeAvailable(CRUNCH)
@@ -114,9 +130,12 @@ project(project_typhon)
 
 
     FetchContent_Declare(JSON
-    GIT_REPOSITORY https://github.com/nlohmann/json
-    GIT_TAG v3.11.2
-    SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/json
+      GIT_REPOSITORY https://github.com/nlohmann/json
+      GIT_TAG v3.11.2
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/json
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
     ) 
 
     FetchContent_MakeAvailable(JSON)
@@ -140,7 +159,7 @@ project(project_typhon)
     # creating target
 
 
-    add_library(typhon SHARED
+    add_library(typhon
 
         ${typhon_SOURCE_FILES}
     )

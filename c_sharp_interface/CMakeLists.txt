@@ -159,7 +159,7 @@ Set(FETCHCONTENT_QUIET FALSE)
     # creating target
 
 
-    add_library(typhon SHARED
+    add_library(typhon
 
         ${typhon_SOURCE_FILES}
     )

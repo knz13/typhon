@@ -259,17 +259,7 @@ extern "C" {
     await File(path.join(projectPath,"CMakeLists.txt")).writeAsString(cmakeTemplateString);
 
     
-    var libPath = await TyphonCPPInterface.getLibraryPath();
-    if(Platform.isWindows){
-      File(path.join(projectPath,"build","${path.basenameWithoutExtension(TyphonCPPInterface.libPath)}.lib")).createSync(recursive: true);
-      File(path.join(projectPath,"build","${path.basenameWithoutExtension(TyphonCPPInterface.libPath)}.dll")).createSync(recursive: true);
-      File(path.join(libPath,path.basename(TyphonCPPInterface.libPath))).copySync(path.join(projectPath,"build","${path.basenameWithoutExtension(TyphonCPPInterface.libPath)}.dll"));    
-      File(path.join(libPath,"${path.basenameWithoutExtension(TyphonCPPInterface.libPath)}.lib")).copySync(path.join(projectPath,"build","${path.basenameWithoutExtension(TyphonCPPInterface.libPath)}.lib"));    
-    }
-    else{
-      File(path.join(projectPath,"build",path.basename(TyphonCPPInterface.libPath))).createSync(recursive: true);
-      File(path.join(libPath,path.basename(TyphonCPPInterface.libPath))).copySync(path.join(projectPath,"build",path.basename(TyphonCPPInterface.libPath)));    
-    }
+
     
     await saveProjectsJSON(map);
 

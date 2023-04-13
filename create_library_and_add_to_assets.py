@@ -32,12 +32,13 @@ if not os.path.exists("src/vendor/shaderc"):
     os.system('echo downloading shaderc library...')
     os.system("git clone https://github.com/google/shaderc src/vendor/shaderc")
     os.system(("python " if platform.system() != "Darwin" else "") + "src/vendor/shaderc/utils/git-sync-deps")
-    
+
 proc = subprocess.Popen(f'cmake -B build ./  {("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")) if platform.system() == "Darwin" else ("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86"))}'.split(), stdout=subprocess.PIPE, shell=True)
 (out,err) = proc.communicate()
 out = str(out)
 
 roots = []
+shutil.copyfile("CMakeLists.txt","../assets/lib/CMakeLists.txt")
 dir = os.listdir("src")
 for root, dirs, files in os.walk('src'):
     root = os.path.abspath(root)
@@ -47,9 +48,8 @@ for root, dirs, files in os.walk('src'):
                 os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src"))),exist_ok=True)
             if root not in roots:
                 roots.append(root)
-        #print(f"doing {os.path.join(root,file)}")
             shutil.copyfile(os.path.join(root,file),os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")),file))
-
+    print(f"Done dir {root}")
 for root in roots:
     path = os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")).replace("\\","/")
     print(f'    - assets/lib/src/{path}/')
