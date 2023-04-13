@@ -9,6 +9,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:typhon/main.dart';
 
 import 'general_widgets.dart';
 
@@ -71,33 +72,51 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
       }
     });
   }
-    
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    return BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-          backgroundColor: Colors.blue,
-          child: Column(
-            children: [
-              GeneralText("Recompiling..."),
-              Expanded(
-                child: ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  controller: controller,
-                  itemBuilder:(context, index) {
-                    return ListTile(
-                      title: GeneralText(currentMessage.elementAt(index).message,color: currentMessage.elementAt(index).type == "LOG"? platinumGray : Colors.red,overflow: TextOverflow.visible,),
-                    );
-                  },
-                  itemCount: currentMessage.length,
-                ),
-              )
-            ],
+
+  Widget dialogBodyContent(String title){
+    return Column(
+      children: [
+        GeneralText(title),
+        Expanded(
+          child: ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: controller,
+            itemBuilder:(context, index) {
+              return ListTile(
+                title: GeneralText(currentMessage.elementAt(index).message,color: currentMessage.elementAt(index).type == "LOG"? platinumGray : Colors.red,overflow: TextOverflow.visible,),
+              );
+            },
+            itemCount: currentMessage.length,
           ),
         )
+      ],
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context){
+    return Dialog(
+      child: Container(
+        width: 375,
+        height: 200,
+        decoration: BoxDecoration(
+          color: activeColor.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(3),
+          boxShadow: [
+            BoxShadow(
+              color: activeColor,
+              blurRadius: 1,
+            ),
+            const BoxShadow(
+              color: Colors.black38,
+              offset: Offset(0, 10),
+              blurRadius: 10,
+            )
+          ],
+        ),
+        child: dialogBodyContent("Recompiling..."),
+      ),
     );
   }
 }
