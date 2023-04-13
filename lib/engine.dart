@@ -101,9 +101,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   Future<void> reloadProject() async {
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
-
       TyphonCPPInterface.getCppFunctions().unloadLibrary();
-
     }
     
     await recompileProject();
@@ -225,7 +223,7 @@ extern "C" {
       FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
 
 
-      await reloadProject();
+      //await reloadProject();
 
       return;
 
