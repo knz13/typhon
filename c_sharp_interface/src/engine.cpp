@@ -59,7 +59,9 @@ std::vector<std::string> Engine::GetImagePathsFromLibrary()
         for(const auto& file : fs::directory_iterator(
             fs::path(HelperStatics::projectPath) / fs::path("build") / fs::path("images")))
         {
-            inputs.push_back(file.path().string());
+            auto strFile = file.path().string();
+            std::replace(strFile.begin(),strFile.end(),"\\","/");
+            inputs.push_back(strFile);
         }
     }
     catch(exception& e) {
