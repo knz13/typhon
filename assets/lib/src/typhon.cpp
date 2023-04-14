@@ -94,4 +94,9 @@ void createObjectFromClassID(int64_t classID)
 {
     Engine::CreateNewGameObject(classID);
 }
+
+bool isEngineInitialized() {
+    return Engine::
+}
+
 //__END__CPP__IMPL__

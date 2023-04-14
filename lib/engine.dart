@@ -113,8 +113,15 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     library.passProjectPath((await getApplicationSupportDirectory()).path.toNativeUtf8().cast());
     library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
     library.initializeCppLibrary();
-    await Future.delayed(Duration(milliseconds: 500));
-    await loadAtlasImage();
+    (()async {
+      while(true){
+        if(library.isEngineInitialized() == 1){
+          await loadAtlasImage();
+          break;
+        }
+        await Future.delayed(Duration(milliseconds: 100));
+      }
+    })();
   }
 
   void unload() {
@@ -221,6 +228,8 @@ extern "C" {
     FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
 
     FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
+
+    FFI_PLUGIN_EXPORT bool isEngineInitialized();
 
 //__END__CPP__EXPORTS__
 
@@ -532,6 +541,16 @@ void createObjectFromClassID(int64_t classID)
     Engine::CreateNewGameObject(classID);
 
 }
+
+
+
+bool isEngineInitialized() {
+
+    return Engine::
+
+}
+
+
 
 //__END__CPP__IMPL__
 """);

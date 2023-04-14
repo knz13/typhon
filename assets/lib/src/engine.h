@@ -58,6 +58,10 @@ public:
         aliveObjects[e] = ptr;
         return ptr.get();
     }
+
+    static bool HasInitialized() {
+        return isInitialized;
+    }
    
 
     static bool RemoveGameObject(GameObject obj) {
@@ -99,6 +103,7 @@ public:
 
     static bool IsKeyPressed(Keys::Key key);
 private:
+    static bool isInitialized;
     static std::map<std::string,TextureAtlasImageProperties> CreateTextureAtlasFromImages();
     static std::map<std::string,TextureAtlasImageProperties> textureAtlas;
     static std::bitset<std::size(Keys::IndicesOfKeys)> keysPressed;

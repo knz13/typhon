@@ -12,10 +12,13 @@ std::map<std::string,TextureAtlasImageProperties> Engine::textureAtlas;
 std::unordered_map<entt::entity,std::shared_ptr<GameObject>> Engine::aliveObjects;
 std::bitset<std::size(Keys::IndicesOfKeys)> Engine::keysPressed;
 std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> EngineInternals::enqueueRenderFunc;
-
+bool Engine::isInitialized = false;
 
 void Engine::Initialize()
-{
+{   
+    if(isInitialized){
+        Engine::Unload();
+    }
     std::cout << "initializing engine in c++" << std::endl;
 
     ShaderCompiler::getInstance();    
@@ -27,6 +30,7 @@ void Engine::Initialize()
     std::cout << "trying texture packer" << std::endl;
     textureAtlas = CreateTextureAtlasFromImages();
     
+    Engine::isInitialized = true;
 }
 
 void Engine::Unload()
@@ -43,7 +47,7 @@ void Engine::Unload()
     GameObject::instantiableClasses.clear();
     GameObject::instantiableClassesIDs.clear();
     GameObject::instantiableClassesNames.clear();
-
+    Engine::isInitialized = false;
 }
 
 std::vector<std::string> Engine::GetImagePathsFromLibrary()

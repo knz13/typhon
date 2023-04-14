@@ -34,6 +34,7 @@ extern "C" {
     FFI_PLUGIN_EXPORT void unloadLibrary();
     FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
     FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
+    FFI_PLUGIN_EXPORT bool isEngineInitialized();
     //__END__CPP__EXPORTS__
 
 #ifdef __cplusplus

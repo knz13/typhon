@@ -152,6 +152,15 @@ class TyphonBindings {
           'getInstantiableClasses');
   late final _getInstantiableClasses =
       _getInstantiableClassesPtr.asFunction<ClassesArray Function()>();
+
+  int isEngineInitialized() {
+    return _isEngineInitialized();
+  }
+
+  late final _isEngineInitializedPtr =
+      _lookup<ffi.NativeFunction<ffi.Int Function()>>('isEngineInitialized');
+  late final _isEngineInitialized =
+      _isEngineInitializedPtr.asFunction<int Function()>();
 }
 
 typedef EnqueueObjectRender = ffi.Pointer<
