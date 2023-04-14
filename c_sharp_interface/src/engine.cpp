@@ -60,8 +60,16 @@ std::vector<std::string> Engine::GetImagePathsFromLibrary()
             fs::path(HelperStatics::projectPath) / fs::path("build") / fs::path("images")))
         {
             auto strFile = file.path().string();
-            std::replace(strFile.begin(),strFile.end(),"\\","/");
-            inputs.push_back(strFile);
+            std::string replacement = "";
+            for(auto it = strFile.begin();it != strFile.end();it++){
+                if(*it == '\\'){
+                    replacement += "\\\\";
+                }
+                else {
+                    replacement += *it;
+                }
+            }
+            inputs.push_back(replacement);
         }
     }
     catch(exception& e) {
