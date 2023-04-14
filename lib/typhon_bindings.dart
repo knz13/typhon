@@ -33,7 +33,13 @@ class TyphonCPPInterface {
     return path.join(docsDir.absolute.path,"lib");
 
   }
+  static DynamicLibrary stdlib = Platform.isWindows ? DynamicLibrary.open('kernel32.dll') : DynamicLibrary.process();
 
+
+  static int Function(Pointer<Void>) get _dlCloseFunc {
+    final funcName = Platform.isWindows ? 'FreeLibrary' : 'dlclose';
+    return stdlib.lookup<NativeFunction<Int32 Function(Pointer<Void>)>>(funcName).asFunction();
+  }
 
 
   static Future<String> extractLib() async {
@@ -84,6 +90,7 @@ class TyphonCPPInterface {
       return libsDir.path;
   }
 
+  
 
   static Future<void> extractImagesFromAssets(String destination) async {
     try {
@@ -162,6 +169,9 @@ class TyphonCPPInterface {
     }
   }
 
+  static DynamicLibrary? getLibraryHandle() {
+    return _lib;
+  }
 
   static DynamicLibrary? _lib;
 
@@ -169,9 +179,7 @@ class TyphonCPPInterface {
 
   static Future<TyphonBindings> initializeLibraryAndGetBindings(String pathToLibrary) async {
     if(_lib != null){
-        _bindings!.unloadLibrary();
-
-        _lib = null;
+        detachLibrary();
     }
     _lib ??= DynamicLibrary.open(pathToLibrary);
     
@@ -187,6 +195,13 @@ class TyphonCPPInterface {
 
   static bool checkIfLibraryLoaded() {
     return _bindings != null;
+  }
+
+  static void detachLibrary() {
+    print("detaching library!");
+    _dlCloseFunc(_lib!.handle);
+    _lib = null;
+    _bindings = null;
   }
 
 }

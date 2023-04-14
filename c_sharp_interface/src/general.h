@@ -112,6 +112,7 @@ namespace HelperFunctions {
             
             iter = mainWord.find(wordToLookFor, iter);
         }
+    
         return foundAny;
     }
 
