@@ -4,7 +4,7 @@
 #include "mono_manager.h"
 #include "shader_compiler.h"
 #include "engine.h"
-//__BEGIN_CPP_IMPL__
+//__BEGIN__CPP__IMPL__
 // -- INCLUDE CREATED CLASSES -- //
 
 bool initializeCppLibrary() {
@@ -94,4 +94,4 @@ void createObjectFromClassID(int64_t classID)
 {
     Engine::CreateNewGameObject(classID);
 }
-//__END_CPP_IMPL__
+//__END__CPP__IMPL__
