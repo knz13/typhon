@@ -75,7 +75,7 @@ const std::map<std::string, TextureAtlasImageProperties> &Engine::GetTextureAtla
 std::string Engine::GetPathToAtlas()
 {
 
-    fs::path atlasPath = fs::path(HelperStatics::projectPath) / fs::path("lib") / fs::path("texture_atlas");
+    fs::path atlasPath = fs::path(HelperStatics::projectPath) / fs::path("build") / fs::path("texture_atlas");
     std::filesystem::create_directory(atlasPath);
 
     return (atlasPath).string() + "/";

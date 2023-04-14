@@ -592,7 +592,7 @@ bool isEngineInitialized() {
   }
 
   Future<void> loadAtlasImage() async {
-    File atlasImageFile = File(path.join((await getApplicationSupportDirectory()).path,"lib","texture_atlas","atlas0.png"));
+    File atlasImageFile = File(path.join(projectPath,"build","texture_atlas","atlas0.png"));
     if(!atlasImageFile.existsSync()){
       print("could not load atlas image!");
     }
