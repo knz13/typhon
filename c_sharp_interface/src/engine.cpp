@@ -30,6 +30,7 @@ void Engine::Initialize()
     std::cout << "trying texture packer" << std::endl;
     textureAtlas = CreateTextureAtlasFromImages();
     
+    std::cout << "finished texture packer!" << std::endl;
     Engine::isInitialized = true;
 }
 
