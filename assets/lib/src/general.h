@@ -9,7 +9,9 @@
 #include "vendor/json/single_include/nlohmann/json.hpp"
 #include <bitset>
 
-
+#ifndef M_PI
+#define M_PI 3.141592653589793238462643383279502884197
+#endif
 
 using json = nlohmann::json;
 using Random = effolkronium::random_static;

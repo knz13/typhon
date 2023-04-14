@@ -21,6 +21,11 @@ public:
     }
 
     bool Valid();
+
+    const std::string& ClassName() {
+        return className;
+    }
+
     entt::entity Handle(){
         return handle;
     }
@@ -89,9 +94,8 @@ class DerivedFromGameObject : public GameObject,public Reflection::IsInitialized
 public:
     static void InitializeStatically() {
         GameObject::instantiableClasses[HelperFunctions::GetClassID<MainClass>()] = [](){
-            std::cout << "Trying to create game object with type " << HelperFunctions::GetClassNameString<MainClass>()<<std::endl;
             entt::entity e = ECSRegistry::Get().create();
-            auto ptr = std::shared_ptr<GameObject>(new MainClass());
+            auto ptr = std::shared_ptr<GameObject>(static_cast<GameObject*>(new MainClass()));
             ptr.get()->handle = e;
             ptr.get()->GameObjectOnCreate();
 
@@ -128,9 +132,10 @@ private:
     }
 
 
-    void GameObjectOnCreate() override{
+    void GameObjectOnCreate() override {
         className = HelperFunctions::GetClassNameString<MainClass>();
 
+        GameObjectOnCreateForOne<MainClass>();
         (GameObjectOnCreateForOne<DerivedClasses>(),...);
     };
     
@@ -139,13 +144,13 @@ private:
 
         GameObject::GameObjectOnDestroy();
         
+        GameObjectOnDestroyForOne<MainClass>();
         (GameObjectOnDestroyForOne<DerivedClasses>(),...);
     };
 private:
     
     friend class Engine;
 };
-
 
 
 

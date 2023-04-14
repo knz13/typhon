@@ -283,7 +283,7 @@ Widget _buildBreadcrumbTrail() {
 class ${str} : public DerivedFromGameObject<${str}
   //Here you can add the class traits you wish to use
   //for example: Traits::HasUpdate<${str}>,Traits::HasPosition...
-
+  
   > {
 private:
   //Add your private variables here

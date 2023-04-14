@@ -93,5 +93,5 @@ os.system('echo "Build finished!"')
 os.system('echo "Running tests"')
 
 if platform.system() == "Darwin":
-    check_output(["open","typhon_tests"])
+    subprocess.call(["open","typhon_tests"])
     

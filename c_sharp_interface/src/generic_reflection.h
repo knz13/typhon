@@ -15,38 +15,25 @@ namespace Reflection {
 
     class InitializedStaticallyStorage {
     public:
-        static std::vector<std::function<void()>> functionsFromDerivedClasses;
+        static std::map<int64_t,std::function<void()>> functionsFromDerivedClasses;
     };
 
 
     template<typename Derived>
     class IsInitializedStatically {
-        static inline int m = [](){
-            
-            
-
-            if constexpr (has_initialize_statically<Derived>::value){
-                InitializedStaticallyStorage::functionsFromDerivedClasses.push_back(
-                    [](){
-                        Derived::InitializeStatically();
-                    }
-                );
-            }
-            return 0;   
-        }();
-
-
-
-    protected:
-
+    private:
 
     public:
-        
 
         IsInitializedStatically()
         {
-            
-            (void)m;
+            if constexpr (has_initialize_statically<Derived>::value){
+                if(InitializedStaticallyStorage::functionsFromDerivedClasses.find(HelperFunctions::GetClassID<Derived>()) == InitializedStaticallyStorage::functionsFromDerivedClasses.end()){
+                    InitializedStaticallyStorage::functionsFromDerivedClasses[HelperFunctions::GetClassID<Derived>()] = [](){
+                            Derived::InitializeStatically();
+                    };
+                }
+            }
         }
         
 

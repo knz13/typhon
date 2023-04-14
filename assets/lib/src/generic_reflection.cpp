@@ -5,5 +5,5 @@
 
 
 namespace Reflection {
-    std::vector<std::function<void()>> InitializedStaticallyStorage::functionsFromDerivedClasses;
+    std::map<int64_t,std::function<void()>> InitializedStaticallyStorage::functionsFromDerivedClasses;
 }

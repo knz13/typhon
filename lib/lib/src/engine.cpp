@@ -47,10 +47,16 @@ void Engine::Unload()
 std::vector<std::string> Engine::GetImagePathsFromLibrary()
 {
     std::vector<std::string> inputs;
-    for(const auto& file : fs::directory_iterator(
-        fs::path(HelperStatics::projectPath) / fs::path("lib") / fs::path("images")))
-    {
-        inputs.push_back(file.path().string());
+    try {
+
+        for(const auto& file : fs::directory_iterator(
+            fs::path(HelperStatics::projectPath) / fs::path("lib") / fs::path("images")))
+        {
+            inputs.push_back(file.path().string());
+        }
+    }
+    catch(exception e) {
+        std::cout << "Error found while loading image paths from library:\n" << e.what() << std::endl;
     }
     return inputs;
 }

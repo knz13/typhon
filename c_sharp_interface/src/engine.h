@@ -22,7 +22,6 @@ public:
     template<typename T>
     static T& CreateNewGameObject() {
         static_assert(std::is_base_of<GameObject,T>::value,"Can only create Game Objects that are derived from GameObject");
-        std::cout << "Trying to create game object with type " << HelperFunctions::GetClassNameString<T>()<<std::endl;
         entt::entity e = ECSRegistry::Get().create();
         aliveObjects[e] = std::shared_ptr<GameObject>(new T());
         aliveObjects[e].get()->handle = e;
@@ -84,6 +83,10 @@ public:
         ECSRegistry::Get().destroy(e);
         return true;
     }
+
+    static int64_t AliveObjects() {
+        return aliveObjects.size();
+    };
 
     static void Update(double dt);
 
