@@ -80,6 +80,8 @@ TEST_CASE("Testing General Templating And Engine Methods") {
 
         Engine::Unload();
     }
+
+    
     
 
     SECTION("GameObject Removal") {
@@ -164,7 +166,6 @@ TEST_CASE("Testing GameObject derivation") {
         REQUIRE(E().someValue == 0);
 
         REQUIRE(Engine::CreateNewGameObject<E>().someValue == 2);
-        
 
         Engine::Unload();
     }

@@ -33,8 +33,11 @@ void Engine::Unload()
 {   
 
     std::cout << "calling unload!" << std::endl;
-    for(const auto& [key,value] : aliveObjects){
+    auto iter = aliveObjects.begin();
+    while(iter != aliveObjects.end()){
+        const auto& [key,value] = *iter;
         RemoveGameObjectFromHandle(key);
+        iter = aliveObjects.begin();
     }
 
     GameObject::instantiableClasses.clear();
