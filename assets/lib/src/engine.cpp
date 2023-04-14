@@ -76,7 +76,7 @@ std::string Engine::GetPathToAtlas()
 {
 
     fs::path atlasPath = fs::path(HelperStatics::projectPath) / fs::path("build") / fs::path("texture_atlas");
-    std::filesystem::create_directory(atlasPath);
+    std::filesystem::create_directories(atlasPath);
 
     return (atlasPath).string() + "/";
 }
@@ -185,6 +185,10 @@ std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFrom
     
     if(inputs.size() == 0){
         return {};
+    }
+    std::cout << "inputs = " << std::endl;
+    for(const auto& val : inputs) {
+        std::cout << val << std::endl;
     }
     Crunch::PackFromFolder(inputs,GetPathToAtlas(),"atlas",Crunch::CrunchOptions::optVerbose | Crunch::CrunchOptions::optJson);
     

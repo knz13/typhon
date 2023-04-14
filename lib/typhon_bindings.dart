@@ -93,7 +93,7 @@ class TyphonCPPInterface {
 
       // Create the 'images' directory if it doesn't exist
       Directory imagesDir = Directory(imagesDirPath);
-      if (!await imagesDir.exists()) {
+      if (!(imagesDir.existsSync())) {
         await imagesDir.create(recursive: true);
       }
 
@@ -103,7 +103,7 @@ class TyphonCPPInterface {
       List<String> assetManifest = assetManifestMap.keys.toList();
 
       List<String> imageAssets = assetManifest
-          .where((p) => path.extension(p).toLowerCase() == '.png' || path.extension(p).toLowerCase() == '.jpg')
+          .where((p) => path.isWithin("assets/images/sprites", p) && (path.extension(p).toLowerCase() == '.png' || path.extension(p).toLowerCase() == '.jpg'))
           .toList();
 
       // Extract images
