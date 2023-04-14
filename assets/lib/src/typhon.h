@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-
+    //__BEGIN__CPP__EXPORTS__
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
     FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
     FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);
@@ -34,6 +34,7 @@ extern "C" {
     FFI_PLUGIN_EXPORT void unloadLibrary();
     FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
     FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
+    //__END__CPP__EXPORTS__
 
 #ifdef __cplusplus
 }

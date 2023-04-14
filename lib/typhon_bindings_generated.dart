@@ -25,6 +25,7 @@ class TyphonBindings {
           lookup)
       : _lookup = lookup;
 
+  /// __BEGIN__CPP__EXPORTS__
   int initializeCppLibrary() {
     return _initializeCppLibrary();
   }

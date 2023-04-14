@@ -84,13 +84,24 @@ with open("c_sharp_interface/src/typhon.h",'r') as f:
         if "//__BEGIN__CPP__EXPORTS__" in line:
             shouldAddLine = True
             continue
-        if "__END__CPP__EXPORTS__" in line:
+        if "//__END__CPP__EXPORTS__" in line:
             shouldAddLine = False
             break
-        cpp_exports += line + "\n"
+        if shouldAddLine:
+            cpp_exports += line + "\n"
 
 with open("c_sharp_interface/src/typhon.cpp",'r') as f:
-    cpp_exports_impl = f.read()
+    lines = f.readlines()
+    shouldAddLine = False
+    for line in lines:
+        if "//__BEGIN__CPP__IMPL__" in line:
+            shouldAddLine = True
+            continue
+        if "//__END__CPP__IMPL__" in line:
+            shouldAddLine = False
+            break
+        if shouldAddLine:
+            cpp_exports_impl += line + "\n"
 
 engine_new_code = ""
 with open("lib/engine.dart",'r') as f:
@@ -101,9 +112,10 @@ with open("lib/engine.dart",'r') as f:
     for line in lines:
         if "//__BEGIN__CPP__EXPORTS__" in line:
             foundCppExportsLine = True
+            engine_new_code += line
         if "//__BEGIN__CPP__IMPL__" in line:
             foundCppExportsImplLine = True
-        
+            engine_new_code += line
         if "//__END__CPP__EXPORTS__" in line:
             foundCppExportsLine = False
             engine_new_code += cpp_exports
@@ -115,7 +127,8 @@ with open("lib/engine.dart",'r') as f:
             engine_new_code += "//__END__CPP__IMPL__\n"
             continue
 
-
+        if foundCppExportsImplLine or foundCppExportsLine:
+            continue
 
         engine_new_code += line
         

@@ -339,12 +339,12 @@ extern "C" {
      File bindingsGeneratedCPP = File(path.join(projectPath,"bindings_generated.cpp"));
     bindingsGeneratedCPP.createSync();
     bindingsGeneratedCPP.writeAsString("""
-//__BEGIN__CPP__IMPL__
 #include <iostream>
 #include <stdint.h>
 #include "bindings_generated.h"
 #include "includes/mono_manager.h"
 #include "includes/shader_compiler.h"
+//__BEGIN__CPP__IMPL__
 
 bool initializeCppLibrary() {
     
