@@ -94,4 +94,6 @@ os.system('echo "Running tests"')
 
 if platform.system() == "Darwin":
     check_output(["open","typhon_tests"])
+else:
+    subprocess.call(["Debug/typhon_tests.exe"])
     
