@@ -116,7 +116,7 @@ namespace HelperFunctions {
     }
 
 
-    void ReplaceAll( std::string &s, const std::string &search, const std::string &replace) {
+    static void ReplaceAll( std::string &s, const std::string &search, const std::string &replace) {
         for( size_t pos = 0; ; pos += replace.length() ) {
             // Locate the substring to replace
             pos = s.find( search, pos );
