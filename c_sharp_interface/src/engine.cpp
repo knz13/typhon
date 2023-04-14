@@ -196,6 +196,8 @@ std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFrom
     
     std::ifstream stream(GetPathToAtlas() + "atlas.json");
 
+    try {
+
     json data = json::parse(stream);
 
     std::map<std::string,TextureAtlasImageProperties> outMap;
@@ -211,5 +213,12 @@ std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFrom
     }
 
     return outMap;
+    }
+    catch(std::exception& e) {
+
+        std::cout << "Error found while loading atlas:\n" << e.what()<<std::endl;
+
+        return {};
+    }
 
 }
