@@ -75,6 +75,8 @@ for root in roots:
     path = os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")).replace("\\","/")
     paths_to_add_to_pubspec.append(f'    - assets/lib/src/{path}/')
 
+os.chdir(current_dir)
+
 pubspecNew = ""
 with open("pubspec.yaml",'r') as f:
     lines = f.readlines()
