@@ -73,18 +73,66 @@ for root in roots:
     path = os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")).replace("\\","/")
     #print(f'    - assets/lib/src/{path}/')
 
+cpp_exports = ""
+cpp_exports_impl = ""
 
+os.chdir(current_dir)
+with open("c_sharp_interface/src/typhon.h",'r') as f:
+    lines = f.readlines()
+    shouldAddLine = False
+    for line in lines:
+        if "//__BEGIN__CPP__EXPORTS__" in line:
+            shouldAddLine = True
+            continue
+        if "__END__CPP__EXPORTS__" in line:
+            shouldAddLine = False
+            break
+        cpp_exports += line + "\n"
+
+with open("c_sharp_interface/src/typhon.cpp",'r') as f:
+    cpp_exports_impl = f.read()
+
+engine_new_code = ""
+with open("lib/engine.dart",'r') as f:
+    lines = f.readlines()
+    foundCppExportsLine = False
+    foundCppExportsImplLine = False
+
+    for line in lines:
+        if "//__BEGIN__CPP__EXPORTS__" in line:
+            foundCppExportsLine = True
+        if "//__BEGIN__CPP__IMPL__" in line:
+            foundCppExportsImplLine = True
+        
+        if "//__END__CPP__EXPORTS__" in line:
+            foundCppExportsLine = False
+            engine_new_code += cpp_exports
+            engine_new_code += "//__END__CPP__EXPORTS__\n"
+            continue
+        if "//__END__CPP__IMPL__" in line:
+            foundCppExportsImplLine = False
+            engine_new_code += cpp_exports_impl
+            engine_new_code += "//__END__CPP__IMPL__\n"
+            continue
+
+
+
+        engine_new_code += line
+        
+with open("lib/engine.dart",'w') as f:
+    f.write(engine_new_code)
 
 
 os.system('echo "Updating dart bindings file..."')
 
-os.system(f'cd {current_dir} && dart run ffigen --config ffigen.yaml')
+os.system(f'dart run ffigen --config ffigen.yaml')
 
 os.system('echo "Done updating dart bindings file!"')
 
 os.system('echo "Building tests...')
 
-os.chdir("build")
+
+os.chdir("c_sharp_interface/build")
 
 os.system(f'{"make typhon_tests" if platform.system() == "Darwin" else "msbuild project_typhon.sln /target:typhon_tests /p:Configuration=" + ("Release" if args.Release else "Debug")}')
 

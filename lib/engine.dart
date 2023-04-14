@@ -201,6 +201,7 @@ extern "C" {
     //__INITIALIZE__USER__DEFINED__CLASSES__
     Entry::OnInitializeProject();
   };
+  //__BEGIN__CPP__EXPORTS__
   FFI_PLUGIN_EXPORT bool initializeCppLibrary();
   FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
   FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);
@@ -211,7 +212,7 @@ extern "C" {
   FFI_PLUGIN_EXPORT void unloadLibrary();
   FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
   FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
-
+  //__END__CPP__EXPORTS__
 
 
 #ifdef __cplusplus
@@ -337,7 +338,9 @@ extern "C" {
 
      File bindingsGeneratedCPP = File(path.join(projectPath,"bindings_generated.cpp"));
     bindingsGeneratedCPP.createSync();
-    bindingsGeneratedCPP.writeAsString("""#include <iostream>
+    bindingsGeneratedCPP.writeAsString("""
+//__BEGIN__CPP__IMPL__
+#include <iostream>
 #include <stdint.h>
 #include "bindings_generated.h"
 #include "includes/mono_manager.h"
@@ -426,6 +429,7 @@ void createObjectFromClassID(int64_t classID)
 {
     Engine::CreateNewGameObject(classID);
 }
+//__END__CPP__IMPL__
 """);
   
 
