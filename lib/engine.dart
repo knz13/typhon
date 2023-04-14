@@ -30,6 +30,7 @@ import 'package:typhon/recompiling_dialog.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
+
 import 'file_viewer_panel.dart';
 
 
@@ -100,9 +101,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   }
 
   Future<void> reloadProject() async {
-    if(TyphonCPPInterface.checkIfLibraryLoaded()){
-      TyphonCPPInterface.getCppFunctions().unloadLibrary();
-    }
+    unload();
     await TyphonCPPInterface.extractImagesFromAssets(path.join(projectPath,"build","images"));
     
     await recompileProject();
@@ -124,9 +123,11 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     })();
   }
 
+  
+
   void unload() {
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
-      TyphonCPPInterface.getCppFunctions().unloadLibrary();
+      TyphonCPPInterface.detachLibrary();
     }
   }
 
