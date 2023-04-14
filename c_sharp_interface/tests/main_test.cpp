@@ -102,7 +102,7 @@ TEST_CASE("Testing General Templating And Engine Methods") {
 
         GameObject& obj = Engine::CreateNewGameObject<GameObject>();
 
-        Engine::RemoveGameObjectFromHandle(obj.Handle());
+        Engine::RemoveGameObject(obj.Handle());
 
         REQUIRE(Engine::AliveObjects() == 0);
         REQUIRE(!obj.Valid());
@@ -117,6 +117,8 @@ TEST_CASE("Testing General Templating And Engine Methods") {
 
         REQUIRE(!Engine::IsKeyPressed(Keys::Key::B));
     }
+
+    
 }
 
 
@@ -128,7 +130,12 @@ public:
         someValue = 2;
     };
 
+    void Destroy() {
+        someValueOnDestroy = -1;
+    };
+
     int someValue = 0;
+    static inline int someValueOnDestroy = 0;
 };
 
 TEST_CASE("Testing GameObject derivation") {
@@ -170,4 +177,101 @@ TEST_CASE("Testing GameObject derivation") {
         Engine::Unload();
     }
 
+    SECTION("GameObject Destroy function") {
+        E::someValueOnDestroy = 0;
+        Engine::Initialize();
+
+        REQUIRE(E::someValueOnDestroy == 0);
+
+        E& obj = Engine::CreateNewGameObject<E>();
+        
+        REQUIRE(E::someValueOnDestroy == 0);
+
+        Engine::RemoveGameObject(obj);
+
+        REQUIRE(E::someValueOnDestroy == -1);
+
+        Engine::Unload();
+    }
+
+    SECTION("OnDestroy event") {
+        Engine::Initialize();
+
+        std::string someString = "ababa";
+        E& obj = Engine::CreateNewGameObject<E>();
+        obj.OnBeingDestroyed().Connect([&](){
+            someString = "abracadabra";
+        });
+
+        REQUIRE(someString == "ababa");
+
+        Engine::RemoveGameObject(obj);
+
+        REQUIRE(someString == "abracadabra");
+
+        Engine::Unload();
+    }
+
+    
+
 }
+
+class F : public DerivedFromGameObject<F,
+    Traits::HasUpdate<F>
+    > {
+public:
+    void Update(double dt) {
+        someValue += 1;
+    }
+
+    int someValue = 0;
+
+};
+
+namespace Traits {
+    class SomeTrait {
+    public: 
+        void Create() {
+            
+        };
+
+        void Destroy() {
+
+        };
+    };
+}
+
+class G : public DerivedFromGameObject<G,Traits::SomeTrait> {};
+
+
+TEST_CASE("Traits testing") {
+
+    SECTION("Simple trait") {
+        Engine::Initialize();
+
+        G& obj = Engine::CreateNewGameObject<G>();
+
+        Engine::Unload();
+    }
+
+    SECTION("Update trait") {
+        Engine::Initialize();
+
+        F& obj = Engine::CreateNewGameObject<F>();
+        REQUIRE(obj.someValue == 0);
+
+        Engine::Update(0.0f);
+
+        REQUIRE(obj.someValue == 1);
+
+        Engine::Update(0.0f);
+
+        REQUIRE(obj.someValue == 2);
+
+        Engine::Unload();
+    }
+
+    
+
+}
+

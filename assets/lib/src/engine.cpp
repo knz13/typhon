@@ -36,7 +36,7 @@ void Engine::Unload()
     auto iter = aliveObjects.begin();
     while(iter != aliveObjects.end()){
         const auto& [key,value] = *iter;
-        RemoveGameObjectFromHandle(key);
+        RemoveGameObject(key);
         iter = aliveObjects.begin();
     }
 

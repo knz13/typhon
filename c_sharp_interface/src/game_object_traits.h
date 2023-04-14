@@ -8,6 +8,9 @@ DEFINE_HAS_SIGNATURE(has_find_frame_function,T::FindFrame,void (T::*)(int));
 
 namespace Traits {
 
+    #define DEFINE_NEW_TRAIT(trait_name) template<typename... DerivedClasses>\
+    class trait_name : public 
+
     template<typename... DerivedClasses> 
     class HasUpdate;
 

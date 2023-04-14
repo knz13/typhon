@@ -73,7 +73,7 @@ public:
         return true;
     }
 
-    static bool RemoveGameObjectFromHandle(entt::entity e) {
+    static bool RemoveGameObject(entt::entity e) {
         if(aliveObjects.find(e) == aliveObjects.end()){
             std::cout << "Could not remove gameobject, invalid id!" << std::endl;
             return false;
