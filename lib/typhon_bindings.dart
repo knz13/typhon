@@ -85,32 +85,30 @@ class TyphonCPPInterface {
   }
 
 
-  static Future<void> extractImagesFromAssets() async {
+  static Future<void> extractImagesFromAssets(String destination) async {
     try {
       // Get the executable directory
-      Directory appDocDir = await getApplicationSupportDirectory();
-      String imagesDirPath = path.join(appDocDir.path,"lib",'images');
 
       // Create the 'images' directory if it doesn't exist
-      Directory imagesDir = Directory(imagesDirPath);
-      if (!(imagesDir.existsSync())) {
-        await imagesDir.create(recursive: true);
-      }
 
       // Get the list of asset files
+      if(!Directory(destination).existsSync()){
+        Directory(destination).createSync(recursive: true);
+      }
+
       String assetManifestJson = await rootBundle.loadString('AssetManifest.json');
       Map<String, dynamic> assetManifestMap = json.decode(assetManifestJson);
       List<String> assetManifest = assetManifestMap.keys.toList();
 
       List<String> imageAssets = assetManifest
-          .where((p) => path.isWithin("assets/images/sprites", p) && (path.extension(p).toLowerCase() == '.png' || path.extension(p).toLowerCase() == '.jpg'))
+          .where((p) => path.isWithin("assets/images/", p) && (path.extension(p).toLowerCase() == '.png' || path.extension(p).toLowerCase() == '.jpg'))
           .toList();
-
+      print(imageAssets);
       // Extract images
       for (String assetPath in imageAssets) {
 
         String imageName = path.basename(assetPath);
-        File imageFile = File(path.join(imagesDir.path, imageName));
+        File imageFile = File(path.join(destination, imageName));
 
         if(imageFile.existsSync()){
           print("Skipping ${imageFile.path}, already copied!");

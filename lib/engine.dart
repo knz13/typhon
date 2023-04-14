@@ -103,14 +103,14 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
       TyphonCPPInterface.getCppFunctions().unloadLibrary();
     }
+    await TyphonCPPInterface.extractImagesFromAssets(path.join(projectPath,"build","images"));
     
     await recompileProject();
     if(!TyphonCPPInterface.checkIfLibraryLoaded()){
       return;
     }
     var library = TyphonCPPInterface.getCppFunctions();
-    await TyphonCPPInterface.extractImagesFromAssets();
-    library.passProjectPath((await getApplicationSupportDirectory()).path.toNativeUtf8().cast());
+    library.passProjectPath(projectPath.toNativeUtf8().cast());
     library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
     library.initializeCppLibrary();
     (()async {
