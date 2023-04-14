@@ -546,7 +546,7 @@ void createObjectFromClassID(int64_t classID)
 
 bool isEngineInitialized() {
 
-    return Engine::
+    return Engine::HasInitialized();
 
 }
 
