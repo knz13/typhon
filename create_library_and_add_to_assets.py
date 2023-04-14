@@ -69,9 +69,36 @@ for root, dirs, files in os.walk('src'):
                 roots.append(root)
             shutil.copyfile(os.path.join(root,file),os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")),file))
     #print(f"Done dir {root}")
+
+paths_to_add_to_pubspec = []
 for root in roots:
     path = os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")).replace("\\","/")
-    #print(f'    - assets/lib/src/{path}/')
+    paths_to_add_to_pubspec.append(f'    - assets/lib/src/{path}/')
+
+pubspecNew = ""
+with open("pubspec.yaml",'r') as f:
+    lines = f.readlines()
+    shouldStartIncluding = False
+
+    for line in lines:
+        if "__BEGIN__ASSETS__INCLUSION__" in line:
+            pubspecNew += line
+            shouldStartIncluding = True
+        
+        if "__END__ASSETS__INCLUSION__" in line:
+            pubspecNew += "\n".join(paths_to_add_to_pubspec)
+            pubspecNew += line
+            shouldStartIncluding = False
+            continue
+
+
+        if shouldStartIncluding:
+            continue
+
+        pubspecNew += line
+
+with open("pubspec.yaml",'w') as f:
+    f.write(pubspecNew)
 
 cpp_exports = ""
 cpp_exports_impl = ""
