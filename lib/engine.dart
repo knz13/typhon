@@ -223,7 +223,7 @@ extern "C" {
       FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
 
 
-      //await reloadProject();
+      await reloadProject();
 
       return;
 

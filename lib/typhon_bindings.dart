@@ -54,7 +54,7 @@ class TyphonCPPInterface {
             return path.isWithin("assets/lib", p);
           })
           .toList();
-      
+      int index = 0;
       // Extract images
       for (String assetPath in libAssets) {
 
@@ -74,8 +74,12 @@ class TyphonCPPInterface {
         catch(e) {
           print("Error found while loading file ${srcName}: ${e}");
         }
-
+        index += 1;
+        if(index %100 == 0) {
+          print("Loaded lib progress: ${index + 1}/${libAssets.length}");
+        }
       }
+      print("Done loading lib!");
 
       return libsDir.path;
   }

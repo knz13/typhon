@@ -49,7 +49,7 @@ namespace Traits {
         void CallUpdateForOneType(double dt) {
             //std::cout << "Calling update for " << HelperFunctions::GetClassNameString<A>() << std::endl;
             if constexpr (has_update_function<A>::value) {
-                static_cast<A*>(static_cast<NthTypeOf<Reflection::IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Update(dt);
+                static_cast<A*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Update(dt);
             }
         }
 
@@ -110,7 +110,7 @@ namespace Traits {
 
     protected:
         yael::event_sink<void(double)> OnUpdate() {
-            return static_cast<HasUpdateTag*>(static_cast<NthTypeOf<Reflection::IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->OnUpdate();
+            return static_cast<HasUpdateTag*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->OnUpdate();
         }
 
 
@@ -150,7 +150,7 @@ namespace Traits {
             template<typename A>
             void CheckIfHasFunction() {
                 if constexpr (has_ai_function<A>::value){
-                    static_cast<A*>(static_cast<NthTypeOf<Reflection::IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->AI();
+                    static_cast<A*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->AI();
                 }
             }
 
@@ -235,8 +235,8 @@ namespace Traits {
                 functionHash = this->OnUpdate().Connect([this](double dt) mutable {
                     this->functionToCallOnUpdate(dt);
                 });
-                UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<NthTypeOf<Reflection::IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle()] = SpriteAnimationData(
-                    static_cast<GameObject*>(static_cast<NthTypeOf<Reflection::IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this)),
+                UsesSpriteAnimationInternals::objectsToBeRendered[static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle()] = SpriteAnimationData(
+                    static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this)),
                     &width,
                     &height,
                     &frame.x,
@@ -250,11 +250,11 @@ namespace Traits {
 
             void Destroy() {
                 this->OnUpdate().Disconnect(functionHash);
-                UsesSpriteAnimationInternals::objectsToBeRendered.erase(static_cast<GameObject*>(static_cast<NthTypeOf<Reflection::IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle());
+                UsesSpriteAnimationInternals::objectsToBeRendered.erase(static_cast<GameObject*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->Handle());
             }
 
             UsesSpriteAnimation() {
-                static_assert(std::is_base_of<HasPosition,NthTypeOf<Reflection::IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>>::value,"In order to use sprite animation, please derive from HasPosition");
+                static_assert(std::is_base_of<HasPosition,NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>>::value,"In order to use sprite animation, please derive from HasPosition");
             }
         protected:
             SpriteAnimationFrame frame;
@@ -271,7 +271,7 @@ namespace Traits {
             template<typename A>
             void CallFindFrameForOne() {
                 if constexpr (has_find_frame_function<A>::value){
-                    static_cast<A*>(static_cast<NthTypeOf<Reflection::IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->FindFrame(height);
+                    static_cast<A*>(static_cast<NthTypeOf<IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>*>(this))->FindFrame(height);
                 }
             }
 

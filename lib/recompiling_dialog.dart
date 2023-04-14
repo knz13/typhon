@@ -33,6 +33,7 @@ class RecompilingMessage {
 class _RecompilingDialogState extends State<RecompilingDialog> {
   ScrollController controller = ScrollController();
   Queue<RecompilingMessage> currentMessage = Queue();
+  bool moveFreely = false;
 
   @override
   void initState() {
@@ -48,11 +49,13 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
         widget.notifier.value!.stdout.listen((event) {
           setState(() {
             currentMessage.addLast(RecompilingMessage(message: String.fromCharCodes(event),type: "LOG"));
-            controller.animateTo(
-                controller.position.maxScrollExtent,
-                curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 1),
-            );
+            if(!moveFreely){
+              controller.animateTo(
+                  controller.position.maxScrollExtent,
+                  curve: Curves.easeOut,
+                  duration: const Duration(milliseconds: 1),
+              );
+            }
           });
         });
         
@@ -60,11 +63,13 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
         widget.notifier.value!.stderr.listen((event) {
           setState(() {
             currentMessage.addLast(RecompilingMessage(message: String.fromCharCodes(event),type: "ERROR"));
-            controller.animateTo(
-                controller.position.maxScrollExtent,
-                curve: Curves.easeOut,
-                duration: const Duration(milliseconds: 1),
-            );
+            if(!moveFreely){
+              controller.animateTo(
+                  controller.position.maxScrollExtent,
+                  curve: Curves.easeOut,
+                  duration: const Duration(milliseconds: 1),
+              );
+            }
           });
         });
         
@@ -76,10 +81,45 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
   Widget dialogBodyContent(String title){
     return Column(
       children: [
-        GeneralText(title),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                flex:1,
+                child: SizedBox(),
+              ),
+              Expanded(
+                flex:9,
+                child: GeneralText(title,alignment: TextAlign.center,)
+              ),
+              Expanded(
+                flex: 1,
+                child: GeneralButton(
+                  onPressed: () {
+                    setState(() {
+                      moveFreely = !moveFreely;
+                    });
+                  },
+                  child: moveFreely? Icon(Icons.lock_open_outlined) : Icon(Icons.lock_outline),
+                ),
+              )
+            ],
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                color: primaryBlack,
+                height: 2,
+              ),
+            ),
+          ],
+        ),
         Expanded(
           child: ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
+            physics: moveFreely? null : const NeverScrollableScrollPhysics(),
             controller: controller,
             itemBuilder:(context, index) {
               return ListTile(
@@ -99,7 +139,7 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
     return Dialog(
       child: Container(
         width: 375,
-        height: 200,
+        height: 400,
         decoration: BoxDecoration(
           color: activeColor.withOpacity(0.5),
           borderRadius: BorderRadius.circular(3),

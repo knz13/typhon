@@ -30,9 +30,11 @@ include(FetchContent)
 #project name
 project(project_typhon)
 
-option(TYPHON_RUN_TESTS "Run Tests" OFF)
+option(TYPHON_RUN_TESTS "Enable WGSL output" OFF)
 
-
+if(TYPHON_RUN_TESTS)
+  add_subdirectory("tests")
+endif()
 
 
 SET(FETCHCONTENT_QUIET FALSE)
@@ -57,34 +59,93 @@ SET(FETCHCONTENT_QUIET FALSE)
     # libraries for target typhon...
     
    # list(APPEND typhon_LIBRARIES monopp)
+    
+    # repository download and settings for shaderc
 
+    
+    FetchContent_Declare(ENTT
+        GIT_REPOSITORY https://github.com/skypjack/entt
+        GIT_TAG v3.11.1
+        SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/entt
+        GIT_PROGRESS   TRUE
+        USES_TERMINAL_DOWNLOAD TRUE
 
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/entt)
+    ) 
     
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/yael)
-    
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/random)
-    
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/glm)
-    
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/crunch)
-        
+
+    FetchContent_MakeAvailable(ENTT)
+    #includes for target typhon...
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/src/)
     
+    FetchContent_Declare(YAEL
+      GIT_REPOSITORY https://github.com/knz13/YAEL
+      GIT_TAG origin/main
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/yael
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
+    ) 
+    
+    
+    FetchContent_MakeAvailable(YAEL)
+    
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/yael/include)
-  
+    
+    FetchContent_Declare(RANDOM
+      GIT_REPOSITORY https://github.com/effolkronium/random
+      GIT_TAG v1.4.1
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/random
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
+    ) 
+    
+    
+    FetchContent_MakeAvailable(RANDOM)
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/random/include)
     
+    FetchContent_Declare(GLM
+      GIT_REPOSITORY https://github.com/g-truc/glm
+      GIT_TAG 0.9.9.8
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/glm
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
+    ) 
+    
+    
+    FetchContent_MakeAvailable(GLM)
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/glm/)
     
+    FetchContent_Declare(CRUNCH
+      GIT_REPOSITORY https://github.com/johnfredcee/crunch
+      GIT_TAG origin/master
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/crunch
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
+    )
+
+    FetchContent_MakeAvailable(CRUNCH)
 
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/crunch/crunch/)
     list(APPEND typhon_LIBRARIES libcrunch)
 
+
+    FetchContent_Declare(JSON
+      GIT_REPOSITORY https://github.com/nlohmann/json
+      GIT_TAG v3.11.2
+      SOURCE_DIR ${PROJECT_SOURCE_DIR}/src/vendor/json
+      GIT_PROGRESS   TRUE
+      USES_TERMINAL_DOWNLOAD TRUE
+
+    ) 
+
+    FetchContent_MakeAvailable(JSON)
 
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/json/single_include)
     
@@ -149,43 +210,12 @@ SET(FETCHCONTENT_QUIET FALSE)
       
       target_link_libraries(typhon PUBLIC ${typhon_LIBRARIES})
       
-      #get_target_property(TYPHON_INCLUDES_FINAL typhon INCLUDE_DIRECTORIES)
+      get_target_property(TYPHON_INCLUDES_FINAL typhon INCLUDE_DIRECTORIES)
         
-      #foreach(X IN LISTS TYPHON_INCLUDES_FINAL)
-      #  message(STATUS "target_include_directories(SOMETHING PUBLIC ${X})")
-      #endforeach()
+      foreach(X IN LISTS TYPHON_INCLUDES_FINAL)
+        message(STATUS "target_include_directories(SOMETHING PUBLIC ${X})")
+      endforeach()
       
-      #message(STATUS "BEGIN__INCLUDE__DIRS ${TYPHON_INCLUDES_FINAL};${} END__INCLUDE__DIRS")
+      message(STATUS "BEGIN__INCLUDE__DIRS ${TYPHON_INCLUDES_FINAL};${} END__INCLUDE__DIRS")
     
 
-#tests
-
-if(TYPHON_RUN_TESTS)
-  
-  add_executable(typhon_tests 
-    tests/main_test.cpp
-  )
-
-  set_target_properties(typhon_tests PROPERTIES
-      CXX_STANDARD 20
-  )
-
-  # setting c standard
-
-  set_target_properties(typhon_tests PROPERTIES
-      C_STANDARD 20
-  )
-
-  add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/catch2)
-  
-  target_link_libraries(typhon_tests PRIVATE Catch2::Catch2WithMain)
-  target_link_libraries(typhon_tests PRIVATE typhon)
-
-  list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/src/vendor/catch2/extras)
-
-  include(CTest)
-  include(Catch)
-    
-  catch_discover_tests(typhon_tests)
-
-endif()

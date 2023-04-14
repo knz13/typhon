@@ -95,18 +95,21 @@ class GeneralText extends StatelessWidget {
   double fontSize;
   Color? color;
   TextOverflow? overflow;
+  TextAlign? alignment;
 
-  GeneralText(this.text,{super.key,this.fontSize = 14,this.color,this.overflow});
+  GeneralText(this.text,{super.key,this.fontSize = 14,this.color,this.overflow,this.alignment});
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Text(
       text,
+      textAlign: alignment,
       style: TextStyle(
         overflow: overflow ?? TextOverflow.ellipsis,
         color: color ?? platinumGray,
-        fontSize: fontSize
+        fontSize: fontSize,
+        
       ),
     );
   }

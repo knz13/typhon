@@ -82,15 +82,11 @@ namespace {
     }
 }
 
-namespace Reflection {
+template<typename... Others>
+constexpr int IndexOfTopClass() {
+    return IndexOfTopClassInternal<Others...>(0);
+} 
 
-
-    template<typename... Others>
-    constexpr int IndexOfTopClass() {
-        return IndexOfTopClassInternal<Others...>(0);
-    } 
-
-}
 namespace HelperFunctions {
 
     static double Radians(double degrees) {
