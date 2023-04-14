@@ -88,7 +88,7 @@ with open("pubspec.yaml",'r') as f:
             shouldStartIncluding = True
         
         if "__END__ASSETS__INCLUSION__" in line:
-            pubspecNew += "\n".join(paths_to_add_to_pubspec)
+            pubspecNew += "\n".join(paths_to_add_to_pubspec) + "\n"
             pubspecNew += line
             shouldStartIncluding = False
             continue

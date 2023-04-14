@@ -624,4 +624,5 @@ flutter:
     - assets/lib/src/vendor/glm/glm/simd/
     - assets/lib/src/vendor/glm/glm/detail/
     - assets/lib/src/vendor/glm/glm/gtc/
-    - assets/lib/src/vendor/glm/glm/gtx/    # __END__ASSETS__INCLUSION__
+    - assets/lib/src/vendor/glm/glm/gtx/
+    # __END__ASSETS__INCLUSION__

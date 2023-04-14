@@ -5,14 +5,14 @@
 #include "shader_compiler.h"
 #include "engine.h"
 //__BEGIN__CPP__IMPL__
-// -- INCLUDE CREATED CLASSES -- //
+//__INCLUDE__CREATED__CLASSES__
 
 bool initializeCppLibrary() {
     
     MonoManager::getInstance();
     ShaderCompiler::getInstance();
     
-    
+    //__INITIALIZE__CREATED__CLASSES__
 
     Engine::Initialize();
 

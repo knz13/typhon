@@ -179,192 +179,16 @@ public:
 };
 """);
 
-      File bindingsFile = File(path.join(projectPath,"bindings.h"));
+      File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
 
-      await bindingsFile.writeAsString("""#pragma once
-#include "includes/engine.h"
-#include "assets/entry.h"
-//__INCLUDE__USER__DEFINED__CLASSES__
-
-#if _WIN32
-#include <windows.h>
-#else
-#include <pthread.h>
-#include <unistd.h>
-#endif
-
-#if _WIN32
-#define FFI_PLUGIN_EXPORT __declspec(dllexport)
-#else
-#define FFI_PLUGIN_EXPORT
-#endif
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-  FFI_PLUGIN_EXPORT void onInitializeProject() {
-    //__INITIALIZE__USER__DEFINED__CLASSES__
-    Entry::OnInitializeProject();
-  };
-  //__BEGIN__CPP__EXPORTS__
-    FFI_PLUGIN_EXPORT bool initializeCppLibrary();
-
-    FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
-
-    FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);
-
-    FFI_PLUGIN_EXPORT void onKeyboardKeyUp(int64_t input);
-
-    FFI_PLUGIN_EXPORT void onUpdateCall(double dt);
-
-    FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
-
-    FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
-
-    FFI_PLUGIN_EXPORT void unloadLibrary();
-
-    FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
-
-    FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
-
-    FFI_PLUGIN_EXPORT bool isEngineInitialized();
-
-//__END__CPP__EXPORTS__
-
-
-#ifdef __cplusplus
-}
-#endif
-""");
-
-      FileViewerPanel.leftInitialDirectory.value = Directory(projectPath);
-      FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
-
-
-      await reloadProject();
-
-      return;
-
-    }
-    
-    map[projectPath] = {
-      "name":projectName
-    };
-
-    Directory documentsDir = await getApplicationSupportDirectory();
-
-    if(!Directory(projectPath).existsSync()) {
-      Directory(projectPath).createSync(recursive: true);
-    }
-
-    Directory(path.join(projectPath,"assets")).createSync(recursive: true);
-
-    await TyphonCPPInterface.extractIncludesFromAssets(path.join(projectPath,"includes"));
-
-    ByteData cmakeTemplateData = await rootBundle.load("assets/cmake_template.txt");
-    String cmakeTemplateString = utf8.decode(cmakeTemplateData.buffer.asUint8List(cmakeTemplateData.offsetInBytes,cmakeTemplateData.lengthInBytes));
-
-
-
-    cmakeTemplateString = cmakeTemplateString.replaceAll('__CMAKE__VERSION__','3.16')
-    .replaceAll('__PROJECT__NAME__',projectFilteredName)
-    .replaceAll('__TYPHON__LIBRARY__LOCATION__',(await TyphonCPPInterface.getLibraryPath()).replaceAll("\\", "/").replaceAll(" ", "\\ "))
-    .replaceAll('__TYPHON__INCLUDE__DIRECTORIES__',path.join(projectPath,'includes'));
-    
-
-    await File(path.join(projectPath,"CMakeLists.txt")).writeAsString(cmakeTemplateString);
-
-    
-
-    
-    await saveProjectsJSON(map);
-
-    return await initializeProject(projectDirectoryPath, projectName);
-
-  }
-
-  Future<List<String>> __findPathsToInclude(Directory directory) async {
-    List<String> paths = [];
-    for(var maybeFile in await directory.list().toList()){
-      print(path.basename(maybeFile.path));
-      if(maybeFile is File && maybeFile.path.substring(maybeFile.path.lastIndexOf(".")) == ".h") {
-        paths.add(path.relative(maybeFile.path,from:projectPath));
-      }
-      if(maybeFile is Directory){
-        __findPathsToInclude(maybeFile);
-      }
-    } 
-    return paths;
-
-  }
-
-  Future<void> recompileProject() async {
-    ValueNotifier<Process?> processNotifier = ValueNotifier(null);
-    RecompilingDialog dialog = RecompilingDialog(notifier: processNotifier);
-
-    showDialog(
-      barrierDismissible: false,
-      context: MyApp.globalContext.currentContext!, 
-      builder:(context) {
-      return dialog;
-    },);
-
-    
-    if(!hasInitializedProject()){
-      Navigator.of(MyApp.globalContext.currentContext!).pop();
-      return;
-    }
-    print("recompiling...");
-
-    //finding includes
-    List<String> includes = await __findPathsToInclude(Directory(path.join(projectPath,"assets")));
-    print("includes found: ${includes}");
-    
-    File bindingsFile = File(path.join(projectPath,"bindings.h"));
-    String bindingsGeneratedData = "";
-    List<String> lines = bindingsFile.readAsLinesSync();
-    for(String line in lines) {
-      
-      if(line.contains("//__INCLUDE__USER__DEFINED__CLASSES__")){
-        includes.forEach((element) { 
-          if(element == "assets/entry.h"){
-            return;
-          }
-          bindingsGeneratedData += '#include "${element}"\n';
-        });
-        continue;
-      }
-      if(line.contains("//__INITIALIZE__USER__DEFINED__CLASSES__")){
-        includes.forEach((element) {
-          if(element == "assets/entry.h" || element == "assets\\entry.h"){
-            return;
-          }
-          bindingsGeneratedData += "    ${path.basenameWithoutExtension(element)}();\n";
-        });
-        continue;
-      }
-      bindingsGeneratedData += line;
-
-      bindingsGeneratedData += "\n";
-
-    }
-    
-    File bindingsGenerated = File(path.join(projectPath,"bindings_generated.h"));
-    bindingsGenerated.createSync();
-    bindingsGenerated.writeAsStringSync(bindingsGeneratedData);
-
-     File bindingsGeneratedCPP = File(path.join(projectPath,"bindings_generated.cpp"));
-    bindingsGeneratedCPP.createSync();
-    bindingsGeneratedCPP.writeAsString("""
+      await bindingsFile.writeAsString("""
 #include <iostream>
 #include <stdint.h>
 #include "bindings_generated.h"
 #include "includes/mono_manager.h"
 #include "includes/shader_compiler.h"
 //__BEGIN__CPP__IMPL__
-// -- INCLUDE CREATED CLASSES -- //
+//__INCLUDE__CREATED__CLASSES__
 
 
 
@@ -378,7 +202,7 @@ bool initializeCppLibrary() {
 
     
 
-    
+    //__INITIALIZE__CREATED__CLASSES__
 
 
 
@@ -555,6 +379,177 @@ bool isEngineInitialized() {
 //__END__CPP__IMPL__
 """);
   
+
+      FileViewerPanel.leftInitialDirectory.value = Directory(projectPath);
+      FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
+
+
+      await reloadProject();
+
+      return;
+
+    }
+    
+    map[projectPath] = {
+      "name":projectName
+    };
+
+    Directory documentsDir = await getApplicationSupportDirectory();
+
+    if(!Directory(projectPath).existsSync()) {
+      Directory(projectPath).createSync(recursive: true);
+    }
+
+    Directory(path.join(projectPath,"assets")).createSync(recursive: true);
+
+    await TyphonCPPInterface.extractIncludesFromAssets(path.join(projectPath,"includes"));
+
+    ByteData cmakeTemplateData = await rootBundle.load("assets/cmake_template.txt");
+    String cmakeTemplateString = utf8.decode(cmakeTemplateData.buffer.asUint8List(cmakeTemplateData.offsetInBytes,cmakeTemplateData.lengthInBytes));
+
+
+
+    cmakeTemplateString = cmakeTemplateString.replaceAll('__CMAKE__VERSION__','3.16')
+    .replaceAll('__PROJECT__NAME__',projectFilteredName)
+    .replaceAll('__TYPHON__LIBRARY__LOCATION__',(await TyphonCPPInterface.getLibraryPath()).replaceAll("\\", "/").replaceAll(" ", "\\ "))
+    .replaceAll('__TYPHON__INCLUDE__DIRECTORIES__',path.join(projectPath,'includes'));
+    
+
+    await File(path.join(projectPath,"CMakeLists.txt")).writeAsString(cmakeTemplateString);
+
+    
+
+    
+    await saveProjectsJSON(map);
+
+    return await initializeProject(projectDirectoryPath, projectName);
+
+  }
+
+  Future<List<String>> __findPathsToInclude(Directory directory) async {
+    List<String> paths = [];
+    for(var maybeFile in await directory.list().toList()){
+      print(path.basename(maybeFile.path));
+      if(maybeFile is File && maybeFile.path.substring(maybeFile.path.lastIndexOf(".")) == ".h") {
+        paths.add(path.relative(maybeFile.path,from:projectPath));
+      }
+      if(maybeFile is Directory){
+        __findPathsToInclude(maybeFile);
+      }
+    } 
+    return paths;
+
+  }
+
+  Future<void> recompileProject() async {
+    ValueNotifier<Process?> processNotifier = ValueNotifier(null);
+    RecompilingDialog dialog = RecompilingDialog(notifier: processNotifier);
+
+    showDialog(
+      barrierDismissible: false,
+      context: MyApp.globalContext.currentContext!, 
+      builder:(context) {
+      return dialog;
+    },);
+
+    
+    if(!hasInitializedProject()){
+      Navigator.of(MyApp.globalContext.currentContext!).pop();
+      return;
+    }
+    print("recompiling...");
+
+    //finding includes
+    List<String> includes = await __findPathsToInclude(Directory(path.join(projectPath,"assets")));
+    print("includes found: ${includes}");
+    
+    File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
+    String bindingsGeneratedData = "";
+    List<String> lines = bindingsFile.readAsLinesSync();
+    for(String line in lines) {
+      
+      if(line.contains("//__INCLUDE__CREATED__CLASSES__")){
+        includes.forEach((element) { 
+          if(element == "assets/entry.h"){
+            return;
+          }
+          bindingsGeneratedData += '#include "${element}"\n';
+        });
+        continue;
+      }
+      if(line.contains("//__INITIALIZE__CREATED__CLASSES__")){
+        includes.forEach((element) {
+          if(element == "assets/entry.h" || element == "assets\\entry.h"){
+            return;
+          }
+          bindingsGeneratedData += "    ${path.basenameWithoutExtension(element)}();\n";
+        });
+        continue;
+      }
+      bindingsGeneratedData += line;
+
+      bindingsGeneratedData += "\n";
+
+    }
+    
+    File bindingsGenerated = File(path.join(projectPath,"bindings_generated.cpp"));
+    bindingsGenerated.createSync();
+    bindingsGenerated.writeAsStringSync(bindingsGeneratedData);
+
+    File bindingsGeneratedCPP = File(path.join(projectPath,"bindings_generated.h"));
+    bindingsGeneratedCPP.createSync();
+    bindingsGeneratedCPP.writeAsString("""#pragma once
+#include "includes/engine.h"
+#include "assets/entry.h"
+
+#if _WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
+#include <unistd.h>
+#endif
+
+#if _WIN32
+#define FFI_PLUGIN_EXPORT __declspec(dllexport)
+#else
+#define FFI_PLUGIN_EXPORT
+#endif
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+  //__BEGIN__CPP__EXPORTS__
+    FFI_PLUGIN_EXPORT bool initializeCppLibrary();
+
+    FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
+
+    FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);
+
+    FFI_PLUGIN_EXPORT void onKeyboardKeyUp(int64_t input);
+
+    FFI_PLUGIN_EXPORT void onUpdateCall(double dt);
+
+    FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
+
+    FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
+
+    FFI_PLUGIN_EXPORT void unloadLibrary();
+
+    FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
+
+    FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
+
+    FFI_PLUGIN_EXPORT bool isEngineInitialized();
+
+//__END__CPP__EXPORTS__
+
+
+#ifdef __cplusplus
+}
+#endif
+""");
 
     processNotifier.value = await Process.start("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
     
