@@ -58,18 +58,8 @@ std::vector<std::string> Engine::GetImagePathsFromLibrary()
 
         for(const auto& file : fs::directory_iterator(
             fs::path(HelperStatics::projectPath) / fs::path("build") / fs::path("images")))
-        {
-            auto strFile = file.path().string();
-            std::string replacement = "";
-            for(auto it = strFile.begin();it != strFile.end();it++){
-                if(*it == '\\'){
-                    replacement += "\\\\";
-                }
-                else {
-                    replacement += *it;
-                }
-            }
-            inputs.push_back(replacement);
+        {            
+            inputs.push_back(file.path().string());
         }
     }
     catch(exception& e) {
@@ -206,9 +196,17 @@ std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFrom
     
     std::ifstream stream(GetPathToAtlas() + "atlas.json");
 
+    std::stringstream sstream;
+
+    sstream << stream.rdbuf();
+
+    std::string sstreamRead = sstream.str();
+
+    HelperFunctions::ReplaceAll(sstreamRead,"\\","\\\\");
+
     try {
 
-    json data = json::parse(stream);
+    json data = json::parse(sstreamRead);
 
     std::map<std::string,TextureAtlasImageProperties> outMap;
 
