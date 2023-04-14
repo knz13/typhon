@@ -49,7 +49,7 @@ if not os.path.exists("src/vendor/json"):
     os.system('git clone --recursive https://github.com/nlohmann/json src/vendor/json')
 
 
-os.system(' '.join([shutil.which('cmake'), '-DTYPHON_RUN_TESTS=ON',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
+os.system(' '.join(['cmake', '-DTYPHON_RUN_TESTS=ON',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
 
 roots = []
 os.makedirs("../assets/lib",exist_ok=True)
