@@ -69,17 +69,21 @@ class _MyAppState extends State<MyApp> {
   int page = 1;
   @override
   Widget build(BuildContext context) {
-    return  MouseRegion(
-      onHover: (ev) {
-        MyApp.globalMousePosition = ev.position;
+    return  ReassembleListener(
+      onReassemble: () {
       },
-      child: MaterialApp(
-        navigatorKey: MyApp.globalContext,
-        title: 'Typhon',
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: ProjectsPage()
-        )
+      child: MouseRegion(
+        onHover: (ev) {
+          MyApp.globalMousePosition = ev.position;
+        },
+        child: MaterialApp(
+          navigatorKey: MyApp.globalContext,
+          title: 'Typhon',
+          debugShowCheckedModeBanner: false,
+          home: Scaffold(
+            body: ProjectsPage()
+          )
+        ),
       ),
     );
   }

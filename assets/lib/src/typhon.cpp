@@ -76,6 +76,7 @@ ClassesArray getInstantiableClasses()
 
     for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
         names.push_back(name.c_str());
+        std::cout << "sending names: " << *(name.end() - 1) << std::endl;
         ids.push_back(id);
     }
 

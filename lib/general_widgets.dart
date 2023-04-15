@@ -14,6 +14,31 @@ import 'package:native_context_menu/native_context_menu.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/main.dart';
 
+
+class ReassembleListener extends StatefulWidget {
+  const ReassembleListener({Key? key, required this.onReassemble,required  this.child})
+      : super(key: key);
+
+  final VoidCallback onReassemble;
+  final Widget child;
+
+  @override
+  _ReassembleListenerState createState() => _ReassembleListenerState();
+}
+
+class _ReassembleListenerState extends State<ReassembleListener> {
+  @override
+  void reassemble() {
+    super.reassemble();
+    widget.onReassemble();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
 T? castOrNull<T>(dynamic x) => x is T ? x : null;
 
 Color nightBlack = Color(0xff100F0F);
