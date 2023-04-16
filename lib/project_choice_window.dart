@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:menu_bar/menu_bar.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/main_engine_frontend.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
@@ -159,6 +160,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
           ),
         ),
     ];
+
 
     return SafeArea(
       child: Scaffold(
@@ -514,7 +516,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
               ),
             )
           ],
-        ),
+        )
       ),
     );
   }

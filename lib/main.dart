@@ -1,6 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:menu_bar/menu_bar.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/general_widgets.dart';
@@ -66,50 +69,67 @@ class _MyAppState extends State<MyApp> {
     
 
   }
+
+  Widget buildMainApp() {
+    return MouseRegion(
+        onHover: (ev) {
+          MyApp.globalMousePosition = ev.position;
+        },
+        child: MaterialApp(
+          navigatorKey: MyApp.globalContext,
+          title: 'Typhon',
+          debugShowCheckedModeBanner: false,
+          home: Scaffold(
+            body: Platform.isMacOS ? PlatformMenuBar(
+              menus: [
+                PlatformMenu(
+                  label: "Typhon",
+                  menus: [
+                    PlatformMenuItemGroup(
+                      members: [
+                        PlatformProvidedMenuItem(type: PlatformProvidedMenuItemType.about),
+                        PlatformMenuItem(
+                          label: "Preferences",
+                        ),
+                        PlatformMenuItem(
+                          label: "Shortcuts",
+                        ),
+                      ]
+                    ),
+                    
+                  ]
+                ),
+                PlatformMenu(
+                  label: "Project" ,
+                  menus: [
+                    PlatformMenuItemGroup(members: [
+                      PlatformMenuItem(
+                        label: "Project Selection",
+                        onSelected: () {
+                          Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
+                          Navigator.of(MyApp.globalContext.currentContext!).push(MaterialPageRoute(builder:(context) {
+                            Engine.instance.unload();
+                            return ProjectsPage();
+                          },));
+                        }
+                      ),
+                    ])
+                  ]
+                )
+              ],
+              child: ProjectsPage()
+            ) : MenuBar(
+              barButtons: [],
+              child: ProjectsPage(), 
+            )
+          )
+        ),
+      );
+  }
+
   int page = 1;
   @override
   Widget build(BuildContext context) {
-    return  MouseRegion(
-      onHover: (ev) {
-        MyApp.globalMousePosition = ev.position;
-      },
-      child: MaterialApp(
-        navigatorKey: MyApp.globalContext,
-        title: 'Typhon',
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          body: ProjectsPage()
-        )
-      ),
-    );
+    return buildMainApp();
   }
 }
-
-          // Stack(
-          //   children: [
-          //     [
-          //       MainEngineFrontend(),
-          //       const ProjectsPage(),
-          //       const ProjectChoiceWindow(),
-          //     ][page%3],
-          //
-          //     Positioned(
-          //       top: 0,
-          //       right: 0,
-          //       child: Container(
-          //         height: 50,
-          //         width: 50,
-          //         color: Colors.black,
-          //         child: RawMaterialButton(
-          //           onPressed: (){
-          //             setState(() {
-          //               page++;
-          //               page %= 3;
-          //             });
-          //           },
-          //           child: const Icon(MdiIcons.reload,color: Colors.white,),
-          //         ),
-          //       ),
-          //     )
-          //   ],
-          // ),

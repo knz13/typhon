@@ -126,6 +126,10 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   
 
   void unload() {
+    if(currentProcess != null){
+      currentProcess!.kill();
+    }
+    currentProcess = null;
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
       TyphonCPPInterface.detachLibrary();
     }
@@ -331,7 +335,7 @@ ClassesArray getInstantiableClasses()
 
         names.push_back(name.c_str());
 
-        std::cout << "sending names: " << *(name.end() - 1) << std::endl;
+        std::cout << "sending names: " << *(names.end() - 1) << std::endl;
 
         ids.push_back(id);
 
@@ -444,20 +448,12 @@ bool isEngineInitialized() {
 
   }
 
+
+  Process? currentProcess;
+
   Future<void> recompileProject() async {
-    ValueNotifier<Process?> processNotifier = ValueNotifier(null);
-    RecompilingDialog dialog = RecompilingDialog(notifier: processNotifier);
-
-    showDialog(
-      barrierDismissible: false,
-      context: MyApp.globalContext.currentContext!, 
-      builder:(context) {
-      return dialog;
-    },);
-
     
     if(!hasInitializedProject()){
-      Navigator.of(MyApp.globalContext.currentContext!).pop();
       return;
     }
     print("recompiling...");
@@ -554,26 +550,52 @@ extern "C" {
 #endif
 """);
 
-    processNotifier.value = await Process.start("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
+    currentProcess = await Process.start("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
     
-    if(await processNotifier.value!.exitCode != 0){
+    showDialog(
+      barrierDismissible: false,
+      context: MyApp.globalContext.currentContext!, 
+      builder:(context) {
+      return RecompilingDialog(process: currentProcess!);
+    },);
+
+    if(await currentProcess?.exitCode != 0){
+      Navigator.of(MyApp.globalContext.currentContext!).pop();
       return;
     }
+    Navigator.of(MyApp.globalContext.currentContext!).pop();
+
     //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
     if(Platform.isMacOS){
 
-      processNotifier.value = await Process.start("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
-      await processNotifier.value!.exitCode;
+      currentProcess = await Process.start("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
+      
+      showDialog(
+        barrierDismissible: false,
+        context: MyApp.globalContext.currentContext!, 
+        builder:(context) {
+        return RecompilingDialog(process: currentProcess!);
+      },);
       //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
-      if(await processNotifier.value!.exitCode != 0){
+      if(await currentProcess?.exitCode != 0){
+        Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
       }
+      Navigator.of(MyApp.globalContext.currentContext!).pop();
+
     } 
     if(Platform.isWindows){
-      processNotifier.value = await Process.start("msbuild",["${projectFilteredName}.sln","/target:${projectFilteredName}","/p:Configuration=Debug"],workingDirectory: path.join(projectPath,"build"),runInShell: true);
-      await processNotifier.value!.exitCode;
+      currentProcess = await Process.start("msbuild",["${projectFilteredName}.sln","/target:${projectFilteredName}","/p:Configuration=Debug"],workingDirectory: path.join(projectPath,"build"),runInShell: true);
+      
+      showDialog(
+        barrierDismissible: false,
+        context: MyApp.globalContext.currentContext!, 
+        builder:(context) {
+        return RecompilingDialog(process: currentProcess!);
+      },);
       //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
-      if(await processNotifier.value!.exitCode != 0){
+      if(await currentProcess?.exitCode != 0){
+        Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
       }
     }
@@ -584,7 +606,6 @@ extern "C" {
     ));
     
     onRecompileNotifier.value++;
-    Navigator.of(MyApp.globalContext.currentContext!).pop();
         
     
   }

@@ -15,9 +15,9 @@ import 'general_widgets.dart';
 
 class RecompilingDialog extends StatefulWidget {
 
-  RecompilingDialog({required this.notifier});
+  RecompilingDialog({required this.process});
 
-  ValueNotifier<Process?> notifier;
+  Process process;
 
   @override
   State<RecompilingDialog> createState() => _RecompilingDialogState();
@@ -26,7 +26,7 @@ class RecompilingDialog extends StatefulWidget {
 class RecompilingMessage {
   String message;
   String type;
-
+    
   RecompilingMessage({this.message ="",this.type = ""});
 }
 
@@ -35,47 +35,55 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
   Queue<RecompilingMessage> currentMessage = Queue();
   bool moveFreely = false;
 
+  void stdOutEvent(event) {
+      if(mounted) {
+        setState(() {
+        currentMessage.addLast(RecompilingMessage(message: String.fromCharCodes(event),type: "LOG"));
+        if(!moveFreely){
+          controller.animateTo(
+              controller.position.maxScrollExtent,
+              curve: Curves.easeOut,
+              duration: const Duration(milliseconds: 1),
+          );
+        }
+      });
+      }
+  }
+
+  void stdErrEvent(event) {
+      if(mounted) {
+        setState(() {
+        currentMessage.addLast(RecompilingMessage(message: String.fromCharCodes(event),type: "ERROR"));
+        if(!moveFreely){
+          controller.animateTo(
+              controller.position.maxScrollExtent,
+              curve: Curves.easeOut,
+              duration: const Duration(milliseconds: 1),
+          );
+        }
+      });
+      }
+  }
+
+  
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    widget.notifier.addListener(() {
-      if(widget.notifier.value != null){
-        setState(() {
-          currentMessage.clear();
-        });
 
-        widget.notifier.value!.stdout.listen((event) {
-          setState(() {
-            currentMessage.addLast(RecompilingMessage(message: String.fromCharCodes(event),type: "LOG"));
-            if(!moveFreely){
-              controller.animateTo(
-                  controller.position.maxScrollExtent,
-                  curve: Curves.easeOut,
-                  duration: const Duration(milliseconds: 1),
-              );
-            }
-          });
-        });
-        
+    widget.process.stdout.listen(stdOutEvent);
 
-        widget.notifier.value!.stderr.listen((event) {
-          setState(() {
-            currentMessage.addLast(RecompilingMessage(message: String.fromCharCodes(event),type: "ERROR"));
-            if(!moveFreely){
-              controller.animateTo(
-                  controller.position.maxScrollExtent,
-                  curve: Curves.easeOut,
-                  duration: const Duration(milliseconds: 1),
-              );
-            }
-          });
-        });
-        
+    widget.process.stderr.listen(stdErrEvent);
+  }
 
-      }
-    });
+  @override
+  void dispose() {
+    // TODO: implement dispose
+
+    super.dispose();
   }
 
   Widget dialogBodyContent(String title){
