@@ -74,7 +74,7 @@ ClassesArray getInstantiableClasses()
     ids.clear();
     names.clear();
 
-    for(auto [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
+    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
         names.push_back(name);
         std::cout << "sending names: " << *(names.end() - 1) << std::endl;
         std::cout << "address = " << (void*)*(names.end() - 1) << std::endl;

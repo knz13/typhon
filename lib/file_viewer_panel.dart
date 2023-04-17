@@ -40,7 +40,6 @@ class FileViewerPanel extends StatefulWidget {
   static ValueNotifier<Directory> currentDirectory = ValueNotifier(Directory.current);
   static ValueNotifier<Directory> leftInitialDirectory = ValueNotifier(Directory.current);
   static ValueNotifier<bool> reAddWatchers = ValueNotifier(false);
-  static ValueNotifier<FileViewerFileToCreate?> fileToCreate = ValueNotifier(null);
   static ValueNotifier<bool> shouldRefreshFiles = ValueNotifier(false);
 
   @override
@@ -66,19 +65,8 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
       
     });
 
-    FileViewerPanel.fileToCreate.addListener(() {
+        
 
-      if(FileViewerPanel.fileToCreate.value != null){
-
-        if(mounted) {
-          setState(() {
-            tempFileData = FileViewerPanel.fileToCreate.value;
-          });
-        }
-
-        FileViewerPanel.fileToCreate.value = null;
-      }
-    });
 
     FileViewerPanel.reAddWatchers.addListener(() {
       if(FileViewerPanel.reAddWatchers.value == true) {
@@ -143,11 +131,17 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
   }
 
   Future<void> _refreshFiles() async {
+    try{
+
     final files = await FileViewerPanel.currentDirectory.value.list().toList();
     if(mounted){
       setState(() {
         _files = files;
       });
+    }
+    }
+    catch(e) {
+      print("Error found while refreshing files: ${e}");
     }
   }
 
@@ -289,7 +283,9 @@ Widget _buildBreadcrumbTrail() {
                             ContextMenuOption(
                               title: "Empty GameObject",
                               callback: () {
-                                FileViewerPanel.fileToCreate.value = FileViewerFileToCreate(
+                                setState(() {
+                                  
+                                tempFileData = FileViewerFileToCreate(
                                   fileData: (str) => """#pragma once
 #include <iostream>
 #include "../includes/engine.h"
@@ -312,6 +308,8 @@ public:
 };
 """
                                 );
+                              });
+
                               }
                             )
                           ]
@@ -344,6 +342,7 @@ public:
                                 file.writeAsStringSync(tempFileData!.fileData != null ? tempFileData!.fileData!.call(value) : "");
                                 
                                 _refreshFiles();
+                                _refreshWatchers(FileViewerPanel.currentDirectory.value);
 
                                 setState(() {
                                   tempFileData = null;

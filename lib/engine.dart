@@ -332,7 +332,7 @@ ClassesArray getInstantiableClasses()
 
 
 
-    for(auto [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
+    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
 
         names.push_back(name);
 
@@ -404,7 +404,6 @@ bool isEngineInitialized() {
       "name":projectName
     };
 
-    Directory documentsDir = await getApplicationSupportDirectory();
 
     if(!Directory(projectPath).existsSync()) {
       Directory(projectPath).createSync(recursive: true);
@@ -592,7 +591,6 @@ extern "C" {
         Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
       }
-      Navigator.of(MyApp.globalContext.currentContext!).pop();
 
     } 
     if(Platform.isWindows){
