@@ -118,10 +118,7 @@ class _MyAppState extends State<MyApp> {
                 )
               ],
               child: ProjectsPage()
-            ) : MenuBar(
-              barButtons: [],
-              child: ProjectsPage(), 
-            )
+            ) : ProjectsPage()
           )
         ),
       );

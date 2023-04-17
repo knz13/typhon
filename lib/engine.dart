@@ -106,6 +106,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     
     await recompileProject();
     if(!TyphonCPPInterface.checkIfLibraryLoaded()){
+      print("Could not load library!");
       return;
     }
     var library = TyphonCPPInterface.getCppFunctions();
@@ -331,11 +332,13 @@ ClassesArray getInstantiableClasses()
 
 
 
-    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
+    for(auto [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
 
-        names.push_back(name.c_str());
+        names.push_back(name);
 
         std::cout << "sending names: " << *(names.end() - 1) << std::endl;
+
+        std::cout << "address = " << (void*)*(names.end() - 1) << std::endl;
 
         ids.push_back(id);
 
@@ -553,11 +556,16 @@ extern "C" {
     currentProcess = await Process.start("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
     
     showDialog(
-      barrierDismissible: false,
-      context: MyApp.globalContext.currentContext!, 
-      builder:(context) {
-      return RecompilingDialog(process: currentProcess!);
-    },);
+        barrierDismissible: false,
+        context: MyApp.globalContext.currentContext!, 
+        builder:(context) {
+        return RecompilingDialog(
+          process: currentProcess!,
+          onLeaveRequest: () {
+            currentProcess!.kill();
+          },
+        );
+      },);
 
     if(await currentProcess?.exitCode != 0){
       Navigator.of(MyApp.globalContext.currentContext!).pop();
@@ -565,7 +573,6 @@ extern "C" {
     }
     Navigator.of(MyApp.globalContext.currentContext!).pop();
 
-    //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
     if(Platform.isMacOS){
 
       currentProcess = await Process.start("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
@@ -574,9 +581,13 @@ extern "C" {
         barrierDismissible: false,
         context: MyApp.globalContext.currentContext!, 
         builder:(context) {
-        return RecompilingDialog(process: currentProcess!);
+        return RecompilingDialog(
+          process: currentProcess!,
+          onLeaveRequest: () {
+            currentProcess!.kill();
+          },
+        );
       },);
-      //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
       if(await currentProcess?.exitCode != 0){
         Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
@@ -591,14 +602,19 @@ extern "C" {
         barrierDismissible: false,
         context: MyApp.globalContext.currentContext!, 
         builder:(context) {
-        return RecompilingDialog(process: currentProcess!);
+        return RecompilingDialog(
+          process: currentProcess!,
+          onLeaveRequest: () {
+            currentProcess!.kill();
+          },
+        );
       },);
-      //print((await processNotifier.value!.stderr.toList()).map((e) => String.fromCharCodes(e),));
       if(await currentProcess?.exitCode != 0){
         Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
       }
     }
+    Navigator.of(MyApp.globalContext.currentContext!).pop();
     
     
     var library = await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",

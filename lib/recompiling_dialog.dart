@@ -4,20 +4,24 @@
 
 
 
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:collection';
 import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:typhon/console_panel.dart';
 import 'package:typhon/main.dart';
 
 import 'general_widgets.dart';
 
 class RecompilingDialog extends StatefulWidget {
 
-  RecompilingDialog({required this.process});
+  RecompilingDialog({required this.process,this.onLeaveRequest});
 
   Process process;
+  void Function()? onLeaveRequest;
 
   @override
   State<RecompilingDialog> createState() => _RecompilingDialogState();
@@ -75,6 +79,20 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
 
 
     widget.process.stdout.listen(stdOutEvent);
+    
+    widget.process.exitCode.then((value) {
+      if(value != 0){
+        String value = "";
+        for(int i in List.generate(currentMessage.length > 10 ? 10 : currentMessage.length, (index) => currentMessage.length - index - 1)){
+          if(currentMessage.elementAt(i).message.contains("error")){
+            value += currentMessage.elementAt(i).message;
+          }
+        }
+        if(value != ""){
+          ConsolePanel.show(value,level: ConsolePanelLevel.error);
+        }
+      }
+    });
 
     widget.process.stderr.listen(stdErrEvent);
   }
@@ -95,7 +113,10 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
             children: [
               Expanded(
                 flex:1,
-                child: SizedBox(),
+                child: GeneralButton(
+                  onPressed: widget.onLeaveRequest ?? (){},
+                  child: Icon(Icons.close),
+                ),
               ),
               Expanded(
                 flex:9,

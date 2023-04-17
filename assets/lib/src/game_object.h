@@ -16,7 +16,7 @@ public:
     static const std::map<int64_t,std::function<std::pair<entt::entity,std::shared_ptr<GameObject>>()>>& GetInstantiableClassesFunctions() {
         return instantiableClasses;
     }
-    static const std::map<int64_t,std::string> GetInstantiableClassesIDsToNames() {
+    static const std::map<int64_t,const char*> GetInstantiableClassesIDsToNames() {
         return instantiableClassesNames;
     }
 
@@ -38,7 +38,7 @@ protected:
 
 private:
     static std::map<int64_t,std::function<std::pair<entt::entity,std::shared_ptr<GameObject>>()>> instantiableClasses;
-    static std::map<int64_t,std::string> instantiableClassesNames;
+    static std::map<int64_t,const char*> instantiableClassesNames;
     static std::map<std::string,int64_t> instantiableClassesIDs;
 
     std::string className = "";
@@ -110,7 +110,7 @@ public:
             return std::make_pair(e,ptr);
         };
         GameObject::instantiableClassesIDs[HelperFunctions::GetClassNameString<MainClass>()] = HelperFunctions::GetClassID<MainClass>();
-        GameObject::instantiableClassesNames[HelperFunctions::GetClassID<MainClass>()] = HelperFunctions::GetClassNameString<MainClass>();
+        GameObject::instantiableClassesNames[HelperFunctions::GetClassID<MainClass>()] = HelperFunctions::GetClassNameString<MainClass>().c_str();
     };
 
 private:

@@ -26,10 +26,12 @@ class EngineSubWindowData {
   Widget child;
   Widget? topPanelWidgets;
   String title;
+  Widget? Function(BuildContext,TabStatus)? tabLeading;
   bool closable;
   List<TabbedViewMenuItem> menuItems;
+  void Function()? onTabSelected;
 
-  EngineSubWindowData({required this.child,required this.title,this.closable = true,this.menuItems = const [],this.topPanelWidgets});
+  EngineSubWindowData({required this.child,required this.title,this.onTabSelected,this.closable = true,this.menuItems = const [],this.topPanelWidgets,this.tabLeading});
 
 }
 
@@ -40,6 +42,7 @@ class EngineSubWindow extends StatefulWidget {
   EngineSubWindow? splitSubWindow;
   EngineSubWindow? mainSubWindow;
   SubWindowDivision division;
+  
   double mainChildProportion;
   double proportionAllowedRange;
   TextStyle? titleStyle;
@@ -183,6 +186,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           TabData(
             closable: false,
             text: data.title,
+            leading:data.tabLeading,
             content: Column(
               children: [
                 data.topPanelWidgets ?? Container(),
@@ -214,6 +218,11 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           mousePosition = event.position;
         },
         child: TabbedView(
+          onTabSelection: (newTabIndex) {
+            if(newTabIndex != null){
+              widget.tabs.elementAt(newTabIndex).onTabSelected?.call();
+            }
+          },
           controller: _controller,
           tabsAreaButtonsBuilder:(context, tabsCount) {
             return [

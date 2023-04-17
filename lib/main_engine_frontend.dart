@@ -4,15 +4,21 @@
 
 
 
-import 'package:flutter/material.dart';
+// ignore_for_file: prefer_const_constructors
+
+import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
+import 'package:menu_bar/menu_bar.dart';
 import 'package:typhon/engine.dart';
+import 'package:typhon/project_choice_window.dart';
 import 'package:typhon/scene_viewer_panel.dart';
 
 import 'console_panel.dart';
 import 'engine_sub_window.dart';
 import 'file_viewer_panel.dart';
+import 'general_widgets.dart';
 import 'hierarchy_panel.dart';
 import 'inspector_panel.dart';
+import 'main.dart';
 
 class MainEngineFrontend extends StatefulWidget {
 
@@ -28,6 +34,9 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
 
 
 
+  
+
+
   @override
   void initState() {
     // TODO: implement initState
@@ -36,6 +45,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
     if(Engine.instance.hasInitializedProject()){
       Engine.instance.reloadProject();
     }
+
   }
 
  
@@ -49,6 +59,8 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
 
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
   
@@ -57,50 +69,92 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
         onHover: (ev) {
           MainEngineFrontend.mousePosition = ev.position;
         },
-        child: Scaffold(
-          body: MainEngineFrontend.isEditing ? EngineSubWindow(
-            division: SubWindowDivision.left,
-            mainChildProportion: 0.75,
-            mainSubWindow: EngineSubWindow(
-              mainChildProportion: 0.7,
-              division: SubWindowDivision.top,
-              mainSubWindow: EngineSubWindow(
-                division: SubWindowDivision.right,
-                mainChildProportion: 0.75,
-                mainSubWindow: EngineSubWindow(
-                  tabs: [
-                    SceneViewerPanel().subWindowData()
-                  ]
-                ),
-                splitSubWindow: EngineSubWindow(
-                  tabs: [
-                    HierarchyPanel().subWindowData()
+        child: MenuBar(
+              barStyle: BarStyle(
+                backgroundColor: primaryBlack,
+                openMenuOnHover: true
+              ),
+              barButtonStyle: BarButtonStyle(
+
+              ),
+              menuButtonStyle: MenuButtonStyle(
+                
+              ),
+              menuStyle: MenuStyle(
+                
+              ),
+              barButtons: [
+                BarButton(text: GeneralText("Typhon"), submenu: SubMenu(
+                  menuItems: [
+                    MenuButton(
+                      text: GeneralText("About",color: primaryBlack,),
+                      onTap: null
+                    ),
+                    MenuButton(
+                      text: GeneralText("Preferences",color: primaryBlack,),
+                      onTap: null
+                    ),
+                    MenuButton(
+                      text: GeneralText("Shortcuts",color: primaryBlack,),
+                      onTap: null
+                    ),
+
                   ],
-                ),
-              ),
-              splitSubWindow: EngineSubWindow(
-                tabs: [
-                  EngineSubWindowData(
-                    title: "File Viewer",
-                    child: FileViewerPanel()
-                  ),
-                  EngineSubWindowData(
-                    title: "Console",
-                    child: ConsolePanel(),
-                  )
-                ],
-              ),
-            ),
-            splitSubWindow: EngineSubWindow(
-              tabs: [
-                EngineSubWindowData(
-                  title: "Inspector",
-                  child: InspectorPanel()
-                )
+                )),
+                BarButton(text: GeneralText("Project"),submenu: SubMenu(
+                  menuItems:[
+                    MenuButton(
+                      text: GeneralText("Project Selection",color: primaryBlack,),
+                      onTap: () {
+                        Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
+                        Navigator.of(MyApp.globalContext.currentContext!).push(MaterialPageRoute(builder:(context) {
+                          Engine.instance.unload();
+                          return ProjectsPage();
+                        },));
+                      }
+                    ),
+                  ]
+                ),)
               ],
-            ),
-          ) : SceneViewerPanel().subWindowData().child
-        ),
+              child: Scaffold(
+                body: MainEngineFrontend.isEditing ? EngineSubWindow(
+                  division: SubWindowDivision.left,
+                  mainChildProportion: 0.75,
+                  mainSubWindow: EngineSubWindow(
+                    mainChildProportion: 0.7,
+                    division: SubWindowDivision.top,
+                    mainSubWindow: EngineSubWindow(
+                      division: SubWindowDivision.right,
+                      mainChildProportion: 0.75,
+                      mainSubWindow: EngineSubWindow(
+                        tabs: [
+                          SceneViewerPanel().subWindowData()
+                        ]
+                      ),
+                      splitSubWindow: EngineSubWindow(
+                        tabs: [
+                          HierarchyPanel().subWindowData()
+                        ],
+                      ),
+                    ),
+                    splitSubWindow: EngineSubWindow(
+                      tabs: [
+                        FileViewerPanelWindow(),
+                        ConsolePanelSubWindow()
+                      ],
+                    ),
+                  ),
+                  splitSubWindow: EngineSubWindow(
+                    tabs: [
+                      EngineSubWindowData(
+                        title: "Inspector",
+                        child: InspectorPanel()
+                      )
+                    ],
+                  ),
+                ) : SceneViewerPanel().subWindowData().child
+              ), 
+            )
       ) ,
     );
   }

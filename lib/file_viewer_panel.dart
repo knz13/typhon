@@ -7,6 +7,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/engine.dart';
+import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/main_engine_frontend.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:watcher/watcher.dart';
@@ -25,11 +26,22 @@ class FileViewerFileToCreate {
   );
 }
 
+class FileViewerPanelWindow extends EngineSubWindowData {
+
+
+
+  FileViewerPanelWindow() : super(child: FileViewerPanel(), title: "File Viewer",onTabSelected: () {
+    FileViewerPanel.shouldRefreshFiles.value = true;
+  });
+
+}
+
 class FileViewerPanel extends StatefulWidget {
   static ValueNotifier<Directory> currentDirectory = ValueNotifier(Directory.current);
   static ValueNotifier<Directory> leftInitialDirectory = ValueNotifier(Directory.current);
   static ValueNotifier<bool> reAddWatchers = ValueNotifier(false);
   static ValueNotifier<FileViewerFileToCreate?> fileToCreate = ValueNotifier(null);
+  static ValueNotifier<bool> shouldRefreshFiles = ValueNotifier(false);
 
   @override
   _FileViewerPanelState createState() => _FileViewerPanelState();
@@ -45,6 +57,14 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
   @override
   void initState() {
     super.initState();
+
+    FileViewerPanel.shouldRefreshFiles.addListener(() {
+      if(FileViewerPanel.shouldRefreshFiles.value == true){
+        _refreshFiles();
+        FileViewerPanel.shouldRefreshFiles.value = false;
+      }
+      
+    });
 
     FileViewerPanel.fileToCreate.addListener(() {
 
@@ -125,9 +145,9 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
   Future<void> _refreshFiles() async {
     final files = await FileViewerPanel.currentDirectory.value.list().toList();
     if(mounted){
-    setState(() {
-      _files = files;
-    });
+      setState(() {
+        _files = files;
+      });
     }
   }
 
@@ -135,17 +155,7 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
     FileViewerPanel.currentDirectory.value = directory;
   }
 
-  Future<void> _showFileContents(File file) async {
-    final contents = await file.readAsString();
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => Scaffold(
-        appBar: AppBar(title: GeneralText(file.path)),
-        body: SingleChildScrollView(
-          child: GeneralText(contents),
-        ),
-      ),
-    ));
-  }
+  
 
   Widget _buildFolderTree(Directory directory) {
   return FutureBuilder<List<FileSystemEntity>>(
@@ -215,6 +225,10 @@ Widget _buildBreadcrumbTrail() {
 
   @override
   Widget build(BuildContext context) {
+    if(_files.isEmpty){
+      _refreshFiles();
+    }
+
     return LayoutBuilder(
       builder: (context,constraints) => Row(
         children: [
