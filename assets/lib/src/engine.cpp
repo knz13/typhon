@@ -230,3 +230,51 @@ std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFrom
     }
 
 }
+
+
+std::string Engine::SerializeCurrent() {
+
+    return Engine::SerializeCurrentJSON().dump();
+}
+
+json Engine::SerializeCurrentJSON() {
+    json finalData = json();
+
+    std::vector<json> objects;
+    for(const auto& [handle,objPtr] : aliveObjects) { 
+        json objData = json();
+
+        objPtr->GameObjectSerialize(objData);
+
+
+        objects.push_back(objData);
+    }
+
+    finalData["Objects"] = objects;
+
+    return finalData;
+}
+
+bool Engine::DeserializeToCurrent(std::string scene) {
+
+    try{
+        json sceneData = json::parse(scene);
+
+        if(sceneData.contains("Objects")) {
+            for(const auto& object : sceneData.at("Objects")){
+                auto ptr = Engine::CreateNewGameObject(object.items().begin().key());
+                if(ptr != nullptr) {
+                    ptr->GameObjectDeserialize(object);
+                }
+            }
+        }
+
+        return true;
+    }
+    catch(std::exception& e) {
+        std::cout << "Error while deserializing to current engine:\n" << e.what() << std::endl;
+        return false;
+    }
+
+
+}

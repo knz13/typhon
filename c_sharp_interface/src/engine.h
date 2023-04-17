@@ -6,6 +6,7 @@
 #include "game_object_traits.h"
 #include "keyboard_adaptations.h"
 #include "crunch_texture_packer.h"
+#include <ranges>
 
 
 
@@ -38,6 +39,31 @@ public:
         return *static_cast<T*>(aliveObjects[e].get());
     };
 
+
+    static std::string SerializeCurrent();
+    static json SerializeCurrentJSON();
+    static bool DeserializeToCurrent(std::string scene);
+    static const std::vector<GameObject*>& View(std::string typeName) {
+        static std::vector<GameObject*> dummy = std::vector<GameObject*>();
+        if(GameObject::instantiatedClassesPerType.find(typeName) != GameObject::instantiatedClassesPerType.end()) {
+            return GameObject::instantiatedClassesPerType[typeName];
+        }
+       
+        return dummy;
+    }
+    template<typename T>
+    static const std::vector<T*>& View() {
+        static std::vector<T*> dummy = std::vector<T*>();
+        std::string typeName = HelperFunctions::GetClassNameString<T>();
+        if(GameObject::instantiatedClassesPerType.find(typeName) != GameObject::instantiatedClassesPerType.end()) {
+            dummy.clear();
+            std::transform(GameObject::instantiatedClassesPerType[typeName].begin(),GameObject::instantiatedClassesPerType[typeName].end(),std::back_inserter(dummy),[](GameObject* obj){ return (static_cast<T*>(obj));});
+            return dummy;
+        }
+
+        dummy.clear();
+        return dummy;
+    }
 
     static GameObject* CreateNewGameObject(int64_t identifier) {
         if(GameObject::GetInstantiableClassesFunctions().find(identifier) == GameObject::GetInstantiableClassesFunctions().end()){

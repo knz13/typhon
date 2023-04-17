@@ -62,7 +62,7 @@ struct has_member_##member {                                                \
             Alias_##member<ambiguate<T, AmbiguitySeed_##member>>            \
             , Alias_##member<AmbiguitySeed_##member>                        \
         >::value                                                            \
-    ;                                                                       \
+    ;                                                                        \
 }
 
 

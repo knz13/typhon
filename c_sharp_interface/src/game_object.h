@@ -20,6 +20,9 @@ public:
         return instantiableClassesNames;
     }
 
+
+
+
     bool Valid();
 
     const std::string& ClassName() {
@@ -40,12 +43,15 @@ private:
     static std::map<int64_t,std::function<std::pair<entt::entity,std::shared_ptr<GameObject>>()>> instantiableClasses;
     static std::map<int64_t,std::string> instantiableClassesNames;
     static std::map<std::string,int64_t> instantiableClassesIDs;
+    static std::map<std::string,std::vector<GameObject*>> instantiatedClassesPerType;
 
     std::string className = "";
     yael::event_launcher<void()> onDestroyEvent;
     entt::entity handle = entt::null;
     
 
+    virtual void GameObjectSerialize(json& json) {};
+    virtual void GameObjectDeserialize(const json& jsonData) {};
     virtual void GameObjectOnCreate() {};
     virtual void GameObjectOnDestroy() {
         onDestroyEvent.EmitEvent();
@@ -58,6 +64,8 @@ private:
 
 DEFINE_HAS_SIGNATURE(has_on_create,T::Create,void (T::*) ());
 DEFINE_HAS_SIGNATURE(has_on_destroy,T::Destroy,void (T::*) ());
+DEFINE_HAS_SIGNATURE(has_serialize,T::Serialize,void (T::*) (json&));
+DEFINE_HAS_SIGNATURE(has_deserialize,T::Deserialize,void (T::*) (const json&));
 
 
 
@@ -88,7 +96,6 @@ public:
 
 
 
-
 template<typename MainClass,typename... DerivedClasses> 
 class DerivedFromGameObject : public GameObject,public Reflection::IsInitializedStatically<DerivedFromGameObject<MainClass,DerivedClasses...>>,public DerivedClasses... {
 public:
@@ -116,6 +123,38 @@ public:
 private:
 
     template<typename A>
+    void GameObjectSerializeForOne(json& jsonData) {
+        if constexpr (has_serialize<A>::value) {
+            std::cout << "executing serialize for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
+            json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()];
+            static_cast<A*>(static_cast<MainClass*>(this))->Serialize(jsonInner);
+        }
+    }
+
+    template<typename A>
+    void GameObjectDeserializeForOne(const json& jsonData) {
+        if constexpr (has_deserialize<A>::value) {
+            std::cout << "executing deserialize for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
+            if(jsonData.contains(HelperFunctions::GetClassNameString<MainClass>())){
+                const json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()];
+                return static_cast<A*>(static_cast<MainClass*>(this))->Deserialize(jsonInner);
+            }
+        }
+    }
+
+    void GameObjectSerialize(json& json) override {
+
+        GameObjectSerializeForOne<MainClass>(json);
+        (GameObjectSerializeForOne<DerivedClasses>(json),...);
+    }
+
+    void GameObjectDeserialize(const json& jsonData) override {
+
+        GameObjectDeserializeForOne<MainClass>(jsonData);
+        (GameObjectDeserializeForOne<DerivedClasses>(jsonData),...);
+    }
+
+    template<typename A>
     void GameObjectOnCreateForOne() {
         std::cout << "executing on create for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
         if constexpr (has_on_create<A>::value){
@@ -134,10 +173,16 @@ private:
 
     void GameObjectOnCreate() override {
         className = HelperFunctions::GetClassNameString<MainClass>();
+        if(GameObject::instantiatedClassesPerType.find(className) == GameObject::instantiatedClassesPerType.end()){
+            GameObject::instantiatedClassesPerType[className] = {};
+        }
+        GameObject::instantiatedClassesPerType[className].push_back(this);
 
         GameObjectOnCreateForOne<MainClass>();
         (GameObjectOnCreateForOne<DerivedClasses>(),...);
     };
+
+
     
 
     void GameObjectOnDestroy() override {
@@ -146,6 +191,9 @@ private:
         
         GameObjectOnDestroyForOne<MainClass>();
         (GameObjectOnDestroyForOne<DerivedClasses>(),...);
+
+        GameObject::instantiatedClassesPerType[className].erase(std::find(GameObject::instantiatedClassesPerType[className].begin(),GameObject::instantiatedClassesPerType[className].end(),static_cast<GameObject*>(this)));
+
     };
 private:
     

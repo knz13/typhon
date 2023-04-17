@@ -275,3 +275,90 @@ TEST_CASE("Traits testing") {
 
 }
 
+
+class SerializationClassA : public DerivedFromGameObject<SerializationClassA> {
+public:
+
+    int someInsideValue = 0;
+
+
+    void Serialize(json& json) {
+        
+        someInsideValue = 1;
+
+        json["someInsideValue"] = someInsideValue;
+
+    }
+
+    void Deserialize(const json& json) {
+        if(json.contains("someInsideValue")){
+            json.at("someInsideValue").get_to(someInsideValue);
+        }
+    }
+};
+
+
+TEST_CASE("Serialization/Deserialization") {
+
+    SECTION("Testing method call") {
+        Engine::Initialize();
+    
+        
+        SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
+        
+        REQUIRE(obj.someInsideValue == 0);
+
+        
+        std::string serializationData = Engine::SerializeCurrent();
+        
+        REQUIRE(obj.someInsideValue == 1);
+        
+        Engine::Unload();
+    }   
+
+    SECTION("Testing actual serialization") {
+        Engine::Initialize();
+
+        SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
+        
+        json serializationData = Engine::SerializeCurrentJSON();
+
+        REQUIRE(serializationData.contains("Objects"));
+
+        REQUIRE(serializationData.at("Objects").at(0).contains("SerializationClassA"));
+
+        REQUIRE(serializationData.at("Objects").at(0).at("SerializationClassA").contains("someInsideValue"));
+
+        REQUIRE(serializationData.at("Objects").at(0).at("SerializationClassA").at("someInsideValue").get<int>() == 1);
+
+
+        Engine::Unload();
+    }
+
+
+    SECTION("Simple deserialization") {
+
+        Engine::Initialize();
+
+        SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
+        
+        json serializationData = Engine::SerializeCurrentJSON();
+
+
+        Engine::Unload();
+        Engine::Initialize();
+
+
+        REQUIRE(Engine::DeserializeToCurrent(serializationData.dump()));
+
+        REQUIRE(Engine::AliveObjects() == 1);
+
+        for(auto obj : Engine::View<SerializationClassA>()){
+            REQUIRE(obj->someInsideValue == 1);
+        }
+
+        Engine::Unload();
+    }
+
+}
+
