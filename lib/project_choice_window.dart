@@ -797,11 +797,11 @@ class _ProjectsPageState extends State<ProjectsPage> {
                             padding: const EdgeInsets.symmetric(horizontal: 20.0),
                             child: MaterialButton(
                               hoverColor: Colors.white12,
-                              onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => MainEngineFrontend()));
+                              onPressed: () async {
                                 Future.delayed(Duration(milliseconds: 500),(){
                                   Engine.instance.initializeProject(path.dirname(snapshot.data!.keys.toList()[index]), snapshot.data![snapshot.data!.keys.toList()[index]]["name"]);
                                 });
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => MainEngineFrontend()));
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,

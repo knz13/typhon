@@ -69,16 +69,21 @@ void unloadLibrary()
 ClassesArray getInstantiableClasses()
 {
     static std::vector<int64_t> ids;
-    static std::vector<const char*> names;
+    static std::vector<std::vector<char>> names;
+    static std::vector<const char*> names_char;
 
     ids.clear();
     names.clear();
+    names_char.clear();
 
-    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
-        names.push_back(name);
-        std::cout << "sending names: " << *(names.end() - 1) << std::endl;
-        std::cout << "address = " << (void*)*(names.end() - 1) << std::endl;
+    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()) {
+        std::vector<char> temp(name.size() + 1);
+        memcpy(temp.data(),name.c_str(),name.size() + 1);
+        names.push_back(temp);
+        std::cout << "sending names: " << (*(names.end() - 1)).data() << std::endl;
+        std::cout << "address = " << (void*)((*(names.end() - 1)).data()) << std::endl;
         ids.push_back(id);
+        names_char.push_back((*(names.end() - 1)).data());
     }
 
     std::cout << "names size = " << names.size() << std::endl;
@@ -87,8 +92,8 @@ ClassesArray getInstantiableClasses()
 
     arr.array = ids.data();
     arr.size = ids.size();
-    arr.stringArray = names.data();
-    arr.stringArraySize = names.size();
+    arr.stringArray = names_char.data();
+    arr.stringArraySize = names_char.size();
     return arr;
 }
 

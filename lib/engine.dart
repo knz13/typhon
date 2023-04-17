@@ -24,6 +24,7 @@ import 'package:path/path.dart' as path;
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:typhon/console_panel.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/main.dart';
 import 'package:typhon/recompiling_dialog.dart';
@@ -124,7 +125,13 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     })();
   }
 
-  
+  void unloadProject() {
+    projectName = "";
+    projectPath = "";
+    projectFilteredName = "";
+    ConsolePanel.clear();
+    unload();
+  }
 
   void unload() {
     if(currentProcess != null){
@@ -322,7 +329,9 @@ ClassesArray getInstantiableClasses()
 
     static std::vector<int64_t> ids;
 
-    static std::vector<const char*> names;
+    static std::vector<std::vector<char>> names;
+
+    static std::vector<const char*> names_char;
 
 
 
@@ -330,17 +339,25 @@ ClassesArray getInstantiableClasses()
 
     names.clear();
 
+    names_char.clear();
 
 
-    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()){
 
-        names.push_back(name);
+    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()) {
 
-        std::cout << "sending names: " << *(names.end() - 1) << std::endl;
+        std::vector<char> temp(name.size() + 1);
 
-        std::cout << "address = " << (void*)*(names.end() - 1) << std::endl;
+        memcpy(temp.data(),name.c_str(),name.size() + 1);
+
+        names.push_back(temp);
+
+        std::cout << "sending names: " << (*(names.end() - 1)).data() << std::endl;
+
+        std::cout << "address = " << (void*)((*(names.end() - 1)).data()) << std::endl;
 
         ids.push_back(id);
+
+        names_char.push_back((*(names.end() - 1)).data());
 
     }
 
@@ -358,9 +375,9 @@ ClassesArray getInstantiableClasses()
 
     arr.size = ids.size();
 
-    arr.stringArray = names.data();
+    arr.stringArray = names_char.data();
 
-    arr.stringArraySize = names.size();
+    arr.stringArraySize = names_char.size();
 
     return arr;
 

@@ -20,8 +20,9 @@ enum ConsolePanelLevel {
 class ConsolePanelMessage {
   Widget? leading;
   String text;
+  String? time;
 
-  ConsolePanelMessage({required this.text,this.leading});
+  ConsolePanelMessage({required this.text,this.leading,this.time});
 }
 
 class ConsolePanelLeadingWidget extends StatefulWidget {
@@ -39,8 +40,11 @@ class _ConsolePanelLeadingWidgetState extends State<ConsolePanelLeadingWidget> {
 
 
   void onNotifierChange() {
-    setState(() {
-    });
+    if(mounted){
+
+      setState(() {
+      });
+    }
   }
 
   @override
@@ -92,7 +96,10 @@ class ConsolePanel extends StatefulWidget {
     if(kDebugMode){
       print(message);
     }
-    ConsolePanel._data.addFirst(ConsolePanelMessage(text: message,leading: level == ConsolePanelLevel.log ? Icon(Icons.message) : level == ConsolePanelLevel.warning ? Icon(Icons.warning) : Icon(Icons.error)));
+    ConsolePanel._data.addFirst(ConsolePanelMessage(
+      text: message,
+      time: "${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}",
+      leading: level == ConsolePanelLevel.log ? Icon(Icons.message) : level == ConsolePanelLevel.warning ? Icon(Icons.warning) : Icon(Icons.error)));
     if(ConsolePanel._data.length > ConsolePanel.maxMessages) {
       ConsolePanel._data.removeLast();
     }
@@ -146,7 +153,11 @@ class _ConsolePanelState extends State<ConsolePanel> {
       
       itemBuilder:(context, index) {
       return ListTile(
-        leading: ConsolePanel._data.elementAt(index).leading,
+        leading: Column(children: [
+            ConsolePanel._data.elementAt(index).leading ?? Container(),
+            GeneralText(ConsolePanel._data.elementAt(index).time ?? "")
+          ]
+        ),
         title: GeneralText(ConsolePanel._data.elementAt(index).text,overflow: TextOverflow.visible,),
       );
     },itemCount: ConsolePanel._data.length,);

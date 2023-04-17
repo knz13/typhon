@@ -108,7 +108,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                       onTap: () {
                         Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
                         Navigator.of(MyApp.globalContext.currentContext!).push(MaterialPageRoute(builder:(context) {
-                          Engine.instance.unload();
+                          Engine.instance.unloadProject();
                           return ProjectsPage();
                         },));
                       }
