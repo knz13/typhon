@@ -276,7 +276,26 @@ TEST_CASE("Traits testing") {
 }
 
 
-class SerializationClassA : public DerivedFromGameObject<SerializationClassA> {
+
+class SomeTraitToBeSerialized {
+public:
+
+    int traitData = -2;
+
+    void Serialize(json& json) {
+        json["traitData"] = traitData;
+    }
+
+
+    void Deserialize(const json& json){
+        if(json.contains("traitData")){
+            json.at("traitData").get_to(traitData);
+        }
+    }
+
+};
+
+class SerializationClassA : public DerivedFromGameObject<SerializationClassA,SomeTraitToBeSerialized> {
 public:
 
     int someInsideValue = 0;
@@ -358,6 +377,34 @@ TEST_CASE("Serialization/Deserialization") {
         }
 
         Engine::Unload();
+    }
+
+    SECTION("Trait Serialization/Deserialization") {
+
+        Engine::Initialize();
+
+        SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
+        obj.traitData = -4;
+        
+        json serializationData = Engine::SerializeCurrentJSON();
+
+
+            
+
+
+        Engine::Unload();
+        Engine::Initialize();
+
+
+       REQUIRE(Engine::DeserializeToCurrent(serializationData.dump()));
+
+        REQUIRE(Engine::AliveObjects() == 1);
+
+        for(auto obj : Engine::View<SerializationClassA>()){
+            REQUIRE(obj->someInsideValue == 1);
+        } */
+
+        Engine::Unload(); 
     }
 
 }
