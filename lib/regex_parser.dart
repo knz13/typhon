@@ -182,7 +182,7 @@ static Map<String, List<String>> extractVariableFromClasses(Map<String, String> 
           statement = statement.replaceAll('::', '');
         }
 
-        if (statement.contains(nameOfClass)) {
+        if (statement.contains(" $nameOfClass")) {
           continue;
         }
 
@@ -197,7 +197,7 @@ static Map<String, List<String>> extractVariableFromClasses(Map<String, String> 
           name = functionMatch.group(1)!;
         }
         else {
-          RegExp variableExp = RegExp(r'(?:[\w:]+(?:<[^>]*>)?|(?:\w+::)*\w+)(?:\s*&)?(?:\s*\w+)?\s+([\w]+)');
+          RegExp variableExp = RegExp(r'(?:[\w:]+(?:<[^>]*>)?|(?:\w+::)*\w+)(?:\s*[\*&]+)?(?:\s*\w+)?\s+([\w]+)');
           RegExpMatch? variableMatch = variableExp.firstMatch(statement);
           if (variableMatch != null) {
             name = variableMatch.group(1)!;
@@ -207,6 +207,9 @@ static Map<String, List<String>> extractVariableFromClasses(Map<String, String> 
         if (name.isEmpty) {
           continue;
         }
+
+        
+        
 
 
 
