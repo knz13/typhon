@@ -317,6 +317,21 @@ public:
 };
 
 
+class SerializationClassB : public DerivedFromGameObject<SerializationClassB>{
+public:
+    int someOtherValue = -2;
+    
+    void InternalSerialize(json& json) {
+        someOtherValue = 10;
+        json["someOtherValue"] = someOtherValue;
+    };
+
+    void InternalDeserialize(const json& json){
+        json.at("someOtherValue").get_to(someOtherValue);
+    };
+    
+};
+
 TEST_CASE("Serialization/Deserialization") {
 
     SECTION("Testing method call") {
@@ -389,7 +404,7 @@ TEST_CASE("Serialization/Deserialization") {
         json serializationData = Engine::SerializeCurrentJSON();
 
 
-            
+
 
 
         Engine::Unload();
@@ -402,7 +417,39 @@ TEST_CASE("Serialization/Deserialization") {
 
         for(auto obj : Engine::View<SerializationClassA>()){
             REQUIRE(obj->someInsideValue == 1);
-        } */
+        } 
+
+        Engine::Unload(); 
+    }
+
+
+    SECTION("Internal serialization/deserialization") {
+
+        Engine::Initialize();
+
+        SerializationClassB& obj = Engine::CreateNewGameObject<SerializationClassB>();
+        
+        REQUIRE(obj.someOtherValue == -2);
+        
+        json serializationData = Engine::SerializeCurrentJSON();
+        REQUIRE(obj.someOtherValue == 10);
+
+        REQUIRE(serializationData.at("Objects").at(0).contains("SerializationClassB"));
+        REQUIRE(serializationData.at("Objects").at(0).at("SerializationClassB").contains("someOtherValue"));
+        REQUIRE(serializationData.at("Objects").at(0).at("SerializationClassB").at("someOtherValue").get<int>() == 10);
+        
+
+        Engine::Unload();
+        Engine::Initialize();
+
+
+       REQUIRE(Engine::DeserializeToCurrent(serializationData.dump()));
+
+        REQUIRE(Engine::AliveObjects() == 1);
+
+        for(auto obj : Engine::View<SerializationClassB>()){
+            REQUIRE(obj->someOtherValue == 10);
+        } 
 
         Engine::Unload(); 
     }
