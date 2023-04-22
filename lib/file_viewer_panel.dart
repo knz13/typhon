@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:typhon/engine.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/main_engine_frontend.dart';
+import 'package:typhon/regex_parser.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:watcher/watcher.dart';
 
@@ -98,18 +99,9 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
       }
     });
 
-/*     (() async {
-      print("recreating project!");
-      var map = (await Engine.instance.getProjectsJSON());
-      map.clear();
-      await Engine.instance.saveProjectsJSON(map);
-      Directory("/Users/otaviomaya/Documents/testTyphon").deleteSync(recursive: true);
-      Directory("/Users/otaviomaya/Documents/testTyphon").createSync();
-      await Engine.instance.initializeProject("/Users/otaviomaya/Documents/testTyphon", "TestTyphon");
-    })(); */
 
-    //_refreshFiles();
-  }
+
+  } 
 
   Future<void> _refreshWatchers(Directory dir) async {
     var dirs = await dir.list().toList();
@@ -118,6 +110,7 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
         
         var fileWatcher = FileWatcher(file.absolute.path,pollingDelay: Duration(seconds: 2));
         fileWatcher.events.listen((event) {
+          
           Engine.instance.reloadProject();
         });
         _watchers.add(fileWatcher);
@@ -160,7 +153,7 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
       }
       final children = <Widget>[];
       for (final entity in snapshot.data!) {
-        if (entity is Directory && !(entity.parent.path == FileViewerPanel.leftInitialDirectory.value.path && (path.basename(entity.path) == "build" || path.basename(entity.path) == "includes"))) {
+        if (entity is Directory && !(entity.parent.path == FileViewerPanel.leftInitialDirectory.value.path && (path.basename(entity.path) == "build" || path.basename(entity.path) == "includes" || path.basename(entity.path) == "generated"))) {
           bool isExpanded = false;
           children.add(ExpansionTile(
             collapsedIconColor: platinumGray,

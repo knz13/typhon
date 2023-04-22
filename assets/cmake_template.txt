@@ -11,7 +11,8 @@ message(STATUS "__current__project__compiler__ ${CMAKE_CXX_COMPILER}")
 
 add_library(${PROJECT_NAME} SHARED
     bindings_generated.cpp
-    #__PROJECT__SOURCES__
+    #__BEGIN__PROJECT__SOURCES__
+    #__END__PROJECT__SOURCES__
 )
 
 # setting c++ standard

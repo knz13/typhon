@@ -29,13 +29,58 @@ class Tuple2<T1, T2> {
 
 class CPPParser {
 
-
-
-static Map<String, String> getClassesText(String text) {
+static String removeComments(String text) {
   text = text.replaceAll(RegExp(r'/\*.*?\*/', dotAll: true), '');
   text = text.replaceAll(RegExp(r'//.*?\n'), '');
+  return text;
+}
+
+static String removeContentBetweenAngleBrackets(String input) {
+  RegExp pattern = RegExp(r'<[^<>]*>', multiLine: true, dotAll: true);
+  String output;
+  
+  while ((output = input.replaceAll(pattern, '')) != input) {
+    input = output;
+  }
+  
+  return output;
+}
+
+
+static List<String> extractBaseClasses(String fileContent, String className) {
+  // RegExp pattern to match class definition with inheritance
+  final pattern = RegExp(
+      r'class\s+' + className + r'\s*:\s*([\s\S]*?)\{',
+      caseSensitive: false);
+  final match = pattern.firstMatch(fileContent);
+  if (match == null) {
+    return [];
+  }
+
+  var baseClassesStr = match.group(1);
+  if(baseClassesStr == null) {
+    return [];
+  }
+  baseClassesStr = removeContentBetweenAngleBrackets(baseClassesStr);
+  final baseClasses = baseClassesStr.split(RegExp(r'\s*,\s*'));
+
+  // RegExp pattern to match only the class names
+  final classNamePattern = RegExp(r'\b(?:public\s+|private\s+|protected\s+)?([\w:]+)\b');
+
+  return baseClasses
+      .map((baseClass) => classNamePattern
+          .firstMatch(baseClass)
+          ?.group(1) ?? "")
+      .where((className) => className != null)
+      .toList();
+}
+
+static Map<String, dynamic> getClassesProperties(String text) {
+
+  text = removeComments(text);
 
   Map<String, String> classesText = {};
+  Map<String,List<String>> classesInheritance = {};
   List<Tuple2<String, int>> classNames = [];
 
   RegExp classNameExp = RegExp(r'class .*? {');
@@ -54,6 +99,14 @@ static Map<String, String> getClassesText(String text) {
   classNames.sort((a,b) {
     return a.item2.compareTo(b.item2);
   });
+
+
+  //getting class inheritance 
+  for(String className in classNames.map((e) => e.item1,)){
+    classesInheritance[className] = extractBaseClasses(text, className);
+  }
+
+
 
 
   for (int i = 0; i < classNames.length; i++) {
@@ -106,14 +159,29 @@ static Map<String, String> getClassesText(String text) {
     classesText[className] = classText;
   }
 
-  return classesText;
+  var variables = extractVariableFromClassesText(classesText);
+
+  Map<String,dynamic> finalMap = {};
+
+  for(String className in classesText.keys){
+
+    finalMap[className] = {
+      "variables":variables[className]!,
+      "class_text":classesText[className]!,
+      "inheritance":classesInheritance[className]!
+    };
+
+
+  }
+
+  return finalMap;
 }
 
 
 
 
 
-static Map<String, List<String>> extractVariableFromClasses(Map<String, String> classes) {
+static Map<String, List<String>> extractVariableFromClassesText(Map<String, String> classes) {
   Map<String, List<String>> classVariables = {};
 
   classes.forEach((className, classText) {

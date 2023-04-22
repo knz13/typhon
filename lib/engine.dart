@@ -28,6 +28,7 @@ import 'package:typhon/console_panel.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/main.dart';
 import 'package:typhon/recompiling_dialog.dart';
+import 'package:typhon/regex_parser.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
@@ -405,7 +406,8 @@ bool isEngineInitialized() {
 
 //__END__CPP__IMPL__
 """);
-  
+
+      Directory(path.join(projectPath,"generated")).createSync(recursive: true);
 
       FileViewerPanel.leftInitialDirectory.value = Directory(projectPath);
       FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
@@ -453,17 +455,30 @@ bool isEngineInitialized() {
   }
 
   Future<List<String>> __findPathsToInclude(Directory directory) async {
-    List<String> paths = [];
+    List<String> arr = [];
     for(var maybeFile in await directory.list().toList()){
-      print(path.basename(maybeFile.path));
       if(maybeFile is File && maybeFile.path.substring(maybeFile.path.lastIndexOf(".")) == ".h") {
-        paths.add(path.relative(maybeFile.path,from:projectPath));
+        arr.add(path.relative(maybeFile.path,from:projectPath));
       }
       if(maybeFile is Directory){
-        __findPathsToInclude(maybeFile);
+        arr.addAll(await __findPathsToInclude(maybeFile));
       }
     } 
-    return paths;
+    return arr;
+
+  }
+
+  Future<List<String>> __findSourcesToAdd(Directory directory) async {
+    List<String> sources = [];
+    for(var maybeFile in await directory.list().toList()){
+      if(maybeFile is File && [".cpp",".cc",".c"].contains(maybeFile.path.substring(maybeFile.path.lastIndexOf(".")))) {
+        sources.add(path.relative(maybeFile.path,from:projectPath));
+      }
+      if(maybeFile is Directory){
+        sources.addAll(await __findSourcesToAdd(maybeFile));
+      }
+    } 
+    return sources;
 
   }
 
@@ -477,10 +492,82 @@ bool isEngineInitialized() {
     }
     print("recompiling...");
 
-    //finding includes
-    List<String> includes = await __findPathsToInclude(Directory(path.join(projectPath,"assets")));
-    print("includes found: ${includes}");
+
+
     
+    
+    List<String> includes = await __findPathsToInclude(Directory(path.join(projectPath,"assets")));
+
+    Directory(path.join(projectPath,"generated")).createSync();
+
+    for(String include in includes){
+      String pathGenerated = path.join(Engine.instance.projectPath,"generated",path.relative(include,from:"assets"));
+
+      String fileText = File(path.join(projectPath,include)).readAsStringSync();
+      fileText = CPPParser.removeComments(fileText);
+
+      var mapWithClassesProperties = CPPParser.getClassesProperties(fileText);
+
+
+      for(String className in mapWithClassesProperties.keys){
+        if(!mapWithClassesProperties[className]["inheritance"].contains("DerivedFromGameObject")) {
+          continue;
+        }
+        String classText = mapWithClassesProperties[className]["class_text"]!;
+        int lastIndex = classText.lastIndexOf("}");
+
+        String newClassText = """${classText.substring(0,lastIndex)}
+    void InternalSerialize(json& jsonData) {
+      ${mapWithClassesProperties[className]["variables"]!.map((e) => 'jsonData["${e}"] = ${e};').toList().join("\n")}
+    }
+          
+    void InternalDeserialize(const json& jsonData) {
+      ${mapWithClassesProperties[className]["variables"]!.map((e) => 'jsonData.at("${e}").get_to(${e});').toList().join("\n")}
+    }
+};""";
+        fileText = fileText.replaceAll("$classText;", newClassText);
+
+      }
+
+
+
+
+      File(pathGenerated).createSync();
+      File(pathGenerated).writeAsStringSync(fileText);
+    }
+    
+    includes = await __findPathsToInclude(Directory(path.join(projectPath,"generated")));
+
+
+    //adding source files to cmakelists
+    List<String> sourcesPathRelative = await __findSourcesToAdd(Directory(path.join(projectPath,"generated")));
+
+    File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"));
+
+    List<String> cmakeLines = cmakeFile.readAsLinesSync();
+    String cmakeFileNewText = "";
+    bool shouldAdd = true;
+    for(String line in cmakeLines){
+      if(line.contains("#__BEGIN__PROJECT__SOURCES__")){
+        shouldAdd = false;
+      }
+      if(line.contains("#__END__PROJECT__SOURCES__")){
+        line += "   #__BEGIN__PROJECT__SOURCES__\n";
+        for(String path in sourcesPathRelative){
+          line += "   $path\n";
+        }
+        shouldAdd = true;
+      }
+
+      if(shouldAdd){
+        cmakeFileNewText += line + "\n";
+      }
+
+    }
+
+    cmakeFile.writeAsStringSync(cmakeFileNewText);
+
+    //finding includes
     File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
     String bindingsGeneratedData = "";
     List<String> lines = bindingsFile.readAsLinesSync();
@@ -488,7 +575,7 @@ bool isEngineInitialized() {
       
       if(line.contains("//__INCLUDE__CREATED__CLASSES__")){
         includes.forEach((element) { 
-          if(element == "assets/entry.h"){
+          if(element == "generated/entry.h" || element == "generated\\entry.h"){
             return;
           }
           bindingsGeneratedData += '#include "${element}"\n';
@@ -497,7 +584,7 @@ bool isEngineInitialized() {
       }
       if(line.contains("//__INITIALIZE__CREATED__CLASSES__")){
         includes.forEach((element) {
-          if(element == "assets/entry.h" || element == "assets\\entry.h"){
+          if(element == "generated/entry.h" || element == "generated\\entry.h"){
             return;
           }
           bindingsGeneratedData += "    ${path.basenameWithoutExtension(element)}();\n";
