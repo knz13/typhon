@@ -4,6 +4,6 @@
 
 namespace Traits {
 
-    std::map<entt::entity,UpdatePayload> HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate;
-    std::map<entt::entity,SpriteAnimationData> UsesSpriteAnimationInternals::objectsToBeRendered;
+    std::map<int64_t,UpdatePayload> HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate;
+    std::map<int64_t,SpriteAnimationData> UsesSpriteAnimationInternals::objectsToBeRendered;
 }

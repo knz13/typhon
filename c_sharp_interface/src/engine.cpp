@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 
 Vector2f Engine::mousePosition;
 std::map<std::string,TextureAtlasImageProperties> Engine::textureAtlas;
-std::unordered_map<entt::entity,std::shared_ptr<GameObject>> Engine::aliveObjects;
+std::unordered_map<int64_t,std::shared_ptr<GameObject>> Engine::aliveObjects;
 std::bitset<std::size(Keys::IndicesOfKeys)> Engine::keysPressed;
 std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> EngineInternals::enqueueRenderFunc;
 bool Engine::isInitialized = false;

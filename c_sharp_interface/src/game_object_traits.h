@@ -79,7 +79,7 @@ namespace Traits {
     template<>
     class HasUpdate<Reflection::NullClassHelper> {
     public:
-        static std::map<entt::entity,UpdatePayload> objectsThatNeedUpdate;
+        static std::map<int64_t,UpdatePayload> objectsThatNeedUpdate;
     };
 
 
@@ -214,7 +214,7 @@ namespace Traits {
 
    
     struct UsesSpriteAnimationInternals {
-        static std::map<entt::entity,SpriteAnimationData> objectsToBeRendered;
+        static std::map<int64_t,SpriteAnimationData> objectsToBeRendered;
     };  
 
     struct SpriteAnimationFrame {

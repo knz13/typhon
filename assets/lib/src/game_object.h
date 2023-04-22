@@ -13,7 +13,7 @@ class DerivedFromGameObject;
 class GameObject {
 public:
 
-    static const std::map<int64_t,std::function<std::pair<entt::entity,std::shared_ptr<GameObject>>()>>& GetInstantiableClassesFunctions() {
+    static const std::map<int64_t,std::function<std::pair<int64_t,std::shared_ptr<GameObject>>()>>& GetInstantiableClassesFunctions() {
         return instantiableClasses;
     }
     static const std::map<int64_t,std::string> GetInstantiableClassesIDsToNames() {
@@ -29,7 +29,7 @@ public:
         return className;
     }
 
-    entt::entity Handle(){
+    int64_t Handle(){
         return handle;
     }
 
@@ -40,14 +40,14 @@ public:
 protected:
 
 private:
-    static std::map<int64_t,std::function<std::pair<entt::entity,std::shared_ptr<GameObject>>()>> instantiableClasses;
+    static std::map<int64_t,std::function<std::pair<int64_t,std::shared_ptr<GameObject>>()>> instantiableClasses;
     static std::map<int64_t,std::string> instantiableClassesNames;
     static std::map<std::string,int64_t> instantiableClassesIDs;
     static std::map<std::string,std::vector<GameObject*>> instantiatedClassesPerType;
 
     std::string className = "";
     yael::event_launcher<void()> onDestroyEvent;
-    entt::entity handle = entt::null;
+    int64_t handle = -1;
     
 
     virtual void GameObjectSerialize(json& json) {};
@@ -101,7 +101,7 @@ class DerivedFromGameObject : public GameObject,public Reflection::IsInitialized
 public:
     static void InitializeStatically() {
         GameObject::instantiableClasses[HelperFunctions::GetClassID<MainClass>()] = [](){
-            entt::entity e = ECSRegistry::Get().create();
+            int64_t e = Random::get<int64_t>();
             auto ptr = std::shared_ptr<GameObject>(static_cast<GameObject*>(new MainClass()));
             ptr.get()->handle = e;
             ptr.get()->GameObjectOnCreate();

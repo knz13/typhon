@@ -99,7 +99,7 @@ class ConsolePanel extends StatefulWidget {
     ConsolePanel._data.addFirst(ConsolePanelMessage(
       text: message,
       time: "${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}",
-      leading: level == ConsolePanelLevel.log ? Icon(Icons.message) : level == ConsolePanelLevel.warning ? Icon(Icons.warning) : Icon(Icons.error)));
+      leading: level == ConsolePanelLevel.log ? Icon(Icons.message,size: 8,) : level == ConsolePanelLevel.warning ? Icon(Icons.warning,size:8) : Icon(Icons.error,size: 8,)));
     if(ConsolePanel._data.length > ConsolePanel.maxMessages) {
       ConsolePanel._data.removeLast();
     }

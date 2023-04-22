@@ -23,7 +23,7 @@ public:
     template<typename T>
     static T& CreateNewGameObject() {
         static_assert(std::is_base_of<GameObject,T>::value,"Can only create Game Objects that are derived from GameObject");
-        entt::entity e = ECSRegistry::Get().create();
+        int64_t e = Random::get<int64_t>();
         aliveObjects[e] = std::shared_ptr<GameObject>(new T());
         aliveObjects[e].get()->handle = e;
         aliveObjects[e].get()->GameObjectOnCreate();
@@ -42,6 +42,11 @@ public:
 
     static std::string SerializeCurrent();
     static json SerializeCurrentJSON();
+
+    static bool ValidateHandle(int64_t handle) {
+        return aliveObjects.find(handle) != aliveObjects.end();
+    }
+
     static bool DeserializeToCurrent(std::string scene);
     static const std::vector<GameObject*>& View(std::string typeName) {
         static std::vector<GameObject*> dummy = std::vector<GameObject*>();
@@ -99,18 +104,16 @@ public:
         aliveObjects[obj.Handle()]->GameObjectOnDestroy();
 
         aliveObjects.erase(obj.handle);
-        ECSRegistry::Get().destroy(obj.handle);
         return true;
     }
 
-    static bool RemoveGameObject(entt::entity e) {
+    static bool RemoveGameObject(int64_t e) {
         if(aliveObjects.find(e) == aliveObjects.end()){
             std::cout << "Could not remove gameobject, invalid id!" << std::endl;
             return false;
         }
         aliveObjects[e]->GameObjectOnDestroy();
         aliveObjects.erase(e);
-        ECSRegistry::Get().destroy(e);
         return true;
     }
 
@@ -133,7 +136,7 @@ private:
     static std::map<std::string,TextureAtlasImageProperties> CreateTextureAtlasFromImages();
     static std::map<std::string,TextureAtlasImageProperties> textureAtlas;
     static std::bitset<std::size(Keys::IndicesOfKeys)> keysPressed;
-    static std::unordered_map<entt::entity,std::shared_ptr<GameObject>> aliveObjects;
+    static std::unordered_map<int64_t,std::shared_ptr<GameObject>> aliveObjects;
     static Vector2f mousePosition;
 
 

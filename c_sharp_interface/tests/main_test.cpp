@@ -58,9 +58,9 @@ TEST_CASE("Testing General Templating And Engine Methods") {
 
         GameObject& obj = Engine::CreateNewGameObject<GameObject>();
 
-        REQUIRE(ECSRegistry::Get().valid(obj.Handle()));
 
         REQUIRE(Engine::AliveObjects() == 1);
+        REQUIRE(obj.Valid());
 
         Engine::Unload();
 
