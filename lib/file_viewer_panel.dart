@@ -110,8 +110,9 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
         
         var fileWatcher = FileWatcher(file.absolute.path,pollingDelay: Duration(seconds: 2));
         fileWatcher.events.listen((event) {
-          
-          Engine.instance.reloadProject();
+          if(Engine.instance.hasInitializedProject()){
+            Engine.instance.reloadProject();
+          }
         });
         _watchers.add(fileWatcher);
       }

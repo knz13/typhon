@@ -72,6 +72,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   String projectName = "";
   String projectFilteredName = "";
   Image? atlasImage;
+  bool _isProjectLoaded = false;
   static Queue<EngineRenderingDataFromAtlas> renderingObjects = Queue();
   ValueNotifier<List<int>> currentChildren = ValueNotifier([]);
 
@@ -100,11 +101,12 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   } 
 
   bool hasInitializedProject() {
-    return projectName != "" && projectPath != "";
+    return _isProjectLoaded;
   }
 
   Future<void> reloadProject() async {
     unload();
+
     await TyphonCPPInterface.extractImagesFromAssets(path.join(projectPath,"build","images"));
     
     await recompileProject();
@@ -126,12 +128,14 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
         await Future.delayed(Duration(milliseconds: 100));
       }
     })();
+
   }
 
   void unloadProject() {
     projectName = "";
     projectPath = "";
     projectFilteredName = "";
+    _isProjectLoaded = false;
     ConsolePanel.clear();
     unload();
   }
@@ -163,7 +167,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   }
 
   Future<void> initializeProject(String projectDirectoryPath,String projectName) async {
-    
+
     //testing if project exists and loading it if true
     var map = await getProjectsJSON();
     var projectFilteredName = projectName.replaceAllMapped(RegExp(r'[^a-zA-Z0-9]'), (match) => '_');
@@ -610,8 +614,10 @@ bool isEngineInitialized() {
       FileViewerPanel.leftInitialDirectory.value = Directory(projectPath);
       FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
 
-
       await reloadProject();
+
+      _isProjectLoaded = true;
+
 
       return;
 
@@ -685,7 +691,7 @@ bool isEngineInitialized() {
 
   Future<void> recompileProject() async {
     
-    if(!hasInitializedProject()){
+    if(projectPath == "" || projectName == "" || projectFilteredName == ""){
       return;
     }
     print("recompiling...");
@@ -865,10 +871,9 @@ extern "C" {
 """);
 
     currentProcess = await Process.start("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
-    
     showDialog(
         barrierDismissible: false,
-        context: MyApp.globalContext.currentContext!, 
+        context: MyApp.globalContext.currentContext!,
         builder:(context) {
         return RecompilingDialog(
           process: currentProcess!,
@@ -888,7 +893,7 @@ extern "C" {
 
       currentProcess = await Process.start("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
       
-      showDialog(
+    showDialog(
         barrierDismissible: false,
         context: MyApp.globalContext.currentContext!, 
         builder:(context) {

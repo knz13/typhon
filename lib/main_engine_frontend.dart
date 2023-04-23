@@ -42,9 +42,6 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
     // TODO: implement initState
     
     super.initState();
-    if(Engine.instance.hasInitializedProject()){
-      Engine.instance.reloadProject();
-    }
 
   }
 

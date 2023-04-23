@@ -77,7 +77,6 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
     // TODO: implement initState
     super.initState();
 
-
     widget.process.stdout.listen(stdOutEvent);
     
     widget.process.exitCode.then((value) {
