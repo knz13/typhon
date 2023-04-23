@@ -38,11 +38,23 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
         
         for option in options {
             let title = option["title"] as? String ?? ""
-            
+            let type: String = option["type"] as? String ?? "General"
+            let enabled: Int = Int((option["enabled"] as? String ?? "1")) ?? 1
+           
             let menuItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
             let subOptionsJson = try? JSONSerialization.jsonObject(with: (option["subOptions"] as? String ?? "").data(using: .utf8) ?? Data(), options: [])
             
-            
+            if (enabled == 0) {
+                menuItem.isEnabled = false
+                menu.addItem(menuItem)
+                continue
+            }
+
+            if (type == "Separator") {
+                menu.addItem(.separator());
+                continue;
+            }
+
             if let subOptions = subOptionsJson as? [[String:Any]] {
                 
                 let subMenu = NSMenu()

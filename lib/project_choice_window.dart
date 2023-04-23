@@ -793,6 +793,9 @@ class _ProjectsPageState extends State<ProjectsPage> {
                             map.remove(snapshot.data!.keys.toList()[index]);
                             Engine.instance.saveProjectsJSON(map);
                           }
+                          if(snapshot.hasData && snapshot.data!.isEmpty){
+                            return Container();
+                          }
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20.0),
                             child: MaterialButton(

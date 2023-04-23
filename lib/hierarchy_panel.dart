@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:math';
 
@@ -19,18 +20,14 @@ import 'general_widgets.dart';
 import 'main.dart';
 
 
-class HierarchyPanel extends WidgetPanel {
+class HierarchyPanelWindow extends EngineSubWindowData {
 
-  @override
-  EngineSubWindowData subWindowData() {
-    // TODO: implement subWindowData
-    return EngineSubWindowData(
-      title: "Hierarchy",
-      topPanelWidgets: HierarchyPanelTop(),
-      child: HierarchyPanelContents()
-    );
-  }
+
+  HierarchyPanelWindow() : super(child: HierarchyPanelContents(),title: "Hierarchy",topPanelWidgets: HierarchyPanelTop());
+
 }
+
+
 
 class HierarchyPanelTop extends StatefulWidget {
 
@@ -223,7 +220,8 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
                   
                   Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectSerializationByID(idChosen);
                   if(val != nullptr){
-                    print(val.cast<Utf8>().toDartString());
+                    var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
+                    print(jsonData);
                   }
 
                 },

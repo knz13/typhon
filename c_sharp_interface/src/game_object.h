@@ -141,18 +141,29 @@ private:
         constexpr bool hasInternalToJsonFunc = requires (json& j,A& a) {
             a.InternalSerialize(j);
         };
-
-
-        
-        if constexpr (has_serialize<A>::value) {
-            std::cout << "executing serialize for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
-            json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()];
-            static_cast<A*>(static_cast<MainClass*>(this))->Serialize(jsonInner);
+        if constexpr (std::is_same<A,MainClass>::value){
+            if constexpr (has_serialize<A>::value) {
+                std::cout << "executing serialize for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
+                json& jsonInner = jsonData[HelperFunctions::GetClassNameString<A>()];
+                static_cast<A*>(static_cast<MainClass*>(this))->Serialize(jsonInner);
+            }
+            else if constexpr(hasInternalToJsonFunc){
+                std::cout << "calling internal serialize!" << std::endl;
+                json& jsonInner = jsonData[HelperFunctions::GetClassNameString<A>()];
+                static_cast<A*>(static_cast<MainClass*>(this))->InternalSerialize(jsonInner);
+            }
         }
-        else if constexpr(hasInternalToJsonFunc){
-            std::cout << "calling internal serialize!" << std::endl;
-            json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()];
-            static_cast<A*>(static_cast<MainClass*>(this))->InternalSerialize(jsonInner);
+        else {
+            if constexpr (has_serialize<A>::value) {
+                std::cout << "executing serialize for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
+                json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()]["traits"][HelperFunctions::GetClassNameString<A>()];
+                static_cast<A*>(static_cast<MainClass*>(this))->Serialize(jsonInner);
+            }
+            else if constexpr(hasInternalToJsonFunc){
+                std::cout << "calling internal serialize!" << std::endl;
+                json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()]["traits"][HelperFunctions::GetClassNameString<A>()];
+                static_cast<A*>(static_cast<MainClass*>(this))->InternalSerialize(jsonInner);
+            }
         }
     }
 
@@ -164,21 +175,44 @@ private:
         };
         
 
+         if constexpr (std::is_same<A,MainClass>::value){
+            if constexpr (has_deserialize<A>::value) {
+                std::cout << "executing deserialize for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
+                if(jsonData.contains(HelperFunctions::GetClassNameString<A>())){
+                    const json& jsonInner = jsonData[HelperFunctions::GetClassNameString<A>()];
+                    static_cast<A*>(static_cast<MainClass*>(this))->Deserialize(jsonInner);
+                }
+            }
+            else if constexpr(hasInternalFromJsonFunc){
+                std::cout << "calling internal deserialize!" << std::endl;
+                if(jsonData.contains(HelperFunctions::GetClassNameString<A>())){
+                    const json& jsonInner = jsonData[HelperFunctions::GetClassNameString<A>()];
+                    static_cast<A*>(static_cast<MainClass*>(this))->InternalDeserialize(jsonInner);
+                }
+            }
+        }
+        else {
+            if constexpr (has_serialize<A>::value) {
+                std::cout << "executing serialize for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
+                if(jsonData.contains(HelperFunctions::GetClassNameString<MainClass>()) && jsonData[HelperFunctions::GetClassNameString<MainClass>()].contains("traits")) {
+                    if(jsonData[HelperFunctions::GetClassNameString<MainClass>()]["traits"].contains(HelperFunctions::GetClassNameString<A>())){
+                        const json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()]["traits"][HelperFunctions::GetClassNameString<A>()];
+                        static_cast<A*>(static_cast<MainClass*>(this))->Deserialize(jsonInner);
+                    }
+                }
+            }
+            else if constexpr(hasInternalFromJsonFunc){
+                std::cout << "calling internal serialize!" << std::endl;
+                if(jsonData.contains(HelperFunctions::GetClassNameString<MainClass>()) && jsonData[HelperFunctions::GetClassNameString<MainClass>()].contains("traits")) {
+                    if(jsonData[HelperFunctions::GetClassNameString<MainClass>()]["traits"].contains(HelperFunctions::GetClassNameString<A>())){
+                        const json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()]["traits"][HelperFunctions::GetClassNameString<A>()];
+                        static_cast<A*>(static_cast<MainClass*>(this))->InternalDeserialize(jsonInner);
+                    }
+                }
+            }
+        }
         
-        if constexpr (has_deserialize<A>::value) {
-            std::cout << "executing deserialize for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
-            if(jsonData.contains(HelperFunctions::GetClassNameString<MainClass>())){
-                const json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()];
-                static_cast<A*>(static_cast<MainClass*>(this))->Deserialize(jsonInner);
-            }
-        }
-        else if constexpr(hasInternalFromJsonFunc){
-            std::cout << "calling internal deserialize!" << std::endl;
-            if(jsonData.contains(HelperFunctions::GetClassNameString<MainClass>())){
-                const json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()];
-                static_cast<A*>(static_cast<MainClass*>(this))->InternalDeserialize(jsonInner);
-            }
-        }
+        
     }
 
     void GameObjectSerialize(json& json) override {

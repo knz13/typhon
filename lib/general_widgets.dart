@@ -74,14 +74,24 @@ class ContextMenuOption {
   final String title;
   final void Function()? callback;
   final List<ContextMenuOption>? subOptions;
+  final bool enabled;
+  final String type;
+  final bool selectable;
 
   ContextMenuOption({
     required this.title,
     this.callback,
     this.subOptions,
+    this.enabled = true,
+    this.selectable = false,
+    this.type = "General"
   });
 
   
+}
+
+class SeparatorMenuOption extends ContextMenuOption {
+  SeparatorMenuOption() : super(title: "",type: "Separator");
 }
 
 class GeneralButton extends StatelessWidget {
@@ -175,7 +185,13 @@ List<Map<String,dynamic>> buildOptionList(List<ContextMenuOption> options) {
     // ignore: unnecessary_cast
     var map =  {
       "title":e.title,
+      "type":e.type,
+      "enabled":e.enabled ? 1 : 0
     } as Map<String,dynamic>;
+
+    if(map["enabled"] == 0){
+      return map;
+    }
 
     if(e.callback != null) {
       int callbackId = ++_callbackId;

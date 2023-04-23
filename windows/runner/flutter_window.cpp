@@ -25,8 +25,27 @@ void FlutterWindow::CreateMenuInternal(HMENU menu,
       auto item = item_value;
       
       auto title = item["title"].get<std::string>();
+      auto type = item["type"].get<std::string>();
+      auto enabled = item["enabled"].get<int>();
+
       UINT_PTR item_id = 0;
       UINT uFlags = MF_STRING;
+
+      if(enabled == 0){
+        uFlags |= MF_GRAYED;
+        AppendMenuW(menu, uFlags, item_id, string_to_wstring(title).data());
+        continue;
+      }
+
+
+      if(type == "Separator"){
+        uFlags |= MF_SEPARATOR;
+        AppendMenuW(menu, uFlags, item_id, string_to_wstring(title).data());
+        continue;
+      }
+
+
+
       if (item.contains("callbackId")){
           int32_t id = atoi(item["callbackId"].get<std::string>().c_str());
           item_id = id;   

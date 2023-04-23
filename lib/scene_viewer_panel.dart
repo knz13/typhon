@@ -12,19 +12,15 @@ import 'package:typhon/general_widgets.dart';
 import 'engine.dart';
 
 
-class SceneViewerPanel extends WidgetPanel {
+class SceneViewerWindow extends EngineSubWindowData {
+  static bool exists = false;
+
+  SceneViewerWindow() : super(title: "Scene",topPanelWidgets: SceneViewerTop(),child: SceneViewerContents());
 
 
-  @override
-  EngineSubWindowData subWindowData() {
-    // TODO: implement subWindowData
-    return EngineSubWindowData(
-      title:"Scene",
-      topPanelWidgets: SceneViewerTop(),
-      child: SceneViewerContents()
-    );
-  }
 }
+
+
 
 class SceneViewerTop extends StatelessWidget {
   @override
@@ -51,7 +47,7 @@ class SceneViewerTop extends StatelessWidget {
 
 class SceneViewerContents extends StatefulWidget {
 
-
+  
   SceneViewerContents();
 
   @override
@@ -66,7 +62,17 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
     // TODO: implement initState
     super.initState();
 
+    SceneViewerWindow.exists = true;
+
     gameWidget = GameWidget(game: Engine.instance);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    SceneViewerWindow.exists = false;
   }
 
   Widget build(BuildContext context) {

@@ -125,12 +125,12 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                       mainChildProportion: 0.75,
                       mainSubWindow: EngineSubWindow(
                         tabs: [
-                          SceneViewerPanel().subWindowData()
+                          SceneViewerWindow()
                         ]
                       ),
                       splitSubWindow: EngineSubWindow(
                         tabs: [
-                          HierarchyPanel().subWindowData()
+                          HierarchyPanelWindow()
                         ],
                       ),
                     ),
@@ -146,7 +146,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                       InspectorPanelWindow()
                     ],
                   ),
-                ) : SceneViewerPanel().subWindowData().child
+                ) : SceneViewerWindow().child
               ), 
             )
       ) ,

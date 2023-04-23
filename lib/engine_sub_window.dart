@@ -9,9 +9,13 @@ import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tabbed_view/tabbed_view.dart';
+import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine.dart';
 import 'package:typhon/general_widgets.dart';
+import 'package:typhon/hierarchy_panel.dart';
+import 'package:typhon/inspector_panel.dart';
 import 'package:typhon/main.dart';
+import 'package:typhon/scene_viewer_panel.dart';
 
 
 
@@ -28,7 +32,7 @@ class EngineSubWindowData {
   String title;
   Widget? Function(BuildContext,TabStatus)? tabLeading;
   bool closable;
-  List<TabbedViewMenuItem> menuItems;
+  List<ContextMenuOption> menuItems;
   void Function()? onTabSelected;
 
   EngineSubWindowData({required this.child,required this.title,this.onTabSelected,this.closable = true,this.menuItems = const [],this.topPanelWidgets,this.tabLeading});
@@ -240,7 +244,33 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                       setState(() {
                         widget.tabs.removeAt(_controller.selectedIndex!);
                       });
-                    })
+                    }),
+                    SeparatorMenuOption(), 
+                    ...widget.tabs[_controller.selectedIndex!].menuItems,
+                    SeparatorMenuOption(),
+                    ContextMenuOption(title: "Add Tab",subOptions: [
+                      if(!SceneViewerWindow.exists)
+                      ContextMenuOption(title: "Scene",callback: () {
+                        setState(() {
+                          widget.tabs.add(SceneViewerWindow());
+                        });
+                      },),
+                      ContextMenuOption(title: "Hierarchy",callback: () {
+                        setState(() {
+                          widget.tabs.add(HierarchyPanelWindow());
+                        });
+                      },),
+                      ContextMenuOption(title: "Inspector",callback: () {
+                        setState(() {
+                          widget.tabs.add(InspectorPanelWindow());
+                        });
+                      },),
+                      ContextMenuOption(title: "Console",callback: () {
+                        setState(() {
+                          widget.tabs.add(ConsolePanelSubWindow());
+                        });
+                      },),
+                    ])
                   ]);
                 },
                 icon: IconProvider.data(FontAwesomeIcons.ellipsisVertical),
