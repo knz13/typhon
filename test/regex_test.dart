@@ -18,10 +18,11 @@ void main() {
 
     var map = CPPParser.getClassesProperties(fileData);
     expect(map.containsKey("GameObject"),true);
-    expect(map["GameObject"]["variables"]!.length,3);
+    expect(map["GameObject"]["variables"]!.length,4);
     expect(map["GameObject"]["variables"]!.contains("className"),true);
     expect(map["GameObject"]["variables"]!.contains("onDestroyEvent"),true);
     expect(map["GameObject"]["variables"]!.contains("handle"),true);
+    expect(map["GameObject"]["variables"]!.contains("name"),true);
     
   });
 
