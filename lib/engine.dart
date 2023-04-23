@@ -73,11 +73,23 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   String projectFilteredName = "";
   Image? atlasImage;
   bool _isProjectLoaded = false;
+  bool _isReloading = false;
+  bool _shouldRecompile = false;
   static Queue<EngineRenderingDataFromAtlas> renderingObjects = Queue();
   ValueNotifier<List<int>> currentChildren = ValueNotifier([]);
 
   bool isInitialized = false;
 
+
+  void enqueueRecompilation() {
+    if(hasInitializedProject() && TyphonCPPInterface.checkIfLibraryLoaded()){
+      _shouldRecompile = true;
+    }
+  }
+
+  bool shouldRecompile() {
+    return _shouldRecompile;
+  }
 
   Future<Map<String,dynamic>> getProjectsJSON() async {
     Directory privateDir = await getApplicationSupportDirectory();
@@ -102,9 +114,13 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
   bool hasInitializedProject() {
     return _isProjectLoaded;
-  }
+  } 
 
   Future<void> reloadProject() async {
+    if(_isReloading){
+      return;
+    }
+    _isReloading = true;
     unload();
 
     await TyphonCPPInterface.extractImagesFromAssets(path.join(projectPath,"build","images"));
@@ -128,7 +144,8 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
         await Future.delayed(Duration(milliseconds: 100));
       }
     })();
-
+    _isReloading = false;
+    _shouldRecompile = false;
   }
 
   void unloadProject() {
@@ -153,16 +170,13 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
 
   static void onCppChildrenChanged() {
-    print("children changed!");
 
     AliveObjectsArray arr = TyphonCPPInterface.getCppFunctions().getAliveObjects();
-    print("arr pos = ${arr.array}");
 
     Int64List list = arr.array.asTypedList(arr.size);
 
     Engine.instance.currentChildren.value = list.toList();
 
-    print("current num children = ${Engine.instance.currentChildren.value}");
 
   }
 

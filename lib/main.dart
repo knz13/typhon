@@ -54,6 +54,7 @@ class MyApp extends StatefulWidget {
 
   static Offset globalMousePosition = Offset.zero;
   static GlobalKey<NavigatorState> globalContext = GlobalKey();
+  static bool isInteractingWithWindow = false;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -66,6 +67,16 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initializeContextMenu();
 
+
+    (() async {
+      while(true){
+        if(MyApp.isInteractingWithWindow){
+          MyApp.isInteractingWithWindow = false;
+        }
+
+        await Future.delayed(Duration(milliseconds: 300));
+      }
+    })();
     
 
   }
@@ -74,6 +85,12 @@ class _MyAppState extends State<MyApp> {
     return MouseRegion(
         onHover: (ev) {
           MyApp.globalMousePosition = ev.position;
+          if(!MyApp.isInteractingWithWindow){
+            if(Engine.instance.shouldRecompile()){
+              Engine.instance.reloadProject();
+            }
+            MyApp.isInteractingWithWindow = true;
+          }
         },
         child: MaterialApp(
           navigatorKey: MyApp.globalContext,
