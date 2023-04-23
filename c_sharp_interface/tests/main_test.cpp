@@ -157,7 +157,7 @@ TEST_CASE("Testing GameObject derivation") {
         Engine::Initialize();
 
         GameObject* obj = Engine::CreateNewGameObject("E");
-
+        
         REQUIRE(obj != nullptr);
 
         REQUIRE(obj->ClassName() == "E");

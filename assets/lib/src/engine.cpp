@@ -11,7 +11,8 @@ Vector2f Engine::mousePosition;
 std::map<std::string,TextureAtlasImageProperties> Engine::textureAtlas;
 std::unordered_map<int64_t,std::shared_ptr<GameObject>> Engine::aliveObjects;
 std::bitset<std::size(Keys::IndicesOfKeys)> Engine::keysPressed;
-std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> EngineInternals::enqueueRenderFunc;
+std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> EngineInternals::enqueueRenderFunc = [](double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double){};
+std::function<void()> EngineInternals::onChildrenChangedFunc = [](){};
 bool Engine::isInitialized = false;
 
 void Engine::Initialize()
@@ -38,12 +39,7 @@ void Engine::Unload()
 {   
 
     std::cout << "calling unload!" << std::endl;
-    auto iter = aliveObjects.begin();
-    while(iter != aliveObjects.end()){
-        const auto& [key,value] = *iter;
-        RemoveGameObject(key);
-        iter = aliveObjects.begin();
-    }
+    Clear();
 
     GameObject::instantiableClasses.clear();
     GameObject::instantiableClassesIDs.clear();
@@ -71,6 +67,9 @@ std::vector<std::string> Engine::GetImagePathsFromLibrary()
 const std::map<std::string, TextureAtlasImageProperties> &Engine::GetTextureAtlas()
 {
     return textureAtlas;
+}
+void EngineInternals::SetMousePosition(Vector2f mousePos)  {
+    Engine::mousePosition = mousePos;
 }
 
 std::string Engine::GetPathToAtlas()

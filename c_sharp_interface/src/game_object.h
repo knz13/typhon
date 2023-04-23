@@ -25,6 +25,10 @@ public:
 
     bool Valid();
 
+    const std::string& Name() {
+        return name;
+    }
+
     const std::string& ClassName() {
         return className;
     }
@@ -37,6 +41,14 @@ public:
         return onDestroyEvent.Sink();
     }
 
+    void Serialize(json& jsonData) {
+        GameObjectSerialize(jsonData);
+    }
+
+    void Deserialize(const json& jsonData) {
+        GameObjectDeserialize(jsonData);
+    }
+
 protected:
 
 private:
@@ -46,6 +58,7 @@ private:
     static std::map<std::string,std::vector<GameObject*>> instantiatedClassesPerType;
 
     std::string className = "";
+    std::string name = "";
     yael::event_launcher<void()> onDestroyEvent;
     int64_t handle = -1;
     

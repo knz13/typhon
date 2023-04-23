@@ -49,9 +49,10 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
 
 
     Engine.instance.onRecompileNotifier.addListener(() {
-      if(mounted)
-      setState(() {
-      });
+      if(mounted){
+        setState(() {
+        });
+      }
     });
   }
 
@@ -160,14 +161,16 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
       return children;
   } */
 
-  List<String> currentObjects = [];
+  List<Pair<String,int>> currentObjects = [];
 
 
   void callbackToEngineChanges() async {
 
-    
-    setState(() {
-    });
+    if(mounted) {
+      setState(() {
+        currentObjects = Engine.instance.currentChildren.value.map((e) => Pair(TyphonCPPInterface.getCppFunctions().getObjectNameByID(e).cast<Utf8>().toDartString(),e)).toList();
+      });
+    }
   }
 
   
@@ -177,14 +180,20 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
     // TODO: implement initState
     super.initState();
 
-  }
+    Engine.instance.currentChildren.addListener(callbackToEngineChanges);
+
+  } 
+
 
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    Engine.instance.currentChildren.removeListener(callbackToEngineChanges);
   }
+
+  int idChosen = -1;
   
   @override
   Widget build(BuildContext context) {
@@ -201,10 +210,21 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
           Row(children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: GeneralText(e),
+              child: GeneralButton(
+                onPressed: () {
+                  setState(() {
+                    idChosen = e.second;
+                  });
+                },
+                color:idChosen == e.second? Colors.red : null,
+                child: GeneralText(e.first)
+              ),
             ),
             InkWell(
               onTap: () {
+                if(TyphonCPPInterface.checkIfLibraryLoaded()){
+                  TyphonCPPInterface.getCppFunctions().removeObjectByID(e.second);
+                }
               },
               child: Icon(Icons.delete),
             )
@@ -214,4 +234,13 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
       ),
     );
   }
+}
+
+
+class Pair<T1,T2> {
+  T1 first;
+  T2 second;
+
+  Pair(this.first,this.second);
+
 }

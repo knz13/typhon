@@ -124,6 +124,7 @@ class _ConsolePanelState extends State<ConsolePanel> {
 
 
   void onChange() {
+    if(mounted)
     setState(() {
         
     });

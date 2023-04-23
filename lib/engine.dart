@@ -73,6 +73,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   String projectFilteredName = "";
   Image? atlasImage;
   static Queue<EngineRenderingDataFromAtlas> renderingObjects = Queue();
+  ValueNotifier<List<int>> currentChildren = ValueNotifier([]);
 
   bool isInitialized = false;
 
@@ -114,6 +115,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     var library = TyphonCPPInterface.getCppFunctions();
     library.passProjectPath(projectPath.toNativeUtf8().cast());
     library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
+    library.attachEnqueueOnChildrenChanged(Pointer.fromFunction(onCppChildrenChanged));
     library.initializeCppLibrary();
     (()async {
       while(true){
@@ -142,6 +144,22 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
       TyphonCPPInterface.detachLibrary();
     }
+  }
+
+
+
+  static void onCppChildrenChanged() {
+    print("children changed!");
+
+    AliveObjectsArray arr = TyphonCPPInterface.getCppFunctions().getAliveObjects();
+    print("arr pos = ${arr.array}");
+
+    Int64List list = arr.array.asTypedList(arr.size);
+
+    Engine.instance.currentChildren.value = list.toList();
+
+    print("current num children = ${Engine.instance.currentChildren.value}");
+
   }
 
   Future<void> initializeProject(String projectDirectoryPath,String projectName) async {
@@ -312,6 +330,18 @@ void attachEnqueueRender(EnqueueObjectRender func)
 
 
 
+void attachEnqueueOnChildrenChanged(OnChildrenChangedFunc func) {
+
+    EngineInternals::onChildrenChangedFunc = [=](){
+
+        func();
+
+    };
+
+}
+
+
+
 void unloadLibrary()
 
 {
@@ -321,6 +351,174 @@ void unloadLibrary()
 
 
 }
+
+
+
+AliveObjectsArray getAliveObjects() {
+
+    static std::vector<int64_t> ids;
+
+
+
+
+
+    ids.clear();
+
+    auto view = Engine::View();
+
+    ids.reserve(view.size());
+
+    for(const auto& obj : view) {
+
+        ids.push_back(obj->Handle());
+
+    }
+
+
+
+
+
+    AliveObjectsArray arr;
+
+    arr.array = ids.data();
+
+    arr.size = ids.size();
+
+
+
+
+
+    return arr;
+
+
+
+}
+
+
+
+const char* getObjectNameByID(int64_t id) {
+
+    static std::vector<char> temp = std::vector<char>();
+
+    static const char* ptr = nullptr;
+
+
+
+    temp.clear(); 
+
+
+
+    GameObject* obj = Engine::GetObjectFromID(id);
+
+    std::cout << "tried getting object with id: " << id << " with result ptr = "<< (void*)obj << std::endl;
+
+
+
+    if(obj == nullptr){
+
+        temp.push_back('\0');
+
+        ptr = temp.data();
+
+        return ptr;
+
+    }
+
+    temp.reserve(obj->Name().size() + 1);
+
+    memcpy(temp.data(),obj->Name().c_str(),obj->Name().size() + 1);
+
+    ptr = temp.data();
+
+
+
+
+
+    return ptr;
+
+};
+
+
+
+
+
+void removeObjectByID(int64_t id) {
+
+    if(Engine::ValidateHandle(id)){
+
+        Engine::RemoveGameObject(id);
+
+    }
+
+}
+
+
+
+
+
+const char* getObjectSerializationByID(int64_t id) {
+
+
+
+    static std::vector<char> temp = std::vector<char>();
+
+    static const char* ptr = nullptr;
+
+
+
+    temp.clear(); 
+
+
+
+    GameObject* obj = Engine::GetObjectFromID(id);
+
+    
+
+    if(obj == nullptr){
+
+        temp.reserve(3);
+
+        temp.push_back('{');
+
+        temp.push_back('}');
+
+        temp.push_back('\0');
+
+        ptr = temp.data();
+
+        return ptr;
+
+    }
+
+
+
+
+
+    json jsonData;
+
+    obj->Serialize(jsonData);
+
+
+
+    std::string jsonDataStr = jsonData.dump();
+
+
+
+    temp.reserve(jsonDataStr.size() + 1);
+
+    memcpy(temp.data(),jsonDataStr.c_str(),jsonDataStr.size() + 1);
+
+    ptr = temp.data();
+
+
+
+
+
+    return ptr;
+
+}
+
+
 
 
 
@@ -640,6 +838,8 @@ extern "C" {
 
     FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
 
+    FFI_PLUGIN_EXPORT void attachEnqueueOnChildrenChanged(OnChildrenChangedFunc func);
+
     FFI_PLUGIN_EXPORT void unloadLibrary();
 
     FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
@@ -647,6 +847,14 @@ extern "C" {
     FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
 
     FFI_PLUGIN_EXPORT bool isEngineInitialized();
+
+    FFI_PLUGIN_EXPORT AliveObjectsArray getAliveObjects();
+
+    FFI_PLUGIN_EXPORT const char* getObjectNameByID(int64_t id);
+
+    FFI_PLUGIN_EXPORT void removeObjectByID(int64_t id);
+
+    FFI_PLUGIN_EXPORT const char* getObjectSerializationByID(int64_t id);
 
 //__END__CPP__EXPORTS__
 
@@ -722,6 +930,7 @@ extern "C" {
     var library = await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
       Platform.isMacOS ? "lib${projectFilteredName}.dylib" : Platform.isWindows? "Debug/${projectFilteredName}.dll" : "" //TODO!
     ));
+
     
     onRecompileNotifier.value++;
         

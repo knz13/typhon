@@ -61,6 +61,7 @@ typedef void (*UpdateFunc)(int64_t,double);
 typedef void (*PreDrawFunc)(int64_t);
 typedef void (*PostDrawFunc)(int64_t);
 typedef void (*EnqueueObjectRender)(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double);
+typedef void (*OnChildrenChangedFunc)();
 typedef void (*RemoveObjectFunc)(int64_t);
 typedef void (*LoadTextureToObject)(int64_t,const char*);
 typedef const char* (*AddToEntityMenuFunc)(void);
@@ -163,6 +164,7 @@ public:
 template<int N, typename... Ts> using NthTypeOf =
         typename std::tuple_element<N, std::tuple<Ts...>>::type;
 
+
 struct ClassesArray {
     int64_t* array;
     const char** stringArray;
@@ -170,3 +172,7 @@ struct ClassesArray {
     int64_t size;
 };
 
+struct AliveObjectsArray {
+    int64_t* array;
+    int64_t size;
+};

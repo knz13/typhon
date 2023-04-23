@@ -60,11 +60,101 @@ void attachEnqueueRender(EnqueueObjectRender func)
     };
 }
 
+void attachEnqueueOnChildrenChanged(OnChildrenChangedFunc func) {
+    EngineInternals::onChildrenChangedFunc = [=](){
+        func();
+    };
+}
+
 void unloadLibrary()
 {
     Engine::Unload();
 
 }
+
+AliveObjectsArray getAliveObjects() {
+    static std::vector<int64_t> ids;
+
+
+    ids.clear();
+    auto view = Engine::View();
+    ids.reserve(view.size());
+    for(const auto& obj : view) {
+        ids.push_back(obj->Handle());
+    }
+
+
+    AliveObjectsArray arr;
+    arr.array = ids.data();
+    arr.size = ids.size();
+
+
+    return arr;
+
+}
+
+const char* getObjectNameByID(int64_t id) {
+    static std::vector<char> temp = std::vector<char>();
+    static const char* ptr = nullptr;
+
+    temp.clear(); 
+
+    GameObject* obj = Engine::GetObjectFromID(id);
+    std::cout << "tried getting object with id: " << id << " with result ptr = "<< (void*)obj << std::endl;
+
+    if(obj == nullptr){
+        temp.push_back('\0');
+        ptr = temp.data();
+        return ptr;
+    }
+    temp.reserve(obj->Name().size() + 1);
+    memcpy(temp.data(),obj->Name().c_str(),obj->Name().size() + 1);
+    ptr = temp.data();
+
+
+    return ptr;
+};
+
+
+void removeObjectByID(int64_t id) {
+    if(Engine::ValidateHandle(id)){
+        Engine::RemoveGameObject(id);
+    }
+}
+
+
+const char* getObjectSerializationByID(int64_t id) {
+
+    static std::vector<char> temp = std::vector<char>();
+    static const char* ptr = nullptr;
+
+    temp.clear(); 
+
+    GameObject* obj = Engine::GetObjectFromID(id);
+    
+    if(obj == nullptr){
+        temp.reserve(3);
+        temp.push_back('{');
+        temp.push_back('}');
+        temp.push_back('\0');
+        ptr = temp.data();
+        return ptr;
+    }
+
+
+    json jsonData;
+    obj->Serialize(jsonData);
+
+    std::string jsonDataStr = jsonData.dump();
+
+    temp.reserve(jsonDataStr.size() + 1);
+    memcpy(temp.data(),jsonDataStr.c_str(),jsonDataStr.size() + 1);
+    ptr = temp.data();
+
+
+    return ptr;
+}
+
 
 ClassesArray getInstantiableClasses()
 {

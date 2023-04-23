@@ -121,6 +121,21 @@ class TyphonBindings {
   late final _attachEnqueueRender =
       _attachEnqueueRenderPtr.asFunction<void Function(EnqueueObjectRender)>();
 
+  void attachEnqueueOnChildrenChanged(
+    OnChildrenChangedFunc func,
+  ) {
+    return _attachEnqueueOnChildrenChanged(
+      func,
+    );
+  }
+
+  late final _attachEnqueueOnChildrenChangedPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(OnChildrenChangedFunc)>>(
+          'attachEnqueueOnChildrenChanged');
+  late final _attachEnqueueOnChildrenChanged =
+      _attachEnqueueOnChildrenChangedPtr
+          .asFunction<void Function(OnChildrenChangedFunc)>();
+
   void unloadLibrary() {
     return _unloadLibrary();
   }
@@ -161,6 +176,58 @@ class TyphonBindings {
       _lookup<ffi.NativeFunction<ffi.Int Function()>>('isEngineInitialized');
   late final _isEngineInitialized =
       _isEngineInitializedPtr.asFunction<int Function()>();
+
+  AliveObjectsArray getAliveObjects() {
+    return _getAliveObjects();
+  }
+
+  late final _getAliveObjectsPtr =
+      _lookup<ffi.NativeFunction<AliveObjectsArray Function()>>(
+          'getAliveObjects');
+  late final _getAliveObjects =
+      _getAliveObjectsPtr.asFunction<AliveObjectsArray Function()>();
+
+  ffi.Pointer<ffi.Char> getObjectNameByID(
+    int id,
+  ) {
+    return _getObjectNameByID(
+      id,
+    );
+  }
+
+  late final _getObjectNameByIDPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int64)>>(
+          'getObjectNameByID');
+  late final _getObjectNameByID =
+      _getObjectNameByIDPtr.asFunction<ffi.Pointer<ffi.Char> Function(int)>();
+
+  void removeObjectByID(
+    int id,
+  ) {
+    return _removeObjectByID(
+      id,
+    );
+  }
+
+  late final _removeObjectByIDPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+          'removeObjectByID');
+  late final _removeObjectByID =
+      _removeObjectByIDPtr.asFunction<void Function(int)>();
+
+  ffi.Pointer<ffi.Char> getObjectSerializationByID(
+    int id,
+  ) {
+    return _getObjectSerializationByID(
+      id,
+    );
+  }
+
+  late final _getObjectSerializationByIDPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int64)>>(
+          'getObjectSerializationByID');
+  late final _getObjectSerializationByID = _getObjectSerializationByIDPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(int)>();
 }
 
 typedef EnqueueObjectRender = ffi.Pointer<
@@ -176,6 +243,8 @@ typedef EnqueueObjectRender = ffi.Pointer<
             ffi.Double,
             ffi.Double,
             ffi.Double)>>;
+typedef OnChildrenChangedFunc
+    = ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>;
 
 class ClassesArray extends ffi.Struct {
   external ffi.Pointer<ffi.Int64> array;
@@ -184,6 +253,13 @@ class ClassesArray extends ffi.Struct {
 
   @ffi.Int64()
   external int stringArraySize;
+
+  @ffi.Int64()
+  external int size;
+}
+
+class AliveObjectsArray extends ffi.Struct {
+  external ffi.Pointer<ffi.Int64> array;
 
   @ffi.Int64()
   external int size;

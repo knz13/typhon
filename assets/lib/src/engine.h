@@ -8,7 +8,13 @@
 #include "crunch_texture_packer.h"
 #include <ranges>
 
+class EngineInternals {
+public:
+    static std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> enqueueRenderFunc;
+    static std::function<void()> onChildrenChangedFunc;
 
+    static void SetMousePosition(Vector2f mousePos);
+};
 
 class Engine {
 public:
@@ -20,11 +26,26 @@ public:
     static std::string GetPathToAtlas();
 
 
+    static GameObject* GetObjectFromID(int64_t id) {
+        if(!Engine::ValidateHandle(id)){
+            return nullptr;
+        }
+
+        return aliveObjects[id].get();
+    };
+
+
     template<typename T>
-    static T& CreateNewGameObject() {
+    static T& CreateNewGameObject(std::string name = "") {
         static_assert(std::is_base_of<GameObject,T>::value,"Can only create Game Objects that are derived from GameObject");
         int64_t e = Random::get<int64_t>();
         aliveObjects[e] = std::shared_ptr<GameObject>(new T());
+        if(name == ""){
+            aliveObjects[e].get()->name = HelperFunctions::GetClassNameString<T>();
+        }
+        else {
+            aliveObjects[e].get()-> name = name;
+        }
         aliveObjects[e].get()->handle = e;
         aliveObjects[e].get()->GameObjectOnCreate();
 
@@ -35,7 +56,7 @@ public:
         if constexpr (has_set_defaults_function<T>::value){
             static_cast<T*>(aliveObjects[e].get())->SetDefaults();
         }
-
+        EngineInternals::onChildrenChangedFunc();
         return *static_cast<T*>(aliveObjects[e].get());
     };
 
@@ -47,7 +68,31 @@ public:
         return aliveObjects.find(handle) != aliveObjects.end();
     }
 
+    static void Clear() {
+        auto iter = aliveObjects.begin();
+        while(iter != aliveObjects.end()){
+            const auto& [key,value] = *iter;
+            RemoveGameObject(key);
+            iter = aliveObjects.begin();
+        }
+    };
+
     static bool DeserializeToCurrent(std::string scene);
+
+
+    static const std::vector<GameObject*>& View() {
+        static std::vector<GameObject*> dummy = std::vector<GameObject*>();
+        dummy.clear();
+
+        dummy.reserve(aliveObjects.size());
+        for(const auto& [key,val] : aliveObjects){
+            dummy.push_back(val.get());
+        }
+
+        return dummy;
+
+    }
+
     static const std::vector<GameObject*>& View(std::string typeName) {
         static std::vector<GameObject*> dummy = std::vector<GameObject*>();
         if(GameObject::instantiatedClassesPerType.find(typeName) != GameObject::instantiatedClassesPerType.end()) {
@@ -66,27 +111,42 @@ public:
             return dummy;
         }
 
+
         dummy.clear();
         return dummy;
     }
 
-    static GameObject* CreateNewGameObject(int64_t identifier) {
+    static GameObject* CreateNewGameObject(int64_t identifier,std::string name = "") {
         if(GameObject::GetInstantiableClassesFunctions().find(identifier) == GameObject::GetInstantiableClassesFunctions().end()){
             return nullptr;
         }
         else {
             auto [e,ptr] = GameObject::GetInstantiableClassesFunctions().at(identifier)();
             aliveObjects[e] = ptr;
+            if(name == ""){
+                aliveObjects[e].get()->name = GameObject::instantiableClassesNames[identifier];
+            }
+            else {
+                aliveObjects[e].get()-> name = name;
+            }
+            EngineInternals::onChildrenChangedFunc();
             return ptr.get();
         }
     }
-    static GameObject* CreateNewGameObject(std::string className) {
+    static GameObject* CreateNewGameObject(std::string className,std::string name = "") {
         if(GameObject::instantiableClassesIDs.find(className) == GameObject::instantiableClassesIDs.end()){
             return nullptr;
         }
         int64_t identifier = GameObject::instantiableClassesIDs[className];
         auto [e,ptr] = GameObject::GetInstantiableClassesFunctions().at(identifier)();
         aliveObjects[e] = ptr;
+        if(name == ""){
+            aliveObjects[e].get()->name = GameObject::instantiableClassesNames[GameObject::instantiableClassesIDs[className]];
+        }
+        else {
+            aliveObjects[e].get()-> name = name;
+        }
+        EngineInternals::onChildrenChangedFunc();
         return ptr.get();
     }
 
@@ -104,6 +164,7 @@ public:
         aliveObjects[obj.Handle()]->GameObjectOnDestroy();
 
         aliveObjects.erase(obj.handle);
+        EngineInternals::onChildrenChangedFunc();
         return true;
     }
 
@@ -114,6 +175,7 @@ public:
         }
         aliveObjects[e]->GameObjectOnDestroy();
         aliveObjects.erase(e);
+        EngineInternals::onChildrenChangedFunc();
         return true;
     }
 
@@ -145,11 +207,3 @@ private:
 };
 
 
-class EngineInternals {
-public:
-    static std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> enqueueRenderFunc;
-
-    static void SetMousePosition(Vector2f mousePos) {
-        Engine::mousePosition = mousePos;
-    }
-};

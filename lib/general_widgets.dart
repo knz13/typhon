@@ -88,11 +88,13 @@ class GeneralButton extends StatelessWidget {
 
   GeneralButton({
     required this.onPressed,
-    this.child
+    this.child,
+    this.color
   });
 
   void Function() onPressed;
   Widget? child;
+  Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +107,7 @@ class GeneralButton extends StatelessWidget {
         splashColor: Colors.transparent,
         hoverColor: Colors.white24,
         highlightColor: Colors.white24,
+        color: color,
         onPressed: onPressed,
         child: child,
       ),
