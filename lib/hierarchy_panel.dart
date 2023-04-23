@@ -215,6 +215,17 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
                   setState(() {
                     idChosen = e.second;
                   });
+
+                  if(!TyphonCPPInterface.checkIfLibraryLoaded()){
+                    print("Tried pressing while library not loaded!");
+                    return;
+                  }
+                  
+                  Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectSerializationByID(idChosen);
+                  if(val != nullptr){
+                    print(val.cast<Utf8>().toDartString());
+                  }
+
                 },
                 color:idChosen == e.second? Colors.red : null,
                 child: GeneralText(e.first)

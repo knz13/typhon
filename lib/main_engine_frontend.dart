@@ -143,10 +143,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                   ),
                   splitSubWindow: EngineSubWindow(
                     tabs: [
-                      EngineSubWindowData(
-                        title: "Inspector",
-                        child: InspectorPanel()
-                      )
+                      InspectorPanelWindow()
                     ],
                   ),
                 ) : SceneViewerPanel().subWindowData().child

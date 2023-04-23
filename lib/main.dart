@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
           MyApp.isInteractingWithWindow = false;
         }
 
-        await Future.delayed(Duration(milliseconds: 300));
+        await Future.delayed(Duration(seconds: 3));
       }
     })();
     

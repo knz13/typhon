@@ -162,6 +162,17 @@ namespace Traits {
     class HasPosition {
     public:
         const Vector2f& GetPosition() {return position;};
+
+        void Serialize(json& jsonData) {
+            jsonData["position_x"] = position.x;
+            jsonData["position_y"] = position.y;
+        }
+
+        void Deserialize(const json& jsonData){
+            jsonData.at("position_x").get_to(position.x);
+            jsonData.at("position_y").get_to(position.y);
+        }
+
     protected:
         Vector2f position = Vector2f(0,0);
 
@@ -190,6 +201,17 @@ namespace Traits {
             void Destroy() {
                 this->OnUpdate().Disconnect(functionHash);
                 std::cout << "Calling destroy for HasVelocity!" << std::endl;
+            }
+
+
+            void Serialize(json& jsonData) {
+                jsonData["velocity_x"] = velocity.x;
+                jsonData["velocity_y"] = velocity.y;
+            }
+
+            void Deserialize(const json& jsonData){
+                jsonData.at("velocity_x").get_to(velocity.x);
+                jsonData.at("velocity_y").get_to(velocity.y);
             }
         protected:
             Vector2f velocity = Vector2f(0,0);
@@ -259,6 +281,29 @@ namespace Traits {
             UsesSpriteAnimation() {
                 static_assert(std::is_base_of<HasPosition,NthTypeOf<Reflection::IndexOfTopClass<DerivedClasses...>(),DerivedClasses...>>::value,"In order to use sprite animation, please derive from HasPosition");
             }
+
+            void Serialize(json& jsonData) {
+                jsonData["width"] = width;
+                jsonData["height"] = height;
+                jsonData["scale"] = scale;
+                jsonData["angle"] = angle;
+                jsonData["frame_x"] = frame.x;
+                jsonData["frame_y"] = frame.y;
+                jsonData["anchor_x"] = anchor.x;
+                jsonData["anchor_y"] = anchor.y;
+            }
+
+            void Deserialize(const json& jsonData){
+                jsonData.at("width").get_to(width);
+                jsonData.at("height").get_to(height);
+                jsonData.at("scale").get_to(scale);
+                jsonData.at("angle").get_to(angle);
+                jsonData.at("frame_x").get_to(frame.x);
+                jsonData.at("frame_y").get_to(frame.y);
+                jsonData.at("anchor_x").get_to(anchor.x);
+                jsonData.at("anchor_y").get_to(anchor.y);
+            }
+
         protected:
             SpriteAnimationFrame frame;
             int width = -1;

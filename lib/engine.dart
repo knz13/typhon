@@ -82,7 +82,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
 
 
   void enqueueRecompilation() {
-    if(hasInitializedProject() && TyphonCPPInterface.checkIfLibraryLoaded()){
+    if(hasInitializedProject()){
       _shouldRecompile = true;
     }
   }
