@@ -245,8 +245,10 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                         widget.tabs.removeAt(_controller.selectedIndex!);
                       });
                     }),
+                    if((widget.tabs[_controller.selectedIndex!].closable && EngineSubWindow.aliveWindows.length != 1) || widget.tabs.length != 1)
                     SeparatorMenuOption(), 
                     ...widget.tabs[_controller.selectedIndex!].menuItems,
+                    if(widget.tabs[_controller.selectedIndex!].menuItems.isNotEmpty)
                     SeparatorMenuOption(),
                     ContextMenuOption(title: "Add Tab",subOptions: [
                       

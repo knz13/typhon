@@ -39,7 +39,7 @@ void FlutterWindow::CreateMenuInternal(HMENU menu,
 
 
       if(type == "Separator"){
-        uFlags |= MF_SEPARATOR;
+        uFlags = MF_SEPARATOR;
         AppendMenuW(menu, uFlags, item_id, string_to_wstring(title).data());
         continue;
       }
