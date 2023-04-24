@@ -75,6 +75,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   bool _isProjectLoaded = false;
   bool _isReloading = false;
   bool _shouldRecompile = false;
+  ValueNotifier<bool> lastCompilationResult = ValueNotifier(false);
   static Queue<EngineRenderingDataFromAtlas> renderingObjects = Queue();
   ValueNotifier<List<int>> currentChildren = ValueNotifier([]);
 
@@ -899,6 +900,8 @@ extern "C" {
       },);
 
     if(await currentProcess?.exitCode != 0){
+      loadProjectLibrary();
+      lastCompilationResult.value = false;
       Navigator.of(MyApp.globalContext.currentContext!).pop();
       return;
     }
@@ -920,6 +923,8 @@ extern "C" {
         );
       },);
       if(await currentProcess?.exitCode != 0){
+        loadProjectLibrary();
+        lastCompilationResult.value = false;
         Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
       }
@@ -940,21 +945,27 @@ extern "C" {
         );
       },);
       if(await currentProcess?.exitCode != 0){
+        loadProjectLibrary();
+        lastCompilationResult.value = false;
         Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
       }
     }
     Navigator.of(MyApp.globalContext.currentContext!).pop();
+    lastCompilationResult.value = true;
     
-    
-    var library = await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
-      Platform.isMacOS ? "lib${projectFilteredName}.dylib" : Platform.isWindows? "Debug/${projectFilteredName}.dll" : "" //TODO!
-    ));
+    loadProjectLibrary();
 
     
     onRecompileNotifier.value++;
         
     
+  }
+
+  Future<TyphonBindings> loadProjectLibrary() async {
+    return await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
+      Platform.isMacOS ? "lib${projectFilteredName}.dylib" : Platform.isWindows? "Debug/${projectFilteredName}.dll" : "" //TODO!
+    ));
   }
 
   Future<void> loadAtlasImage() async {

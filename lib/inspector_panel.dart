@@ -12,7 +12,7 @@ class InspectorPanelWindow extends EngineSubWindowData {
 
   static ValueNotifier<List<Widget>> dataToShow = ValueNotifier([Container()]);
 
-  InspectorPanelWindow() : super(child: InspectorPanel(), title: "File Viewer",onTabSelected: () {
+  InspectorPanelWindow() : super(child: InspectorPanel(), title: "Inspector",onTabSelected: () {
     
   });
 
