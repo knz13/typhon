@@ -243,6 +243,19 @@ namespace Traits {
 
 class G : public DerivedFromGameObject<G,Traits::SomeTrait> {};
 
+class H : public DerivedFromGameObject<H> {
+public:
+    static std::string TitleOnEditor() {
+        return "Class H";
+    } 
+
+
+    void Serialize(json& json){
+
+    }
+};
+
+
 
 TEST_CASE("Traits testing") {
 
@@ -270,8 +283,6 @@ TEST_CASE("Traits testing") {
 
         Engine::Unload();
     }
-
-    
 
 }
 
@@ -404,7 +415,7 @@ TEST_CASE("Serialization/Deserialization") {
         json serializationData = Engine::SerializeCurrentJSON();
 
 
-
+        std::cout << serializationData.dump() << std::endl;
 
 
         Engine::Unload();
@@ -454,5 +465,18 @@ TEST_CASE("Serialization/Deserialization") {
         Engine::Unload(); 
     }
 
+    SECTION("Editor title testing"){
+
+        Engine::Initialize();
+
+        Engine::CreateNewGameObject<H>();
+
+        json serializationData = Engine::SerializeCurrentJSON();
+
+        std::cout << serializationData.dump() << std::endl;
+
+        Engine::Unload();
+
+    }
 }
 

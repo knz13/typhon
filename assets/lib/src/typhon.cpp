@@ -170,13 +170,10 @@ ClassesArray getInstantiableClasses()
         std::vector<char> temp(name.size() + 1);
         memcpy(temp.data(),name.c_str(),name.size() + 1);
         names.push_back(temp);
-        std::cout << "sending names: " << (*(names.end() - 1)).data() << std::endl;
-        std::cout << "address = " << (void*)((*(names.end() - 1)).data()) << std::endl;
         ids.push_back(id);
         names_char.push_back((*(names.end() - 1)).data());
     }
 
-    std::cout << "names size = " << names.size() << std::endl;
 
     ClassesArray arr;
 

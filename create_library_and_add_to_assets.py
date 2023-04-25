@@ -35,8 +35,8 @@ if not os.path.exists("src/vendor/shaderc"):
 
 if not os.path.exists("src/vendor/catch2"):
     os.system('git clone --recursive https://github.com/catchorg/Catch2 src/vendor/catch2')
-if not os.path.exists("src/vendor/entt"):
-    os.system('git clone --recursive https://github.com/skypjack/entt src/vendor/entt')
+if not os.path.exists("src/vendor/ecspp"):
+    os.system('git clone --recursive https://github.com/knz13/ecspp src/vendor/ecspp')
 if not os.path.exists("src/vendor/yael"):
     os.system('git clone --recursive https://github.com/knz13/YAEL src/vendor/yael')
 if not os.path.exists("src/vendor/random"):

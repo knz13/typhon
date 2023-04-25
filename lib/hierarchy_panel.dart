@@ -11,6 +11,7 @@ import 'package:ffi/ffi.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:typhon/engine_sub_window.dart';
+import 'package:typhon/inspector_panel.dart';
 import 'package:typhon/tree_viewer.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
@@ -221,7 +222,9 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
                   Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectSerializationByID(idChosen);
                   if(val != nullptr){
                     var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
-                    print(jsonData);
+                    InspectorPanelWindow.dataToShow.value = (jsonData[e.first]["traits"] as Map).keys.map((key)  {
+                      return GeneralText(jsonData[e.first]["traits"][key].toString());
+                    }).toList();
                   }
 
                 },

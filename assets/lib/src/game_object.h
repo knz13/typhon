@@ -5,6 +5,7 @@
 #include "ecs_registry.h"
 
 DEFINE_HAS_SIGNATURE(has_set_defaults_function,T::SetDefaults,void (T::*)());
+DEFINE_HAS_SIGNATURE(has_title_on_editor_function,T::TitleOnEditor,std::string (*)());
 
 
 template<typename MainClass,typename... DerivedClasses>
@@ -48,6 +49,10 @@ public:
     void Deserialize(const json& jsonData) {
         GameObjectDeserialize(jsonData);
     }
+
+
+    virtual std::string GetClassNameOnEditor() {return "";};
+   
 
 protected:
 
@@ -157,6 +162,12 @@ private:
             if constexpr (has_serialize<A>::value) {
                 std::cout << "executing serialize for class " << HelperFunctions::GetClassNameString<A>() << std::endl;
                 json& jsonInner = jsonData[HelperFunctions::GetClassNameString<MainClass>()]["traits"][HelperFunctions::GetClassNameString<A>()];
+                if constexpr (has_title_on_editor_function<A>::value) {
+                    jsonData[HelperFunctions::GetClassNameString<MainClass>()]["editor_titles"][HelperFunctions::GetClassNameString<A>()] = MainClass::TitleOnEditor();
+                }
+                else {
+                    jsonData[HelperFunctions::GetClassNameString<MainClass>()]["editor_titles"][HelperFunctions::GetClassNameString<A>()] = HelperFunctions::GetClassNameString<A>();
+                }
                 static_cast<A*>(static_cast<MainClass*>(this))->Serialize(jsonInner);
             }
             else if constexpr(hasInternalToJsonFunc){

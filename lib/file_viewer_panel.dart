@@ -208,6 +208,7 @@ Widget _buildBreadcrumbTrail() {
 }
 
   double leftWidthPercent = 0.3;
+  String hoveringPath = "";
 
   @override
   Widget build(BuildContext context) {
@@ -269,6 +270,20 @@ Widget _buildBreadcrumbTrail() {
                   child: GestureDetector(
                     onSecondaryTap: () {
                       showNativeContextMenu(context, MainEngineFrontend.mousePosition.dx, MainEngineFrontend.mousePosition.dy, [
+                        if(hoveringPath != "")
+                        ContextMenuOption(
+                          title: "Open",
+                          callback: () {
+                            launchUrl(Uri.parse("file:" + path.join(FileViewerPanel.currentDirectory.value.absolute.path,hoveringPath)));
+                          }
+                        ),
+                        ContextMenuOption(
+                          title: "Open Folder In Explorer",
+                          callback: () {
+                            launchUrl(Uri.parse("file:" + FileViewerPanel.currentDirectory.value.absolute.path));
+                          }
+                        ),
+                        ContextMenuSeparator(),
                         ContextMenuOption(
                           title: "Create",
                           subOptions: [
@@ -306,12 +321,7 @@ public:
                             )
                           ]
                         ),
-                        ContextMenuOption(
-                          title: "Open Folder In Explorer",
-                          callback: () {
-                            launchUrl(Uri.parse("file:" + FileViewerPanel.currentDirectory.value.absolute.path));
-                          }
-                        ),
+                        
                       ]);
                     },
                     child: ListView.separated(
@@ -335,7 +345,7 @@ public:
                                 
                                 _refreshFiles();
                                 _refreshWatchers(FileViewerPanel.currentDirectory.value);
-
+                          
                                 setState(() {
                                   tempFileData = null;
                                 });
@@ -345,24 +355,32 @@ public:
                                   tempFileData = null;
                                 });
                               },
-
+                          
                               autofocus: true,
                             ),
                           );
                         }
                         final entity = _files[index];
-                        return ListTile(
-                          leading: entity is File
-                              ? Icon(MdiIcons.file)
-                              : Icon(Icons.folder),
-                          title: GeneralText(path.basename(entity.path)),
-                          onTap: () async {
-                            if (entity is File) {
-                              
-                            } else if (entity is Directory) {
-                              await _navigateToDirectory(entity);
-                            }
+                        return MouseRegion(
+                          onEnter: (event) {
+                            hoveringPath = _files.elementAt(index).path;
                           },
+                          onExit: (event) {
+                            hoveringPath = "";
+                          },
+                          child: ListTile(
+                            leading: entity is File
+                                ? Icon(MdiIcons.file)
+                                : Icon(Icons.folder),
+                            title: GeneralText(path.basename(entity.path)),
+                            onTap: () async {
+                              if (entity is File) {
+                                
+                              } else if (entity is Directory) {
+                                await _navigateToDirectory(entity);
+                              }
+                            },
+                          ),
                         );
                       },
                     ),

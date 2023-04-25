@@ -6,6 +6,8 @@
 
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:menu_bar/menu_bar.dart';
 import 'package:typhon/engine.dart';
@@ -56,7 +58,43 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
 
   }
 
-  
+  Widget buildMainFrontend() {
+    return Scaffold(
+                body: MainEngineFrontend.isEditing ? EngineSubWindow(
+                  division: SubWindowDivision.left,
+                  mainChildProportion: 0.75,
+                  mainSubWindow: EngineSubWindow(
+                    mainChildProportion: 0.7,
+                    division: SubWindowDivision.top,
+                    mainSubWindow: EngineSubWindow(
+                      division: SubWindowDivision.right,
+                      mainChildProportion: 0.75,
+                      mainSubWindow: EngineSubWindow(
+                        tabs: [
+                          SceneViewerWindow()
+                        ]
+                      ),
+                      splitSubWindow: EngineSubWindow(
+                        tabs: [
+                          HierarchyPanelWindow()
+                        ],
+                      ),
+                    ),
+                    splitSubWindow: EngineSubWindow(
+                      tabs: [
+                        FileViewerPanelWindow(),
+                        ConsolePanelSubWindow()
+                      ],
+                    ),
+                  ),
+                  splitSubWindow: EngineSubWindow(
+                    tabs: [
+                      InspectorPanelWindow()
+                    ],
+                  ),
+                ) : SceneViewerWindow().child
+              );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +104,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
         onHover: (ev) {
           MainEngineFrontend.mousePosition = ev.position;
         },
-        child: MenuBar(
+        child: Platform.isWindows? MenuBar(
               barStyle: BarStyle(
                 backgroundColor: primaryBlack,
                 openMenuOnHover: true
@@ -113,42 +151,10 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                   ]
                 ),)
               ],
-              child: Scaffold(
-                body: MainEngineFrontend.isEditing ? EngineSubWindow(
-                  division: SubWindowDivision.left,
-                  mainChildProportion: 0.75,
-                  mainSubWindow: EngineSubWindow(
-                    mainChildProportion: 0.7,
-                    division: SubWindowDivision.top,
-                    mainSubWindow: EngineSubWindow(
-                      division: SubWindowDivision.right,
-                      mainChildProportion: 0.75,
-                      mainSubWindow: EngineSubWindow(
-                        tabs: [
-                          SceneViewerWindow()
-                        ]
-                      ),
-                      splitSubWindow: EngineSubWindow(
-                        tabs: [
-                          HierarchyPanelWindow()
-                        ],
-                      ),
-                    ),
-                    splitSubWindow: EngineSubWindow(
-                      tabs: [
-                        FileViewerPanelWindow(),
-                        ConsolePanelSubWindow()
-                      ],
-                    ),
-                  ),
-                  splitSubWindow: EngineSubWindow(
-                    tabs: [
-                      InspectorPanelWindow()
-                    ],
-                  ),
-                ) : SceneViewerWindow().child
-              ), 
+              child: buildMainFrontend()
             )
+            :
+            buildMainFrontend()
       ) ,
     );
   }

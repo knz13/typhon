@@ -59,7 +59,7 @@ SET(FETCHCONTENT_QUIET FALSE)
    # list(APPEND typhon_LIBRARIES monopp)
 
 
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/entt)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/ecspp)
     
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/yael)
     
@@ -70,7 +70,8 @@ SET(FETCHCONTENT_QUIET FALSE)
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/crunch)
         
     
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/src/)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/ecspp/include/)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/ecspp/vendor/entt/single_include/)
     
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/yael/include)

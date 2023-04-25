@@ -90,8 +90,8 @@ class ContextMenuOption {
   
 }
 
-class SeparatorMenuOption extends ContextMenuOption {
-  SeparatorMenuOption() : super(title: "",type: "Separator");
+class ContextMenuSeparator extends ContextMenuOption {
+  ContextMenuSeparator() : super(title: "",type: "Separator");
 }
 
 class GeneralButton extends StatelessWidget {

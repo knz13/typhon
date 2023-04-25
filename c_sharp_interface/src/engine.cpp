@@ -20,7 +20,6 @@ void Engine::Initialize()
     if(isInitialized){
         Engine::Unload();
     }
-    std::cout << "initializing engine in c++" << std::endl;
 
     ShaderCompiler::getInstance();    
     
@@ -28,17 +27,14 @@ void Engine::Initialize()
         func();
     }
 
-    std::cout << "trying texture packer" << std::endl;
     textureAtlas = CreateTextureAtlasFromImages();
     
-    std::cout << "finished texture packer!" << std::endl;
     Engine::isInitialized = true;
 }
 
 void Engine::Unload()
 {   
 
-    std::cout << "calling unload!" << std::endl;
     Clear();
 
     GameObject::instantiableClasses.clear();
@@ -59,7 +55,7 @@ std::vector<std::string> Engine::GetImagePathsFromLibrary()
         }
     }
     catch(exception& e) {
-        std::cout << "Error found while loading image paths from library:\n" << e.what() << std::endl;
+        //std::cout << "Error found while loading image paths from library:\n" << e.what() << std::endl;
     }
     return inputs;
 }
@@ -77,7 +73,6 @@ std::string Engine::GetPathToAtlas()
 
     fs::path atlasPath = fs::path(HelperStatics::projectPath) / fs::path("build") / fs::path("texture_atlas");
     std::filesystem::create_directories(atlasPath);
-    std::cout << "atlas path = " << atlasPath.string() << std::endl;
 
     return (atlasPath).string() + "/";
 }
@@ -187,10 +182,7 @@ std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFrom
     if(inputs.size() == 0){
         return {};
     }
-    std::cout << "inputs = " << std::endl;
-    for(const auto& val : inputs) {
-        std::cout << val << std::endl;
-    }
+    
     Crunch::PackFromFolder(inputs,GetPathToAtlas(),"atlas",Crunch::CrunchOptions::optVerbose | Crunch::CrunchOptions::optJson);
     
     std::ifstream stream(GetPathToAtlas() + "atlas.json");

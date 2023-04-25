@@ -9,7 +9,6 @@ public:
 
     static ShaderCompiler& getInstance() {
         if(!ShaderCompiler::instance){
-            std::cout << "initializing shader compiler!" << std::endl;
             ShaderCompiler::instance = std::shared_ptr<ShaderCompiler>(new ShaderCompiler());
         }  
         return *ShaderCompiler::instance.get();

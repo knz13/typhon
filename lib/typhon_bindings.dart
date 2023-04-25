@@ -177,15 +177,20 @@ class TyphonCPPInterface {
 
   static TyphonBindings? _bindings;
 
-  static Future<TyphonBindings> initializeLibraryAndGetBindings(String pathToLibrary) async {
+  static Future<TyphonBindings?> initializeLibraryAndGetBindings(String pathToLibrary) async {
+    try {
     if(_lib != null){
         detachLibrary();
     }
+    
     _lib ??= DynamicLibrary.open(pathToLibrary);
     
     _bindings = TyphonBindings(_lib!);
 
     return _bindings!;
+    } catch(e) {
+      return null;
+    }
   }
 
 

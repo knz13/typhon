@@ -570,10 +570,6 @@ ClassesArray getInstantiableClasses()
 
         names.push_back(temp);
 
-        std::cout << "sending names: " << (*(names.end() - 1)).data() << std::endl;
-
-        std::cout << "address = " << (void*)((*(names.end() - 1)).data()) << std::endl;
-
         ids.push_back(id);
 
         names_char.push_back((*(names.end() - 1)).data());
@@ -581,8 +577,6 @@ ClassesArray getInstantiableClasses()
     }
 
 
-
-    std::cout << "names size = " << names.size() << std::endl;
 
 
 
@@ -962,7 +956,7 @@ extern "C" {
     
   }
 
-  Future<TyphonBindings> loadProjectLibrary() async {
+  Future<TyphonBindings?> loadProjectLibrary() async {
     return await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
       Platform.isMacOS ? "lib${projectFilteredName}.dylib" : Platform.isWindows? "Debug/${projectFilteredName}.dll" : "" //TODO!
     ));

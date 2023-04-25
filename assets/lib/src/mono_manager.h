@@ -12,7 +12,6 @@ public:
 
     static MonoManager& getInstance() {
         if(!MonoManager::instance){
-            std::cout << "initializing mono!" << std::endl;
             MonoManager::instance = std::shared_ptr<MonoManager>(new MonoManager());
         }  
         return *MonoManager::instance.get();

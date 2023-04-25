@@ -245,9 +245,9 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                         widget.tabs.removeAt(_controller.selectedIndex!);
                       });
                     }),
-                    SeparatorMenuOption(), 
+                    ContextMenuSeparator(), 
                     ...widget.tabs[_controller.selectedIndex!].menuItems,
-                    SeparatorMenuOption(),
+                    ContextMenuSeparator(),
                     ContextMenuOption(title: "Add Tab",subOptions: [
                       
                       ContextMenuOption(title: "Hierarchy",callback: () {
