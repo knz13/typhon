@@ -164,7 +164,7 @@ SET(FETCHCONTENT_QUIET FALSE)
 if(TYPHON_RUN_TESTS)
   
   add_executable(typhon_tests 
-    tests/object_test.cpp
+    tests/main_test.cpp
   )
 
   set_target_properties(typhon_tests PROPERTIES

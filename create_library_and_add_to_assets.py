@@ -35,8 +35,8 @@ if not os.path.exists("src/vendor/shaderc"):
 
 if not os.path.exists("src/vendor/catch2"):
     os.system('git clone --recursive https://github.com/catchorg/Catch2 src/vendor/catch2')
-if not os.path.exists("src/vendor/ecspp"):
-    os.system('git clone --recursive https://github.com/knz13/ecspp src/vendor/ecspp')
+if not os.path.exists("src/vendor/entt"):
+    os.system('git clone --recursive https://github.com/skypjack/entt src/vendor/entt')
 if not os.path.exists("src/vendor/yael"):
     os.system('git clone --recursive https://github.com/knz13/YAEL src/vendor/yael')
 if not os.path.exists("src/vendor/random"):
@@ -47,7 +47,13 @@ if not os.path.exists("src/vendor/crunch"):
     os.system('git clone --recursive https://github.com/johnfredcee/crunch src/vendor/crunch')
 if not os.path.exists("src/vendor/json"):
     os.system('git clone --recursive https://github.com/nlohmann/json src/vendor/json')
-
+""" if platform.system() == "Darwin":
+    if not os.path.exists("src/vendor/metal-cpp"):
+        os.system('git clone --recursive https://github.com/LeeTeng2001/metal-cpp-cmake src/vendor/metal-cpp')
+        for file in os.listdir('src/vendor/metal-cpp'):
+            if file != "metal-cmake":
+                os.system(f'rm -rf src/vendor/metal-cpp/{file}')
+ """
 
 os.system(' '.join(['cmake', '-DTYPHON_RUN_TESTS=ON',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
 
@@ -171,6 +177,7 @@ os.system(f'dart run ffigen --config ffigen.yaml')
 
 os.system('echo "Done updating dart bindings file!"')
 
+
 os.system('echo "Building tests...')
 
 
@@ -183,7 +190,7 @@ os.system('echo "Build finished!"')
 os.system('echo "Running tests"')
 
 if platform.system() == "Darwin":
-    subprocess.call(["open","typhon_tests"])
+    subprocess.call(["open","typhon_tests_main"])
 else:
-    subprocess.call(["Debug/typhon_tests.exe"])
+    subprocess.call(["Debug/typhon_tests_main.exe"])
     

@@ -1,6 +1,168 @@
+
 #include <iostream>
+#include <algorithm>
 #include "catch2/catch_test_macros.hpp"
 #include "../src/engine.h"
+#include "../src/object.h"
+#include <algorithm>
+
+
+TEST_CASE("Get Class Name testing") {
+    REQUIRE(strcmp(HelperFunctions::GetClassNameStringCompileTime<Engine>(),"Engine")==0);
+    REQUIRE(HelperFunctions::GetClassNameString<Component>() == "Component");
+    REQUIRE(HelperFunctions::GetClassNameString<Object>() == "Object");
+}
+
+TEST_CASE("Initial object testing") {
+    Object obj(ECSRegistry::CreateEntity());
+
+    REQUIRE(obj.Valid());
+
+    REQUIRE(!obj.HasParent());
+
+    ECSRegistry::Clear();
+}
+
+TEST_CASE("Object parenting") {
+    Object obj(ECSRegistry::CreateEntity());
+    Object objTwo(ECSRegistry::CreateEntity());
+
+
+    REQUIRE(!objTwo.HasParent());
+    REQUIRE(!obj.HasParent());
+    REQUIRE(obj.NumberOfChildren() == 0);
+    REQUIRE(objTwo.NumberOfChildren() == 0);
+
+    obj.AddChild(objTwo);
+
+    REQUIRE(objTwo.HasParent());
+    REQUIRE(!obj.HasParent());
+    REQUIRE(obj.IsMyChild(objTwo));
+    REQUIRE(objTwo.IsChildOf(obj));
+    REQUIRE(obj.NumberOfChildren() == 1);
+    REQUIRE(objTwo.NumberOfChildren() == 0);
+
+    objTwo.RemoveFromParent();
+
+    REQUIRE(!objTwo.HasParent());
+    REQUIRE(!obj.HasParent());
+    REQUIRE(!obj.IsMyChild(objTwo));
+    REQUIRE(!objTwo.IsChildOf(obj));
+    REQUIRE(obj.NumberOfChildren() == 0);
+
+    ECSRegistry::Clear();
+}
+
+
+class SomeComponent : public MakeComponent<SomeComponent> {
+public:
+
+    int someValue = -1;
+    int someOtherValue = 3;
+};
+
+TEST_CASE("Component names") {
+    Engine::Initialize();
+
+    Engine::Unload();
+}
+
+TEST_CASE("Components testing") {
+    Engine::Initialize();
+    Object obj(ECSRegistry::CreateEntity());
+
+
+    REQUIRE(!obj.HasAnyOf<SomeComponent>());
+    REQUIRE(!obj.HasAllOf<SomeComponent>());
+    REQUIRE(obj.GetComponentsNames().size() == 0);
+
+    obj.AddComponent<SomeComponent>();
+
+    REQUIRE(obj.HasAnyOf<SomeComponent>());
+    REQUIRE(obj.HasAllOf<SomeComponent>());
+
+    Component* comp = obj.GetComponent<SomeComponent>();
+
+    REQUIRE(comp != nullptr);
+    static_cast<SomeComponent*>(comp)->someValue = -1;
+
+    REQUIRE(obj.GetComponent<SomeComponent>()->someValue == -1);
+
+    ECSRegistry::Clear();
+    Engine::Unload();
+
+}
+
+
+TEST_CASE("For multiple objects") {
+
+    std::vector<Object> objects;
+    Object parent;
+
+    REQUIRE(!parent.Valid());
+
+    parent = Object(ECSRegistry::CreateEntity());
+
+    REQUIRE(parent.Valid());
+
+    for(int i = 0;i< 100; i++){
+        Object temp = Object(ECSRegistry::CreateEntity());
+        REQUIRE(temp.AddComponent<SomeComponent>());
+        temp.GetComponent<SomeComponent>()->someValue = i;
+        objects.push_back(temp);
+    }
+
+    REQUIRE(ECSRegistry::Get().alive() == 101);
+
+    for(auto& obj : objects) {
+        obj.SetParent(parent);
+    }
+
+    auto& someObj = *Random::get(objects);
+    REQUIRE(someObj.IsChildOf(parent));
+
+
+    REQUIRE(parent.NumberOfChildren() == 100);
+
+    parent.RemoveChildren();    
+
+    REQUIRE(parent.NumberOfChildren() == 0);
+
+    auto& obj = *Random::get(objects);
+
+    REQUIRE(obj.HasComponent<SomeComponent>());
+
+    REQUIRE(obj.GetComponent<SomeComponent>()->someValue == std::distance(objects.begin(),std::find(objects.begin(),objects.end(),obj)));
+
+    REQUIRE(!obj.IsChildOf(parent));
+
+
+    ECSRegistry::Clear();
+
+}
+
+class NamedComponent : public MakeComponent<NamedComponent> {
+
+};
+
+TEST_CASE("Components from names") {
+
+    Engine::Initialize();
+
+
+    Object obj = Object(ECSRegistry::CreateEntity());
+
+    auto resolved = entt::resolve(entt::hashed_string("NamedComponent"));
+    REQUIRE(resolved.operator bool());
+    auto func = entt::resolve(entt::hashed_string("NamedComponent")).func(entt::hashed_string("AddComponent"));
+    REQUIRE(func);
+    func.invoke({},obj.ID());
+
+    REQUIRE(obj.HasComponent<NamedComponent>());
+
+    Engine::Unload();
+
+}
 
 
 template<typename... Derived>

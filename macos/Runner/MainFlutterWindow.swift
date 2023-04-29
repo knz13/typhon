@@ -1,6 +1,6 @@
 import Cocoa
 import FlutterMacOS
-
+import AppKit
 
 func convertToDictionary(text: String) -> [String: Any]? {
     if let data = text.data(using: .utf8) {
@@ -17,7 +17,7 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
     
     static var instance: ContextMenuPlugin?
     var _callbackMap = [Int: (() -> Void)]()
-        
+
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "context_menu", binaryMessenger: registrar.messenger)
@@ -27,6 +27,8 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
     
     public static func registerOnStart(with controller: FlutterViewController){
         let channel = FlutterMethodChannel(name: "context_menu",binaryMessenger: controller.engine.binaryMessenger)
+            
+        
         
         instance = ContextMenuPlugin()
         
@@ -109,6 +111,17 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
     }
 }
 
+class CustomView: NSView {
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+
+        // Draw the custom view using AppKit APIs
+        let path = NSBezierPath(roundedRect: dirtyRect, xRadius: 10, yRadius: 10)
+        NSColor.blue.setFill()
+        path.fill()
+    }
+}
 
 
 class MainFlutterWindow: NSWindow {
@@ -128,5 +141,20 @@ class MainFlutterWindow: NSWindow {
         RegisterGeneratedPlugins(registry: MainFlutterWindow.flutterViewController!)
         
         super.awakeFromNib()
+    }
+    
+    func printViewController(view: NSViewController){
+        print(view.description)
+        view.children.forEach { controller in
+            printViewController(view: controller)
+        }
+    }
+    
+    
+    override func mouseDown(with event: NSEvent) {
+        
+        //printViewController(view: MainFlutterWindow.flutterViewController!.engine.)
+        
+        super.mouseDown(with: event)
     }
 }

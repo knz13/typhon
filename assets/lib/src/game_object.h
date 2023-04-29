@@ -3,9 +3,9 @@
 #include "reflection_checks.h"
 #include "generic_reflection.h"
 #include "ecs_registry.h"
+#include "object.h"
 
 DEFINE_HAS_SIGNATURE(has_set_defaults_function,T::SetDefaults,void (T::*)());
-DEFINE_HAS_SIGNATURE(has_title_on_editor_function,T::TitleOnEditor,std::string (*)());
 
 
 template<typename MainClass,typename... DerivedClasses>
@@ -79,11 +79,6 @@ private:
     friend class DerivedFromGameObject;
     friend class Engine;
 };
-
-DEFINE_HAS_SIGNATURE(has_on_create,T::Create,void (T::*) ());
-DEFINE_HAS_SIGNATURE(has_on_destroy,T::Destroy,void (T::*) ());
-DEFINE_HAS_SIGNATURE(has_serialize,T::Serialize,void (T::*) (json&));
-DEFINE_HAS_SIGNATURE(has_deserialize,T::Deserialize,void (T::*) (const json&));
 
 
 
