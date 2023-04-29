@@ -9,13 +9,13 @@ bool ShaderCompiler::compileShader()
 
 
 ShaderCompiler::ShaderCompiler() {
-    compiler = shaderc_compiler_initialize();
+    //compiler = shaderc_compiler_initialize();
 
 }
 
 
 ShaderCompiler::~ShaderCompiler() {
-    if(compiler != nullptr){
+    /* if(compiler != nullptr){
         shaderc_compiler_release(compiler);
-    }
+    } */
 }

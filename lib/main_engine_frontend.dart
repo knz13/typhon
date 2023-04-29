@@ -60,7 +60,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
 
   Widget buildMainFrontend() {
     return Scaffold(
-                body: MainEngineFrontend.isEditing ? EngineSubWindow(
+                body:EngineSubWindow(
                   division: SubWindowDivision.left,
                   mainChildProportion: 0.75,
                   mainSubWindow: EngineSubWindow(
@@ -92,7 +92,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                       InspectorPanelWindow()
                     ],
                   ),
-                ) : SceneViewerWindow().child
+                )
               );
   }
 

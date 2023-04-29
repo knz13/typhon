@@ -1,14 +1,24 @@
 #pragma once
+#ifndef TYPHON_ON_EDITOR
+#define TYPHON_NOT_ON_EDITOR 1
+#endif
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
-#include "vendor/ecspp/include/ecspp.h"
+#include "vendor/entt/single_include/entt/entt.hpp"
 #include "vendor/random/include/effolkronium/random.hpp"
 #include "vendor/glm/glm/glm.hpp"
 #include "vendor/yael/include/yael.h"
 #include "vendor/json/single_include/nlohmann/json.hpp"
 #include <bitset>
 #include <functional>
+
+#ifdef __APPLE__
+#include "vendor/metal-cpp/metal-cpp-extensions/AppKit/AppKit.hpp"
+#include "vendor/metal-cpp/metal-cpp/Foundation/Foundation.hpp"
+#include "vendor/metal-cpp/metal-cpp/Metal/Metal.hpp"
+
+#endif
 
 
 #ifndef M_PI

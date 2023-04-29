@@ -62,11 +62,12 @@ class EngineRenderingDataFromAtlas {
 
 
 
-class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDetector {
+class Engine {
 
   static Random rng = Random();
   static Engine instance = Engine();
   
+  GlobalKey macOSRenderingKey = GlobalKey();
   ValueNotifier onRecompileNotifier = ValueNotifier(0);
   String projectPath = "";
   String projectName = "";
@@ -239,6 +240,9 @@ public:
 #include "bindings_generated.h"
 #include "includes/mono_manager.h"
 #include "includes/shader_compiler.h"
+#ifdef __APPLE__
+#include "includes/macos/macos_engine.h
+#endif
 //__BEGIN__CPP__IMPL__
 //__INCLUDE__CREATED__CLASSES__
 
@@ -616,6 +620,20 @@ bool isEngineInitialized() {
 
 
 
+#ifdef __APPLE__
+
+void passNSViewPointer(void* view) {
+
+    std::cout << "passing pointer!" << std::endl;
+
+    MacOSEngine::ReceiveNSViewPointer(view);
+
+}
+
+#endif
+
+
+
 //__END__CPP__IMPL__
 """);
 
@@ -840,6 +858,12 @@ extern "C" {
 #endif
 
   //__BEGIN__CPP__EXPORTS__
+    #ifdef __APPLE__
+
+    FFI_PLUGIN_EXPORT void passNSViewPointer(void* view);
+
+    #endif
+
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
 
     FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
@@ -976,7 +1000,7 @@ extern "C" {
 
   }
 
-  @override
+  /* @override
   void onMouseMove(PointerHoverInfo info) {
     // TODO: implement onMouseMove
 
@@ -999,7 +1023,7 @@ extern "C" {
       }
 
     return super.onKeyEvent(event, keysPressed);
-  } 
+  }  */
 
   Future<void> waitingForInitialization() async {
     while(true) {
@@ -1025,7 +1049,7 @@ extern "C" {
     ));
   }
 
-  @override
+  /* @override
   FutureOr<void> onLoad() async {
     
     return super.onLoad();
@@ -1066,6 +1090,6 @@ extern "C" {
       TyphonCPPInterface.getCppFunctions().onUpdateCall(dt);
     }
 
-  }
+  } */
 
 }

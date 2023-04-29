@@ -4,6 +4,9 @@
 #include "mono_manager.h"
 #include "shader_compiler.h"
 #include "engine.h"
+#ifdef __APPLE__
+#include "macos/macos_engine.h"
+#endif
 //__BEGIN__CPP__IMPL__
 //__INCLUDE__CREATED__CLASSES__
 
@@ -192,5 +195,12 @@ void createObjectFromClassID(int64_t classID)
 bool isEngineInitialized() {
     return Engine::HasInitialized();
 }
+
+#ifdef __APPLE__
+void passNSViewPointer(void* view) {
+    std::cout << "passing pointer!" << std::endl;
+    MacOSEngine::ReceiveNSViewPointer(view);
+}
+#endif
 
 //__END__CPP__IMPL__

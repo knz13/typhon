@@ -6,6 +6,7 @@ import os
 import subprocess
 from glob import glob
 import shutil
+import re
 from subprocess import check_output
 
 parser = argparse.ArgumentParser("create library")
@@ -28,11 +29,11 @@ if not os.path.exists("src/vendor"):
 
 
 #downloading dependencies
-if not os.path.exists("src/vendor/shaderc"):
+""" if not os.path.exists("src/vendor/shaderc"):
     os.system('echo downloading shaderc library...')
     os.system("git clone https://github.com/google/shaderc src/vendor/shaderc")
     os.system(("python " if platform.system() != "Darwin" else "") + "src/vendor/shaderc/utils/git-sync-deps")
-
+ """
 if not os.path.exists("src/vendor/catch2"):
     os.system('git clone --recursive https://github.com/catchorg/Catch2 src/vendor/catch2')
 if not os.path.exists("src/vendor/entt"):
@@ -45,15 +46,83 @@ if not os.path.exists("src/vendor/glm"):
     os.system('git clone --recursive https://github.com/g-truc/glm src/vendor/glm')
 if not os.path.exists("src/vendor/crunch"):
     os.system('git clone --recursive https://github.com/johnfredcee/crunch src/vendor/crunch')
+
+    for file in os.listdir("src/vendor/crunch/crunch"):
+        with open(f'src/vendor/crunch/crunch/{file}','r', encoding='iso-8859-1') as f:
+            file_data = f.read()
+        
+        if file != "packer.hpp":
+            pattern = r'(?<![A-Za-z<>])Point(?![A-Za-z<>])'
+            file_data = re.sub(pattern, 'Crunch::Point', file_data)
+        else:
+            file_data = file_data.replace("""struct Point
+{
+    int x;
+    int y;
+    int dupID;
+    bool rot;
+};""","""
+namespace Crunch {
+
+    struct Point
+    {
+        int x;
+        int y;
+        int dupID;
+        bool rot;
+    };
+
+}
+""")        
+            file_data = file_data.replace("vector<Point> points;","vector<Crunch::Point> points;")
+
+        with open(f'src/vendor/crunch/crunch/{file}','w') as f:
+            f.write(file_data)
+        
+
 if not os.path.exists("src/vendor/json"):
     os.system('git clone --recursive https://github.com/nlohmann/json src/vendor/json')
-""" if platform.system() == "Darwin":
+if platform.system() == "Darwin":
     if not os.path.exists("src/vendor/metal-cpp"):
         os.system('git clone --recursive https://github.com/LeeTeng2001/metal-cpp-cmake src/vendor/metal-cpp')
         for file in os.listdir('src/vendor/metal-cpp'):
             if file != "metal-cmake":
                 os.system(f'rm -rf src/vendor/metal-cpp/{file}')
- """
+
+        shutil.copytree("src/vendor/metal-cpp/metal-cmake",'src/vendor/metal-cpp/',dirs_exist_ok=True)
+        os.system("rm -rf src/vendor/metal-cpp/metal-cmake")
+
+        with open("src/vendor/metal-cpp/CMakeLists.txt",'w') as f:
+            f.write("""# Library definition
+add_library(METAL_CPP
+        ${CMAKE_CURRENT_SOURCE_DIR}/defination.cpp
+        )
+
+set_target_properties(METAL_CPP PROPERTIES
+    CXX_STANDARD 20
+)
+
+# setting c standard
+
+set_target_properties(METAL_CPP PROPERTIES
+    C_STANDARD 20
+)
+
+# Metal cpp headers
+target_include_directories(METAL_CPP PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp-extensions"
+        )
+
+# Metal cpp library (linker)
+target_link_libraries(METAL_CPP
+        "-framework Metal"
+        "-framework MetalKit"
+        "-framework AppKit"
+        "-framework Foundation"
+        "-framework QuartzCore"
+        )
+""")
 
 os.system(' '.join(['cmake', '-DTYPHON_RUN_TESTS=ON',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
 
@@ -66,15 +135,21 @@ for root, dirs, files in os.walk('src'):
     if os.path.basename(root).startswith("."):
         continue
     for file in files:
-        if file in dir or os.path.relpath(os.path.abspath(os.path.join(root,file)),os.path.abspath("src/vendor/")).count("..") == 0:
-            if os.path.basename(root).startswith("."):
-                continue
-            if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")))):
-                os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src"))),exist_ok=True)
-            if root not in roots:
-                roots.append(root)
-            shutil.copyfile(os.path.join(root,file),os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")),file))
+        if os.path.basename(root).startswith("."):
+            continue
+        if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")))):
+            os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src"))),exist_ok=True)
+        if root not in roots:
+            roots.append(root)
+            
     #print(f"Done dir {root}")
+
+os.chdir(current_dir)
+
+os.system("rm -rf assets/lib/src")
+os.chdir("c_sharp_interface")
+shutil.copytree("src",os.path.join(current_dir,"assets","lib",'src'))
+
 
 paths_to_add_to_pubspec = []
 for root in roots:
@@ -190,7 +265,7 @@ os.system('echo "Build finished!"')
 os.system('echo "Running tests"')
 
 if platform.system() == "Darwin":
-    subprocess.call(["open","typhon_tests_main"])
+    subprocess.call(["open","typhon_tests"])
 else:
-    subprocess.call(["Debug/typhon_tests_main.exe"])
+    subprocess.call(["Debug/typhon_tests.exe"])
     

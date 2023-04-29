@@ -59,7 +59,7 @@ SET(FETCHCONTENT_QUIET FALSE)
    # list(APPEND typhon_LIBRARIES monopp)
 
 
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/ecspp)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/entt)
     
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/yael)
     
@@ -69,9 +69,17 @@ SET(FETCHCONTENT_QUIET FALSE)
     
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/crunch)
         
+    if(APPLE)
+      add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/metal-cpp)
     
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/ecspp/include/)
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/ecspp/vendor/entt/single_include/)
+      list(APPEND typhon_LIBRARIES METAL_CPP)
+
+      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/metal-cpp/metal-cpp/)
+
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/macos/macos_engine.cpp)
+    endif()
+    
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/single_include/)
     
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/yael/include)
@@ -112,22 +120,22 @@ SET(FETCHCONTENT_QUIET FALSE)
     )
 
 
-    set(SHADERC_SKIP_TESTS ON)
-    set(SHADERC_SKIP_EXAMPLES ON)
+    #set(SHADERC_SKIP_TESTS ON)
+    #set(SHADERC_SKIP_EXAMPLES ON)
     
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/shaderc)
+    #add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/shaderc)
 
-    target_link_libraries(typhon PUBLIC shaderc)
+    #target_link_libraries(typhon PUBLIC shaderc)
     
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/src)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/src)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/glslang)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/effcee)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/re2)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-headers/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-tools/include)
+    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/include)
+    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/src)
+    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/include)
+    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/src)
+    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/glslang)
+    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/effcee)
+    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/re2)
+    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-headers/include)
+    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-tools/include)
 
     # setting c++ standard
     set_target_properties(typhon PROPERTIES

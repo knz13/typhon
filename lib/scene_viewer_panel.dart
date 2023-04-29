@@ -4,11 +4,15 @@
 
 
 
+import 'dart:ffi';
+import 'dart:io';
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/general_widgets.dart';
+import 'package:typhon/typhon_bindings.dart';
 
 import 'engine.dart';
 
@@ -114,7 +118,6 @@ class SceneViewerContents extends StatefulWidget {
 }
 
 class _SceneViewerContentsState extends State<SceneViewerContents> {
-  late GameWidget gameWidget;
 
   @override
   void initState() {
@@ -122,8 +125,16 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
     super.initState();
 
     SceneViewerWindow.exists = true;
-
-    gameWidget = GameWidget(game: Engine.instance);
+    (() async {
+      if(TyphonCPPInterface.checkIfLibraryLoaded()){
+        if(Platform.isMacOS){
+          TyphonCPPInterface.getCppFunctions().passNSViewPointer(await getWidgetView(Engine.instance.macOSRenderingKey.hashCode));
+        }
+        else {
+          //TODO
+        }
+      }
+    })();
   }
 
   @override
@@ -131,10 +142,23 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
     // TODO: implement dispose
     super.dispose();
 
+    if(TyphonCPPInterface.checkIfLibraryLoaded()){
+      if(Platform.isMacOS){
+        TyphonCPPInterface.getCppFunctions().passNSViewPointer(nullptr);
+      }
+      else {
+        //TODO:
+      }
+    }
+
     SceneViewerWindow.exists = false;
   }
 
   Widget build(BuildContext context) {
-    return gameWidget;
+    return Container(
+      key: Engine.instance.macOSRenderingKey,
+    );
   }
+
+
 }

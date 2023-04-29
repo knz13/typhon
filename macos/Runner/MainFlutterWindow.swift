@@ -111,18 +111,37 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
     }
 }
 
-class CustomView: NSView {
+public class GetWidgetViewPlugin: NSObject, FlutterPlugin {
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let channel = FlutterMethodChannel(name: "getWidgetViewChannel", binaryMessenger: registrar.messenger)
+        let instance = GetWidgetViewPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
+        print("registered plugin!")
+    }
+    
+   
 
-    override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if call.method == "getWidgetView" {
+            let args = call.arguments as! Dictionary<String, Any>
+            let widgetId = args["widgetId"] as! Int
+            let widgetView = getWidgetView(widgetId)
+            if let actualWidgetView = widgetView{
+                result(UInt64(bitPattern:Int64(Int(bitPattern: Unmanaged.passRetained(actualWidgetView).toOpaque()))))
+            }
+            else {
+                result(UInt64(0))
+            }
+            
+        } else {
+            result(FlutterMethodNotImplemented)
+        }
+    }
 
-        // Draw the custom view using AppKit APIs
-        let path = NSBezierPath(roundedRect: dirtyRect, xRadius: 10, yRadius: 10)
-        NSColor.blue.setFill()
-        path.fill()
+    func getWidgetView(_ widgetId: Int) -> NSView? {
+        return MainFlutterWindow.instance!.contentView?.viewWithTag(widgetId)
     }
 }
-
 
 class MainFlutterWindow: NSWindow {
     static var instance: MainFlutterWindow?
@@ -137,24 +156,12 @@ class MainFlutterWindow: NSWindow {
         self.setFrame(windowFrame, display: true)
 
         ContextMenuPlugin.registerOnStart(with: MainFlutterWindow.flutterViewController!)
-            
+        
+        
         RegisterGeneratedPlugins(registry: MainFlutterWindow.flutterViewController!)
         
         super.awakeFromNib()
     }
     
-    func printViewController(view: NSViewController){
-        print(view.description)
-        view.children.forEach { controller in
-            printViewController(view: controller)
-        }
-    }
-    
-    
-    override func mouseDown(with event: NSEvent) {
-        
-        //printViewController(view: MainFlutterWindow.flutterViewController!.engine.)
-        
-        super.mouseDown(with: event)
-    }
+   
 }
