@@ -17,7 +17,6 @@
 #include "vendor/metal-cpp/metal-cpp-extensions/AppKit/AppKit.hpp"
 #include "vendor/metal-cpp/metal-cpp/Foundation/Foundation.hpp"
 #include "vendor/metal-cpp/metal-cpp/Metal/Metal.hpp"
-
 #endif
 
 

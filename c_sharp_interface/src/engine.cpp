@@ -35,12 +35,18 @@ void Engine::Initialize()
 void Engine::Unload()
 {   
 
+    #ifdef __APPLE__
+    MacOSEngine::ReceiveNSViewPointer(nullptr);
+    #endif
+
     Clear();
 
     GameObject::instantiableClasses.clear();
     GameObject::instantiableClassesIDs.clear();
     GameObject::instantiableClassesNames.clear();
     Engine::isInitialized = false;
+
+    std::cout << "Unloaded Engine!" << std::endl;
 }
 
 std::vector<std::string> Engine::GetImagePathsFromLibrary()

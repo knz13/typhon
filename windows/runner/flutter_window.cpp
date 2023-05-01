@@ -101,6 +101,8 @@ bool FlutterWindow::OnCreate() {
     channel = std::unique_ptr<flutter::MethodChannel<>>(new flutter::MethodChannel(flutter_controller_->engine()->messenger(), "context_menu",
       &flutter::StandardMethodCodec::GetInstance()));
   }
+
+  
  
   channel.get()->SetMethodCallHandler(
       [=](const flutter::MethodCall<>& call,

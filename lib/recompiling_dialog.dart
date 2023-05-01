@@ -82,10 +82,8 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
     widget.process.exitCode.then((value) {
       if(value != 0){
         String value = "";
-        for(int i in List.generate(currentMessage.length > 40 ? 40 : currentMessage.length, (index) => currentMessage.length - index - 1)){
-          if(currentMessage.elementAt(i).message.contains("error")){
+        for(int i in List.generate(currentMessage.length > 30 ? 30 : currentMessage.length, (index) => currentMessage.length - index - 1)){
             value += currentMessage.elementAt(i).message;
-          }
         }
         if(value != ""){
           ConsolePanel.show(value,level: ConsolePanelLevel.error);

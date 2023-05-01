@@ -295,7 +295,7 @@ Widget _buildBreadcrumbTrail() {
                                 tempFileData = FileViewerFileToCreate(
                                   fileData: (str) => """#pragma once
 #include <iostream>
-#include "../includes/engine.h"
+#include "engine.h"
 
 class ${str} : public DerivedFromGameObject<${str}
   //Here you can add the class traits you wish to use

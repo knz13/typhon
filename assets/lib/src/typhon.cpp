@@ -1,13 +1,13 @@
+#include "typhon.h"
+//__BEGIN__CPP__IMPL__
 #include <iostream>
 #include <stdint.h>
-#include "typhon.h"
 #include "mono_manager.h"
 #include "shader_compiler.h"
 #include "engine.h"
 #ifdef __APPLE__
 #include "macos/macos_engine.h"
 #endif
-//__BEGIN__CPP__IMPL__
 //__INCLUDE__CREATED__CLASSES__
 
 bool initializeCppLibrary() {

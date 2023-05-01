@@ -2,11 +2,11 @@
 #include "../general.h"
 
 
-
-
 class MacOSEngine {
 public:
-    static void Unload(){}
+    static void Unload(){
+        std::cout << "Unloading macos engine!" << std::endl;
+    }
     static void Initialize() {
         MTL::Device* device = MTL::CreateSystemDefaultDevice();
         if(!device){
@@ -14,6 +14,8 @@ public:
         }
         
         std::cout << "continuing metal initialization" << std::endl;
+
+        device->release(); 
     };
 
     static void ReceiveNSViewPointer(void* viewPtr) {

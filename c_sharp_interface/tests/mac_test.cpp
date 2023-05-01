@@ -5,4 +5,6 @@
 #include "../src/object.h"
 #include <algorithm>
 
-TEST_CASE()
+TEST_CASE("Testing loading and unloading the library") {
+    
+}

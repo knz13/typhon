@@ -111,36 +111,82 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
     }
 }
 
-public class GetWidgetViewPlugin: NSObject, FlutterPlugin {
+public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
+
+    var createdView: NSView?
+
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "getWidgetViewChannel", binaryMessenger: registrar.messenger)
-        let instance = GetWidgetViewPlugin()
+        let channel = FlutterMethodChannel(name: "nativeWindowInterfaceChannel", binaryMessenger: registrar.messenger)
+        let instance = NativeWindowInterfacePlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
-        print("registered plugin!")
+        
     }
     
+    public static func registerOnStart(with controller: FlutterViewController){
+        let channel = FlutterMethodChannel(name: "nativeWindowInterfaceChannel",binaryMessenger: controller.engine.binaryMessenger)
+            
+        let instance = NativeWindowInterfacePlugin()
+        
+        channel.setMethodCallHandler(instance.handle)
+        print("registered plugin!")
+    }
    
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        if call.method == "getWidgetView" {
-            let args = call.arguments as! Dictionary<String, Any>
-            let widgetId = args["widgetId"] as! Int
+        if call.method == "createRenderableView" {
+            let args = convertToDictionary(text: call.arguments as? String ?? "")
+            let x = args?["x"] as? Double ?? 0.0
+            let y = args?["y"] as? Double ?? 0.0
+            
+            let width = args?["width"] as? Double ?? 0
+            let height = args?["height"] as? Double ?? 0
+            
+            if let view = createdView {
+                print("called create for NSView before deleting current NSView")
+                view.removeFromSuperview()
+            }
+            createdView = NSView()
+            let frame = NSRect(x:x,y:y,width:width,height:height)
+            createdView!.frame = frame
+            createdView!.wantsLayer = true
+            
+            MainFlutterWindow.flutterViewController!.view.addSubview(createdView!, positioned: .above, relativeTo: nil)
+            MainFlutterWindow.instance?.contentViewController!.view.setNeedsDisplay(createdView!.frame)
+            
+            result(UInt64(bitPattern:Int64(Int(bitPattern: Unmanaged.passRetained(createdView!).toOpaque()))))
+            /* 
+            let widgetId = args?["widgetId"] as? Int ?? -1
+            
             let widgetView = getWidgetView(widgetId)
             if let actualWidgetView = widgetView{
                 result(UInt64(bitPattern:Int64(Int(bitPattern: Unmanaged.passRetained(actualWidgetView).toOpaque()))))
             }
             else {
+                print("Found no view with tag")
+                print(widgetId)
                 result(UInt64(0))
-            }
+            } */
             
+        } else if call.method == "setFrameRenderableView" {
+            let args = convertToDictionary(text: call.arguments as? String ?? "")
+            let x = args?["x"] as? Double ?? 0
+            let y = args?["y"] as? Double ?? 0
+            let width = args?["width"] as? Double ?? 0
+            let height = args?["height"] as? Double ?? 0
+            
+            if let view = createdView {
+                view.frame = NSRect(x:x,y:y,width:width,height:height)
+            }
+        } else if call.method == "removeRenderableView" {
+            if let view = createdView {
+                view.removeFromSuperview()
+                createdView = nil
+            }
         } else {
             result(FlutterMethodNotImplemented)
         }
     }
 
-    func getWidgetView(_ widgetId: Int) -> NSView? {
-        return MainFlutterWindow.instance!.contentView?.viewWithTag(widgetId)
-    }
 }
 
 class MainFlutterWindow: NSWindow {
@@ -151,12 +197,13 @@ class MainFlutterWindow: NSWindow {
     override func awakeFromNib() {
         MainFlutterWindow.instance = self
         MainFlutterWindow.flutterViewController = FlutterViewController.init()
+        MainFlutterWindow.flutterViewController!.view.wantsLayer = true
         let windowFrame = self.frame
         self.contentViewController = MainFlutterWindow.flutterViewController!
         self.setFrame(windowFrame, display: true)
 
         ContextMenuPlugin.registerOnStart(with: MainFlutterWindow.flutterViewController!)
-        
+        NativeWindowInterfacePlugin.registerOnStart(with: MainFlutterWindow.flutterViewController!)
         
         RegisterGeneratedPlugins(registry: MainFlutterWindow.flutterViewController!)
         
