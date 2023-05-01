@@ -29,11 +29,14 @@ if not os.path.exists("src/vendor"):
 
 
 #downloading dependencies
-""" if not os.path.exists("src/vendor/shaderc"):
+if not os.path.exists("src/vendor/shaderc"):
     os.system('echo downloading shaderc library...')
     os.system("git clone https://github.com/google/shaderc src/vendor/shaderc")
     os.system(("python " if platform.system() != "Darwin" else "") + "src/vendor/shaderc/utils/git-sync-deps")
- """
+
+if not os.path.exists("src/vendor/spirv_cross"):
+    os.system('git clone --recursive https://github.com/KhronosGroup/SPIRV-Cross src/vendor/spirv_cross')
+
 if not os.path.exists("src/vendor/catch2"):
     os.system('git clone --recursive https://github.com/catchorg/Catch2 src/vendor/catch2')
 if not os.path.exists("src/vendor/entt"):

@@ -21,7 +21,6 @@ void Engine::Initialize()
         Engine::Unload();
     }
 
-    ShaderCompiler::getInstance();    
     
     for(auto& [key,func] : Reflection::InitializedStaticallyStorage::functionsFromDerivedClasses){
         func();

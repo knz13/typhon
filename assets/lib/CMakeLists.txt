@@ -113,6 +113,7 @@ SET(FETCHCONTENT_QUIET FALSE)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/ecs_registry.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object_traits.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/generic_reflection.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/rendering_engine.cpp)
     # creating target
 
 
@@ -121,23 +122,36 @@ SET(FETCHCONTENT_QUIET FALSE)
         ${typhon_SOURCE_FILES}
     )
 
+    #SPIRV-Cross setup
+    set(SPIRV_CROSS_ENABLE_TESTS OFF)
+    set(SPIRV_CROSS_CLI OFF)
 
-    #set(SHADERC_SKIP_TESTS ON)
-    #set(SHADERC_SKIP_EXAMPLES ON)
-    
-    #add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/shaderc)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/spirv_cross)
 
-    #target_link_libraries(typhon PUBLIC shaderc)
+    target_link_libraries(typhon PUBLIC spirv-cross-cpp)
+    target_link_libraries(typhon PUBLIC spirv-cross-msl)
+    target_link_libraries(typhon PUBLIC spirv-cross-hlsl)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/spirv_cross/)
+
+
+
+    #SHADERC setup
+    set(SHADERC_SKIP_TESTS ON)
+    set(SHADERC_SKIP_EXAMPLES ON)
     
-    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/include)
-    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/src)
-    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/include)
-    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/src)
-    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/glslang)
-    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/effcee)
-    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/re2)
-    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-headers/include)
-    #target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-tools/include)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/shaderc)
+
+    target_link_libraries(typhon PUBLIC shaderc)
+    
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/src)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/src)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/glslang)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/effcee)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/re2)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-headers/include)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-tools/include)
 
     # setting c++ standard
     set_target_properties(typhon PROPERTIES
@@ -173,6 +187,7 @@ SET(FETCHCONTENT_QUIET FALSE)
 
 if(TYPHON_RUN_TESTS)
   add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/catch2)
+  add_compile_definitions(__TYPHON_TESTING__=1)
 
   list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/src/vendor/catch2/extras)
 
@@ -195,6 +210,7 @@ if(TYPHON_RUN_TESTS)
   # Creating test to load dll/dylib created above
   add_executable(typhon_shared_tests 
     tests/shared_library_test.cpp  
+
   )
 
   set_target_properties(typhon_shared_tests PROPERTIES
@@ -210,6 +226,7 @@ if(TYPHON_RUN_TESTS)
   # Adding main engine tests
   add_executable(typhon_tests 
     tests/main_test.cpp
+    tests/shader_tests.cpp
   )
 
   set_target_properties(typhon_tests PROPERTIES

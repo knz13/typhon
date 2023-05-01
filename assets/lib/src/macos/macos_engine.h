@@ -6,15 +6,25 @@ class MacOSEngine {
 public:
     static void Unload(){
         std::cout << "Unloading macos engine!" << std::endl;
+
     }
     static void Initialize() {
+        
+
         MTL::Device* device = MTL::CreateSystemDefaultDevice();
         if(!device){
             std::cout << "metal is not supported on this device!" << std::endl;
         }
+
+        /* NS::Error *error = nullptr;
+
+        CA::MetalLayer* layer = CA::MetalLayer::layer();
+
+        layer->setDevice(device);    
+        layer->setPixelFormat(MTL::PixelFormatBGRA8Unorm); */
         
         std::cout << "continuing metal initialization" << std::endl;
-
+        
         device->release(); 
     };
 

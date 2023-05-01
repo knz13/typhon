@@ -17,6 +17,7 @@
 #include "vendor/metal-cpp/metal-cpp-extensions/AppKit/AppKit.hpp"
 #include "vendor/metal-cpp/metal-cpp/Foundation/Foundation.hpp"
 #include "vendor/metal-cpp/metal-cpp/Metal/Metal.hpp"
+#include "vendor/metal-cpp/metal-cpp/QuartzCore/QuartzCore.hpp"
 #endif
 
 
@@ -129,6 +130,29 @@ namespace Reflection {
 
 }
 namespace HelperFunctions {
+
+    template<typename Container>
+    static Container MapContainer(Container & container,typename Container::value_type(*f)(typename Container::value_type&)) {
+        Container output;
+        std::transform(container.begin(), container.end(), std::back_inserter(output), f);
+        return output;
+    }
+
+    template<typename Container>
+    static Container MapContainer(Container & container,typename Container::value_type(*f)(typename Container::value_type)) {
+        Container output;
+        std::transform(container.begin(), container.end(), std::back_inserter(output), f);
+        return output;
+    }
+
+    template<typename Container>
+    static void ForEach(Container& container,void(*f)(typename Container::value_type&)){
+        std::for_each(container.begin(),container.end(),f);
+    }
+    template<typename Container>
+    static void ForEach(Container& container,void(*f)(typename Container::value_type)){
+        std::for_each(container.begin(),container.end(),f);
+    }
 
     static double Radians(double degrees) {
         return (M_PI/180)*degrees;
