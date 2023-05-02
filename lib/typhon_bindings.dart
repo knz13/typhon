@@ -36,10 +36,7 @@ class TyphonCPPInterface {
   static DynamicLibrary stdlib = Platform.isWindows ? DynamicLibrary.open('kernel32.dll') : DynamicLibrary.process();
 
 
-  static int Function(Pointer<Void>) get _dlCloseFunc {
-    final funcName = Platform.isWindows ? 'FreeLibrary' : 'dlclose';
-    return stdlib.lookup<NativeFunction<Int32 Function(Pointer<Void>)>>(funcName).asFunction();
-  }
+  static final int Function(Pointer<Void>) _dlCloseFunc = stdlib.lookup<NativeFunction<Int32 Function(Pointer<Void>)>>( Platform.isWindows ? 'FreeLibrary' : 'dlclose').asFunction();
 
 
   static Future<String> extractLib() async {
@@ -203,10 +200,10 @@ class TyphonCPPInterface {
   }
 
   static void detachLibrary() {
-    print("detaching library!");
     _dlCloseFunc(_lib!.handle);
     _lib = null;
     _bindings = null;
+    print("detached library!");
   }
 
 }

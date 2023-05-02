@@ -59,7 +59,7 @@ SET(FETCHCONTENT_QUIET FALSE)
    # list(APPEND typhon_LIBRARIES monopp)
 
 
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/ecspp)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/entt)
     
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/yael)
     
@@ -69,9 +69,19 @@ SET(FETCHCONTENT_QUIET FALSE)
     
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/crunch)
         
+    if(APPLE)
+      add_compile_definitions(OBJC_DEBUG_MISSING_POOLS=1)
+
+      add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/metal-cpp)
     
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/ecspp/include/)
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/ecspp/vendor/entt/single_include/)
+      list(APPEND typhon_LIBRARIES METAL_CPP)
+
+      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/metal-cpp/metal-cpp/)
+
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/macos/macos_engine.cpp)
+    endif()
+    
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/single_include/)
     
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/yael/include)
@@ -103,6 +113,7 @@ SET(FETCHCONTENT_QUIET FALSE)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/ecs_registry.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object_traits.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/generic_reflection.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/rendering_engine.cpp)
     # creating target
 
 
@@ -111,7 +122,21 @@ SET(FETCHCONTENT_QUIET FALSE)
         ${typhon_SOURCE_FILES}
     )
 
+    #SPIRV-Cross setup
+    set(SPIRV_CROSS_ENABLE_TESTS OFF)
+    set(SPIRV_CROSS_CLI OFF)
 
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/spirv_cross)
+
+    target_link_libraries(typhon PUBLIC spirv-cross-cpp)
+    target_link_libraries(typhon PUBLIC spirv-cross-msl)
+    target_link_libraries(typhon PUBLIC spirv-cross-hlsl)
+    target_link_libraries(typhon PUBLIC spirv-cross-reflect)
+    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/spirv_cross/)
+
+
+
+    #SHADERC setup
     set(SHADERC_SKIP_TESTS ON)
     set(SHADERC_SKIP_EXAMPLES ON)
     
@@ -162,9 +187,47 @@ SET(FETCHCONTENT_QUIET FALSE)
 #tests
 
 if(TYPHON_RUN_TESTS)
+  add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/catch2)
+  add_compile_definitions(__TYPHON_TESTING__=1)
+
+  list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/src/vendor/catch2/extras)
+
+  include(CTest)
+  include(Catch)
+
+  # Creating shared test library to be loaded as dll/dylib
+  add_library(typhon_shared_tests_lib SHARED tests/shared_library_code.cpp)
+
+  set_target_properties(typhon_shared_tests_lib PROPERTIES
+      CXX_STANDARD 20
+  )
+
+  set_target_properties(typhon_shared_tests_lib PROPERTIES
+  C_STANDARD 20
+  )
   
+  target_link_libraries(typhon_shared_tests_lib PRIVATE typhon)
+
+  # Creating test to load dll/dylib created above
+  add_executable(typhon_shared_tests 
+    tests/shared_library_test.cpp  
+
+  )
+
+  set_target_properties(typhon_shared_tests PROPERTIES
+      CXX_STANDARD 20
+  )
+
+  set_target_properties(typhon_shared_tests PROPERTIES
+      C_STANDARD 20
+  )
+
+  add_dependencies(typhon_shared_tests typhon_shared_tests_lib)
+
+  # Adding main engine tests
   add_executable(typhon_tests 
     tests/main_test.cpp
+    tests/shader_tests.cpp
   )
 
   set_target_properties(typhon_tests PROPERTIES
@@ -177,16 +240,10 @@ if(TYPHON_RUN_TESTS)
       C_STANDARD 20
   )
 
-  add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/catch2)
-  
   target_link_libraries(typhon_tests PRIVATE Catch2::Catch2WithMain)
   target_link_libraries(typhon_tests PRIVATE typhon)
-
-  list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/src/vendor/catch2/extras)
-
-  include(CTest)
-  include(Catch)
-    
+  
+  catch_discover_tests(typhon_shared_tests)
   catch_discover_tests(typhon_tests)
 
 endif()

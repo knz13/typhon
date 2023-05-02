@@ -25,15 +25,28 @@ class TyphonBindings {
           lookup)
       : _lookup = lookup;
 
-  /// __BEGIN__CPP__EXPORTS__
-  int initializeCppLibrary() {
+  void passNSViewPointer(
+    ffi.Pointer<ffi.Void> view,
+  ) {
+    return _passNSViewPointer(
+      view,
+    );
+  }
+
+  late final _passNSViewPointerPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Void>)>>(
+          'passNSViewPointer');
+  late final _passNSViewPointer =
+      _passNSViewPointerPtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
+
+  bool initializeCppLibrary() {
     return _initializeCppLibrary();
   }
 
   late final _initializeCppLibraryPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function()>>('initializeCppLibrary');
+      _lookup<ffi.NativeFunction<ffi.Bool Function()>>('initializeCppLibrary');
   late final _initializeCppLibrary =
-      _initializeCppLibraryPtr.asFunction<int Function()>();
+      _initializeCppLibraryPtr.asFunction<bool Function()>();
 
   void onMouseMove(
     double positionX,
@@ -168,14 +181,14 @@ class TyphonBindings {
   late final _getInstantiableClasses =
       _getInstantiableClassesPtr.asFunction<ClassesArray Function()>();
 
-  int isEngineInitialized() {
+  bool isEngineInitialized() {
     return _isEngineInitialized();
   }
 
   late final _isEngineInitializedPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function()>>('isEngineInitialized');
+      _lookup<ffi.NativeFunction<ffi.Bool Function()>>('isEngineInitialized');
   late final _isEngineInitialized =
-      _isEngineInitializedPtr.asFunction<int Function()>();
+      _isEngineInitializedPtr.asFunction<bool Function()>();
 
   AliveObjectsArray getAliveObjects() {
     return _getAliveObjects();

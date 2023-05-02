@@ -2,6 +2,7 @@
 
 
 
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
@@ -152,6 +153,8 @@ class GeneralText extends StatelessWidget {
     );
   }
 }
+
+
 
 void showNativeContextMenu(BuildContext context,double x,double y, List<ContextMenuOption> options) {
   if(Platform.isMacOS){

@@ -26,43 +26,48 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     C_STANDARD 20
 )
 
+add_compile_definitions(TYPHON_ON_EDITOR=1)
 
-add_subdirectory() #__LIBRARY__PROJECT__PATH__
+set(TYPHON_LIBRARY_LOCATION __TYPHON__LIBRARY__LOCATION__)
+set(TYPHON_LIBRARY_SOURCE ${TYPHON_LIBRARY_LOCATION}/src) 
+
+add_subdirectory(${TYPHON_LIBRARY_LOCATION} ${TYPHON_LIBRARY_LOCATION}/build)
 
 add_dependencies(${PROJECT_NAME} typhon)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC typhon)
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/libshaderc/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/shaderc/libshaderc/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/libshaderc/src)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/shaderc/libshaderc/src)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/libshaderc_util/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/shaderc/libshaderc_util/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/libshaderc_util/src)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/shaderc/libshaderc_util/src)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/glslang)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/shaderc/third_party/glslang)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/effcee)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/shaderc/third_party/effcee)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/re2)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/shaderc/third_party/re2)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/spirv-headers/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/shaderc/third_party/spirv-headers/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/shaderc/third_party/spirv-tools/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/shaderc/third_party/spirv-tools/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/entt/src/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/entt/src/)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/yael/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/yael/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/random/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/random/include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/glm/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/glm/)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/crunch/crunch/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/crunch/crunch/)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/json/single_include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/json/single_include)
 
-target_include_directories(${PROJECT_NAME} PUBLIC includes/vendor/cruch/crunch/)
+target_include_directories(${PROJECT_NAME} PUBLIC ${TYPHON_LIBRARY_SOURCE}/vendor/cruch/crunch/)
 

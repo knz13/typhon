@@ -1,9 +1,11 @@
 #pragma once
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "general.h"
 #include "keyboard_adaptations.h"
+
 
 #if _WIN32
 #include <windows.h>
@@ -24,6 +26,9 @@ extern "C" {
 #endif
 
     //__BEGIN__CPP__EXPORTS__
+    #ifdef __APPLE__
+    FFI_PLUGIN_EXPORT void passNSViewPointer(void* view);
+    #endif
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
     FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
     FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);

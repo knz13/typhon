@@ -4,6 +4,7 @@
 #include "shader_compiler.h"
 #include <filesystem>
 #include <fstream>
+#include "rendering_engine.h"
 
 namespace fs = std::filesystem;
 
@@ -21,13 +22,15 @@ void Engine::Initialize()
         Engine::Unload();
     }
 
-    ShaderCompiler::getInstance();    
     
     for(auto& [key,func] : Reflection::InitializedStaticallyStorage::functionsFromDerivedClasses){
         func();
     }
 
     textureAtlas = CreateTextureAtlasFromImages();
+
+
+    RenderingEngine::InitializeEngine();
     
     Engine::isInitialized = true;
 }
@@ -35,12 +38,17 @@ void Engine::Initialize()
 void Engine::Unload()
 {   
 
+    RenderingEngine::UnloadEngine();
+        
+
     Clear();
 
     GameObject::instantiableClasses.clear();
     GameObject::instantiableClassesIDs.clear();
     GameObject::instantiableClassesNames.clear();
     Engine::isInitialized = false;
+
+    std::cout << "Unloaded Engine!" << std::endl;
 }
 
 std::vector<std::string> Engine::GetImagePathsFromLibrary()

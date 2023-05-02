@@ -1,10 +1,11 @@
+#include "typhon.h"
+//__BEGIN__CPP__IMPL__
 #include <iostream>
 #include <stdint.h>
-#include "typhon.h"
 #include "mono_manager.h"
 #include "shader_compiler.h"
 #include "engine.h"
-//__BEGIN__CPP__IMPL__
+#include "rendering_engine.h"
 //__INCLUDE__CREATED__CLASSES__
 
 bool initializeCppLibrary() {
@@ -192,5 +193,12 @@ void createObjectFromClassID(int64_t classID)
 bool isEngineInitialized() {
     return Engine::HasInitialized();
 }
+
+#ifdef __APPLE__
+void passNSViewPointer(void* view) {
+    std::cout << "passing pointer!" << std::endl;
+    RenderingEngine::PassPlatformSpecificViewPointer(view);
+}
+#endif
 
 //__END__CPP__IMPL__

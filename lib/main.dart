@@ -123,9 +123,10 @@ class _MyAppState extends State<MyApp> {
                       PlatformMenuItem(
                         label: "Project Selection",
                         onSelected: () {
+                          Engine.instance.unload();
                           Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
                           Navigator.of(MyApp.globalContext.currentContext!).push(MaterialPageRoute(builder:(context) {
-                            Engine.instance.unload();
+                            print("loading projects page!");
                             return ProjectsPage();
                           },));
                         }

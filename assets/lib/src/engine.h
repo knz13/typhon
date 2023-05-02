@@ -6,7 +6,12 @@
 #include "game_object_traits.h"
 #include "keyboard_adaptations.h"
 #include "crunch_texture_packer.h"
+#include "object.h"
 #include <ranges>
+#ifdef __APPLE__
+#include "macos/macos_engine.h"
+#endif
+
 
 class EngineInternals {
 public:
@@ -33,6 +38,12 @@ public:
 
         return aliveObjects[id].get();
     };
+
+    static Object CreateNewObject() {
+        return Object(ECSRegistry::CreateEntity());
+    }
+
+    
 
 
     template<typename T>
@@ -75,6 +86,8 @@ public:
             RemoveGameObject(key);
             iter = aliveObjects.begin();
         }
+
+        ECSRegistry::Clear();
     };
 
     static bool DeserializeToCurrent(std::string scene);

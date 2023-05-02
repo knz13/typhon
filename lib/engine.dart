@@ -27,6 +27,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/main.dart';
+import 'package:typhon/native_view_interface.dart';
 import 'package:typhon/recompiling_dialog.dart';
 import 'package:typhon/regex_parser.dart';
 import 'package:typhon/typhon_bindings.dart';
@@ -62,7 +63,7 @@ class EngineRenderingDataFromAtlas {
 
 
 
-class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDetector {
+class Engine {
 
   static Random rng = Random();
   static Engine instance = Engine();
@@ -85,6 +86,7 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
   void enqueueRecompilation() {
     if(hasInitializedProject()){
       _shouldRecompile = true;
+      reloadProject();
     }
   }
 
@@ -129,16 +131,24 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     await recompileProject();
     if(!TyphonCPPInterface.checkIfLibraryLoaded()){
       print("Could not load library!");
+      _isReloading = false;
       return;
     }
+
     var library = TyphonCPPInterface.getCppFunctions();
     library.passProjectPath(projectPath.toNativeUtf8().cast());
     library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
     library.attachEnqueueOnChildrenChanged(Pointer.fromFunction(onCppChildrenChanged));
     library.initializeCppLibrary();
+    if(Platform.isMacOS){
+      library.passNSViewPointer(await NativeViewInterface.createSubView(Rect.zero));
+    }
+    else {
+      
+    }
     (()async {
       while(true){
-        if(library.isEngineInitialized() == 1){
+        if(library.isEngineInitialized() == true){
           await loadAtlasImage();
           break;
         }
@@ -165,8 +175,12 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
     currentProcess = null;
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
       TyphonCPPInterface.getCppFunctions().unloadLibrary();
+      if(Platform.isMacOS){
+        TyphonCPPInterface.getCppFunctions().passNSViewPointer(nullptr);
+      }
       TyphonCPPInterface.detachLibrary();
     }
+    NativeViewInterface.releaseSubView();
   }
 
 
@@ -199,9 +213,9 @@ class Engine extends FlameGame with KeyboardEvents, TapDetector, MouseMovementDe
       File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"));
       List<String> lines = cmakeFile.readAsLinesSync();
       for(String line in lines) {
-        if(line.contains("__LIBRARY__PROJECT__PATH__")){
+        if(line.contains("__TYPHON__LIBRARY__LOCATION__")){
           var projPath = (await TyphonCPPInterface.getLibraryPath()).replaceAll("\\","/").replaceAll(" ", "\\ ");
-          cmakeFileData += "add_subdirectory($projPath ${path.join(projPath,"build").replaceAll("\\","/").replaceAll(" ", "\\ ")}) #__LIBRARY__PROJECT__PATH__";
+          cmakeFileData += "set(TYPHON_LIBRARY_LOCATION $projPath) #__TYPHON__LIBRARY__LOCATION__";
           cmakeFileData += "\n";
           continue;
         }
@@ -234,12 +248,20 @@ public:
       File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
 
       await bindingsFile.writeAsString("""
-#include <iostream>
-#include <stdint.h>
 #include "bindings_generated.h"
-#include "includes/mono_manager.h"
-#include "includes/shader_compiler.h"
 //__BEGIN__CPP__IMPL__
+#include <iostream>
+
+#include <stdint.h>
+
+#include "mono_manager.h"
+
+#include "shader_compiler.h"
+
+#include "engine.h"
+
+#include "rendering_engine.h"
+
 //__INCLUDE__CREATED__CLASSES__
 
 
@@ -616,6 +638,20 @@ bool isEngineInitialized() {
 
 
 
+#ifdef __APPLE__
+
+void passNSViewPointer(void* view) {
+
+    std::cout << "passing pointer!" << std::endl;
+
+    RenderingEngine::PassPlatformSpecificViewPointer(view);
+
+}
+
+#endif
+
+
+
 //__END__CPP__IMPL__
 """);
 
@@ -644,7 +680,7 @@ bool isEngineInitialized() {
 
     Directory(path.join(projectPath,"assets")).createSync(recursive: true);
 
-    await TyphonCPPInterface.extractIncludesFromAssets(path.join(projectPath,"includes"));
+    //await TyphonCPPInterface.extractIncludesFromAssets(path.join(projectPath,"includes"));
 
     ByteData cmakeTemplateData = await rootBundle.load("assets/cmake_template.txt");
     String cmakeTemplateString = utf8.decode(cmakeTemplateData.buffer.asUint8List(cmakeTemplateData.offsetInBytes,cmakeTemplateData.lengthInBytes));
@@ -652,10 +688,8 @@ bool isEngineInitialized() {
 
 
     cmakeTemplateString = cmakeTemplateString.replaceAll('__CMAKE__VERSION__','3.16')
-    .replaceAll('__PROJECT__NAME__',projectFilteredName)
-    .replaceAll('__TYPHON__LIBRARY__LOCATION__',(await TyphonCPPInterface.getLibraryPath()).replaceAll("\\", "/").replaceAll(" ", "\\ "))
-    .replaceAll('__TYPHON__INCLUDE__DIRECTORIES__',path.join(projectPath,'includes'));
-    
+    .replaceAll('__PROJECT__NAME__',projectFilteredName);
+
 
     await File(path.join(projectPath,"CMakeLists.txt")).writeAsString(cmakeTemplateString);
 
@@ -707,7 +741,9 @@ bool isEngineInitialized() {
     print("recompiling...");
 
 
-
+    if(Directory(path.join(projectPath,"generated")).existsSync()){
+      Directory(path.join(projectPath,"generated")).deleteSync(recursive: true);
+    }
     
     
     List<String> includes = await __findPathsToInclude(Directory(path.join(projectPath,"assets")));
@@ -778,7 +814,7 @@ bool isEngineInitialized() {
       }
 
     }
-
+  
     cmakeFile.writeAsStringSync(cmakeFileNewText);
 
     //finding includes
@@ -818,7 +854,7 @@ bool isEngineInitialized() {
     File bindingsGeneratedCPP = File(path.join(projectPath,"bindings_generated.h"));
     bindingsGeneratedCPP.createSync();
     bindingsGeneratedCPP.writeAsString("""#pragma once
-#include "includes/engine.h"
+#include "engine.h"
 #include "assets/entry.h"
 
 #if _WIN32
@@ -840,6 +876,12 @@ extern "C" {
 #endif
 
   //__BEGIN__CPP__EXPORTS__
+    #ifdef __APPLE__
+
+    FFI_PLUGIN_EXPORT void passNSViewPointer(void* view);
+
+    #endif
+
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
 
     FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
@@ -976,7 +1018,7 @@ extern "C" {
 
   }
 
-  @override
+  /* @override
   void onMouseMove(PointerHoverInfo info) {
     // TODO: implement onMouseMove
 
@@ -999,7 +1041,7 @@ extern "C" {
       }
 
     return super.onKeyEvent(event, keysPressed);
-  } 
+  }  */
 
   Future<void> waitingForInitialization() async {
     while(true) {
@@ -1025,7 +1067,7 @@ extern "C" {
     ));
   }
 
-  @override
+  /* @override
   FutureOr<void> onLoad() async {
     
     return super.onLoad();
@@ -1066,6 +1108,6 @@ extern "C" {
       TyphonCPPInterface.getCppFunctions().onUpdateCall(dt);
     }
 
-  }
+  } */
 
 }

@@ -1,21 +1,23 @@
 #include "shader_compiler.h"
 
 
-//TODO
-bool ShaderCompiler::compileShader()
-{
-    return false;
-}
+shaderc::Compiler ShaderCompiler::compiler = shaderc::Compiler();
 
+ShaderSPIRVCompilationResult ShaderCompiler::CompileToSPIRV(std::string shaderSource,std::string shaderName,shaderc_shader_kind kind) {
+    shaderc::CompileOptions options;
+    options.SetSourceLanguage(shaderc_source_language_glsl);
+    options.SetAutoMapLocations(true);
+    options.SetAutoBindUniforms(true);
 
-ShaderCompiler::ShaderCompiler() {
-    compiler = shaderc_compiler_initialize();
-
-}
-
-
-ShaderCompiler::~ShaderCompiler() {
-    if(compiler != nullptr){
-        shaderc_compiler_release(compiler);
+    ShaderSPIRVCompilationResult finalResult;
+    shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(shaderSource,kind,shaderName.c_str(),options);
+    if(result.GetCompilationStatus() != shaderc_compilation_status_success){
+        finalResult.error = result.GetErrorMessage();
+        return finalResult;
     }
+    else {
+        finalResult.spirvBinary = {result.cbegin(),result.cend()};
+        return finalResult;
+    }
+    
 }
