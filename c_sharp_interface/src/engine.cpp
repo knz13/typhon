@@ -4,6 +4,7 @@
 #include "shader_compiler.h"
 #include <filesystem>
 #include <fstream>
+#include "rendering_engine.h"
 
 namespace fs = std::filesystem;
 
@@ -27,6 +28,9 @@ void Engine::Initialize()
     }
 
     textureAtlas = CreateTextureAtlasFromImages();
+
+
+    RenderingEngine::InitializeEngine();
     
     Engine::isInitialized = true;
 }
@@ -34,9 +38,8 @@ void Engine::Initialize()
 void Engine::Unload()
 {   
 
-    #ifdef __APPLE__
-    MacOSEngine::ReceiveNSViewPointer(nullptr);
-    #endif
+    RenderingEngine::UnloadEngine();
+        
 
     Clear();
 

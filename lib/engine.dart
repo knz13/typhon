@@ -260,11 +260,7 @@ public:
 
 #include "engine.h"
 
-#ifdef __APPLE__
-
-#include "macos/macos_engine.h"
-
-#endif
+#include "rendering_engine.h"
 
 //__INCLUDE__CREATED__CLASSES__
 
@@ -648,7 +644,7 @@ void passNSViewPointer(void* view) {
 
     std::cout << "passing pointer!" << std::endl;
 
-    MacOSEngine::ReceiveNSViewPointer(view);
+    RenderingEngine::PassPlatformSpecificViewPointer(view);
 
 }
 

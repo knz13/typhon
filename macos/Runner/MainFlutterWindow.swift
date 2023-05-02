@@ -1,6 +1,7 @@
 import Cocoa
 import FlutterMacOS
 import AppKit
+import MetalKit
 
 func convertToDictionary(text: String) -> [String: Any]? {
     if let data = text.data(using: .utf8) {
@@ -113,7 +114,7 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
 
 public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
 
-    var createdView: NSView?
+    var createdView: MTKView?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "nativeWindowInterfaceChannel", binaryMessenger: registrar.messenger)
@@ -142,10 +143,12 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
             let height = args?["height"] as? Double ?? 0
             
             if let view = createdView {
-                print("called create for NSView before deleting current NSView")
+                print("called create for MTKView before deleting current MTKView")
                 view.removeFromSuperview()
             }
-            createdView = NSView()
+            createdView = MTKView()
+            createdView!.device = MTLCreateSystemDefaultDevice()
+            createdView!.framebufferOnly = true
             let frame = NSRect(x:x,y:y,width:width,height:height)
             createdView!.frame = frame
             createdView!.wantsLayer = true

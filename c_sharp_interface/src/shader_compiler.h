@@ -7,6 +7,7 @@
 #include "vendor/shaderc/libshaderc/include/shaderc/shaderc.hpp"
 #include "vendor/spirv_cross/spirv_msl.hpp"
 #include "vendor/spirv_cross/spirv_glsl.hpp"
+#include "vendor/spirv_cross/spirv_reflect.hpp"
 
 
 struct ShaderSPIRVCompilationResult {
@@ -21,6 +22,7 @@ struct ShaderSPIRVCompilationResult {
 struct ShaderPlatformSpecificCompilationResult {
     std::string shaderText = "";
     spirv_cross::ShaderResources resources;
+    json jsonResources;
 
     bool Succeeded() {
         return succeeded;
@@ -66,12 +68,13 @@ private:
     static ShaderPlatformSpecificCompilationResult CompileToPlatformSpecificInternal(ShaderSPIRVCompilationResult& spirvResult,std::string testingTarget) {
         std::shared_ptr<spirv_cross::Compiler> shaderSPIRVCompiler;
         if(testingTarget == "MACOS") {
-            shaderSPIRVCompiler = std::shared_ptr<spirv_cross::Compiler>(new spirv_cross::CompilerMSL(spirvResult.spirvBinary));
+            auto ptr = new spirv_cross::CompilerMSL(spirvResult.spirvBinary);
+
+            shaderSPIRVCompiler = std::shared_ptr<spirv_cross::Compiler>(ptr);
         }
         if(testingTarget == "WINDOWS") {
             auto ptr = new spirv_cross::CompilerGLSL(spirvResult.spirvBinary);
-            spirv_cross::CompilerGLSL::Options options;
-
+            
             shaderSPIRVCompiler = std::shared_ptr<spirv_cross::Compiler>(ptr);
         }
         spirv_cross::ShaderResources resources = shaderSPIRVCompiler.get()->get_shader_resources();
@@ -79,7 +82,8 @@ private:
         compilationResult.succeeded = true;
         compilationResult.shaderText = shaderSPIRVCompiler.get()->compile();
         compilationResult.resources = resources;
-
+        std::string jsonData = spirv_cross::CompilerReflection(spirvResult.spirvBinary).compile();
+        compilationResult.jsonResources = json::parse(jsonData);
 
         return compilationResult; 
     }

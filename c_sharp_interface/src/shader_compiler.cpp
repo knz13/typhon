@@ -5,9 +5,9 @@ shaderc::Compiler ShaderCompiler::compiler = shaderc::Compiler();
 
 ShaderSPIRVCompilationResult ShaderCompiler::CompileToSPIRV(std::string shaderSource,std::string shaderName,shaderc_shader_kind kind) {
     shaderc::CompileOptions options;
-    options.SetAutoBindUniforms(true);
+    options.SetSourceLanguage(shaderc_source_language_glsl);
     options.SetAutoMapLocations(true);
-    options.SetTargetEnvironment(shaderc_target_env_opengl,0);
+    options.SetAutoBindUniforms(true);
 
     ShaderSPIRVCompilationResult finalResult;
     shaderc::SpvCompilationResult result = compiler.CompileGlslToSpv(shaderSource,kind,shaderName.c_str(),options);
@@ -19,4 +19,5 @@ ShaderSPIRVCompilationResult ShaderCompiler::CompileToSPIRV(std::string shaderSo
         finalResult.spirvBinary = {result.cbegin(),result.cend()};
         return finalResult;
     }
+    
 }

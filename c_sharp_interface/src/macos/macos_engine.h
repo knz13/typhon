@@ -1,44 +1,51 @@
 #pragma once
 #include "../general.h"
+#include "macos_view_delegate.h"
+#include "../shader_compiler.h"
+#include "../rendering_engine.h"
 
-
-class MacOSEngine {
+class MacOSEngine : public PlatformSpecificRenderingEngine {
 public:
-    static void Unload(){
-        std::cout << "Unloading macos engine!" << std::endl;
+    
 
-    }
-    static void Initialize() {
-        
 
-        MTL::Device* device = MTL::CreateSystemDefaultDevice();
-        if(!device){
-            std::cout << "metal is not supported on this device!" << std::endl;
+   
+
+    void SetFragmentShader(ShaderPlatformSpecificCompilationResult& shaderSource) override {
+        if(viewDelegate && viewDelegate.get()->GetRenderer() != nullptr){
+            viewDelegate.get()->GetRenderer()->SetFragmentShader(shaderSource);
         }
+    }
+    void SetVertexShader(ShaderPlatformSpecificCompilationResult& shaderSource) override {
+        if(viewDelegate && viewDelegate.get()->GetRenderer() != nullptr){
+            viewDelegate.get()->GetRenderer()->SetVertexShader(shaderSource);
+        }
+    }
 
-        /* NS::Error *error = nullptr;
-
-        CA::MetalLayer* layer = CA::MetalLayer::layer();
-
-        layer->setDevice(device);    
-        layer->setPixelFormat(MTL::PixelFormatBGRA8Unorm); */
-        
-        std::cout << "continuing metal initialization" << std::endl;
-        
-        device->release(); 
-    };
-
-    static void ReceiveNSViewPointer(void* viewPtr) {
+    void ReceivePlatformSpecificViewPointer(void* viewPtr) override {
         if(viewPtr == nullptr){
             Unload();
         }
         else {
-            mainView = (NS::View*)viewPtr;
+            mainView = (MTK::View*)viewPtr;
             Initialize();
         }
     };
 
 private:
-    static NS::View* mainView;
+    void Unload(){
+        std::cout << "Unloading macos engine!" << std::endl;
+        
+        viewDelegate.reset();
+        mainView = nullptr;
+    }
+    void Initialize() {
+
+        viewDelegate = std::make_unique<MacOSViewDelegate>(mainView->device());
+        mainView->setDelegate(viewDelegate.get());
+    };
+
+    std::unique_ptr<MacOSViewDelegate> viewDelegate = {};
+    MTK::View* mainView = nullptr;
 
 };

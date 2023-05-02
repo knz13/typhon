@@ -131,6 +131,7 @@ SET(FETCHCONTENT_QUIET FALSE)
     target_link_libraries(typhon PUBLIC spirv-cross-cpp)
     target_link_libraries(typhon PUBLIC spirv-cross-msl)
     target_link_libraries(typhon PUBLIC spirv-cross-hlsl)
+    target_link_libraries(typhon PUBLIC spirv-cross-reflect)
     target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/spirv_cross/)
 
 
