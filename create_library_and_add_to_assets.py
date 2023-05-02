@@ -21,7 +21,7 @@ args = parser.parse_args()
 is_64bits = sys.maxsize > 2**32
 
 current_dir = os.path.abspath(os.curdir)
-os.chdir("c_sharp_interface")
+os.chdir("cpp_library")
 if not os.path.exists("src/vendor"):
     os.mkdir("src/vendor")
 
@@ -140,8 +140,8 @@ for root, dirs, files in os.walk('src'):
     for file in files:
         if os.path.basename(root).startswith("."):
             continue
-        if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")))):
-            os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src"))),exist_ok=True)
+        if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")))):
+            os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src"))),exist_ok=True)
         if root not in roots:
             roots.append(root)
             
@@ -150,13 +150,13 @@ for root, dirs, files in os.walk('src'):
 os.chdir(current_dir)
 
 os.system("rm -rf assets/lib/src")
-os.chdir("c_sharp_interface")
+os.chdir("cpp_library")
 shutil.copytree("src",os.path.join(current_dir,"assets","lib",'src'))
 
 
 paths_to_add_to_pubspec = []
 for root in roots:
-    path = os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")).replace("\\","/")
+    path = os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")).replace("\\","/")
     paths_to_add_to_pubspec.append(f'    - assets/lib/src/{path}/')
 
 os.chdir(current_dir)
@@ -190,7 +190,7 @@ cpp_exports = ""
 cpp_exports_impl = ""
 
 os.chdir(current_dir)
-with open("c_sharp_interface/src/typhon.h",'r') as f:
+with open("cpp_library/src/typhon.h",'r') as f:
     lines = f.readlines()
     shouldAddLine = False
     for line in lines:
@@ -203,7 +203,7 @@ with open("c_sharp_interface/src/typhon.h",'r') as f:
         if shouldAddLine:
             cpp_exports += line + "\n"
 
-with open("c_sharp_interface/src/typhon.cpp",'r') as f:
+with open("cpp_library/src/typhon.cpp",'r') as f:
     lines = f.readlines()
     shouldAddLine = False
     for line in lines:
@@ -259,7 +259,7 @@ os.system('echo "Done updating dart bindings file!"')
 os.system('echo "Building tests...')
 
 
-os.chdir("c_sharp_interface/build")
+os.chdir("cpp_library/build")
 
 os.system(f'{"make typhon_tests" if platform.system() == "Darwin" else "msbuild project_typhon.sln /target:typhon_tests /p:Configuration=" + ("Release" if args.Release else "Debug")}')
 

@@ -57,8 +57,12 @@ void main() {
     auto macosResult = ShaderCompiler::CompileToPlatformSpecific(result,"MACOS");
 
     REQUIRE(macosResult.Succeeded());
+    std::cout << macosResult.shaderText << std::endl;
     std::cout << macosResult.jsonResources.dump() << std::endl;
     json resourcesData = macosResult.jsonResources;
+    for(auto inp : macosResult.entryPoints){
+        std::cout << inp.name << "|" << inp.execution_model << std::endl;
+    }
 
     REQUIRE(resourcesData.contains("entryPoints"));
     REQUIRE(resourcesData.contains("types"));

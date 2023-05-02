@@ -1,15 +1,15 @@
 name: TyphonBindings
 
 description: |
-  Bindings for `c_sharp_interface/src/typhon.h`.
+  Bindings for `cpp_library/src/typhon.h`.
   Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
 output: "lib/typhon_bindings_generated.dart"
 
 headers:
   entry-points:
-    - "c_sharp_interface/src/typhon.h"
+    - "cpp_library/src/typhon.h"
   include-directives:
-    - "c_sharp_interface/src/typhon.h"
+    - "cpp_library/src/typhon.h"
 
 
 

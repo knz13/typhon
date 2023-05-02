@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('Parsing cpp files', () {
-    String fileData = File("c_sharp_interface/src/mono_manager.h").readAsStringSync();
+    String fileData = File("cpp_library/src/mono_manager.h").readAsStringSync();
 
     var map = CPPParser.getClassesProperties(fileData);
 
@@ -14,7 +14,7 @@ void main() {
     expect(map["MonoManager"]["variables"]!.contains("_initialized"), true);
   });
   test('Parsing complex file', () {
-    String fileData = File("c_sharp_interface/src/game_object.h").readAsStringSync();
+    String fileData = File("cpp_library/src/game_object.h").readAsStringSync();
 
     var map = CPPParser.getClassesProperties(fileData);
     expect(map.containsKey("GameObject"),true);
