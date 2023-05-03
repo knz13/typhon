@@ -1,5 +1,6 @@
 #pragma once
 #include "../general.h"
+#include "../shader_compiler.h"
 
 class MacOSRenderer {
 public:
@@ -12,7 +13,7 @@ public:
         this->commandQueue->release();
     }
 
-    void SetFragmentShader(ShaderPlatformSpecificCompilationResult& shaderSource) {
+    void SetFragmentShader(ShaderCompilationResult& shaderSource) {
         using NS::StringEncoding::UTF8StringEncoding;
 
         if(!shaderSource.jsonResources["entryPoints"]) {
@@ -41,7 +42,7 @@ public:
 
 
     }
-    void SetVertexShader(ShaderPlatformSpecificCompilationResult& shaderSource) {
+    void SetVertexShader(ShaderCompilationResult& shaderSource) {
         using NS::StringEncoding::UTF8StringEncoding;
 
         if(!shaderSource.jsonResources["entryPoints"]) {

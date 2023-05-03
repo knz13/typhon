@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdint.h>
 #include "engine.h"
-//#include "rendering_engine.h"
+#include "rendering_engine.h"
 //__INCLUDE__CREATED__CLASSES__
 
 bool initializeCppLibrary() {
@@ -193,7 +193,7 @@ bool isEngineInitialized() {
 #ifdef __APPLE__
 void passNSViewPointer(void* view) {
     std::cout << "passing pointer!" << std::endl;
-    //RenderingEngine::PassPlatformSpecificViewPointer(view);
+    RenderingEngine::PassPlatformSpecificViewPointer(view);
 }
 #endif
 

@@ -37,6 +37,7 @@ Select a device to run and you're all set!
 - &check; Adding on-the-fly C++ Compilation
 - &check; Dynamic Loading|Unloading of the C++ Library
 - &check; Integration of the Shader Compiler to SPIRV ([shaderc](https://github.com/google/shaderc)) and the SPIRV to Shader Code Compiler ([spirv-cross](https://github.com/KhronosGroup/SPIRV-Cross))
+- &check; Separating the Shader Compilers into another library
 - &check; Dynamic Loading|Unloading of the C++ Library
 - &check; Basic C++ User Script Creation and Hot Reload
 - &cross; Basic Rendering Engine Outline

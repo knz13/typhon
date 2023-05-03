@@ -57,7 +57,7 @@ SET(FETCHCONTENT_QUIET FALSE)
 
       list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/metal-cpp/metal-cpp/)
 
-      #list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/macos/macos_engine.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/macos/macos_engine.cpp)
     endif()
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/single_include/)
@@ -92,7 +92,8 @@ SET(FETCHCONTENT_QUIET FALSE)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/ecs_registry.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object_traits.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/generic_reflection.cpp)
-      #list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/rendering_engine.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/shader_compiler.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/rendering_engine.cpp)
     # creating target
 
 

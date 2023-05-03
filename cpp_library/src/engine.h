@@ -8,7 +8,7 @@
 #include "crunch_texture_packer.h"
 #include "object.h"
 #include <ranges>
-
+#include "shader_compiler.h"
 
 class EngineInternals {
 public:

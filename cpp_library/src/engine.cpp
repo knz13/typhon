@@ -3,7 +3,7 @@
 #include "crunch_texture_packer.h"
 #include <filesystem>
 #include <fstream>
-//#include "rendering_engine.h"
+#include "rendering_engine.h"
 
 namespace fs = std::filesystem;
 
@@ -26,6 +26,10 @@ void Engine::Initialize()
         func();
     }
 
+
+    #ifndef __TYPHON_TESTING__
+    ShaderCompiler::Initialize();
+    #endif
     
 
     textureAtlas = CreateTextureAtlasFromImages();

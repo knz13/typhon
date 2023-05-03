@@ -256,7 +256,7 @@ public:
 
 #include "engine.h"
 
-//#include "rendering_engine.h"
+#include "rendering_engine.h"
 
 //__INCLUDE__CREATED__CLASSES__
 
@@ -636,7 +636,7 @@ void passNSViewPointer(void* view) {
 
     std::cout << "passing pointer!" << std::endl;
 
-    //RenderingEngine::PassPlatformSpecificViewPointer(view);
+    RenderingEngine::PassPlatformSpecificViewPointer(view);
 
 }
 
@@ -685,8 +685,13 @@ void passNSViewPointer(void* view) {
 
     await File(path.join(projectPath,"CMakeLists.txt")).writeAsString(cmakeTemplateString);
 
-    
 
+
+
+
+    Directory(path.join(projectPath,"build")).createSync();
+
+    File(path.join((await getApplicationSupportDirectory()).path,"lib",Platform.isMacOS ? "libshader_compiler_dynamic.dylib" : Platform.isWindows? "shader_compiler_dynamic.dll" : "shader_compiler_dynamic.so")).copySync(path.join(projectPath,"build",Platform.isMacOS ? "libshader_compiler_dynamic.dylib" : Platform.isWindows? "shader_compiler_dynamic.dll" : "shader_compiler_dynamic.so"));
     
     await saveProjectsJSON(map);
 

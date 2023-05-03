@@ -8,8 +8,8 @@ std::unique_ptr<PlatformSpecificRenderingEngine> RenderingEngine::platformSpecif
 
 void RenderingEngine::PassPlatformSpecificViewPointer(void* view) {
     if(platformSpecificRenderingEngine) {
-        platformSpecificRenderingEngine.get()->ReceivePlatformSpecificViewPointer(view);
-
+        //platformSpecificRenderingEngine.get()->ReceivePlatformSpecificViewPointer(view);
+        
         std::string vertexShader = R"(
 #version 330 core
 
@@ -35,47 +35,29 @@ void main() {
 }
         )";
 
-        auto vertResult = ShaderCompiler::CompileToSPIRV(vertexShader,"Vertex",shaderc_shader_kind::shaderc_vertex_shader);
-        auto fragResult = ShaderCompiler::CompileToSPIRV(fragShader,"Frag",shaderc_shader_kind::shaderc_fragment_shader);
+        auto vertResult = ShaderCompiler::CompileGLSLToPlatformSpecific(vertexShader,"Vertex",ShaderType::Vertex);
+        auto fragResult = ShaderCompiler::CompileGLSLToPlatformSpecific(fragShader,"Frag",ShaderType::Fragment);
 
-        if(!vertResult.Succeeded()){
+        if(!vertResult.Valid()){
             std::cout << vertResult.error << std::endl;
             return;
         }
-        if(!fragResult.Succeeded()){
+        if(!fragResult.Valid()){
             std::cout << fragResult.error << std::endl;
-            return;
-        }
-        #ifdef __TYPHON_TESTING__
-        auto finalVert = ShaderCompiler::CompileToPlatformSpecific(vertResult,"MACOS");
-        auto finalFrag = ShaderCompiler::CompileToPlatformSpecific(fragResult,"MACOS");
-        #else
-        auto finalVert = ShaderCompiler::CompileToPlatformSpecific(vertResult);
-        auto finalFrag = ShaderCompiler::CompileToPlatformSpecific(fragResult);
-        #endif
-        if(!finalVert.Succeeded()){
-            std::cout << "Vert did not work!" << std::endl;
-            return;
-        }
-        if(!finalFrag.Succeeded()){
-            std::cout << "Frag did not work!" << std::endl;
             return;
         }
         
 
 
-        platformSpecificRenderingEngine.get()->SetVertexShader(finalVert);
-        platformSpecificRenderingEngine.get()->SetFragmentShader(finalFrag);
+        platformSpecificRenderingEngine.get()->SetVertexShader(vertResult);
+        platformSpecificRenderingEngine.get()->SetFragmentShader(fragResult);
 
         std::cout << "Succeeded on attaching shaders!" << std::endl;
-    
     }
 }
 
 void RenderingEngine::InitializeEngine() {
     #ifdef __APPLE__
     platformSpecificRenderingEngine = std::make_unique<MacOSEngine>();
-    #endif  
-
-    
+    #endif 
 };

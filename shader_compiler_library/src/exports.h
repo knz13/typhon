@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 
 
 
@@ -20,9 +21,10 @@
 #endif
 
 struct CompilationResult {
-    const char* shaderText;
+    std::string shaderText = "";
+    std::string jsonResources = "";
+    std::string error = "";
     bool result = false;
-    const char* jsonResources;
 };
 
 
@@ -31,7 +33,7 @@ extern "C" {
 #endif
 
     
-    FFI_PLUGIN_EXPORT CompilationResult CompileGLSLToPlatformSpecific(const char* shaderText,int64_t shaderType);
+    FFI_PLUGIN_EXPORT CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText,std::string shaderName,int64_t shaderType);
     
 
 #ifdef __cplusplus
