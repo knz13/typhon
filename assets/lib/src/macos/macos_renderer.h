@@ -16,7 +16,8 @@ public:
     void SetFragmentShader(ShaderCompilationResult& shaderSource) {
         using NS::StringEncoding::UTF8StringEncoding;
 
-        if(!shaderSource.jsonResources["entryPoints"]) {
+
+        if(!shaderSource.jsonResources.contains("entryPoints")) {
             std::cerr << "Could not set fragment shader, no entry points found!" << "\n";
             return;
         }
@@ -44,8 +45,7 @@ public:
     }
     void SetVertexShader(ShaderCompilationResult& shaderSource) {
         using NS::StringEncoding::UTF8StringEncoding;
-
-        if(!shaderSource.jsonResources["entryPoints"]) {
+        if(!shaderSource.jsonResources.contains("entryPoints")) {
             std::cerr << "Could not set vertex shader, no entry points found!" << "\n";
             return;
         }

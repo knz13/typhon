@@ -39,6 +39,11 @@ public:
         }
     }
 
+    static void Unload() {
+        std::cout << "Reseting shader compiler!" << std::endl;
+        shaderCompilerLib.reset();
+    }
+
 
     static ShaderCompilationResult CompileGLSLToPlatformSpecific(std::string shaderText,std::string shaderName,ShaderType type) {
         std::cout << "Compiling shader!" << std::endl;
