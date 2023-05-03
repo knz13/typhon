@@ -1,12 +1,13 @@
 #pragma once
 #include "general.h"
-#include "shader_compiler.h"
 
-
+struct RenderingData {
+    
+};  
 
 class PlatformSpecificRenderingEngine {
 public:
-    virtual void EnqueueRender() {};
+    virtual void EnqueueRender(RenderingData data) {};
     virtual void ReceivePlatformSpecificViewPointer(void* view) {};
     virtual void SetFragmentShader(ShaderPlatformSpecificCompilationResult& shaderSource) {}
     virtual void SetVertexShader(ShaderPlatformSpecificCompilationResult& shaderSource) {}
@@ -23,11 +24,7 @@ public:
     };
 
 
-    static void PassPlatformSpecificViewPointer(void* view) {
-        if(platformSpecificRenderingEngine) {
-            platformSpecificRenderingEngine.get()->ReceivePlatformSpecificViewPointer(view);
-        }
-    };
+    static void PassPlatformSpecificViewPointer(void* view);
 
 private:
     static std::unique_ptr<PlatformSpecificRenderingEngine> platformSpecificRenderingEngine;

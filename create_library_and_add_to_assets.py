@@ -17,6 +17,9 @@ parser.add_argument("--Release",action='store_true')
 
 args = parser.parse_args()
 
+import create_shader_compiler_library as shader_lib
+
+shader_lib.compile(run_tests=True,release=False)
 
 is_64bits = sys.maxsize > 2**32
 
@@ -27,18 +30,10 @@ if not os.path.exists("src/vendor"):
 
 
 
-
 #downloading dependencies
-if not os.path.exists("src/vendor/shaderc"):
-    os.system('echo downloading shaderc library...')
-    os.system("git clone https://github.com/google/shaderc src/vendor/shaderc")
-    os.system(("python " if platform.system() != "Darwin" else "") + "src/vendor/shaderc/utils/git-sync-deps")
 
-if not os.path.exists("src/vendor/spirv_cross"):
-    os.system('git clone --recursive https://github.com/KhronosGroup/SPIRV-Cross src/vendor/spirv_cross')
-
-if not os.path.exists("src/vendor/catch2"):
-    os.system('git clone --recursive https://github.com/catchorg/Catch2 src/vendor/catch2')
+if not os.path.exists("src/vendor/dylib"):
+    os.system('git clone --recursive https://github.com/martin-olivier/dylib src/vendor/dylib')
 if not os.path.exists("src/vendor/entt"):
     os.system('git clone --recursive https://github.com/skypjack/entt src/vendor/entt')
 if not os.path.exists("src/vendor/yael"):
@@ -251,7 +246,7 @@ with open("lib/engine.dart",'w') as f:
 
 os.system('echo "Updating dart bindings file..."')
 
-os.system(f'dart run ffigen --config ffigen.yaml')
+os.system(f'dart run ffigen --config ffigen_typhon.yaml')
 
 os.system('echo "Done updating dart bindings file!"')
 

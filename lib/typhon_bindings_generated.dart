@@ -8,7 +8,7 @@
 import 'dart:ffi' as ffi;
 
 /// Bindings for `cpp_library/src/typhon.h`.
-/// Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
+/// Regenerate bindings with `dart run ffigen --config ffigen_typhon.yaml`.
 ///
 class TyphonBindings {
   /// Holds the symbol lookup function.

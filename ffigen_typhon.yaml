@@ -2,7 +2,7 @@ name: TyphonBindings
 
 description: |
   Bindings for `cpp_library/src/typhon.h`.
-  Regenerate bindings with `dart run ffigen --config ffigen.yaml`.
+  Regenerate bindings with `dart run ffigen --config ffigen_typhon.yaml`.
 output: "lib/typhon_bindings_generated.dart"
 
 headers:

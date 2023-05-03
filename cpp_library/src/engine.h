@@ -8,9 +8,6 @@
 #include "crunch_texture_packer.h"
 #include "object.h"
 #include <ranges>
-#ifdef __APPLE__
-#include "macos/macos_engine.h"
-#endif
 
 
 class EngineInternals {

@@ -1,28 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
-#adding useful functions
-
-function(DIR_EXISTS variable dir_path)
-
-file(GLOB ${variable}_check ${dir_path}/*)
-
-list(LENGTH ${variable}_check ${variable}_len)
-
-if(${${variable}_len} EQUAL 0)
-
-set(${variable} FALSE PARENT_SCOPE)
-
-else()
-
-set(${variable} TRUE PARENT_SCOPE)
-
-endif()
-
-endfunction()
-
 #adding extra cmake libs
 
-include(GNUInstallDirs)
 include(ExternalProject)
 include(FetchContent)
 
@@ -78,7 +57,7 @@ SET(FETCHCONTENT_QUIET FALSE)
 
       list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/metal-cpp/metal-cpp/)
 
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/macos/macos_engine.cpp)
+      #list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/macos/macos_engine.cpp)
     endif()
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/single_include/)
@@ -99,21 +78,21 @@ SET(FETCHCONTENT_QUIET FALSE)
 
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/json/single_include)
     
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/dylib/include)
     
     # --------------------- Targets ------------------------
 
   # settings for target typhon...
 
     # adding sources
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/mono_manager.cpp)
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/shader_compiler.cpp)
+
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/general.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/ecs_registry.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/game_object_traits.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/generic_reflection.cpp)
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/rendering_engine.cpp)
+      #list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/rendering_engine.cpp)
     # creating target
 
 
@@ -121,38 +100,6 @@ SET(FETCHCONTENT_QUIET FALSE)
 
         ${typhon_SOURCE_FILES}
     )
-
-    #SPIRV-Cross setup
-    set(SPIRV_CROSS_ENABLE_TESTS OFF)
-    set(SPIRV_CROSS_CLI OFF)
-
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/spirv_cross)
-
-    target_link_libraries(typhon PUBLIC spirv-cross-cpp)
-    target_link_libraries(typhon PUBLIC spirv-cross-msl)
-    target_link_libraries(typhon PUBLIC spirv-cross-hlsl)
-    target_link_libraries(typhon PUBLIC spirv-cross-reflect)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/spirv_cross/)
-
-
-
-    #SHADERC setup
-    set(SHADERC_SKIP_TESTS ON)
-    set(SHADERC_SKIP_EXAMPLES ON)
-    
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/shaderc)
-
-    target_link_libraries(typhon PUBLIC shaderc)
-    
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc/src)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/libshaderc_util/src)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/glslang)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/effcee)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/re2)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-headers/include)
-    target_include_directories(typhon PUBLIC ${PROJECT_SOURCE_DIR}/src/vendor/shaderc/third_party/spirv-tools/include)
 
     # setting c++ standard
     set_target_properties(typhon PROPERTIES
@@ -227,7 +174,6 @@ if(TYPHON_RUN_TESTS)
   # Adding main engine tests
   add_executable(typhon_tests 
     tests/main_test.cpp
-    tests/shader_tests.cpp
   )
 
   set_target_properties(typhon_tests PROPERTIES

@@ -1,6 +1,5 @@
 #pragma once
 #include "../general.h"
-#include "../shader_compiler.h"
 
 class MacOSRenderer {
 public:
@@ -77,6 +76,13 @@ public:
         auto* renderPassDescriptor = view->currentRenderPassDescriptor();
         //encodes the renderPass descriptor into actually commands
         auto* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor);
+        if(renderPipelineState != nullptr){
+
+            
+            
+
+
+        }
         //YOU SHALL NOT ENCODE ANYMORE - end encoding
         renderCommandEncoder->endEncoding();
         //tell gpu we got something to draw
@@ -97,14 +103,26 @@ public:
             return;
         }
 
-        MTL::Function* vertexFunction = vertexShaderLibrary->newFunction( NS::String::string("main", UTF8StringEncoding));
-        MTL::Function* fragmentFunction = fragmentShaderLibrary->newFunction( NS::String::string("main", UTF8StringEncoding));
+        MTL::Function* vertexFunction = vertexShaderLibrary->newFunction( NS::String::string("main0", UTF8StringEncoding));
+        MTL::Function* fragmentFunction = fragmentShaderLibrary->newFunction( NS::String::string("main0", UTF8StringEncoding));
+
+        MTL::VertexDescriptor* desc = MTL::VertexDescriptor::alloc()->init();
+        
+        desc->attributes()->object(0)->setFormat(MTL::VertexFormatFloat3);
+        desc->attributes()->object(0)->setOffset(0);
+        desc->attributes()->object(0)->setBufferIndex(0);
+        desc->attributes()->object(1)->setFormat(MTL::VertexFormatFloat3);
+        desc->attributes()->object(1)->setOffset(sizeof(float[3]));
+        desc->attributes()->object(1)->setBufferIndex(0);
+        desc->layouts()->object(0)->setStride(sizeof(float[6]));
 
         MTL::RenderPipelineDescriptor* renderPipelineDescriptor = MTL::RenderPipelineDescriptor::alloc()->init();
         //in a render pass we use this vertex function
         renderPipelineDescriptor->setVertexFunction( vertexFunction );
         //in a render pass we use this fragment function
         renderPipelineDescriptor->setFragmentFunction( fragmentFunction );
+
+        renderPipelineDescriptor->setVertexDescriptor(desc);
         
         renderPipelineDescriptor->colorAttachments()->object(0)->setPixelFormat( MTL::PixelFormat::PixelFormatBGRA8Unorm_sRGB );
 
@@ -120,6 +138,7 @@ public:
             assert(false);
         }
 
+        desc->release();
         vertexFunction->release();
         fragmentFunction->release();
         renderPipelineDescriptor->release();
@@ -133,6 +152,8 @@ private:
     MTL::Library* fragmentShaderLibrary = nullptr;
     MTL::RenderPipelineState* renderPipelineState = nullptr;
     MTL::Device* device = nullptr;
+    MTL::Buffer* vertexPositionBuffer = nullptr;
+    MTL::Buffer* colorBuffer = nullptr;
     MTL::CommandQueue* commandQueue = nullptr;
 
 };
