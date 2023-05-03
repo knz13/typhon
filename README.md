@@ -2,6 +2,31 @@
 
 A Game Engine written in Flutter/C++ to ease the entry barrier for C++ learners with an interactive UI made with flutter and make it easier to integrate existing C++ libraries in any game
 
+## Building
+
+In order to build the project you're gonna need to setup a few things:
+
+* [Flutter SDK](https://docs.flutter.dev/get-started/install)
+
+* [Python](https://www.python.org/downloads/)
+
+* [CMake](https://cmake.org)
+
+* [Visual Studio (If using windows)](https://visualstudio.microsoft.com/pt-br/)
+
+After downloading and installing the dependencies, download the repository and run the script create_library_and_add_to_assets.py with the command below to generate the libraries that are bigger than what Github allows in their website
+
+```
+python create_library_and_add_to_assets.py
+```
+
+Then just run 
+```
+flutter run
+```
+Select a device to run and you're all set!
+
+
 ## Roadmap
 
 - &check; Basic Engine UI
@@ -17,6 +42,9 @@ A Game Engine written in Flutter/C++ to ease the entry barrier for C++ learners 
 - &cross; Basic Rendering Engine Outline
 - &cross; Add MacOS Support for Rendering Engine (Metal Backend)
 - &cross; Add Windows Support for Rendering Engine (OpenGL Backend)
+
+
+
 
 
 

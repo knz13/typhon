@@ -50,16 +50,20 @@ void main() {
 }
 )";
 
-    auto result = ShaderCompiler::CompileToSPIRV(simpleVertexGLSLShader,"SomeFile",shaderc_shader_kind::shaderc_fragment_shader);
+    auto result = ShaderCompiler::CompileToSPIRV(simpleVertexGLSLShader,"SomeFile",shaderc_shader_kind::shaderc_vertex_shader);
     REQUIRE(result.Succeeded());
 
 
     auto macosResult = ShaderCompiler::CompileToPlatformSpecific(result,"MACOS");
 
     REQUIRE(macosResult.Succeeded());
+    std::cout << macosResult.shaderText << std::endl;
     std::cout << macosResult.jsonResources.dump() << std::endl;
     json resourcesData = macosResult.jsonResources;
-
+    for(auto inp : macosResult.entryPoints){
+        std::cout << inp.name << "|" << inp.execution_model << std::endl;
+    }
+    
     REQUIRE(resourcesData.contains("entryPoints"));
     REQUIRE(resourcesData.contains("types"));
     REQUIRE(resourcesData.contains("inputs"));

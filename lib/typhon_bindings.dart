@@ -63,8 +63,9 @@ class TyphonCPPInterface {
 
         String srcName = path.relative(assetPath,from:"assets/lib");
         File srcFile = File(path.join(libsDir.path, srcName));
-
+        
         if(assetPath.contains("vendor/") && srcFile.existsSync()){
+          index += 1;
           continue;
         }
         srcFile.createSync(recursive: true);

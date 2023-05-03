@@ -1,5 +1,5 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/c_sharp_interface",
+    "cmake.sourceDirectory": "${workspaceFolder}/cpp_library",
     "files.associations": {
         "iostream": "cpp",
         "unordered_map": "cpp",

@@ -2,16 +2,12 @@
 //__BEGIN__CPP__IMPL__
 #include <iostream>
 #include <stdint.h>
-#include "mono_manager.h"
-#include "shader_compiler.h"
 #include "engine.h"
-#include "rendering_engine.h"
+//#include "rendering_engine.h"
 //__INCLUDE__CREATED__CLASSES__
 
 bool initializeCppLibrary() {
     
-    MonoManager::getInstance();
-    ShaderCompiler::getInstance();
     
     //__INITIALIZE__CREATED__CLASSES__
 
@@ -197,7 +193,7 @@ bool isEngineInitialized() {
 #ifdef __APPLE__
 void passNSViewPointer(void* view) {
     std::cout << "passing pointer!" << std::endl;
-    RenderingEngine::PassPlatformSpecificViewPointer(view);
+    //RenderingEngine::PassPlatformSpecificViewPointer(view);
 }
 #endif
 

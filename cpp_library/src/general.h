@@ -10,6 +10,7 @@
 #include "vendor/glm/glm/glm.hpp"
 #include "vendor/yael/include/yael.h"
 #include "vendor/json/single_include/nlohmann/json.hpp"
+#include "vendor/dylib/include/dylib.hpp"
 #include <bitset>
 #include <functional>
 

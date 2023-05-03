@@ -370,6 +370,20 @@ flutter:
     - assets/lib/src/vendor/shaderc/kokoro/windows/
     - assets/lib/src/vendor/shaderc/kokoro/ndk-build/
     - assets/lib/src/vendor/shaderc/kokoro/android-release/
+    - assets/lib/src/vendor/dylib/
+    - assets/lib/src/vendor/dylib/example/
+    - assets/lib/src/vendor/dylib/include/
+    - assets/lib/src/vendor/dylib/tests/
+    - assets/lib/src/vendor/dylib/.github/workflows/
+    - assets/lib/src/vendor/dylib/.github/ISSUE_TEMPLATE/
+    - assets/lib/src/vendor/dylib/.git/objects/pack/
+    - assets/lib/src/vendor/dylib/.git/info/
+    - assets/lib/src/vendor/dylib/.git/logs/
+    - assets/lib/src/vendor/dylib/.git/logs/refs/heads/
+    - assets/lib/src/vendor/dylib/.git/logs/refs/remotes/origin/
+    - assets/lib/src/vendor/dylib/.git/hooks/
+    - assets/lib/src/vendor/dylib/.git/refs/heads/
+    - assets/lib/src/vendor/dylib/.git/refs/remotes/origin/
     - assets/lib/src/vendor/entt/
     - assets/lib/src/vendor/entt/test/
     - assets/lib/src/vendor/entt/test/benchmark/

@@ -17,28 +17,23 @@ parser.add_argument("--Release",action='store_true')
 
 args = parser.parse_args()
 
+import create_shader_compiler_library as shader_lib
+
+shader_lib.compile(run_tests=True,release=False)
 
 is_64bits = sys.maxsize > 2**32
 
 current_dir = os.path.abspath(os.curdir)
-os.chdir("c_sharp_interface")
+os.chdir("cpp_library")
 if not os.path.exists("src/vendor"):
     os.mkdir("src/vendor")
 
 
 
-
 #downloading dependencies
-if not os.path.exists("src/vendor/shaderc"):
-    os.system('echo downloading shaderc library...')
-    os.system("git clone https://github.com/google/shaderc src/vendor/shaderc")
-    os.system(("python " if platform.system() != "Darwin" else "") + "src/vendor/shaderc/utils/git-sync-deps")
 
-if not os.path.exists("src/vendor/spirv_cross"):
-    os.system('git clone --recursive https://github.com/KhronosGroup/SPIRV-Cross src/vendor/spirv_cross')
-
-if not os.path.exists("src/vendor/catch2"):
-    os.system('git clone --recursive https://github.com/catchorg/Catch2 src/vendor/catch2')
+if not os.path.exists("src/vendor/dylib"):
+    os.system('git clone --recursive https://github.com/martin-olivier/dylib src/vendor/dylib')
 if not os.path.exists("src/vendor/entt"):
     os.system('git clone --recursive https://github.com/skypjack/entt src/vendor/entt')
 if not os.path.exists("src/vendor/yael"):
@@ -140,8 +135,8 @@ for root, dirs, files in os.walk('src'):
     for file in files:
         if os.path.basename(root).startswith("."):
             continue
-        if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")))):
-            os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src"))),exist_ok=True)
+        if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")))):
+            os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src"))),exist_ok=True)
         if root not in roots:
             roots.append(root)
             
@@ -150,13 +145,13 @@ for root, dirs, files in os.walk('src'):
 os.chdir(current_dir)
 
 os.system("rm -rf assets/lib/src")
-os.chdir("c_sharp_interface")
+os.chdir("cpp_library")
 shutil.copytree("src",os.path.join(current_dir,"assets","lib",'src'))
 
 
 paths_to_add_to_pubspec = []
 for root in roots:
-    path = os.path.relpath(root,os.path.join(current_dir,"c_sharp_interface","src")).replace("\\","/")
+    path = os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")).replace("\\","/")
     paths_to_add_to_pubspec.append(f'    - assets/lib/src/{path}/')
 
 os.chdir(current_dir)
@@ -190,7 +185,7 @@ cpp_exports = ""
 cpp_exports_impl = ""
 
 os.chdir(current_dir)
-with open("c_sharp_interface/src/typhon.h",'r') as f:
+with open("cpp_library/src/typhon.h",'r') as f:
     lines = f.readlines()
     shouldAddLine = False
     for line in lines:
@@ -203,7 +198,7 @@ with open("c_sharp_interface/src/typhon.h",'r') as f:
         if shouldAddLine:
             cpp_exports += line + "\n"
 
-with open("c_sharp_interface/src/typhon.cpp",'r') as f:
+with open("cpp_library/src/typhon.cpp",'r') as f:
     lines = f.readlines()
     shouldAddLine = False
     for line in lines:
@@ -251,7 +246,7 @@ with open("lib/engine.dart",'w') as f:
 
 os.system('echo "Updating dart bindings file..."')
 
-os.system(f'dart run ffigen --config ffigen.yaml')
+os.system(f'dart run ffigen --config ffigen_typhon.yaml')
 
 os.system('echo "Done updating dart bindings file!"')
 
@@ -259,7 +254,7 @@ os.system('echo "Done updating dart bindings file!"')
 os.system('echo "Building tests...')
 
 
-os.chdir("c_sharp_interface/build")
+os.chdir("cpp_library/build")
 
 os.system(f'{"make typhon_tests" if platform.system() == "Darwin" else "msbuild project_typhon.sln /target:typhon_tests /p:Configuration=" + ("Release" if args.Release else "Debug")}')
 

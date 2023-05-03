@@ -254,13 +254,9 @@ public:
 
 #include <stdint.h>
 
-#include "mono_manager.h"
-
-#include "shader_compiler.h"
-
 #include "engine.h"
 
-#include "rendering_engine.h"
+//#include "rendering_engine.h"
 
 //__INCLUDE__CREATED__CLASSES__
 
@@ -269,10 +265,6 @@ public:
 bool initializeCppLibrary() {
 
     
-
-    MonoManager::getInstance();
-
-    ShaderCompiler::getInstance();
 
     
 
@@ -644,7 +636,7 @@ void passNSViewPointer(void* view) {
 
     std::cout << "passing pointer!" << std::endl;
 
-    RenderingEngine::PassPlatformSpecificViewPointer(view);
+    //RenderingEngine::PassPlatformSpecificViewPointer(view);
 
 }
 
@@ -913,6 +905,8 @@ extern "C" {
     FFI_PLUGIN_EXPORT void removeObjectByID(int64_t id);
 
     FFI_PLUGIN_EXPORT const char* getObjectSerializationByID(int64_t id);
+
+    
 
 //__END__CPP__EXPORTS__
 

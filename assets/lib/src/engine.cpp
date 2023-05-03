@@ -1,10 +1,9 @@
 #include "engine.h"
 #include "game_object_traits.h"
 #include "crunch_texture_packer.h"
-#include "shader_compiler.h"
 #include <filesystem>
 #include <fstream>
-#include "rendering_engine.h"
+//#include "rendering_engine.h"
 
 namespace fs = std::filesystem;
 
@@ -29,8 +28,8 @@ void Engine::Initialize()
 
     textureAtlas = CreateTextureAtlasFromImages();
 
-
-    RenderingEngine::InitializeEngine();
+    std::cout << "Current path is " << std::filesystem::current_path().string() << std::endl; 
+    //RenderingEngine::InitializeEngine();
     
     Engine::isInitialized = true;
 }
@@ -38,7 +37,7 @@ void Engine::Initialize()
 void Engine::Unload()
 {   
 
-    RenderingEngine::UnloadEngine();
+    //RenderingEngine::UnloadEngine();
         
 
     Clear();
