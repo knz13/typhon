@@ -16,6 +16,7 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:typhon/general_widgets.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
 
@@ -38,6 +39,19 @@ class TyphonCPPInterface {
 
   static final int Function(Pointer<Void>) _dlCloseFunc = stdlib.lookup<NativeFunction<Int32 Function(Pointer<Void>)>>( Platform.isWindows ? 'FreeLibrary' : 'dlclose').asFunction();
 
+  static Future<String> getCMakeCommand() async {
+    if(await isCommandInstalled("cmake")){
+      return "cmake";
+    }
+    var p = await getLibraryPath();
+
+    var cmakeDir = Platform.isMacOS? "cmake-3.26.3-macos-universal/CMake.app/Contents" : Platform.isWindows? "cmake-3.26.3-windows-x86_64" : "";
+
+    return path.join(p,"src","vendor","cmake",cmakeDir,"bin","cmake");
+    
+  }
+
+  
 
   static Future<String> extractLib() async {
 

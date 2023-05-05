@@ -33,8 +33,8 @@ void Engine::Initialize()
     
 
     textureAtlas = CreateTextureAtlasFromImages();
-
-    RenderingEngine::InitializeEngine();
+    
+    //RenderingEngine::InitializeEngine();
     
     Engine::isInitialized = true;
 }
@@ -42,7 +42,7 @@ void Engine::Initialize()
 void Engine::Unload()
 {   
 
-    RenderingEngine::UnloadEngine();
+    //RenderingEngine::UnloadEngine();
 
     #ifndef __TYPHON_TESTING__
     ShaderCompiler::Unload();

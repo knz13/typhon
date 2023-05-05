@@ -36,17 +36,20 @@ def compile(run_tests=False,release=False):
         if not os.path.exists("src/vendor/catch2"):
             os.system('git clone --recursive https://github.com/catchorg/Catch2 src/vendor/catch2')
 
+    cmake_command = "cmake"
 
+    if os.path.exists("src/vendor/cmake"):
+        cmake_command = "src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe"
 
-    os.system(' '.join(['cmake',"-DSHADER_COMPILER_RUN_TESTS=1",("-DCMAKE_BUILD_TYPE=" + ("Release" if release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
+    os.system(' '.join([cmake_command,"-DSHADER_COMPILER_RUN_TESTS=1",("-DCMAKE_BUILD_TYPE=" + ("Release" if release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
 
     os.system('echo "Finished CMake Proccess!"')
 
     os.chdir("build")
 
     os.system(f'{"make shader_compiler_dynamic" if platform.system() == "Darwin" else "msbuild project_shader_compiler_library.sln /target:shader_compiler_dynamic /p:Configuration=" + ("Release" if release else "Debug")}')
-
-    os.system(f'{"make shader_compiler_tests" if platform.system() == "Darwin" else "msbuild project_shader_compiler_library.sln /target:shader_compiler_tests /p:Configuration=" + ("Release" if release else "Debug")}')
+    if run_tests:
+        os.system(f'{"make shader_compiler_tests" if platform.system() == "Darwin" else "msbuild project_shader_compiler_library.sln /target:shader_compiler_tests /p:Configuration=" + ("Release" if release else "Debug")}')
 
     os.system('echo "Finished Building Shader Compiler Library!"')
 
@@ -62,5 +65,6 @@ def compile(run_tests=False,release=False):
 
 
 if __name__ == "__main__":
+
 
     compile(release=True)

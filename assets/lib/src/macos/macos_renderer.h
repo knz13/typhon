@@ -10,7 +10,28 @@ public:
     };
 
     ~MacOSRenderer() {
-        this->commandQueue->release();
+        
+        if(fragmentShaderLibrary){
+            fragmentShaderLibrary->release();
+        }
+        if(vertexShaderLibrary){
+            vertexShaderLibrary->release();
+        }
+        if(vertexPositionBuffer){
+            vertexPositionBuffer->release();
+        }
+        if(colorBuffer){
+            colorBuffer->release();
+        }
+        if(renderPipelineState){
+            renderPipelineState->release();
+        }
+        if(commandQueue){
+            commandQueue->release();
+        }
+        if(device){
+            device->release();
+        }
     }
 
     void SetFragmentShader(ShaderCompilationResult& shaderSource) {
@@ -78,8 +99,9 @@ public:
         //encodes the renderPass descriptor into actually commands
         auto* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor);
         if(renderPipelineState != nullptr){
-
             
+            renderCommandEncoder->setRenderPipelineState(renderPipelineState);
+
             
 
 
@@ -139,10 +161,10 @@ public:
             assert(false);
         }
 
-        desc->release();
-        vertexFunction->release();
-        fragmentFunction->release();
         renderPipelineDescriptor->release();
+        desc->release();
+        fragmentFunction->release();
+        vertexFunction->release();
     };
 
 

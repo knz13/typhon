@@ -141,7 +141,8 @@ class Engine {
     library.attachEnqueueOnChildrenChanged(Pointer.fromFunction(onCppChildrenChanged));
     library.initializeCppLibrary();
     if(Platform.isMacOS){
-      library.passNSViewPointer(await NativeViewInterface.createSubView(Rect.zero));
+      var ptr = await NativeViewInterface.createSubView(Rect.zero);
+      library.passNSViewPointer(ptr);
     }
     else {
       
@@ -173,6 +174,7 @@ class Engine {
       currentProcess!.kill();
     }
     currentProcess = null;
+    NativeViewInterface.preReleaseSubView();
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
       TyphonCPPInterface.getCppFunctions().unloadLibrary();
       if(Platform.isMacOS){
@@ -921,7 +923,9 @@ extern "C" {
 #endif
 """);
 
-    currentProcess = await Process.start("cmake", ["./","-B build"],workingDirectory: projectPath,runInShell: true);
+    var libPath = await TyphonCPPInterface.getLibraryPath();
+    var cmakeLocationCommand = await TyphonCPPInterface.getCMakeCommand();
+    currentProcess = await Process.start(cmakeLocationCommand, ["./","-B build"],workingDirectory: projectPath,runInShell: true);
     showDialog(
         barrierDismissible: false,
         context: MyApp.globalContext.currentContext!,

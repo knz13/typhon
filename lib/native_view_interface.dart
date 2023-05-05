@@ -25,7 +25,7 @@ class NativeViewInterface {
       "width":rect.width,
       "height":rect.height
     }));
-
+    print("received view pointer: $widgetView");
     return widgetView == -1? nullptr : Pointer<Void>.fromAddress(widgetView);
   }
 
@@ -40,6 +40,9 @@ class NativeViewInterface {
 
   static void releaseSubView() async {
     await _channel.invokeMethod("removeRenderableView");
+  }
+  static void preReleaseSubView() async {
+    await _channel.invokeMethod("preRemoveRenderableView");
   }
 
 }

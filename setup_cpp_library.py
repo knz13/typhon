@@ -7,19 +7,56 @@ import subprocess
 from glob import glob
 import shutil
 import re
+from io import BytesIO
+from urllib.request import urlopen
+from zipfile import ZipFile
+import tarfile
 from subprocess import check_output
+import requests
+
+def get_first_available_cpp_compiler():
+    system = platform.system()
+    if system == 'Darwin':
+        compilers = ['clang++', 'c++', 'g++', 'xcrun', 'icc', 'icpc']
+    elif system == 'Windows':
+        compilers = ['clang++', 'cl.exe', 'g++', 'c++', 'icc', 'icpc']
+    else:
+        compilers = ['clang++', 'g++', 'c++', 'icc', 'icpc']
+
+    for compiler in compilers:
+        if shutil.which(compiler) is not None:
+            return compiler
+
+    return None
+
+def download_and_extract(url,save_location):
+    
+    if url.endswith(".zip"):
+        with urlopen(url) as zipresp:
+            with ZipFile(BytesIO(zipresp.read())) as zfile:
+                zfile.extractall(save_location)
+        return
+    if url.endswith(".gz"):
+        response = requests.get(url, stream=True)
+        file = tarfile.open(fileobj=response.raw, mode="r|gz")
+        file.extractall(path=save_location)
+        return
+            
+    raise ValueError("Url is not related to a zip file!")
+
+
 
 parser = argparse.ArgumentParser("create library")
 
 
 parser.add_argument("--Release",action='store_true')
-
+parser.add_argument("--run-tests",action='store_true')
 
 args = parser.parse_args()
 
 import create_shader_compiler_library as shader_lib
 
-shader_lib.compile(run_tests=True,release=False)
+shader_lib.compile(run_tests=args.run_tests,release=False)
 
 is_64bits = sys.maxsize > 2**32
 
@@ -31,6 +68,16 @@ if not os.path.exists("src/vendor"):
 
 
 #downloading dependencies
+
+#if get_first_available_cpp_compiler() == None:
+
+
+if not os.path.exists("src/vendor/cmake"):
+    if platform.system() == "Darwin":
+        #only for macos and windows x64
+        download_and_extract("https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-macos-universal.tar.gz","src/vendor/cmake")
+    else:
+        download_and_extract("https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-windows-x86_64.zip","src/vendor/cmake")
 
 if not os.path.exists("src/vendor/dylib"):
     os.system('git clone --recursive https://github.com/martin-olivier/dylib src/vendor/dylib')
@@ -122,12 +169,13 @@ target_link_libraries(METAL_CPP
         )
 """)
 
-os.system(' '.join(['cmake', '-DTYPHON_RUN_TESTS=ON',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
+os.system(' '.join(["src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe", '-DTYPHON_RUN_TESTS=ON',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
 
 roots = []
 os.makedirs("../assets/lib",exist_ok=True)
 shutil.copyfile("CMakeLists.txt","../assets/lib/CMakeLists.txt")
 dir = os.listdir("src")
+num_files = 0
 for root, dirs, files in os.walk('src'):
     root = os.path.abspath(root)
     if os.path.basename(root).startswith("."):
@@ -139,15 +187,27 @@ for root, dirs, files in os.walk('src'):
             os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src"))),exist_ok=True)
         if root not in roots:
             roots.append(root)
+        num_files += 1
             
     #print(f"Done dir {root}")
 
 os.chdir(current_dir)
 
+print("Copying Files To Assets!")
+copying_index = 0
+def copy2_verbose(src, dst):
+    global copying_index
+    global num_files
+    shutil.copy2(src,dst)
+    if copying_index % 1000 == 0:
+        print('Copied Files To Assets: {0}/{1}'.format(copying_index,num_files))
+    copying_index += 1
+
 os.system("rm -rf assets/lib/src")
 os.chdir("cpp_library")
-shutil.copytree("src",os.path.join(current_dir,"assets","lib",'src'))
+shutil.copytree("src",os.path.join("../assets","lib",'src'), copy_function=copy2_verbose)
 
+print("Finished Copying Files To Assets!")
 
 paths_to_add_to_pubspec = []
 for root in roots:
@@ -250,9 +310,10 @@ os.system(f'dart run ffigen --config ffigen_typhon.yaml')
 
 os.system('echo "Done updating dart bindings file!"')
 
+if not args.run_tests:
+    quit()
 
 os.system('echo "Building tests...')
-
 
 os.chdir("cpp_library/build")
 

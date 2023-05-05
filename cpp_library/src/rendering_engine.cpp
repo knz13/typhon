@@ -9,7 +9,9 @@ std::unique_ptr<PlatformSpecificRenderingEngine> RenderingEngine::platformSpecif
 void RenderingEngine::PassPlatformSpecificViewPointer(void* view) {
     if(platformSpecificRenderingEngine) {
         platformSpecificRenderingEngine.get()->ReceivePlatformSpecificViewPointer(view);
-
+        if(view == nullptr){
+            return;
+        }   
         std::string vertexShader = R"(
 #version 330 core
 

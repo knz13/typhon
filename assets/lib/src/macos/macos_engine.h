@@ -41,6 +41,7 @@ private:
     void Initialize() {
         std::cout << "initializing macos engine!" << std::endl;
         viewDelegate = std::make_unique<MacOSViewDelegate>(mainView->device());
+        std::cout << "Initialized delegate on location " << (void*)viewDelegate.get() << std::endl;
         mainView->setDelegate(viewDelegate.get());
     };
 

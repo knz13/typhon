@@ -155,6 +155,17 @@ class GeneralText extends StatelessWidget {
 }
 
 
+Future<bool> isCommandInstalled(String command) async {
+  try {
+    // Run the command with the "--version" option to check if it is installed
+    final result = await Process.run(command, ['--version']);
+    return result.exitCode == 0;
+  } on ProcessException {
+    // If the command is not found, return false
+    return false;
+  }
+}
+
 
 void showNativeContextMenu(BuildContext context,double x,double y, List<ContextMenuOption> options) {
   if(Platform.isMacOS){

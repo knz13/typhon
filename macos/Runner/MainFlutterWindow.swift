@@ -141,34 +141,32 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
             
             let width = args?["width"] as? Double ?? 0
             let height = args?["height"] as? Double ?? 0
+            print("MAC: Creating View!")
             
             if let view = createdView {
                 print("called create for MTKView before deleting current MTKView")
                 view.removeFromSuperview()
             }
             createdView = MTKView()
-            createdView!.device = MTLCreateSystemDefaultDevice()
-            createdView!.framebufferOnly = true
+            let someView = createdView
+            
+            print(Int64(Int(bitPattern: Unmanaged.passRetained(someView!).toOpaque())))
+            someView!.device = MTLCreateSystemDefaultDevice()
+            someView!.framebufferOnly = true
             let frame = NSRect(x:x,y:y,width:width,height:height)
-            createdView!.frame = frame
-            createdView!.wantsLayer = true
+            someView!.frame = frame
+            someView!.wantsLayer = true
             
-            MainFlutterWindow.flutterViewController!.view.addSubview(createdView!, positioned: .above, relativeTo: nil)
-            MainFlutterWindow.instance?.contentViewController!.view.setNeedsDisplay(createdView!.frame)
+            //let viewController = MainFlutterWindow.flutterViewController;
             
-            result(UInt64(bitPattern:Int64(Int(bitPattern: Unmanaged.passRetained(createdView!).toOpaque()))))
-            /* 
-            let widgetId = args?["widgetId"] as? Int ?? -1
+            //print(viewController)
             
-            let widgetView = getWidgetView(widgetId)
-            if let actualWidgetView = widgetView{
-                result(UInt64(bitPattern:Int64(Int(bitPattern: Unmanaged.passRetained(actualWidgetView).toOpaque()))))
-            }
-            else {
-                print("Found no view with tag")
-                print(widgetId)
-                result(UInt64(0))
-            } */
+            MainFlutterWindow.flutterViewController!.view.addSubview(someView!, positioned: .above, relativeTo: nil)
+            
+            
+            
+            result(UInt64(bitPattern:Int64(Int(bitPattern: Unmanaged.passRetained(someView!).toOpaque()))))
+            
             
         } else if call.method == "setFrameRenderableView" {
             let args = convertToDictionary(text: call.arguments as? String ?? "")
@@ -180,8 +178,13 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
             if let view = createdView {
                 view.frame = NSRect(x:x,y:y,width:width,height:height)
             }
-        } else if call.method == "removeRenderableView" {
+        } else if call.method == "preRemoveRenderableView" {
             if let view = createdView {
+                view.delegate = nil
+            }
+        }else if call.method == "removeRenderableView" {
+            if let view = createdView {
+                print("MAC: Removing view!")
                 view.removeFromSuperview()
                 createdView = nil
             }
