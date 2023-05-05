@@ -39,6 +39,38 @@ class TyphonBindings {
   late final _passNSViewPointer =
       _passNSViewPointerPtr.asFunction<void Function(ffi.Pointer<ffi.Void>)>();
 
+  void setPlatformSpecificWindowSizeAndPos(
+    double x,
+    double y,
+    double width,
+    double height,
+  ) {
+    return _setPlatformSpecificWindowSizeAndPos(
+      x,
+      y,
+      width,
+      height,
+    );
+  }
+
+  late final _setPlatformSpecificWindowSizeAndPosPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.Double, ffi.Double, ffi.Double,
+              ffi.Double)>>('setPlatformSpecificWindowSizeAndPos');
+  late final _setPlatformSpecificWindowSizeAndPos =
+      _setPlatformSpecificWindowSizeAndPosPtr
+          .asFunction<void Function(double, double, double, double)>();
+
+  ffi.Pointer<ffi.Void> getPlatformSpecificPointer() {
+    return _getPlatformSpecificPointer();
+  }
+
+  late final _getPlatformSpecificPointerPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Void> Function()>>(
+          'getPlatformSpecificPointer');
+  late final _getPlatformSpecificPointer = _getPlatformSpecificPointerPtr
+      .asFunction<ffi.Pointer<ffi.Void> Function()>();
+
   bool initializeCppLibrary() {
     return _initializeCppLibrary();
   }

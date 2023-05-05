@@ -17,6 +17,7 @@ bool Engine::isInitialized = false;
 
 void Engine::Initialize()
 {   
+    std::cout << "initializing engine!" << std::endl;
     if(isInitialized){
         Engine::Unload();
     }
@@ -33,7 +34,7 @@ void Engine::Initialize()
     
 
     textureAtlas = CreateTextureAtlasFromImages();
-
+    
     RenderingEngine::InitializeEngine();
     
     Engine::isInitialized = true;
@@ -55,7 +56,7 @@ void Engine::Unload()
     GameObject::instantiableClassesIDs.clear();
     GameObject::instantiableClassesNames.clear();
     Engine::isInitialized = false;
-
+    
     std::cout << "Unloaded Engine!" << std::endl;
 }
 

@@ -29,6 +29,8 @@ extern "C" {
     #ifdef __APPLE__
     FFI_PLUGIN_EXPORT void passNSViewPointer(void* view);
     #endif
+    FFI_PLUGIN_EXPORT void setPlatformSpecificWindowSizeAndPos(double x,double y,double width,double height);
+    FFI_PLUGIN_EXPORT void* getPlatformSpecificPointer();
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
     FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
     FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);

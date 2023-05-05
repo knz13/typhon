@@ -12,21 +12,27 @@ import 'package:flutter/widgets.dart' show Offset;
 
 
 
-const MethodChannel _channel = MethodChannel("nativeWindowInterfaceChannel");
+MethodChannel _channel = const MethodChannel("nativeWindowInterfaceChannel")..setMethodCallHandler((call) async {
+  if(call.method == "pointerDetached") {
+    print("Called pointerDetached on flutter!");
+    NativeViewInterface.waitingToFinishDetaching = false;
+  }
+});
 
 
 
 class NativeViewInterface {
 
-  static Future<Pointer<Void>> createSubView(Rect rect) async {
-     final int widgetView  = await _channel.invokeMethod("createRenderableView",json.encode({
-      "x":rect.topLeft.dx,
-      "y":rect.topLeft.dy,
-      "width":rect.width,
-      "height":rect.height
-    }));
-    print("received view pointer: $widgetView");
-    return widgetView == -1? nullptr : Pointer<Void>.fromAddress(widgetView);
+  static var waitingToFinishDetaching = true;
+
+  static void attachCPPPointer(Pointer<Void> ptr) async {
+    
+    if(ptr != nullptr){
+      await _channel.invokeMethod("attachCPPPointer",ptr.address);
+    }
+    else {
+      print("Tried to attach nullptr to native view interface!");
+    }
   }
 
   static void updateSubViewRect(Rect rect) async {
@@ -37,12 +43,18 @@ class NativeViewInterface {
       "height":rect.height
     }));
   }
+  
+  static Future<void> detachCPPPointer(Pointer<Void> ptr) async {
+    if(ptr != nullptr){
+      await _channel.invokeMethod("detachCPPPointer",ptr.address);
+    }
+    else {
+      print("Tried to dettach nullptr to native view interface!");
+    }
 
-  static void releaseSubView() async {
-    await _channel.invokeMethod("removeRenderableView");
-  }
-  static void preReleaseSubView() async {
-    await _channel.invokeMethod("preRemoveRenderableView");
+    return Future.doWhile(() => waitingToFinishDetaching)..then((value) {
+      NativeViewInterface.waitingToFinishDetaching = true;
+    });
   }
 
 }

@@ -197,4 +197,13 @@ void passNSViewPointer(void* view) {
 }
 #endif
 
+void* getPlatformSpecificPointer() {
+    if(!Engine::HasInitialized()){
+        return nullptr;
+    }
+    return RenderingEngine::GetPlatformSpecificPointer();
+}
+
+
+
 //__END__CPP__IMPL__

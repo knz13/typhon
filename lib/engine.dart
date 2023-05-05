@@ -140,13 +140,9 @@ class Engine {
     library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
     library.attachEnqueueOnChildrenChanged(Pointer.fromFunction(onCppChildrenChanged));
     library.initializeCppLibrary();
-    if(Platform.isMacOS){
-      var ptr = await NativeViewInterface.createSubView(Rect.zero);
-      library.passNSViewPointer(ptr);
-    }
-    else {
-      
-    }
+    var ptr = library.getPlatformSpecificPointer();
+    NativeViewInterface.attachCPPPointer(ptr);
+    
     (()async {
       while(true){
         if(library.isEngineInitialized() == true){
@@ -174,15 +170,14 @@ class Engine {
       currentProcess!.kill();
     }
     currentProcess = null;
-    NativeViewInterface.preReleaseSubView();
+
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
-      TyphonCPPInterface.getCppFunctions().unloadLibrary();
-      if(Platform.isMacOS){
-        TyphonCPPInterface.getCppFunctions().passNSViewPointer(nullptr);
-      }
-      TyphonCPPInterface.detachLibrary();
+      var ptr = TyphonCPPInterface.getCppFunctions().getPlatformSpecificPointer();
+      NativeViewInterface.detachCPPPointer(ptr).then((value) {
+        TyphonCPPInterface.getCppFunctions().unloadLibrary();
+        TyphonCPPInterface.detachLibrary();
+      });
     }
-    NativeViewInterface.releaseSubView();
   }
 
 
@@ -646,6 +641,24 @@ void passNSViewPointer(void* view) {
 
 
 
+void* getPlatformSpecificPointer() {
+
+    if(!Engine::HasInitialized()){
+
+        return nullptr;
+
+    }
+
+    return RenderingEngine::GetPlatformSpecificPointer();
+
+}
+
+
+
+
+
+
+
 //__END__CPP__IMPL__
 """);
 
@@ -880,6 +893,10 @@ extern "C" {
     FFI_PLUGIN_EXPORT void passNSViewPointer(void* view);
 
     #endif
+
+    FFI_PLUGIN_EXPORT void setPlatformSpecificWindowSizeAndPos(double x,double y,double width,double height);
+
+    FFI_PLUGIN_EXPORT void* getPlatformSpecificPointer();
 
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
 

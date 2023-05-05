@@ -114,11 +114,13 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
 
 public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
 
-    var createdView: MTKView?
+    var attachedView:Unmanaged<MTKView>?
+    var channel: FlutterMethodChannel?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "nativeWindowInterfaceChannel", binaryMessenger: registrar.messenger)
         let instance = NativeWindowInterfacePlugin()
+        instance.channel = channel
         registrar.addMethodCallDelegate(instance, channel: channel)
         
     }
@@ -127,6 +129,7 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
         let channel = FlutterMethodChannel(name: "nativeWindowInterfaceChannel",binaryMessenger: controller.engine.binaryMessenger)
             
         let instance = NativeWindowInterfacePlugin()
+        instance.channel = channel
         
         channel.setMethodCallHandler(instance.handle)
         print("registered plugin!")
@@ -134,39 +137,15 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
    
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        if call.method == "createRenderableView" {
-            let args = convertToDictionary(text: call.arguments as? String ?? "")
-            let x = args?["x"] as? Double ?? 0.0
-            let y = args?["y"] as? Double ?? 0.0
-            
-            let width = args?["width"] as? Double ?? 0
-            let height = args?["height"] as? Double ?? 0
-            print("MAC: Creating View!")
-            
-            if let view = createdView {
-                print("called create for MTKView before deleting current MTKView")
-                view.removeFromSuperview()
+        if call.method == "attachCPPPointer" {
+            let pointer = call.arguments as? Int64
+            if let pointer = pointer {
+                if let rawPointer = UnsafeRawPointer(bitPattern: UInt(pointer)) {
+                    attachedView = Unmanaged<MTKView>.fromOpaque(rawPointer)
+                    
+                    MainFlutterWindow.flutterViewController?.view.addSubview(attachedView!.takeUnretainedValue(), positioned: .above, relativeTo: nil)
+                }
             }
-            createdView = MTKView()
-            let someView = createdView
-            
-            print(Int64(Int(bitPattern: Unmanaged.passRetained(someView!).toOpaque())))
-            someView!.device = MTLCreateSystemDefaultDevice()
-            someView!.framebufferOnly = true
-            let frame = NSRect(x:x,y:y,width:width,height:height)
-            someView!.frame = frame
-            someView!.wantsLayer = true
-            
-            //let viewController = MainFlutterWindow.flutterViewController;
-            
-            //print(viewController)
-            
-            MainFlutterWindow.flutterViewController!.view.addSubview(someView!, positioned: .above, relativeTo: nil)
-            
-            
-            
-            result(UInt64(bitPattern:Int64(Int(bitPattern: Unmanaged.passRetained(someView!).toOpaque()))))
-            
             
         } else if call.method == "setFrameRenderableView" {
             let args = convertToDictionary(text: call.arguments as? String ?? "")
@@ -175,18 +154,19 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
             let width = args?["width"] as? Double ?? 0
             let height = args?["height"] as? Double ?? 0
             
-            if let view = createdView {
-                view.frame = NSRect(x:x,y:y,width:width,height:height)
+            if let view = attachedView {
+                view.takeUnretainedValue().frame = NSRect(x:x,y:y,width:width,height:height)
             }
-        } else if call.method == "preRemoveRenderableView" {
-            if let view = createdView {
-                view.delegate = nil
-            }
-        }else if call.method == "removeRenderableView" {
-            if let view = createdView {
-                print("MAC: Removing view!")
-                view.removeFromSuperview()
-                createdView = nil
+
+        } else if call.method == "detachCPPPointer" {
+            if let viewPtr = attachedView {
+                viewPtr.takeUnretainedValue().removeFromSuperview()
+                
+                DispatchQueue.main.async {
+                    self.channel?.invokeMethod("pointerDetached", arguments: nil)
+
+                    self.attachedView = nil
+                }
             }
         } else {
             result(FlutterMethodNotImplemented)

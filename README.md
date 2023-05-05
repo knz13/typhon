@@ -14,10 +14,12 @@ In order to build the project you're gonna need to setup a few things:
 
 * [Visual Studio (If using windows)](https://visualstudio.microsoft.com/pt-br/)
 
+__*CMake is only optional, we can download it for you as a dependency of the program when you run the python code but it might increase the time for building the c++ library at the first time__
+
 After downloading and installing the dependencies, download the repository and run the script create_library_and_add_to_assets.py with the command below to generate the libraries that are bigger than what Github allows in their website
 
 ```
-python create_library_and_add_to_assets.py
+python setup_cpp_library.py
 ```
 
 Then just run 
@@ -40,7 +42,7 @@ Select a device to run and you're all set!
 - &check; Separating the Shader Compilers into another library
 - &check; Dynamic Loading|Unloading of the C++ Library
 - &check; Basic C++ User Script Creation and Hot Reload
-- &check; Add Initial MacOS Rendering Engine Outline
+- &check; Add Initial MacOS Rendering Engine Base
 - &cross; Basic Rendering Engine Outline
 - &cross; Add MacOS Support for Rendering Engine (Metal Backend)
 - &cross; Add Windows Support for Rendering Engine (OpenGL Backend)

@@ -42,11 +42,12 @@ class TyphonCPPInterface {
   static Future<String> getCMakeCommand() async {
     if(await isCommandInstalled("cmake")){
       return "cmake";
-    }
+    } 
     var p = await getLibraryPath();
 
     var cmakeDir = Platform.isMacOS? "cmake-3.26.3-macos-universal/CMake.app/Contents" : Platform.isWindows? "cmake-3.26.3-windows-x86_64" : "";
 
+    //return "cmakekeke";
     return path.join(p,"src","vendor","cmake",cmakeDir,"bin","cmake");
     
   }

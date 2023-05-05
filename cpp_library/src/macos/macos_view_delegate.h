@@ -5,8 +5,7 @@
 
 class MacOSViewDelegate : public MTK::ViewDelegate {
 public:
-    explicit MacOSViewDelegate(MTL::Device* device) {
-        //std::cout << "Renderer location " << (void*)renderer.get() << std::endl;
+    explicit MacOSViewDelegate(MTL::Device* device) : renderer(new MacOSRenderer(device)) {
     }
 
     MacOSRenderer* GetRenderer() {
@@ -18,7 +17,7 @@ public:
     };
 
     void drawInMTKView(MTK::View *pView) override {
-        //renderer.get()->Draw(pView);
+        renderer.get()->Draw(pView);
     };
 
 private:

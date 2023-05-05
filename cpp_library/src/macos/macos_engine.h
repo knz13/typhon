@@ -7,7 +7,34 @@ class MacOSEngine : public PlatformSpecificRenderingEngine {
 public:
     
 
-
+    void InitializeRenderingEngine() override {
+        std::cout << "initializing macos engine!" << std::endl;
+        device = MTL::CreateSystemDefaultDevice();
+        if(!device){
+            std::cout << "Failed to initialize macos rendering engine: metal not supported" << std::endl;
+            return;
+        }
+        CGRect rect = CGRect();
+        rect.origin = CGPoint();
+        rect.origin.x = 100;
+        rect.origin.y = 200;
+        rect.size.width = 100;
+        rect.size.height = 100;
+        mainView = MTK::View::alloc()->init(rect,device);
+        viewDelegate = std::make_unique<MacOSViewDelegate>(mainView->device());
+        mainView->setClearColor(MTL::ClearColor(0,0,0,1));
+        mainView->setDelegate(viewDelegate.get());
+    };
+    void UnloadRenderingEngine() override {
+        std::cout << "unloading macos rendering engine!" << std::endl;
+        if(mainView){
+            mainView->release();
+        }
+        if(device){
+            device->release();
+        }
+        viewDelegate.reset();
+    };
    
 
     void SetFragmentShader(ShaderCompilationResult& shaderSource) override {
@@ -21,31 +48,18 @@ public:
         }
     }
 
-    void ReceivePlatformSpecificViewPointer(void* viewPtr) override {
-        if(viewPtr == nullptr){
-            Unload();
-        }
-        else {
-            mainView = (MTK::View*)viewPtr;
-            Initialize();
-        }
+    void* GetPlatformSpecificPointer() override  {
+        return mainView;
     };
+
+    
 
 private:
-    void Unload(){
-        std::cout << "Unloading macos engine!" << std::endl;
-        
-        viewDelegate.reset();
-        mainView = nullptr;
-    }
-    void Initialize() {
-        std::cout << "initializing macos engine!" << std::endl;
-        viewDelegate = std::make_unique<MacOSViewDelegate>(mainView->device());
-        std::cout << "Initialized delegate on location " << (void*)viewDelegate.get() << std::endl;
-        mainView->setDelegate(viewDelegate.get());
-    };
+    
 
+  
     std::unique_ptr<MacOSViewDelegate> viewDelegate = {};
     MTK::View* mainView = nullptr;
+    MTL::Device* device = nullptr;
 
 };

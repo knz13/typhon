@@ -17,6 +17,7 @@ bool Engine::isInitialized = false;
 
 void Engine::Initialize()
 {   
+    std::cout << "initializing engine!" << std::endl;
     if(isInitialized){
         Engine::Unload();
     }
@@ -34,7 +35,7 @@ void Engine::Initialize()
 
     textureAtlas = CreateTextureAtlasFromImages();
     
-    //RenderingEngine::InitializeEngine();
+    RenderingEngine::InitializeEngine();
     
     Engine::isInitialized = true;
 }
@@ -42,7 +43,7 @@ void Engine::Initialize()
 void Engine::Unload()
 {   
 
-    //RenderingEngine::UnloadEngine();
+    RenderingEngine::UnloadEngine();
 
     #ifndef __TYPHON_TESTING__
     ShaderCompiler::Unload();
@@ -55,7 +56,7 @@ void Engine::Unload()
     GameObject::instantiableClassesIDs.clear();
     GameObject::instantiableClassesNames.clear();
     Engine::isInitialized = false;
-
+    
     std::cout << "Unloaded Engine!" << std::endl;
 }
 

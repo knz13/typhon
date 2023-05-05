@@ -147,6 +147,7 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
         
         NativeViewInterface.updateSubViewRect(rectToSend);
         
+
         await Future.delayed(Duration(milliseconds: 20));
       }
 

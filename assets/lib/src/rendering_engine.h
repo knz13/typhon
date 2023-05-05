@@ -10,20 +10,26 @@ class PlatformSpecificRenderingEngine {
 public:
     virtual void EnqueueRender(RenderingData data) {};
     virtual void ReceivePlatformSpecificViewPointer(void* view) {};
+    virtual void* GetPlatformSpecificPointer() {return nullptr;};
+    virtual void InitializeRenderingEngine() {};
+    virtual void UnloadRenderingEngine() {};
     virtual void SetFragmentShader(ShaderCompilationResult& shaderSource) {}
     virtual void SetVertexShader(ShaderCompilationResult& shaderSource) {}
-
 };
 
 class RenderingEngine {
 public:
+    
 
     static void InitializeEngine();
 
     static void UnloadEngine() {
-        PassPlatformSpecificViewPointer(nullptr);
+        if(platformSpecificRenderingEngine){
+            platformSpecificRenderingEngine.get()->UnloadRenderingEngine();
+        }
     };
 
+    static void* GetPlatformSpecificPointer();
 
     static void PassPlatformSpecificViewPointer(void* view);
 
