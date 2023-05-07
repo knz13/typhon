@@ -54,6 +54,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
 
   Widget buildMainFrontend() {
     return Scaffold(
+      backgroundColor: Colors.transparent,
                 body:EngineSubWindow(
                   division: SubWindowDivision.left,
                   mainChildProportion: 0.75,

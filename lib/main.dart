@@ -12,6 +12,7 @@ import 'package:typhon/inspector_panel.dart';
 import 'package:typhon/project_choice_window.dart';
 import 'package:typhon/scene_viewer_panel.dart';
 import 'package:typhon/typhon_bindings.dart';
+import 'package:window_manager/window_manager.dart';
 import 'engine.dart';
 import 'file_viewer_panel.dart';
 import 'main_engine_frontend.dart';
@@ -43,6 +44,18 @@ void main() async {
     setWindowMinSize(const Size(1280, 600));
     setWindowMaxSize(Size.infinite);
   }
+  await windowManager.ensureInitialized();
+
+
+
+  WindowOptions windowOptions = WindowOptions(
+    size: Size(1280, 600),
+    center: true,
+  );
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
   String libsDir = await TyphonCPPInterface.extractLib();
   
 
@@ -97,6 +110,7 @@ class _MyAppState extends State<MyApp> {
           title: 'Typhon',
           debugShowCheckedModeBanner: false,
           home: Scaffold(
+            backgroundColor: Colors.transparent,
             body: Platform.isMacOS ? PlatformMenuBar(
               menus: [
                 PlatformMenu(

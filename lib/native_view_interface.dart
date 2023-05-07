@@ -44,13 +44,8 @@ class NativeViewInterface {
     }));
   }
   
-  static Future<void> detachCPPPointer(Pointer<Void> ptr) async {
-    if(ptr != nullptr){
-      await _channel.invokeMethod("detachCPPPointer",ptr.address);
-    }
-    else {
-      print("Tried to dettach nullptr to native view interface!");
-    }
+  static Future<void> detachCPPPointer() async {
+    await _channel.invokeMethod("detachCPPPointer");
 
     return Future.doWhile(() => waitingToFinishDetaching)..then((value) {
       NativeViewInterface.waitingToFinishDetaching = true;

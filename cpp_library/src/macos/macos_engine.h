@@ -16,13 +16,13 @@ public:
         }
         CGRect rect = CGRect();
         rect.origin = CGPoint();
-        rect.origin.x = 100;
-        rect.origin.y = 200;
-        rect.size.width = 100;
-        rect.size.height = 100;
+        rect.origin.x = 0;
+        rect.origin.y = 0;
+        rect.size.width = 10;
+        rect.size.height = 10;
         mainView = MTK::View::alloc()->init(rect,device);
         viewDelegate = std::make_unique<MacOSViewDelegate>(mainView->device());
-        mainView->setClearColor(MTL::ClearColor(0,0,0,1));
+        mainView->setClearColor(MTL::ClearColor(1,0,0,1));
         mainView->setDelegate(viewDelegate.get());
     };
     void UnloadRenderingEngine() override {

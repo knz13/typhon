@@ -492,7 +492,9 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                               showToast("Please Provide a Valid Project Location",context:context);
                               return;
                             }
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => MainEngineFrontend()));
+                            Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
+                            Navigator.of(context).pop();
+                            Navigator.push(context, PageRouteBuilder(pageBuilder: (context,a,b) => MainEngineFrontend(),opaque: false));
                             Future.delayed(Duration(milliseconds: 500),(){
                               Engine.instance.initializeProject(projectLocationPath!, projectName!);
                             });
@@ -749,6 +751,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                   ),
                                   child: RawMaterialButton(
                                     onPressed: (){
+                                      Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => const ProjectChoiceWindow()));
                                     },
                                     child: const Text(
@@ -804,7 +807,9 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                 Future.delayed(Duration(milliseconds: 500),(){
                                   Engine.instance.initializeProject(path.dirname(snapshot.data!.keys.toList()[index]), snapshot.data![snapshot.data!.keys.toList()[index]]["name"]);
                                 });
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => MainEngineFrontend()));
+                                Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
+                                Navigator.pop(context);
+                                Navigator.push(context, PageRouteBuilder(pageBuilder: (context,a,b) => MainEngineFrontend(),opaque: false));
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,

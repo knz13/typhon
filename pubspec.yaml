@@ -51,6 +51,7 @@ dependencies:
   flutter_styled_toast:
   flutter_spinkit:
   menu_bar:
+  window_manager:
   
 dev_dependencies:
   flutter_test:

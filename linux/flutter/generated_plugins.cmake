@@ -4,7 +4,9 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   native_context_menu
+  screen_retriever
   url_launcher_linux
+  window_manager
   window_size
 )
 

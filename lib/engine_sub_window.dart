@@ -35,8 +35,10 @@ class EngineSubWindowData {
   bool closable;
   List<ContextMenuOption> menuItems;
   void Function()? onTabSelected;
+  void Function()? onLeavingTab;
+  bool backgroundOpaque;
 
-  EngineSubWindowData({required this.child,required this.title,this.onTabSelected,this.closable = true,this.menuItems = const [],this.topPanelWidgets,this.tabLeading});
+  EngineSubWindowData({required this.child,required this.title,this.onTabSelected,this.closable = true,this.menuItems = const [],this.topPanelWidgets,this.tabLeading,this.onLeavingTab,this.backgroundOpaque= true});
 
 }
 
@@ -172,6 +174,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
   }
  
   Offset mousePosition = Offset.zero;
+  int oldTabIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -191,21 +194,28 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             closable: false,
             text: data.title,
             leading:data.tabLeading,
-            content: Column(
-              children: [
-                data.topPanelWidgets ?? Container(),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 1,
-                  decoration: BoxDecoration(
-                    boxShadow: [BoxShadow(
-                      blurRadius: 1,
-
-                    )]
+            content: Container(
+              color: data.backgroundOpaque? EngineSubWindow.tabColor : Colors.transparent,
+              child: Column(
+                children: [
+                  Container(
+                    color: midGray,
+                    child: data.topPanelWidgets ?? Container(
+                    ),
                   ),
-                ),
-                Expanded(child: data.child),
-              ],
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 1,
+                    decoration: BoxDecoration(
+                      boxShadow: [BoxShadow(
+                        blurRadius: 1,
+            
+                      )]
+                    ),
+                  ),
+                  Expanded(child: data.child),
+                ],
+              ),
             ),
           )
         );
@@ -222,9 +232,14 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           mousePosition = event.position;
         },
         child: TabbedView(
+          
           onTabSelection: (newTabIndex) {
             if(newTabIndex != null){
+              if(oldTabIndex != -1){
+                widget.tabs.elementAt(oldTabIndex).onLeavingTab?.call();
+              }
               widget.tabs.elementAt(newTabIndex).onTabSelected?.call();
+              oldTabIndex = newTabIndex;
             }
           },
           controller: _controller,
@@ -242,7 +257,9 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                         return;
                       }
                       setState(() {
+                        widget.tabs.elementAt(_controller.selectedIndex!).onLeavingTab?.call();
                         widget.tabs.removeAt(_controller.selectedIndex!);
+                        widget.tabs.elementAt(0).onTabSelected?.call();
                       });
                     }),
                     if((widget.tabs[_controller.selectedIndex!].closable && EngineSubWindow.aliveWindows.length != 1) || widget.tabs.length != 1)
@@ -293,7 +310,8 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                   child: EngineSubWindow(tabs: [
                     EngineSubWindowData(
                       title: tab.text,
-                      child: Container()
+                      child: Container(
+                      )
                     )
                   ],),
                 ),
@@ -308,6 +326,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
       TabbedViewThemeData theme = TabbedViewThemeData.dark()
         ..menu.ellipsisOverflowText = true 
         ..tabsArea.middleGap = 2
+        
         ..tab.textStyle = widget.titleStyle ?? TextStyle(
           color: platinumGray,
           fontWeight: FontWeight.normal,
@@ -324,12 +343,10 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
         ..tabsArea.buttonsAreaPadding = EdgeInsets.zero
 
         ..contentArea.decoration = BoxDecoration(
-          color: EngineSubWindow.tabColor
+          color: Colors.transparent,
         )
         ..menu.blur = true
         ..contentArea.padding = EdgeInsets.zero;
-
-      
 
       mainChildWidget = TabbedViewTheme(
         data: theme,

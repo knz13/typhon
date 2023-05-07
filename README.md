@@ -42,7 +42,8 @@ Select a device to run and you're all set!
 - &check; Separating the Shader Compilers into another library
 - &check; Dynamic Loading|Unloading of the C++ Library
 - &check; Basic C++ User Script Creation and Hot Reload
-- &check; Add Initial MacOS Rendering Engine Base
+- &check; Add Initial MacOS Rendering Engine Base (Creating a view, adding shaders and unloading on Metal)
+- &cross; Add Initial Windows Rendering Engine Base (Creating a view, adding shaders and unloading on OpenGL)
 - &cross; Basic Rendering Engine Outline
 - &cross; Add MacOS Support for Rendering Engine (Metal Backend)
 - &cross; Add Windows Support for Rendering Engine (OpenGL Backend)

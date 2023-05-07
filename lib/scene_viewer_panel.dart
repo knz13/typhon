@@ -23,7 +23,19 @@ class SceneViewerWindow extends EngineSubWindowData {
   static bool exists = false;
   static GlobalKey key = GlobalKey();
 
-  SceneViewerWindow() : super(title: "Scene",closable: false,topPanelWidgets: SceneViewerTop(),child: SceneViewerContents());
+  SceneViewerWindow() : super(
+    title: "Scene",
+    backgroundOpaque: false,
+    closable: false,
+    topPanelWidgets: SceneViewerTop(),
+    child: SceneViewerContents(),
+    onLeavingTab: () {
+      Engine.instance.detachPlatformSpecificView();
+    },
+    onTabSelected: () {
+      Engine.instance.attachPlatformSpecificView();
+    }
+  );
 
 
 }
@@ -123,7 +135,7 @@ class SceneViewerContents extends StatefulWidget {
 class _SceneViewerContentsState extends State<SceneViewerContents> {
   bool shouldStopUpdatingSubWindow = false;
 
-
+  Rect lastRect = Rect.fromLTRB(1, 1, 1, 1);
   @override
   void initState() {
     // TODO: implement initState
@@ -136,22 +148,33 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
         }
         await Future.delayed(Duration(milliseconds: 100));
       }
-      
+      if(!mounted){
+        return;
+      }
+      var box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;
+      var position = box.localToGlobal(Offset.zero);
+      var windowSize = (ui.window.physicalSize / ui.window.devicePixelRatio);
+      position = Offset(position.dx,position.dy);
+      var physSize = box.size;
+      var rectToSend = Rect.fromLTWH(position.dx,windowSize.height - position.dy - physSize.height,physSize.width,physSize.height);
+      NativeViewInterface.updateSubViewRect(rectToSend);
+        
       while(!shouldStopUpdatingSubWindow){
-        var box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;
-        var position = box.localToGlobal(Offset.zero);
-        var windowSize = (ui.window.physicalSize / ui.window.devicePixelRatio);
+        if(!mounted){
+          return;
+        }
+        box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;
+        position = box.localToGlobal(Offset.zero);
+        windowSize = (ui.window.physicalSize / ui.window.devicePixelRatio);
         position = Offset(position.dx,position.dy);
-        var physSize = box.size;
-        var rectToSend = Rect.fromLTWH(position.dx,windowSize.height - position.dy - physSize.height,physSize.width,physSize.height);
-        
-        NativeViewInterface.updateSubViewRect(rectToSend);
-        
-
+        physSize = box.size;
+        rectToSend = Rect.fromLTWH(position.dx,windowSize.height - position.dy - physSize.height,physSize.width,physSize.height);
+        if(rectToSend != lastRect) {
+          NativeViewInterface.updateSubViewRect(rectToSend);
+          lastRect = rectToSend;
+        }
         await Future.delayed(Duration(milliseconds: 20));
       }
-
-      
     })();
 
     SceneViewerWindow.exists = true;
@@ -170,6 +193,7 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
 
   Widget build(BuildContext context) {
     return Container(
+      color: Colors.transparent,
       key: SceneViewerWindow.key,
     );
   }

@@ -112,10 +112,14 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
     }
 }
 
+
+
 public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
 
     var attachedView:Unmanaged<MTKView>?
     var channel: FlutterMethodChannel?
+    
+    
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "nativeWindowInterfaceChannel", binaryMessenger: registrar.messenger)
@@ -134,7 +138,10 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
         channel.setMethodCallHandler(instance.handle)
         print("registered plugin!")
     }
+    
+    
    
+    
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if call.method == "attachCPPPointer" {
@@ -143,10 +150,9 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
                 if let rawPointer = UnsafeRawPointer(bitPattern: UInt(pointer)) {
                     attachedView = Unmanaged<MTKView>.fromOpaque(rawPointer)
                     
-                    MainFlutterWindow.flutterViewController?.view.addSubview(attachedView!.takeUnretainedValue(), positioned: .above, relativeTo: nil)
+                    MainFlutterWindow.mainViewController?.view.addSubview(attachedView!.takeUnretainedValue(), positioned: .below, relativeTo: nil)
                 }
             }
-            
         } else if call.method == "setFrameRenderableView" {
             let args = convertToDictionary(text: call.arguments as? String ?? "")
             let x = args?["x"] as? Double ?? 0
@@ -155,18 +161,22 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
             let height = args?["height"] as? Double ?? 0
             
             if let view = attachedView {
+               
                 view.takeUnretainedValue().frame = NSRect(x:x,y:y,width:width,height:height)
             }
-
         } else if call.method == "detachCPPPointer" {
             if let viewPtr = attachedView {
                 viewPtr.takeUnretainedValue().removeFromSuperview()
                 
+               
+                
                 DispatchQueue.main.async {
                     self.channel?.invokeMethod("pointerDetached", arguments: nil)
-
                     self.attachedView = nil
                 }
+            }
+            else {
+                self.channel?.invokeMethod("pointerDetached", arguments: nil)
             }
         } else {
             result(FlutterMethodNotImplemented)
@@ -175,17 +185,37 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
 
 }
 
+class MainFlutterViewController: NSViewController {
+
+    override func loadView() {
+        self.view = NSView()
+        self.view.wantsLayer = true
+    }
+
+}
+
 class MainFlutterWindow: NSWindow {
     static var instance: MainFlutterWindow?
     static var flutterViewController: FlutterViewController?
+    static var mainViewController: MainFlutterViewController?
         
     
     override func awakeFromNib() {
         MainFlutterWindow.instance = self
         MainFlutterWindow.flutterViewController = FlutterViewController.init()
         MainFlutterWindow.flutterViewController!.view.wantsLayer = true
+        
+        MainFlutterWindow.mainViewController = MainFlutterViewController()
+        MainFlutterWindow.flutterViewController!.backgroundColor = .clear
+        
         let windowFrame = self.frame
-        self.contentViewController = MainFlutterWindow.flutterViewController!
+        self.contentViewController = MainFlutterWindow.mainViewController!
+        
+        MainFlutterWindow.mainViewController!.addChild(MainFlutterWindow.flutterViewController!)
+        MainFlutterWindow.flutterViewController!.view.frame = MainFlutterWindow.mainViewController!.view.bounds
+        MainFlutterWindow.flutterViewController!.view.autoresizingMask = [.width, .height]
+        MainFlutterWindow.mainViewController?.view.addSubview(MainFlutterWindow.flutterViewController!.view, positioned: .above, relativeTo: nil)
+        
         self.setFrame(windowFrame, display: true)
 
         ContextMenuPlugin.registerOnStart(with: MainFlutterWindow.flutterViewController!)
@@ -195,6 +225,5 @@ class MainFlutterWindow: NSWindow {
         
         super.awakeFromNib()
     }
-    
    
 }

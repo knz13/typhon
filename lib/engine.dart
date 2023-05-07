@@ -119,6 +119,21 @@ class Engine {
     return _isProjectLoaded;
   } 
 
+  void detachPlatformSpecificView() {
+    if(TyphonCPPInterface.checkIfLibraryLoaded()){
+       NativeViewInterface.detachCPPPointer();
+    }
+  }
+
+  void attachPlatformSpecificView() {
+    if(TyphonCPPInterface.checkIfLibraryLoaded()){
+      var ptr = TyphonCPPInterface.getCppFunctions().getPlatformSpecificPointer();
+      if(ptr != nullptr){
+        NativeViewInterface.attachCPPPointer(ptr);
+      }
+    }
+  }
+
   Future<void> reloadProject() async {
     if(_isReloading){
       return;
@@ -172,8 +187,7 @@ class Engine {
     currentProcess = null;
 
     if(TyphonCPPInterface.checkIfLibraryLoaded()){
-      var ptr = TyphonCPPInterface.getCppFunctions().getPlatformSpecificPointer();
-      NativeViewInterface.detachCPPPointer(ptr).then((value) {
+      NativeViewInterface.detachCPPPointer().then((value) {
         TyphonCPPInterface.getCppFunctions().unloadLibrary();
         TyphonCPPInterface.detachLibrary();
       });
