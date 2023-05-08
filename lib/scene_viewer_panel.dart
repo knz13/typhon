@@ -148,7 +148,7 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
         }
         await Future.delayed(Duration(milliseconds: 100));
       }
-      if(!mounted){
+      if(!SceneViewerWindow.key.currentContext!.mounted || !mounted){
         return;
       }
       var box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;
@@ -160,7 +160,7 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
       NativeViewInterface.updateSubViewRect(rectToSend);
         
       while(!shouldStopUpdatingSubWindow){
-        if(!mounted){
+        if(!SceneViewerWindow.key.currentContext!.mounted || !mounted){
           return;
         }
         box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;

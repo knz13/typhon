@@ -102,8 +102,6 @@ public:
             
             renderCommandEncoder->setRenderPipelineState(renderPipelineState);
 
-            
-
 
         }
         //YOU SHALL NOT ENCODE ANYMORE - end encoding

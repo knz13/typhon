@@ -95,7 +95,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget buildMainApp() {
-    return MouseRegion(
+    Widget mainAppWidget =  MouseRegion(
         onHover: (ev) {
           MyApp.globalMousePosition = ev.position;
           if(!MyApp.isInteractingWithWindow){
@@ -107,11 +107,56 @@ class _MyAppState extends State<MyApp> {
         },
         child: MaterialApp(
           navigatorKey: MyApp.globalContext,
+          theme: ThemeData(
+  primaryColor: Colors.transparent,
+  primaryColorBrightness: Brightness.dark,
+  primaryColorLight: Colors.transparent,
+  primaryColorDark: Colors.transparent,
+  accentColor: Colors.transparent,
+  accentColorBrightness: Brightness.dark,
+  canvasColor: Colors.transparent,
+  scaffoldBackgroundColor: Colors.transparent,
+  bottomAppBarColor: Colors.transparent,
+  cardColor: Colors.transparent,
+  dividerColor: Colors.transparent,
+  focusColor: Colors.transparent,
+  highlightColor: Colors.transparent,
+  hoverColor: Colors.transparent,
+  splashColor: Colors.transparent,
+  selectedRowColor: Colors.transparent,
+  unselectedWidgetColor: Colors.transparent,
+  disabledColor: Colors.transparent,
+  buttonColor: Colors.transparent,
+  buttonTheme: ButtonThemeData(
+    buttonColor: Colors.transparent,
+    disabledColor: Colors.transparent,
+    colorScheme: ColorScheme.light(
+      primary: Colors.transparent,
+      primaryVariant: Colors.transparent,
+      secondary: Colors.transparent,
+      secondaryVariant: Colors.transparent,
+      surface: Colors.transparent,
+      background: Colors.transparent,
+      error: Colors.transparent,
+      onPrimary: Colors.transparent,
+      onSecondary: Colors.transparent,
+      onSurface: Colors.transparent,
+      onBackground: Colors.transparent,
+      onError: Colors.transparent,
+      brightness: Brightness.dark,
+    ),
+  ),
+),
           title: 'Typhon',
           debugShowCheckedModeBanner: false,
           home: Scaffold(
             backgroundColor: Colors.transparent,
-            body: Platform.isMacOS ? PlatformMenuBar(
+            body: ProjectsPage()
+          )
+        ),
+      );
+
+    return Platform.isMacOS ? PlatformMenuBar(
               menus: [
                 PlatformMenu(
                   label: "Typhon",
@@ -139,6 +184,7 @@ class _MyAppState extends State<MyApp> {
                         onSelected: () {
                           Engine.instance.unload();
                           Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
+                          Navigator.of(MyApp.globalContext.currentContext!).pop();
                           Navigator.of(MyApp.globalContext.currentContext!).push(MaterialPageRoute(builder:(context) {
                             print("loading projects page!");
                             return ProjectsPage();
@@ -149,11 +195,8 @@ class _MyAppState extends State<MyApp> {
                   ]
                 )
               ],
-              child: ProjectsPage()
-            ) : ProjectsPage()
-          )
-        ),
-      );
+              child: mainAppWidget
+            ) : mainAppWidget;
   }
 
   int page = 1;

@@ -970,7 +970,6 @@ extern "C" {
       },);
 
     if(await currentProcess?.exitCode != 0){
-      loadProjectLibrary();
       lastCompilationResult.value = false;
       Navigator.of(MyApp.globalContext.currentContext!).pop();
       return;
@@ -992,8 +991,8 @@ extern "C" {
           },
         );
       },);
+
       if(await currentProcess?.exitCode != 0){
-        loadProjectLibrary();
         lastCompilationResult.value = false;
         Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
@@ -1015,7 +1014,6 @@ extern "C" {
         );
       },);
       if(await currentProcess?.exitCode != 0){
-        loadProjectLibrary();
         lastCompilationResult.value = false;
         Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;

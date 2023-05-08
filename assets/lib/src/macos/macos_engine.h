@@ -24,6 +24,7 @@ public:
         viewDelegate = std::make_unique<MacOSViewDelegate>(mainView->device());
         mainView->setClearColor(MTL::ClearColor(1,0,0,1));
         mainView->setDelegate(viewDelegate.get());
+        std::cout << "loaded macos engine!" << std::endl;
     };
     void UnloadRenderingEngine() override {
         std::cout << "unloading macos rendering engine!" << std::endl;

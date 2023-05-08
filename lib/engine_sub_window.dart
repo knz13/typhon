@@ -60,6 +60,10 @@ class EngineSubWindow extends StatefulWidget {
   static Color tabColor = midGray;
   static Color backgroundColor = const Color.fromARGB(255, 100, 100, 100);
   ValueNotifier emptyNotifier = ValueNotifier(0);
+  void Function(void Function()) setStateFunc = (f) {};
+  void Function(EngineSubWindow) onChildEmpty = (f) {};
+  void Function() initializeNotifiersFunc = () {};
+  EngineSubWindow? parent;
 
 
   EngineSubWindow(
@@ -73,10 +77,22 @@ class EngineSubWindow extends StatefulWidget {
       this.mainChildProportion = 0.5,
       this.proportionAllowedRange = 0.6
     }
-  );
+  ) {
+    mainSubWindow?.parent = this;
+    splitSubWindow?.parent = this;      
+  }
 
 
- 
+  void clone(EngineSubWindow other) {
+    setStateFunc(() {
+      tabs = other.tabs;
+      division = other.division;
+      mainChildProportion = other.mainChildProportion;
+      proportionAllowedRange = other.proportionAllowedRange;
+      splitSubWindow = other.splitSubWindow;
+      mainSubWindow = other.mainSubWindow;
+    });
+  }
   
 
   @override
@@ -84,30 +100,12 @@ class EngineSubWindow extends StatefulWidget {
 }
 
 
-
-
-
-
-
 class _EngineSubWindowState extends State<EngineSubWindow>  {
   late TabbedViewController _controller;
 
   double initialMainSize = 0;
 
-  void clone(EngineSubWindow other) {
-    setState(() {
-      widget.tabs = other.tabs;
-      widget.division = other.division;
-      widget.mainChildProportion = other.mainChildProportion;
-      widget.proportionAllowedRange = other.proportionAllowedRange;
-      widget.splitSubWindow = other.splitSubWindow;
-      widget.mainSubWindow = other.mainSubWindow;
-    });
-
-
-
-    initializeNotifiers();
-  }
+  
 
   @override
   void initState() {
@@ -126,13 +124,63 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
 
     List<TabData> data = [];
 
+    widget.setStateFunc = (func) {
+      setState(() {
+        func();
+      });
+    };
+
+    widget.initializeNotifiersFunc = () {
+      initializeNotifiers();
+    };
+
     _controller = TabbedViewController(data);
 
     initializeNotifiers();
   }
 
   void initializeNotifiers() {
-    if(widget.splitSubWindow != null){
+
+    if(widget.parent != null){
+      widget.parent!.onChildEmpty = (EngineSubWindow toBeRemoved) {
+        if(widget.parent!.mainSubWindow == toBeRemoved){
+          if(widget.parent!.splitSubWindow != null){
+            widget.parent!.setStateFunc(() {
+              widget.parent!.mainSubWindow!.clone(widget.parent!.splitSubWindow!);
+              widget.parent!.splitSubWindow = null;
+            });
+          }
+          else {
+            widget.parent!.setStateFunc(() {
+              widget.parent!.mainSubWindow = null;
+              if(widget.parent!.parent != null){
+                widget.parent!.parent!.onChildEmpty(widget.parent!.parent!);
+              }
+            });
+          }
+        }
+        else {
+          //widget parent splitSubWindow is this one
+          if(widget.parent!.mainSubWindow == null) {
+            widget.parent!.setStateFunc(() {
+              widget.parent!.splitSubWindow = null;
+              if(widget.parent!.parent != null){
+                widget.parent!.parent!.onChildEmpty(widget.parent!.parent!);
+              }
+            });
+          }
+          else {
+            widget.parent!.setStateFunc((){
+              widget.parent!.setStateFunc(() {
+                widget.parent!.splitSubWindow = null;
+              });
+            });
+          }
+        }
+        widget.parent?.initializeNotifiersFunc();
+      };
+    }
+    /* if(widget.splitSubWindow != null){
       widget.splitSubWindow!.emptyNotifier.addListener(() {
         if(mounted){
           setState(() {
@@ -158,7 +206,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
           });
         }
       });
-    }
+    } */
   }
 
   @override
@@ -184,7 +232,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     initialMainSize = widget.division == SubWindowDivision.left || widget.division == SubWindowDivision.right ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.height;
     initialMainSize = initialMainSize * widget.mainChildProportion;
 
-    if(widget.tabs.length != 0){
+    if(widget.tabs.isNotEmpty){
 
       
       List<TabData> tabData = [];
@@ -221,11 +269,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
         );
       }
 
-      //print("called! len = ${_controller.tabs}");
-
       _controller = TabbedViewController(tabData);
-
-
       
       mainChildWidget = MouseRegion(
         onHover: (event) {
@@ -248,12 +292,10 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
               TabButton(
                 onPressed: () {
                   showNativeContextMenu(context, mousePosition.dx, mousePosition.dy, [
-                    if((widget.tabs[_controller.selectedIndex!].closable && EngineSubWindow.aliveWindows.length != 1) || widget.tabs.length != 1)
+                    if((widget.tabs[_controller.selectedIndex!].closable))
                     ContextMenuOption(title: "Close Tab",callback: () {
                       if(widget.tabs.length == 1){
-                        setState(() {
-                          widget.emptyNotifier.value++;
-                        });
+                        widget.parent?.onChildEmpty(widget);
                         return;
                       }
                       setState(() {
@@ -262,7 +304,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                         widget.tabs.elementAt(0).onTabSelected?.call();
                       });
                     }),
-                    if((widget.tabs[_controller.selectedIndex!].closable && EngineSubWindow.aliveWindows.length != 1) || widget.tabs.length != 1)
+                    if((widget.tabs[_controller.selectedIndex!].closable))
                     ContextMenuSeparator(), 
                     ...widget.tabs[_controller.selectedIndex!].menuItems,
                     if(widget.tabs[_controller.selectedIndex!].menuItems.isNotEmpty)
@@ -298,7 +340,6 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             ];
           },
           draggableTabBuilder: (tabIndex, tab, tabWidget) {
-            
             return Draggable(
               data: "TabsDraggableData",
               feedback: SizedBox(
@@ -389,6 +430,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     
     return widget.division == SubWindowDivision.top || widget.division == SubWindowDivision.bottom? 
     Container(
+      color: Colors.transparent,
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Column(
@@ -472,6 +514,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
     ) 
     :
     Container(
+      color: Colors.transparent,
       child: LayoutBuilder(
         builder: (context, constraints) {
           return Row(

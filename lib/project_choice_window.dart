@@ -752,6 +752,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                   child: RawMaterialButton(
                                     onPressed: (){
                                       Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
+                                      Navigator.of(MyApp.globalContext.currentContext!).pop();
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => const ProjectChoiceWindow()));
                                     },
                                     child: const Text(
