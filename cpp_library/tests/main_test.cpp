@@ -88,7 +88,6 @@ TEST_CASE("Components testing") {
 
     REQUIRE(obj.GetComponent<SomeComponent>()->someValue == -1);
 
-    ECSRegistry::Clear();
     Engine::Unload();
 
 }
@@ -146,7 +145,7 @@ class NamedComponent : public MakeComponent<NamedComponent> {
 };
 
 TEST_CASE("Components from names") {
-
+    NamedComponent();
     Engine::Initialize();
 
 

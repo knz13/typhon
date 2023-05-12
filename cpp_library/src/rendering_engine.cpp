@@ -6,6 +6,7 @@
 
 std::unique_ptr<PlatformSpecificRenderingEngine> RenderingEngine::platformSpecificRenderingEngine;
 
+
 void RenderingEngine::PassPlatformSpecificViewPointer(void* view) {
     
 }
@@ -64,7 +65,7 @@ FragColor = vec4(vertexColor, 1.0);
     
 
 
-    platformSpecificRenderingEngine.get()->SetVertexShader(vertResult);
-    platformSpecificRenderingEngine.get()->SetFragmentShader(fragResult);
+    platformSpecificRenderingEngine.get()->LoadVertexShader("MyVertex",vertResult);
+    platformSpecificRenderingEngine.get()->LoadFragmentShader("MyFragment",fragResult);
 
 };

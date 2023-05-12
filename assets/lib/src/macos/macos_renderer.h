@@ -10,13 +10,6 @@ public:
     };
 
     ~MacOSRenderer() {
-        
-        if(fragmentShaderLibrary){
-            fragmentShaderLibrary->release();
-        }
-        if(vertexShaderLibrary){
-            vertexShaderLibrary->release();
-        }
         if(vertexPositionBuffer){
             vertexPositionBuffer->release();
         }
@@ -34,59 +27,13 @@ public:
         }
     }
 
-    void SetFragmentShader(ShaderCompilationResult& shaderSource) {
-        using NS::StringEncoding::UTF8StringEncoding;
 
 
-        if(!shaderSource.jsonResources.contains("entryPoints")) {
-            std::cerr << "Could not set fragment shader, no entry points found!" << "\n";
-            return;
-        }
-        if(shaderSource.jsonResources["entryPoints"][0]["name"].get<std::string>() != "main") {
-            std::cerr << R"(Fragment shader could not be loaded. Please make sure that all shaders use "main" as their only entry point)" << "\n";
-            return;
-        }
-
-        NS::Error* error = nullptr; 
-
-        if(fragmentShaderLibrary != nullptr){
-            fragmentShaderLibrary->release();
-            fragmentShaderLibrary = nullptr;
-        }
-        fragmentShaderLibrary = device->newLibrary( NS::String::string(shaderSource.shaderText.c_str(),UTF8StringEncoding),nullptr, &error);
-
-
-        if(!fragmentShaderLibrary) {
-            std::cerr << error->localizedDescription()->utf8String() << "\n";
-            fragmentShaderLibrary = nullptr;
-            return;
-        }
-
-
+    void SetFragmentShader(MTL::Library* fragmentShader) {
+        fragmentShaderLibrary = fragmentShader;
     }
-    void SetVertexShader(ShaderCompilationResult& shaderSource) {
-        using NS::StringEncoding::UTF8StringEncoding;
-        if(!shaderSource.jsonResources.contains("entryPoints")) {
-            std::cerr << "Could not set vertex shader, no entry points found!" << "\n";
-            return;
-        }
-        if(shaderSource.jsonResources["entryPoints"][0]["name"].get<std::string>() != "main") {
-            std::cerr << R"(Vertex shader could not be loaded. Please make sure that all shaders use "main" as their only entry point)" << "\n";
-            return;
-        }
-
-        NS::Error* error = nullptr;
-        if(vertexShaderLibrary != nullptr){
-            vertexShaderLibrary->release();
-            vertexShaderLibrary = nullptr;
-        }
-        vertexShaderLibrary = device->newLibrary( NS::String::string(shaderSource.shaderText.c_str(),UTF8StringEncoding),nullptr, &error);
-        if(!vertexShaderLibrary) {
-            std::cerr << error->localizedDescription()->utf8String() << "\n";
-            vertexShaderLibrary = nullptr;
-            return;
-        }
-
+    void SetVertexShader(MTL::Library* vertexShader) {
+        vertexShaderLibrary = vertexShader;
     }
     
     void Draw(MTK::View* view) {
@@ -94,16 +41,14 @@ public:
 
         //get the current command buffer object to encode commands for execution in the GPU
         auto* commandBuffer = commandQueue->commandBuffer();
+        
         //get the current render pass descriptor that will be populated with different render targets and their information
         auto* renderPassDescriptor = view->currentRenderPassDescriptor();
         //encodes the renderPass descriptor into actually commands
         auto* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor);
         if(renderPipelineState != nullptr){
             
-            renderCommandEncoder->setRenderPipelineState(renderPipelineState);
-
-            
-
+            //renderCommandEncoder->setRenderPipelineState(renderPipelineState);
 
         }
         //YOU SHALL NOT ENCODE ANYMORE - end encoding
@@ -118,7 +63,7 @@ public:
 
     void RemakeRenderPipeline() {
         using NS::StringEncoding::UTF8StringEncoding;
-
+        
         NS::Error* error;
         if(vertexShaderLibrary == nullptr || fragmentShaderLibrary == nullptr){
             std::cerr << "Called RemakeRenderPipeline without having vertex and fragment shaders attached!" << "\n";

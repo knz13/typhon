@@ -254,7 +254,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                   Container(
                     width: MediaQuery.of(context).size.width,
                     height: 1,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       boxShadow: [BoxShadow(
                         blurRadius: 1,
             
@@ -383,7 +383,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
         )
         ..tabsArea.buttonsAreaPadding = EdgeInsets.zero
 
-        ..contentArea.decoration = BoxDecoration(
+        ..contentArea.decoration = const BoxDecoration(
           color: Colors.transparent,
         )
         ..menu.blur = true
@@ -424,7 +424,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
         child: secondChildWidget
     );
     
-    
+
     //mainChildWidget = mainChildWidget.runtimeType == EngineSubWindow? mainChildWidget : EngineSubWindow(mainChild: mainChildWidget,mainChildTitle: widget.mainChildTitle,);
     //secondChildWidget = secondChildWidget.runtimeType == EngineSubWindow? secondChildWidget : EngineSubWindow(mainChild: secondChildWidget,mainChildTitle: widget.secondChildTitle,);
     
@@ -453,7 +453,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                 child: MouseRegion(
                   cursor:SystemMouseCursors.resizeUpDown,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color:Colors.black,
                       boxShadow: [
                         BoxShadow(
@@ -490,7 +490,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                 child: MouseRegion(
                   cursor:SystemMouseCursors.resizeUpDown,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color:Colors.black,
                       boxShadow: [
                         BoxShadow(
@@ -537,7 +537,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                 child: MouseRegion(
                   cursor:SystemMouseCursors.resizeLeftRight,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color:Colors.black,
                       boxShadow: [
                         BoxShadow(
@@ -574,7 +574,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                 child: MouseRegion(
                   cursor:SystemMouseCursors.resizeLeftRight,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color:Colors.black,
                       boxShadow: [
                         BoxShadow(

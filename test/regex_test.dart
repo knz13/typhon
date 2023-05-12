@@ -31,7 +31,7 @@ void main() {
 #include <iostream>
 
 
-class Something {
+class Something : public MakeComponent<Something> {
 public:
   int somethingNamedAfterMe;
 
@@ -57,6 +57,7 @@ public:
     expect(map["Something"]["variables"]!.contains("someVariable"),true);
     expect(map["Something"]["variables"]!.contains("myFunc"),false);
     expect(map["Something"]["variables"]!.contains("someOtherFunc"),false);
+    expect(map["Something"]["inheritance"]!.contains("MakeComponent"),true);
 
   });
 

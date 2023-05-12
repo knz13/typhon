@@ -10,9 +10,11 @@ include(FetchContent)
 project(project_typhon)
 
 option(TYPHON_RUN_TESTS "Run Tests" OFF)
+option(TYPHON_RENDER_2D "Use 2D Rendered" ON)
 
-
-
+if(TYPHON_RENDER_2D)
+add_compile_definitions(TYPHON_RENDER_2D=1)
+endif()
 
 SET(FETCHCONTENT_QUIET FALSE)
 

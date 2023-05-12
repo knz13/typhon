@@ -16,11 +16,15 @@ public:
         renderer.reset();
     };
 
+    
+    
+
     void drawInMTKView(MTK::View *pView) override {
         renderer.get()->Draw(pView);
     };
 
 private:
+
     std::unique_ptr<MacOSRenderer> renderer{nullptr};
 };
 
