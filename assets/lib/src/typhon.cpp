@@ -73,13 +73,12 @@ void unloadLibrary()
 AliveObjectsArray getAliveObjects() {
     static std::vector<int64_t> ids;
 
-
+    
     ids.clear();
-    auto view = Engine::View();
-    ids.reserve(view.size());
-    for(const auto& obj : view) {
-        ids.push_back(obj->Handle());
-    }
+    ids.reserve(Engine::NumberAlive());
+    Engine::View([&](Object obj){
+        ids.push_back(static_cast<int64_t>(obj.ID()));
+    });
 
 
     AliveObjectsArray arr;
@@ -97,16 +96,16 @@ const char* getObjectNameByID(int64_t id) {
 
     temp.clear(); 
 
-    GameObject* obj = Engine::GetObjectFromID(id);
-    std::cout << "tried getting object with id: " << id << " with result ptr = "<< (void*)obj << std::endl;
+    Object obj = Engine::GetObjectFromID(id);
+    std::cout << "tried getting object with id: " << id << " with result = "<< (obj.Valid() ? "valid" : "invalid") << std::endl;
 
-    if(obj == nullptr){
+    if(!obj.Valid()){
         temp.push_back('\0');
         ptr = temp.data();
         return ptr;
     }
-    temp.reserve(obj->Name().size() + 1);
-    memcpy(temp.data(),obj->Name().c_str(),obj->Name().size() + 1);
+    temp.reserve(obj.Name().size() + 1);
+    memcpy(temp.data(),obj.Name().c_str(),obj.Name().size() + 1);
     ptr = temp.data();
 
 
@@ -116,7 +115,7 @@ const char* getObjectNameByID(int64_t id) {
 
 void removeObjectByID(int64_t id) {
     if(Engine::ValidateHandle(id)){
-        Engine::RemoveGameObject(id);
+        Engine::RemoveObject(id);
     }
 }
 
@@ -126,7 +125,7 @@ const char* getObjectSerializationByID(int64_t id) {
     static std::vector<char> temp = std::vector<char>();
     static const char* ptr = nullptr;
 
-    temp.clear(); 
+   /*  temp.clear(); 
 
     GameObject* obj = Engine::GetObjectFromID(id);
     
@@ -148,7 +147,7 @@ const char* getObjectSerializationByID(int64_t id) {
     temp.reserve(jsonDataStr.size() + 1);
     memcpy(temp.data(),jsonDataStr.c_str(),jsonDataStr.size() + 1);
     ptr = temp.data();
-
+ */
 
     return ptr;
 }
@@ -160,7 +159,7 @@ ClassesArray getInstantiableClasses()
     static std::vector<std::vector<char>> names;
     static std::vector<const char*> names_char;
 
-    ids.clear();
+    /* ids.clear();
     names.clear();
     names_char.clear();
 
@@ -170,21 +169,18 @@ ClassesArray getInstantiableClasses()
         names.push_back(temp);
         ids.push_back(id);
         names_char.push_back((*(names.end() - 1)).data());
-    }
+    } */
 
 
     ClassesArray arr;
 
-    arr.array = ids.data();
-    arr.size = ids.size();
-    arr.stringArray = names_char.data();
-    arr.stringArraySize = names_char.size();
+    
     return arr;
 }
 
 void createObjectFromClassID(int64_t classID)
 {
-    Engine::CreateNewGameObject(classID);
+    Engine::CreateObject();
 }
 
 bool isEngineInitialized() {

@@ -35,8 +35,11 @@ public:
     void SetVertexShader(MTL::Library* vertexShader) {
         vertexShaderLibrary = vertexShader;
     }
+
+    
     
     void Draw(MTK::View* view) {
+
         NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
         //get the current command buffer object to encode commands for execution in the GPU
@@ -114,7 +117,6 @@ public:
 
 
 private:
-
 
     MTL::Library* vertexShaderLibrary = nullptr;
     MTL::Library* fragmentShaderLibrary = nullptr;

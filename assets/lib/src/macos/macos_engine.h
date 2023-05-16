@@ -21,7 +21,10 @@ public:
         rect.size.width = 10;
         rect.size.height = 10;
         mainView = MTK::View::alloc()->init(rect,device);
-        viewDelegate = std::make_unique<MacOSViewDelegate>(mainView->device());
+        viewDelegate = std::make_unique<MacOSViewDelegate>(mainView->device(),[&](){
+            std::cout << "Calling update!" << std::endl;
+            this->CallUpdateFunc();
+        });
         mainView->setClearColor(MTL::ClearColor(0,0,0,1));
         mainView->setDelegate(viewDelegate.get());
         

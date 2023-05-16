@@ -22,7 +22,7 @@ public:
             return;
         }
         for(auto [name,storage] : ECSRegistry::Get().storage()){
-            if(storage.contains(ID())){
+            if(storage.contains(ID()) && storage.type() != entt::type_id<ObjectStorage>()){
                 func(*((Component*)storage.get(ID())));
             }
 
@@ -108,6 +108,18 @@ public:
         }
     }
 
+    std::string Name() {
+        if(Valid()){
+            return Storage().name;
+        }
+        return "Invalid Entity";
+    }
+
+    void SetName(std::string name) {
+        if(Valid()){
+            Storage().name = name;
+        }
+    }
 
 
     template<typename... Components>

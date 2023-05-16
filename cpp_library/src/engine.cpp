@@ -31,11 +31,12 @@ void Engine::Initialize()
     #ifndef __TYPHON_TESTING__
     ShaderCompiler::Initialize();
     #endif
-    
+        
 
     textureAtlas = CreateTextureAtlasFromImages();
     
     RenderingEngine::InitializeEngine();
+    RenderingEngine::SetUpdateFunction(&Engine::Update);
     
     Engine::isInitialized = true;
 }
@@ -268,14 +269,14 @@ bool Engine::DeserializeToCurrent(std::string scene) {
     try{
         json sceneData = json::parse(scene);
 
-        if(sceneData.contains("Objects")) {
+        /* if(sceneData.contains("Objects")) {
             for(const auto& object : sceneData.at("Objects")){
                 auto ptr = Engine::CreateNewGameObject(object.items().begin().key());
                 if(ptr != nullptr) {
                     ptr->GameObjectDeserialize(object);
                 }
             }
-        }
+        } */
 
         return true;
     }

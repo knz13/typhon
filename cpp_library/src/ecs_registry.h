@@ -28,6 +28,7 @@ private:
     ObjectHandle parent = {};
     ObjectHandle master = {};
     std::vector<entt::entity> children = {};
+    std::string name = "Empty Object";
     
 
     friend class ECSRegistry;
@@ -60,6 +61,7 @@ public:
             std::cout << "returning nullptr from get storage for entity" << std::endl;
             return nullptr;
         }
+        
         return &registry.get<ObjectStorage>(e);
     }
 
@@ -118,7 +120,7 @@ public:
         return true;
     }
 
-    
+
 
 private:
     static entt::registry registry;
