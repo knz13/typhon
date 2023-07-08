@@ -22,9 +22,6 @@ public:
         if(commandQueue){
             commandQueue->release();
         }
-        if(device){
-            device->release();
-        }
     }
 
 
@@ -39,19 +36,19 @@ public:
     
     
     void Draw(MTK::View* view) {
-
+        
         NS::AutoreleasePool* pool = NS::AutoreleasePool::alloc()->init();
 
         //get the current command buffer object to encode commands for execution in the GPU
         auto* commandBuffer = commandQueue->commandBuffer();
-        
+
         //get the current render pass descriptor that will be populated with different render targets and their information
         auto* renderPassDescriptor = view->currentRenderPassDescriptor();
         //encodes the renderPass descriptor into actually commands
         auto* renderCommandEncoder = commandBuffer->renderCommandEncoder(renderPassDescriptor);
         if(renderPipelineState != nullptr){
             
-            //renderCommandEncoder->setRenderPipelineState(renderPipelineState);
+            renderCommandEncoder->setRenderPipelineState(renderPipelineState);
 
         }
         //YOU SHALL NOT ENCODE ANYMORE - end encoding

@@ -146,9 +146,12 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
         if (SceneViewerWindow.key.currentContext != null) {
           break;
         }
+        print("waiting to key to begin...");
         await Future.delayed(Duration(milliseconds: 100));
       }
+      print("key begun!");
       if(!SceneViewerWindow.key.currentContext!.mounted || !mounted){
+        print("saddly not mounted!");
         return;
       }
       var box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;
@@ -158,11 +161,14 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
       var physSize = box.size;
       var rectToSend = Rect.fromLTWH(position.dx,windowSize.height - position.dy - physSize.height,physSize.width,physSize.height);
       NativeViewInterface.updateSubViewRect(rectToSend);
+
+      await Future.delayed(Duration(milliseconds: 500));
         
       while(!shouldStopUpdatingSubWindow){
         if(!SceneViewerWindow.key.currentContext!.mounted || !mounted){
           return;
         }
+       
         box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;
         position = box.localToGlobal(Offset.zero);
         windowSize = (ui.window.physicalSize / ui.window.devicePixelRatio);

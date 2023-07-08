@@ -30,6 +30,8 @@ public:
     //Textures
     virtual void CreateTextureFromName(std::string name,int width,int height,std::vector<char> bufferData) {};
     virtual bool UnloadTextureFromName(std::string name) {return false;};
+
+    virtual void Render() {};
     
     //Rendering
     virtual RenderPassData& EnqueueRenderLoadedTextureRect() {
@@ -62,17 +64,26 @@ private:
 class RenderingEngine {
 public:
     
-
+    static PlatformSpecificRenderingEngine* GetPlatformSpecificEngine() {
+        return platformSpecificRenderingEngine? platformSpecificRenderingEngine.get() : nullptr;
+    }
 
     static void InitializeEngine();
-
+    
     static void SetUpdateFunction(std::function<void(double)> func) {
        if(platformSpecificRenderingEngine){
         platformSpecificRenderingEngine->SetUpdateFunction(func);
        }
     };
 
+    static void Render() {
+        if(platformSpecificRenderingEngine){
+            platformSpecificRenderingEngine->Render();
+        }
+    }
+
     static void UnloadEngine() {
+        std::cout << "Unloading engine completely!" << std::endl;
         if(platformSpecificRenderingEngine){
             platformSpecificRenderingEngine.get()->UnloadRenderingEngine();
         }

@@ -26,9 +26,9 @@ extern "C" {
 #endif
 
     //__BEGIN__CPP__EXPORTS__
-    #ifdef __APPLE__
-    FFI_PLUGIN_EXPORT void passNSViewPointer(void* view);
-    #endif
+
+    FFI_PLUGIN_EXPORT void passPlatformSpecificViewPointer(void* view);
+
     FFI_PLUGIN_EXPORT void setPlatformSpecificWindowSizeAndPos(double x,double y,double width,double height);
     FFI_PLUGIN_EXPORT void* getPlatformSpecificPointer();
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
@@ -36,6 +36,7 @@ extern "C" {
     FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);
     FFI_PLUGIN_EXPORT void onKeyboardKeyUp(int64_t input);
     FFI_PLUGIN_EXPORT void onUpdateCall(double dt);
+    FFI_PLUGIN_EXPORT void onRenderCall(double dt);
     FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
     FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
     FFI_PLUGIN_EXPORT void attachEnqueueOnChildrenChanged(OnChildrenChangedFunc func);

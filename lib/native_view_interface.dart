@@ -25,6 +25,11 @@ class NativeViewInterface {
 
   static var waitingToFinishDetaching = true;
 
+  static Future<Pointer<Void>> getMetalViewPointer() async {
+
+    return Pointer.fromAddress(await _channel.invokeMethod("getMetalViewPointer"));
+  }
+
   static void attachCPPPointer(Pointer<Void> ptr) async {
     
     if(ptr != nullptr){
@@ -46,8 +51,12 @@ class NativeViewInterface {
   
   static Future<void> detachCPPPointer() async {
     await _channel.invokeMethod("detachCPPPointer");
-
-    return Future.doWhile(() => waitingToFinishDetaching)..then((value) {
+    
+    return Future.doWhile(() {
+      print("Waiting!");
+      return waitingToFinishDetaching;
+    })..then((value) {
+      print("finished waiting to finish detaching!");
       NativeViewInterface.waitingToFinishDetaching = true;
     });
   }

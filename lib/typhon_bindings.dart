@@ -40,6 +40,7 @@ class TyphonCPPInterface {
   static final int Function(Pointer<Void>) _dlCloseFunc = stdlib.lookup<NativeFunction<Int32 Function(Pointer<Void>)>>( Platform.isWindows ? 'FreeLibrary' : 'dlclose').asFunction();
 
   static Future<String> getCMakeCommand() async {
+    //return "cmakekeke";
     if(await isCommandInstalled("cmake")){
       return "cmake";
     } 
@@ -47,7 +48,6 @@ class TyphonCPPInterface {
 
     var cmakeDir = Platform.isMacOS? "cmake-3.26.3-macos-universal/CMake.app/Contents" : Platform.isWindows? "cmake-3.26.3-windows-x86_64" : "";
 
-    //return "cmakekeke";
     return path.join(p,"src","vendor","cmake",cmakeDir,"bin","cmake");
     
   }
@@ -99,6 +99,7 @@ class TyphonCPPInterface {
         }
       }
       print("Done loading lib!");
+      print("Lib path = ${docsDir}");
 
       return libsDir.path;
   }

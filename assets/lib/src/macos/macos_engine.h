@@ -1,7 +1,13 @@
 #pragma once
 #include "../general.h"
+#include <objc/runtime.h>
+#include <objc/message.h>
 #include "macos_view_delegate.h"
 #include "../rendering_engine.h"
+#include "mtk_view_wrapper.h"
+
+
+
 
 class MacOSEngine : public PlatformSpecificRenderingEngine {
 public:
@@ -10,30 +16,37 @@ public:
     void InitializeRenderingEngine() override {
         std::cout << "initializing macos engine!" << std::endl;
         device = MTL::CreateSystemDefaultDevice();
+
+        
         if(!device){
             std::cout << "Failed to initialize macos rendering engine: metal not supported" << std::endl;
             return;
         }
-        CGRect rect = CGRect();
-        rect.origin = CGPoint();
-        rect.origin.x = 0;
-        rect.origin.y = 0;
-        rect.size.width = 10;
-        rect.size.height = 10;
-        mainView = MTK::View::alloc()->init(rect,device);
-        viewDelegate = std::make_unique<MacOSViewDelegate>(mainView->device(),[&](){
-            std::cout << "Calling update!" << std::endl;
+        
+        viewDelegate = std::make_unique<MacOSViewDelegate>(device,[&](){
+            //std::cout << "Calling update!" << std::endl;
             this->CallUpdateFunc();
         });
-        mainView->setClearColor(MTL::ClearColor(0,0,0,1));
-        mainView->setDelegate(viewDelegate.get());
+        
+
+        oldMethod = MacFunctions::ReplaceDrawMethod(&MacOSEngine::DrawMethodOverride);
+       
         
     };
+
+   void ReceivePlatformSpecificViewPointer(void* view) override {
+        mainView = view;
+
+   }
+    
     void UnloadRenderingEngine() override {
         std::cout << "unloading macos rendering engine!" << std::endl;
-        if(mainView){
-            mainView->release();
+
+        if(viewDelegate){
+            viewDelegate->ResetRenderer();
         }
+        
+
         for(auto& [key,val] : vertexShaders){
             val->release();
         }
@@ -42,11 +55,14 @@ public:
             val->release();
         }
         fragmentShaders.clear();
+
+        viewDelegate.reset();
+
         if(device){
             device->release();
         }
 
-        viewDelegate.reset();
+        MacFunctions::ReplaceDrawMethod(reinterpret_cast<void (*)(id, SEL, void*)>(oldMethod));
         
     };
    
@@ -137,17 +153,31 @@ public:
         return false;
     }
 
-    void* GetPlatformSpecificPointer() override  {      
-        return mainView;        
-    };      
+    void* GetPlatformSpecificPointer() override  {
+        return NS::Value::value(mainView);    
+    };
     
 private:
+
+    static void DrawMethodOverride(id self, SEL _cmd, void* view) {
+        if(RenderingEngine::GetPlatformSpecificEngine()){
+            MacOSViewDelegate* delegate = reinterpret_cast<MacOSEngine*>(RenderingEngine::GetPlatformSpecificEngine())->viewDelegate.get();
+            if(delegate){
+                std::cout << "Drawing in view c++!!!" << std::endl;
+                delegate->drawInMTKView((MTK::View*)view);
+            }
+        }
+
+       
+    }
+
     std::unordered_map<std::string,MTL::Library*> vertexShaders;
     std::unordered_map<std::string,MTL::Library*> fragmentShaders;
 
   
     std::unique_ptr<MacOSViewDelegate> viewDelegate = {};
-    MTK::View* mainView = nullptr;
+    void* mainView = nullptr;
+    IMP oldMethod = [](){};
     MTL::Device* device = nullptr;
 
 };

@@ -118,7 +118,10 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "parentbad": "cpp",
-        "*.hpp11": "cpp"
+        "*.hpp11": "cpp",
+        "cfenv": "cpp",
+        "scoped_allocator": "cpp",
+        "typeindex": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

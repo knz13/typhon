@@ -109,11 +109,8 @@ class _MyAppState extends State<MyApp> {
           navigatorKey: MyApp.globalContext,
           theme: ThemeData(
   primaryColor: Colors.transparent,
-  primaryColorBrightness: Brightness.dark,
   primaryColorLight: Colors.transparent,
   primaryColorDark: Colors.transparent,
-  accentColor: Colors.transparent,
-  accentColorBrightness: Brightness.dark,
   canvasColor: Colors.transparent,
   scaffoldBackgroundColor: Colors.transparent,
   bottomAppBarColor: Colors.transparent,
@@ -126,15 +123,12 @@ class _MyAppState extends State<MyApp> {
   selectedRowColor: Colors.transparent,
   unselectedWidgetColor: Colors.transparent,
   disabledColor: Colors.transparent,
-  buttonColor: Colors.transparent,
   buttonTheme: ButtonThemeData(
     buttonColor: Colors.transparent,
     disabledColor: Colors.transparent,
     colorScheme: ColorScheme.light(
       primary: Colors.transparent,
-      primaryVariant: Colors.transparent,
       secondary: Colors.transparent,
-      secondaryVariant: Colors.transparent,
       surface: Colors.transparent,
       background: Colors.transparent,
       error: Colors.transparent,

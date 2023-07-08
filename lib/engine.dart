@@ -141,6 +141,7 @@ class Engine {
     _isReloading = true;
     unload();
 
+    
     await TyphonCPPInterface.extractImagesFromAssets(path.join(projectPath,"build","images"));
     
     await recompileProject();
@@ -157,6 +158,11 @@ class Engine {
     library.initializeCppLibrary();
     var ptr = library.getPlatformSpecificPointer();
     NativeViewInterface.attachCPPPointer(ptr);
+    /* if(Platform.isMacOS){
+      print("Passing from flutter!");
+      library.passPlatformSpecificViewPointer(await NativeViewInterface.getMetalViewPointer());
+      print("Passed from flutter!");
+    } */
     
     (()async {
       while(true){
@@ -401,6 +407,14 @@ void unloadLibrary()
 
 
 
+void onRenderCall() {
+
+    RenderingEngine::Render();
+
+}
+
+
+
 AliveObjectsArray getAliveObjects() {
 
     static std::vector<int64_t> ids;
@@ -635,17 +649,15 @@ bool isEngineInitialized() {
 
 
 
-#ifdef __APPLE__
 
-void passNSViewPointer(void* view) {
 
-    std::cout << "passing pointer!" << std::endl;
+void passPlatformSpecificViewPointer(void* view) {
+
+    
 
     RenderingEngine::PassPlatformSpecificViewPointer(view);
 
 }
-
-#endif
 
 
 
@@ -896,11 +908,11 @@ extern "C" {
 #endif
 
   //__BEGIN__CPP__EXPORTS__
-    #ifdef __APPLE__
 
-    FFI_PLUGIN_EXPORT void passNSViewPointer(void* view);
 
-    #endif
+    FFI_PLUGIN_EXPORT void passPlatformSpecificViewPointer(void* view);
+
+
 
     FFI_PLUGIN_EXPORT void setPlatformSpecificWindowSizeAndPos(double x,double y,double width,double height);
 
@@ -915,6 +927,8 @@ extern "C" {
     FFI_PLUGIN_EXPORT void onKeyboardKeyUp(int64_t input);
 
     FFI_PLUGIN_EXPORT void onUpdateCall(double dt);
+
+    FFI_PLUGIN_EXPORT void onRenderCall(double dt);
 
     FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
 

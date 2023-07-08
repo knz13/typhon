@@ -751,8 +751,8 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                   ),
                                   child: RawMaterialButton(
                                     onPressed: (){
-                                      Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
-                                      Navigator.of(MyApp.globalContext.currentContext!).pop();
+                                      //Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
+                                      //Navigator.of(MyApp.globalContext.currentContext!).pop();
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => const ProjectChoiceWindow()));
                                     },
                                     child: const Text(
@@ -803,8 +803,9 @@ class _ProjectsPageState extends State<ProjectsPage> {
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20.0),
                             child: MaterialButton(
-                              hoverColor: Colors.white12,
+                              hoverColor: Colors.red,
                               onPressed: () async {
+                                print("pressed!");
                                 Future.delayed(Duration(milliseconds: 500),(){
                                   Engine.instance.initializeProject(path.dirname(snapshot.data!.keys.toList()[index]), snapshot.data![snapshot.data!.keys.toList()[index]]["name"]);
                                 });

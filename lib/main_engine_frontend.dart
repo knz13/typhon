@@ -9,6 +9,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
+import 'package:flutter/material.dart';
 import 'package:menu_bar/menu_bar.dart';
 import 'package:typhon/engine.dart';
 import 'package:typhon/project_choice_window.dart';
@@ -99,18 +100,16 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
         onHover: (ev) {
           MainEngineFrontend.mousePosition = ev.position;
         },
-        child: Platform.isWindows? MenuBar(
-              barStyle: BarStyle(
-                backgroundColor: primaryBlack,
-                openMenuOnHover: true
+        child: Platform.isWindows? MenuBarWidget(
+              barStyle:  MenuStyle(
+                backgroundColor:  MaterialStateColor.resolveWith((states) {
+                  return primaryBlack;
+                }),
               ),
-              barButtonStyle: BarButtonStyle(
+              barButtonStyle: ButtonStyle(
 
               ),
-              menuButtonStyle: MenuButtonStyle(
-                
-              ),
-              menuStyle: MenuStyle(
+              menuButtonStyle: ButtonStyle(
                 
               ),
               barButtons: [

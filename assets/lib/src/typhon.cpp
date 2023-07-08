@@ -70,6 +70,10 @@ void unloadLibrary()
 
 }
 
+void onRenderCall() {
+    RenderingEngine::Render();
+}
+
 AliveObjectsArray getAliveObjects() {
     static std::vector<int64_t> ids;
 
@@ -187,12 +191,11 @@ bool isEngineInitialized() {
     return Engine::HasInitialized();
 }
 
-#ifdef __APPLE__
-void passNSViewPointer(void* view) {
-    std::cout << "passing pointer!" << std::endl;
+
+void passPlatformSpecificViewPointer(void* view) {
+    
     RenderingEngine::PassPlatformSpecificViewPointer(view);
 }
-#endif
 
 void* getPlatformSpecificPointer() {
     if(!Engine::HasInitialized()){

@@ -8,7 +8,9 @@ std::unique_ptr<PlatformSpecificRenderingEngine> RenderingEngine::platformSpecif
 
 
 void RenderingEngine::PassPlatformSpecificViewPointer(void* view) {
-    
+    if(platformSpecificRenderingEngine){
+        platformSpecificRenderingEngine.get()->ReceivePlatformSpecificViewPointer(view);
+    }
 }
 
 void* RenderingEngine::GetPlatformSpecificPointer() {
@@ -47,7 +49,7 @@ in vec3 vertexColor;
 out vec4 FragColor;
 
 void main() {
-FragColor = vec4(vertexColor, 1.0);
+FragColor = vec4(1,0,1, 1.0);
 }
     )";
 

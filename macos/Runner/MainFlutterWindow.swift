@@ -118,6 +118,8 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
 
     var attachedView:Unmanaged<MTKView>?
     var channel: FlutterMethodChannel?
+    var metalView: MTKView? = nil
+    var delegate: MTKDelegateReplacement = MTKDelegateReplacement()
     
     
 
@@ -145,14 +147,16 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if call.method == "attachCPPPointer" {
-            let pointer = call.arguments as? Int64
-            if let pointer = pointer {
-                if let rawPointer = UnsafeRawPointer(bitPattern: UInt(pointer)) {
-                    attachedView = Unmanaged<MTKView>.fromOpaque(rawPointer)
-                    
-                    MainFlutterWindow.mainViewController?.view.addSubview(attachedView!.takeUnretainedValue(), positioned: .below, relativeTo: nil)
-                }
+
+            if metalView == nil {
+                print("initializing metal view!")
+                metalView = MTKView(frame: NSRect(x: 0, y: 0, width: 500, height: 500),device: MTLCreateSystemDefaultDevice())
+                metalView?.delegate = delegate
+                //metalView?.clearColor = MTLClearColorMake(10, 20, 30, 255)
+                MainFlutterWindow.mainViewController!.view.addSubview(metalView!, positioned: .below, relativeTo: nil)
             }
+
+            result(0);
         } else if call.method == "setFrameRenderableView" {
             let args = convertToDictionary(text: call.arguments as? String ?? "")
             let x = args?["x"] as? Double ?? 0
@@ -160,30 +164,26 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
             let width = args?["width"] as? Double ?? 0
             let height = args?["height"] as? Double ?? 0
             
-            if let view = attachedView {
-               
-                view.takeUnretainedValue().frame = NSRect(x:x,y:y,width:width,height:height)
+            if let view = metalView {
+                view.frame = NSRect(x:x,y:y,width:width,height:height)
             }
+            result(0)
         } else if call.method == "detachCPPPointer" {
-            if let viewPtr = attachedView {
-                viewPtr.takeUnretainedValue().removeFromSuperview()
-                
-               
-                
-                DispatchQueue.main.async {
-                    self.channel?.invokeMethod("pointerDetached", arguments: nil)
-                    self.attachedView = nil
-                }
+            if let view = metalView {
+                view.frame = NSRect(x:0,y:0,width: 0,height:0)
             }
-            else {
-                self.channel?.invokeMethod("pointerDetached", arguments: nil)
-            }
+            self.channel?.invokeMethod("pointerDetached", arguments: nil)
+            result(0)
+        } else if call.method == "getMetalViewPointer" {
+            
+            result(Int(bitPattern: Unmanaged.passUnretained(metalView!).toOpaque()))
         } else {
             result(FlutterMethodNotImplemented)
         }
     }
 
 }
+
 
 class MainFlutterViewController: NSViewController {
 

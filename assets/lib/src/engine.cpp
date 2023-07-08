@@ -45,13 +45,16 @@ void Engine::Unload()
 {   
 
     RenderingEngine::UnloadEngine();
-
+    std::cout << "Here!" << std::endl;
     #ifndef __TYPHON_TESTING__
     ShaderCompiler::Unload();
     #endif
+    std::cout << "Here again!" << std::endl;
         
 
     Clear();
+
+    std::cout << "Another time!" << std::endl;
 
     GameObject::instantiableClasses.clear();
     GameObject::instantiableClassesIDs.clear();

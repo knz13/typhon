@@ -3,7 +3,7 @@
 #include "macos_renderer.h"
 
 
-class MacOSViewDelegate : public MTK::ViewDelegate {
+class MacOSViewDelegate  {
 public:
     explicit MacOSViewDelegate(MTL::Device* device,std::function<void()> func) : renderer(new MacOSRenderer(device)),updateFunction(func) {
     }
@@ -12,21 +12,24 @@ public:
         return renderer.get();
     };
 
-    ~MacOSViewDelegate() override { 
+    ~MacOSViewDelegate()  { 
         renderer.reset();
     };
 
     
-    
+    void ResetRenderer() {
+        renderer.reset();
+    }
 
-    void drawInMTKView(MTK::View *pView) override {
+    void drawInMTKView(MTK::View *pView)  {
 
         //update
         updateFunction();
 
         //draw
-
-        renderer.get()->Draw(pView);
+        if(renderer){
+            renderer.get()->Draw(pView);
+        }
     };
 
 private:

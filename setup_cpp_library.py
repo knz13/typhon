@@ -61,6 +61,8 @@ shader_lib.compile(run_tests=args.run_tests,release=False)
 is_64bits = sys.maxsize > 2**32
 
 current_dir = os.path.abspath(os.curdir)
+
+
 os.chdir("cpp_library")
 if not os.path.exists("src/vendor"):
     os.mkdir("src/vendor")
@@ -169,7 +171,11 @@ target_link_libraries(METAL_CPP
         )
 """)
 
-os.system(' '.join(["src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe", '-DTYPHON_RUN_TESTS=ON',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
+os.system(' '.join(["src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe", '-DTYPHON_RUN_TESTS=OFF',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
+
+os.chdir(os.path.join(current_dir,"cpp_library","build"))
+os.system(f'{"make typhon" if platform.system() == "Darwin" else "msbuild typhon.sln /target:shader_compiler_dynamic /p:Configuration=" + ("Release" if args.Release else "Debug")}')
+os.chdir(os.path.join(current_dir,"cpp_library"))
 
 roots = []
 os.makedirs("../assets/lib",exist_ok=True)

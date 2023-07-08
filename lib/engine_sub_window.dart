@@ -339,8 +339,9 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
               )
             ];
           },
-          draggableTabBuilder: (tabIndex, tab, tabWidget) {
-            return Draggable(
+          onDraggableBuild: (tabIndex, tab) {
+            /*
+            Draggable(
               data: "TabsDraggableData",
               feedback: SizedBox(
                 width: 200,
@@ -358,6 +359,24 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                 ),
               ),
               child: tabWidget
+            );
+            */
+            return DraggableConfig(
+              feedback: SizedBox(
+                width: 200,
+                height: 100,
+                child: Blur(
+                  blur: 0.5,
+                  colorOpacity: 0.1,
+                  child: EngineSubWindow(tabs: [
+                    EngineSubWindowData(
+                      title: tab.text,
+                      child: Container(
+                      )
+                    )
+                  ],),
+                ),
+              ),
             );
           },
         ),

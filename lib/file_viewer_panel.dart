@@ -331,7 +331,7 @@ public:
                         if(tempFileData != null && index == _files.length) {
                           tempFileFocus.requestFocus();
                           return ListTile(
-                            leading: tempFileData!.icon ?? const Icon(MdiIcons.file),
+                            leading: tempFileData!.icon ?? Icon(MdiIcons.file),
                             title: TextField(
                               focusNode: tempFileFocus,
                               onSubmitted: (value) {
