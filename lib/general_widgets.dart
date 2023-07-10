@@ -173,7 +173,6 @@ void showNativeContextMenu(BuildContext context,double x,double y, List<ContextM
   }
   else if(Platform.isWindows){
     contextMenuChannel.invokeMethod('showContextMenu', buildJSONNativeMessage(options, x,y));
-
   }
   else{
     showContextMenu(

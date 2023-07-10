@@ -83,6 +83,8 @@ flutter:
     # __BEGIN__ASSETS__INCLUSION__
     - assets/lib/src/./
     - assets/lib/src/macos/
+    - assets/lib/src/prefab/
+    - assets/lib/src/prefab/defaults/
     - assets/lib/src/vendor/metal-cpp/
     - assets/lib/src/vendor/metal-cpp/metal-cpp/
     - assets/lib/src/vendor/metal-cpp/metal-cpp/Metal/

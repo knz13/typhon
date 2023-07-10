@@ -10,7 +10,7 @@ namespace fs = std::filesystem;
 Vector2f Engine::mousePosition;
 std::map<std::string,TextureAtlasImageProperties> Engine::textureAtlas;
 std::unordered_map<int64_t,std::shared_ptr<GameObject>> Engine::aliveObjects;
-std::bitset<std::size(Keys::IndicesOfKeys)> Engine::keysPressed;
+std::bitset<std::size(Keys::IndicesOfKeys)> EngineInternals::keysPressed;
 std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> EngineInternals::enqueueRenderFunc = [](double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double){};
 std::function<void()> EngineInternals::onChildrenChangedFunc = [](){};
 bool Engine::isInitialized = false;
@@ -169,7 +169,7 @@ void Engine::Update(double dt)
 
 }
 
-void Engine::PushKeyDown(int64_t key)
+void EngineInternals::PushKeyDown(int64_t key)
 {      
     auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(),Keys::IndicesOfKeys.end(),key);
     
@@ -179,7 +179,7 @@ void Engine::PushKeyDown(int64_t key)
     keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()] = 1;
 }
 
-void Engine::PushKeyUp(int64_t key)
+void EngineInternals::PushKeyUp(int64_t key)
 {
     auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(),Keys::IndicesOfKeys.end(),key);
     
@@ -192,8 +192,8 @@ void Engine::PushKeyUp(int64_t key)
 bool Engine::IsKeyPressed(Keys::Key key)
 {
     auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(),Keys::IndicesOfKeys.end(),key);
-
-    return keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()];
+    
+    return EngineInternals::keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()];
 }
 
 std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFromImages()

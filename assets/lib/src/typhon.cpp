@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include "engine.h"
 #include "rendering_engine.h"
+#include "prefab/prefab.h"
 //__INCLUDE__CREATED__CLASSES__
+//__INCLUDE__INTERNALS__STATICALLY__
 
 bool initializeCppLibrary() {
     
@@ -12,9 +14,10 @@ bool initializeCppLibrary() {
     
     //__INITIALIZE__CREATED__CLASSES__
 
+    //__INITIALIZE__INTERNALS__STATICALLY__
+
     Engine::Initialize();
 
-    
 
     return true;    
 
@@ -28,12 +31,12 @@ void onMouseMove(double positionX, double positionY)
 
 void onKeyboardKeyDown(int64_t input)
 {
-    Engine::PushKeyDown(input);
+    EngineInternals::PushKeyDown(input);
 }
 
 void onKeyboardKeyUp(int64_t input)
 {
-    Engine::PushKeyUp(input);
+    EngineInternals::PushKeyUp(input);
 
 }
 
@@ -157,29 +160,21 @@ const char* getObjectSerializationByID(int64_t id) {
 }
 
 
-ClassesArray getInstantiableClasses()
+char* getInstantiableClasses()
 {
-    static std::vector<int64_t> ids;
-    static std::vector<std::vector<char>> names;
-    static std::vector<const char*> names_char;
+    static std::vector<char> classesJSON;
+    static char* classesJSONChar = nullptr;
 
-    /* ids.clear();
-    names.clear();
-    names_char.clear();
+    classesJSON.clear();
 
-    for(const auto& [id,name] : GameObject::GetInstantiableClassesIDsToNames()) {
-        std::vector<char> temp(name.size() + 1);
-        memcpy(temp.data(),name.c_str(),name.size() + 1);
-        names.push_back(temp);
-        ids.push_back(id);
-        names_char.push_back((*(names.end() - 1)).data());
-    } */
+    std::string jsonData = PrefabInternals::GetPrefabsJSON();
 
-
-    ClassesArray arr;
-
+    classesJSON.resize(jsonData.size() + 1);
     
-    return arr;
+    memcpy(classesJSON.data(),jsonData.c_str(),jsonData.size() + 1);
+    classesJSONChar = classesJSON.data();
+
+    return classesJSONChar;
 }
 
 void createObjectFromClassID(int64_t classID)

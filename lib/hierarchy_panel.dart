@@ -54,6 +54,27 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
     });
   }
 
+  List<ContextMenuOption> buildMenuOptionsFromJson(Map<String,dynamic> map){
+    List<ContextMenuOption> options = [];
+
+    map.forEach((key, value) {
+      ContextMenuOption option = ContextMenuOption(
+        title: key,
+        enabled: true,
+        subOptions: value is Map<String,dynamic> ? buildMenuOptionsFromJson(value) : null,
+        callback: value is Map<String,dynamic> ? null : () {
+          if(TyphonCPPInterface.checkIfLibraryLoaded()){
+            TyphonCPPInterface.getCppFunctions().createObjectFromClassID(value);
+          }
+        },
+      );
+      options.add(option);
+    });
+
+    return options;
+    
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -61,21 +82,13 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
           GeneralButton(
             onPressed: () {
               showNativeContextMenu(context, MyApp.globalMousePosition.dx, MyApp.globalMousePosition.dy,TyphonCPPInterface.checkIfLibraryLoaded() ? (() {
-              ClassesArray arr = TyphonCPPInterface.getCppFunctions().getInstantiableClasses();
-              List<ContextMenuOption> options = [];
-              for(int index in List.generate(arr.size, (index) => index)){
-                var val = arr.array.elementAt(index).value;
-                final Pointer<Utf8> str = arr.stringArray.elementAt(index).value.cast<Utf8>();
-                
-                options.add(
-                  ContextMenuOption(
-                    title: str.toDartString(),
-                    callback: () {TyphonCPPInterface.getCppFunctions().createObjectFromClassID(val);}
-                  )
-                );
-              }
+              Pointer<Char> ptr = TyphonCPPInterface.getCppFunctions().getInstantiableClasses();
+              String jsonClasses = ptr.cast<Utf8>().toDartString();
+              Map<String,dynamic> map = jsonDecode(jsonClasses);
               
-              return options;
+
+              return buildMenuOptionsFromJson(map);
+              
             })()
             :
             []);

@@ -220,15 +220,15 @@ class TyphonBindings {
   late final _createObjectFromClassID =
       _createObjectFromClassIDPtr.asFunction<void Function(int)>();
 
-  ClassesArray getInstantiableClasses() {
+  ffi.Pointer<ffi.Char> getInstantiableClasses() {
     return _getInstantiableClasses();
   }
 
   late final _getInstantiableClassesPtr =
-      _lookup<ffi.NativeFunction<ClassesArray Function()>>(
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
           'getInstantiableClasses');
   late final _getInstantiableClasses =
-      _getInstantiableClassesPtr.asFunction<ClassesArray Function()>();
+      _getInstantiableClassesPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
 
   bool isEngineInitialized() {
     return _isEngineInitialized();
@@ -307,18 +307,6 @@ typedef EnqueueObjectRender = ffi.Pointer<
             ffi.Double)>>;
 typedef OnChildrenChangedFunc
     = ffi.Pointer<ffi.NativeFunction<ffi.Void Function()>>;
-
-final class ClassesArray extends ffi.Struct {
-  external ffi.Pointer<ffi.Int64> array;
-
-  external ffi.Pointer<ffi.Pointer<ffi.Char>> stringArray;
-
-  @ffi.Int64()
-  external int stringArraySize;
-
-  @ffi.Int64()
-  external int size;
-}
 
 final class AliveObjectsArray extends ffi.Struct {
   external ffi.Pointer<ffi.Int64> array;

@@ -40,6 +40,7 @@ public class ContextMenuPlugin: NSObject, FlutterPlugin {
     public func buildMenuFromArguments(options: [[String: Any]],menu: NSMenu) {
         
         for option in options {
+        
             let title = option["title"] as? String ?? ""
             let type: String = option["type"] as? String ?? "General"
             let enabled: Int = Int((option["enabled"] as? String ?? "1")) ?? 1

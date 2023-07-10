@@ -255,11 +255,30 @@ namespace HelperFunctions {
         return name;
     }
 
+    static int64_t HashString(std::string str) {
+        return entt::hashed_string(str.c_str());
+    }
+
     template<typename T>
     static int64_t GetClassID() {
 
         return entt::hashed_string(GetClassNameString<T>().c_str()).operator entt::id_type();
     };
+
+    static std::vector<std::string> SplitString(const std::string& s, const std::string& delimiter) {
+        std::vector<std::string> result;
+        size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+        std::string token;
+
+        while ((pos_end = s.find(delimiter, pos_start)) != std::string::npos) {
+            token = s.substr(pos_start, pos_end - pos_start);
+            pos_start = pos_end + delim_len;
+            result.push_back(token);
+        }
+
+        result.push_back(s.substr(pos_start));
+        return result;
+    }
 
 
 };

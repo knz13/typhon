@@ -42,7 +42,7 @@ extern "C" {
     FFI_PLUGIN_EXPORT void attachEnqueueOnChildrenChanged(OnChildrenChangedFunc func);
     FFI_PLUGIN_EXPORT void unloadLibrary();
     FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
-    FFI_PLUGIN_EXPORT ClassesArray getInstantiableClasses();
+    FFI_PLUGIN_EXPORT char* getInstantiableClasses();
     FFI_PLUGIN_EXPORT bool isEngineInitialized();
     FFI_PLUGIN_EXPORT AliveObjectsArray getAliveObjects();
     FFI_PLUGIN_EXPORT const char* getObjectNameByID(int64_t id);

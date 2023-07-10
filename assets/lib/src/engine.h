@@ -10,12 +10,21 @@
 #include <ranges>
 #include "shader_compiler.h"
 
+class Engine;
 class EngineInternals {
 public:
     static std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> enqueueRenderFunc;
     static std::function<void()> onChildrenChangedFunc;
 
     static void SetMousePosition(Vector2f mousePos);
+
+    static void PushKeyDown(int64_t key);
+    static void PushKeyUp(int64_t key);
+private:
+    static std::bitset<std::size(Keys::IndicesOfKeys)> keysPressed;
+
+    friend class Engine;
+    
 };
 
 class Engine {
@@ -101,22 +110,18 @@ public:
     static bool HasInitialized() {
         return isInitialized;
     }
-
+        
     static void Update(double dt);
 
     static const Vector2f& GetMousePosition() {
         return mousePosition;
     }
-    
-    static void PushKeyDown(int64_t key);
-    static void PushKeyUp(int64_t key);
 
     static bool IsKeyPressed(Keys::Key key);
 private:
     static bool isInitialized;
     static std::map<std::string,TextureAtlasImageProperties> CreateTextureAtlasFromImages();
     static std::map<std::string,TextureAtlasImageProperties> textureAtlas;
-    static std::bitset<std::size(Keys::IndicesOfKeys)> keysPressed;
     static std::unordered_map<int64_t,std::shared_ptr<GameObject>> aliveObjects;
     static Vector2f mousePosition;
 

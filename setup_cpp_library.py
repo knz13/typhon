@@ -13,6 +13,7 @@ from zipfile import ZipFile
 import tarfile
 from subprocess import check_output
 import requests
+from python_scripts.cpp_parser import CPPParser
 
 def get_first_available_cpp_compiler():
     system = platform.system()
@@ -250,6 +251,8 @@ with open("pubspec.yaml",'w') as f:
 cpp_exports = ""
 cpp_exports_impl = ""
 
+
+
 os.chdir(current_dir)
 with open("cpp_library/src/typhon.h",'r') as f:
     lines = f.readlines()
@@ -264,6 +267,24 @@ with open("cpp_library/src/typhon.h",'r') as f:
         if shouldAddLine:
             cpp_exports += line + "\n"
 
+
+prefabs = []
+for root, dirs, files in os.walk("cpp_library/src"):
+    if "vendor" in root:
+        continue
+    for file in files:
+        file_path = os.path.join(root, file)
+        try:
+            with open(file_path, 'r') as f:
+                value = f.read()
+            classes = CPPParser.get_classes_properties(value)
+            for klass in classes:
+                if "Prefab" in classes[klass]["inheritance"]:
+                    prefabs.append((klass,os.path.relpath(file_path,"cpp_library/src")))
+        except Exception as e:
+            print(f"Couldn't open {file_path}: {e}")
+print(f'PREFABS FOUND: {prefabs}')
+
 with open("cpp_library/src/typhon.cpp",'r') as f:
     lines = f.readlines()
     shouldAddLine = False
@@ -274,6 +295,15 @@ with open("cpp_library/src/typhon.cpp",'r') as f:
         if "//__END__CPP__IMPL__" in line:
             shouldAddLine = False
             break
+        if "//__INCLUDE__INTERNALS__STATICALLY__" in line:
+            for prefab in prefabs:
+                cpp_exports_impl += f'#include "{prefab[1]}"\n'
+            continue
+        if "//__INITIALIZE__INTERNALS__STATICALLY__" in line:
+            cpp_exports_impl += f'    //initializing prefabs!\n'
+            for prefab in prefabs:
+                cpp_exports_impl += f'    {prefab[0]}();\n'
+            continue
         if shouldAddLine:
             cpp_exports_impl += line + "\n"
 

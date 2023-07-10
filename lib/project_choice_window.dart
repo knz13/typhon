@@ -803,9 +803,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20.0),
                             child: MaterialButton(
-                              hoverColor: Colors.red,
                               onPressed: () async {
-                                print("pressed!");
                                 Future.delayed(Duration(milliseconds: 500),(){
                                   Engine.instance.initializeProject(path.dirname(snapshot.data!.keys.toList()[index]), snapshot.data![snapshot.data!.keys.toList()[index]]["name"]);
                                 });
