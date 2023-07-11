@@ -183,20 +183,19 @@ class TyphonBindings {
   late final _attachEnqueueRender =
       _attachEnqueueRenderPtr.asFunction<void Function(EnqueueObjectRender)>();
 
-  void attachEnqueueOnChildrenChanged(
+  void attachOnChildrenChanged(
     OnChildrenChangedFunc func,
   ) {
-    return _attachEnqueueOnChildrenChanged(
+    return _attachOnChildrenChanged(
       func,
     );
   }
 
-  late final _attachEnqueueOnChildrenChangedPtr =
+  late final _attachOnChildrenChangedPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(OnChildrenChangedFunc)>>(
-          'attachEnqueueOnChildrenChanged');
-  late final _attachEnqueueOnChildrenChanged =
-      _attachEnqueueOnChildrenChangedPtr
-          .asFunction<void Function(OnChildrenChangedFunc)>();
+          'attachOnChildrenChanged');
+  late final _attachOnChildrenChanged = _attachOnChildrenChangedPtr
+      .asFunction<void Function(OnChildrenChangedFunc)>();
 
   void unloadLibrary() {
     return _unloadLibrary();

@@ -39,7 +39,7 @@ extern "C" {
     FFI_PLUGIN_EXPORT void onRenderCall(double dt);
     FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
     FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
-    FFI_PLUGIN_EXPORT void attachEnqueueOnChildrenChanged(OnChildrenChangedFunc func);
+    FFI_PLUGIN_EXPORT void attachOnChildrenChanged(OnChildrenChangedFunc func);
     FFI_PLUGIN_EXPORT void unloadLibrary();
     FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
     FFI_PLUGIN_EXPORT char* getInstantiableClasses();

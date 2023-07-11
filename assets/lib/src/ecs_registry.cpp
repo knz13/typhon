@@ -1,13 +1,18 @@
 #include "ecs_registry.h"
-#include "object.h"
+#include "object/object.h"
 
 
 entt::registry ECSRegistry::registry;
 
-Object ObjectHandle::GetAsObject() {
-    return Object(handle);
-}
+bool ECSRegistry::DeleteObject(entt::entity objID) {
+    if(ValidateEntity(objID)){
+        Object(objID).ForEachComponent([](Component& comp){
+            comp.Destroy();
+        });
+        registry.destroy(objID);
+        return true;
+    }
+    return false;
 
-ObjectHandle::operator bool() const {
-    return ECSRegistry::Get().valid(handle);
-}
+};
+

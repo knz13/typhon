@@ -61,7 +61,7 @@ void attachEnqueueRender(EnqueueObjectRender func)
     };
 }
 
-void attachEnqueueOnChildrenChanged(OnChildrenChangedFunc func) {
+void attachOnChildrenChanged(OnChildrenChangedFunc func) {
     EngineInternals::onChildrenChangedFunc = [=](){
         func();
     };
@@ -104,7 +104,6 @@ const char* getObjectNameByID(int64_t id) {
     temp.clear(); 
 
     Object obj = Engine::GetObjectFromID(id);
-    std::cout << "tried getting object with id: " << id << " with result = "<< (obj.Valid() ? "valid" : "invalid") << std::endl;
 
     if(!obj.Valid()){
         temp.push_back('\0');
@@ -132,12 +131,13 @@ const char* getObjectSerializationByID(int64_t id) {
     static std::vector<char> temp = std::vector<char>();
     static const char* ptr = nullptr;
 
-   /*  temp.clear(); 
+    temp.clear(); 
 
-    GameObject* obj = Engine::GetObjectFromID(id);
+    Object obj = Engine::GetObjectFromID(id);
     
-    if(obj == nullptr){
-        temp.reserve(3);
+    if(!obj.Valid()){
+        std::cout << "object not valid!" << std::endl;
+        temp.resize(3);
         temp.push_back('{');
         temp.push_back('}');
         temp.push_back('\0');
@@ -147,15 +147,15 @@ const char* getObjectSerializationByID(int64_t id) {
 
 
     json jsonData;
-    obj->Serialize(jsonData);
+    obj.Serialize(jsonData);
+    std::cout << jsonData.dump() << std::endl;
 
     std::string jsonDataStr = jsonData.dump();
 
-    temp.reserve(jsonDataStr.size() + 1);
+    temp.resize(jsonDataStr.size() + 1);
     memcpy(temp.data(),jsonDataStr.c_str(),jsonDataStr.size() + 1);
     ptr = temp.data();
- */
-
+    
     return ptr;
 }
 
@@ -179,7 +179,7 @@ char* getInstantiableClasses()
 
 void createObjectFromClassID(int64_t classID)
 {
-    Engine::CreateObject();
+    PrefabInternals::CreatePrefabFromID(classID);
 }
 
 bool isEngineInitialized() {

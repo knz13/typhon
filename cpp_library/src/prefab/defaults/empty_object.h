@@ -2,14 +2,15 @@
 #include "../prefab.h"
 
 
-class Cube : public Prefab<Cube> {
+class EmptyObject : public Prefab<EmptyObject> {
 public:
     
+
     std::string GetPrefabPath() override {
-        return "Solids/3D/Cube";
+        return "Empty Object";
     }
 
     Object CreatePrefab() override {
-        return Engine::CreateObject("Cube");
+        return Engine::CreateObject("Empty Object");
     };
 };

@@ -6,7 +6,7 @@
 #include "game_object_traits.h"
 #include "keyboard_adaptations.h"
 #include "crunch_texture_packer.h"
-#include "object.h"
+#include "object/object.h"
 #include <ranges>
 #include "shader_compiler.h"
 
@@ -62,11 +62,8 @@ public:
     static bool RemoveObject(int64_t id) {
         entt::entity objID{static_cast<std::underlying_type_t<entt::entity>>(id)};
 
-        if(ECSRegistry::ValidateEntity(objID)){
-            Object(objID).ForEachComponent([](Component& comp){
-                comp.Destroy();
-            });
-
+        if(ECSRegistry::DeleteObject(objID)){
+            EngineInternals::onChildrenChangedFunc();
             return true;
         }
         else {
@@ -75,11 +72,13 @@ public:
     }
 
     static Object CreateObject(std::string name = "") {
+        Object obj{ECSRegistry::CreateEntity()};
         if(name != ""){
-            Object obj{ECSRegistry::CreateEntity()};
             obj.SetName(name);
+            EngineInternals::onChildrenChangedFunc();
             return obj;
-        }   
+        }
+        EngineInternals::onChildrenChangedFunc();
         return {ECSRegistry::CreateEntity()};
     }
     

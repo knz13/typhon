@@ -209,24 +209,25 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   @override
   Widget build(BuildContext context) {
 
-    setState(() {
-    });
+    
 
     // TODO: implement build
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      scrollDirection: Axis.vertical,
       physics: NeverScrollableScrollPhysics(),
       child: Column(
         children: currentObjects.map((e) =>
-          Row(children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: GeneralButton(
+          Container(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+              GeneralButton(
                 onPressed: () {
                   setState(() {
                     idChosen = e.second;
                   });
-
+          
                   if(!TyphonCPPInterface.checkIfLibraryLoaded()){
                     print("Tried pressing while library not loaded!");
                     return;
@@ -235,26 +236,26 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
                   Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectSerializationByID(idChosen);
                   if(val != nullptr){
                     var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
-                    InspectorPanelWindow.dataToShow.value = (jsonData[e.first]["traits"] as Map).keys.map((key)  {
+                    /* InspectorPanelWindow.dataToShow.value = (jsonData[e.first]["traits"] as Map).keys.map((key)  {
                       return GeneralText(jsonData[e.first]["traits"][key].toString());
-                    }).toList();
+                    }).toList(); */
                   }
-
+          
                 },
                 color:idChosen == e.second? Colors.red : null,
                 child: GeneralText(e.first)
               ),
-            ),
-            InkWell(
-              onTap: () {
-                if(TyphonCPPInterface.checkIfLibraryLoaded()){
-                  TyphonCPPInterface.getCppFunctions().removeObjectByID(e.second);
-                }
-              },
-              child: Icon(Icons.delete),
-            )
-
-          ],)
+              InkWell(
+                onTap: () {
+                  if(TyphonCPPInterface.checkIfLibraryLoaded()){
+                    TyphonCPPInterface.getCppFunctions().removeObjectByID(e.second);
+                  }
+                },
+                child: Icon(Icons.delete),
+              )
+          
+            ],),
+          )
         ).toList(),
       ),
     );

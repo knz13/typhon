@@ -154,7 +154,7 @@ class Engine {
     var library = TyphonCPPInterface.getCppFunctions();
     library.passProjectPath(projectPath.toNativeUtf8().cast());
     library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
-    library.attachEnqueueOnChildrenChanged(Pointer.fromFunction(onCppChildrenChanged));
+    library.attachOnChildrenChanged(Pointer.fromFunction(onCppChildrenChanged));
     library.initializeCppLibrary();
     var ptr = library.getPlatformSpecificPointer();
     NativeViewInterface.attachCPPPointer(ptr);
@@ -280,6 +280,7 @@ public:
 //__INCLUDE__CREATED__CLASSES__
 
 #include "prefab/defaults/cube.h"
+#include "prefab/defaults/empty_object.h"
 
 
 bool initializeCppLibrary() {
@@ -296,6 +297,7 @@ bool initializeCppLibrary() {
 
     //initializing prefabs!
     Cube();
+    EmptyObject();
 
 
     Engine::Initialize();
@@ -388,7 +390,7 @@ void attachEnqueueRender(EnqueueObjectRender func)
 
 
 
-void attachEnqueueOnChildrenChanged(OnChildrenChangedFunc func) {
+void attachOnChildrenChanged(OnChildrenChangedFunc func) {
 
     EngineInternals::onChildrenChangedFunc = [=](){
 
@@ -474,8 +476,6 @@ const char* getObjectNameByID(int64_t id) {
 
     Object obj = Engine::GetObjectFromID(id);
 
-    std::cout << "tried getting object with id: " << id << " with result = "<< (obj.Valid() ? "valid" : "invalid") << std::endl;
-
 
 
     if(!obj.Valid()){
@@ -530,17 +530,19 @@ const char* getObjectSerializationByID(int64_t id) {
 
 
 
-   /*  temp.clear(); 
+    temp.clear(); 
 
 
 
-    GameObject* obj = Engine::GetObjectFromID(id);
+    Object obj = Engine::GetObjectFromID(id);
 
     
 
-    if(obj == nullptr){
+    if(!obj.Valid()){
 
-        temp.reserve(3);
+        std::cout << "object not valid!" << std::endl;
+
+        temp.resize(3);
 
         temp.push_back('{');
 
@@ -560,7 +562,9 @@ const char* getObjectSerializationByID(int64_t id) {
 
     json jsonData;
 
-    obj->Serialize(jsonData);
+    obj.Serialize(jsonData);
+
+    std::cout << jsonData.dump() << std::endl;
 
 
 
@@ -568,15 +572,13 @@ const char* getObjectSerializationByID(int64_t id) {
 
 
 
-    temp.reserve(jsonDataStr.size() + 1);
+    temp.resize(jsonDataStr.size() + 1);
 
     memcpy(temp.data(),jsonDataStr.c_str(),jsonDataStr.size() + 1);
 
     ptr = temp.data();
 
- */
-
-
+    
 
     return ptr;
 
@@ -624,7 +626,7 @@ void createObjectFromClassID(int64_t classID)
 
 {
 
-    Engine::CreateObject();
+    PrefabInternals::CreatePrefabFromID(classID);
 
 }
 
@@ -923,7 +925,7 @@ extern "C" {
 
     FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
 
-    FFI_PLUGIN_EXPORT void attachEnqueueOnChildrenChanged(OnChildrenChangedFunc func);
+    FFI_PLUGIN_EXPORT void attachOnChildrenChanged(OnChildrenChangedFunc func);
 
     FFI_PLUGIN_EXPORT void unloadLibrary();
 

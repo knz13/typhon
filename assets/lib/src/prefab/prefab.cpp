@@ -6,7 +6,6 @@ std::unordered_map<int64_t,std::function<Object()>> PrefabInternals::prefabsIDTo
 
 std::string PrefabInternals::GetPrefabsJSON() {
     json prefabs;
-    std::cout << "Getting prefabs!" << std::endl;
     for(const auto& [path,hash] : prefabsInstantiationMap){
         auto strVector = HelperFunctions::SplitString(path,"/");
         std::string prefabName = strVector.back();
@@ -22,7 +21,6 @@ std::string PrefabInternals::GetPrefabsJSON() {
         }
         (*jsonPtr)[prefabName] = hash;
     }
-    std::cout << "Got prefabs!" << std::endl;
 
     return prefabs.dump();
 }

@@ -3,7 +3,7 @@
 #include "reflection_checks.h"
 #include "generic_reflection.h"
 #include "ecs_registry.h"
-#include "object.h"
+#include "object/object.h"
 
 DEFINE_HAS_SIGNATURE(has_set_defaults_function,T::SetDefaults,void (T::*)());
 

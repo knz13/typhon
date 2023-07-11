@@ -170,9 +170,7 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
             }
             result(0)
         } else if call.method == "detachCPPPointer" {
-            if let view = metalView {
-                view.frame = NSRect(x:0,y:0,width: 0,height:0)
-            }
+            
             self.channel?.invokeMethod("pointerDetached", arguments: nil)
             result(0)
         } else if call.method == "getMetalViewPointer" {

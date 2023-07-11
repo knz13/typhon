@@ -4,12 +4,9 @@
 
 class Cube : public Prefab<Cube> {
 public:
-    std::string GetPrefabName() override {
-        return "Cube";
-    }
-
+    
     std::string GetPrefabPath() override {
-        return "Solids/3d";
+        return "Solids/3D/Cube";
     }
 
     Object CreatePrefab() override {

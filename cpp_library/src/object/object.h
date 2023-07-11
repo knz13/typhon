@@ -1,7 +1,7 @@
 #pragma once
-#include "general.h"
-#include "generic_reflection.h"
-#include "ecs_registry.h"
+#include "../general.h"
+#include "../generic_reflection.h"
+#include "../ecs_registry.h"
 
 
 class Object {
@@ -11,7 +11,6 @@ public:
     
     //includes self
     void ExecuteForEveryChildInTree(std::function<void(Object&)> func) {
-        func(*this);
         for(auto& id : Storage().children){
             Object(id).ExecuteForEveryChildInTree(func);
         }
@@ -28,6 +27,34 @@ public:
 
         }
     }
+
+    void Clear() {
+        EraseAllComponents();
+        RemoveFromParent();
+        RemoveChildren();
+    };
+
+    void Serialize(json& val) {
+        val["name"] = Storage().name;
+        val["id"] = static_cast<int64_t>(handle);
+        val["components"] = json::array();
+        val["children"] = json::array();
+        ForEachComponent([&](Component& comp){
+            val["components"].push_back(json::object());
+            auto& compJSON = val["components"].back();
+            comp.Serialize(compJSON);
+        });
+        val["children"] = json::array();
+        ExecuteForEveryChildInTree([&](Object& obj){
+            val["children"].push_back(json::object());
+            auto& childJSON = val["children"].back();
+            obj.Serialize(childJSON);
+        });
+    }
+
+    void Deserialize(const json& val);
+
+    
 
     bool IsChildOf(Object e) {
         return Storage().parent.ID() == e.ID();

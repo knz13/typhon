@@ -1,7 +1,7 @@
 #pragma once
 #include "../general.h"
 #include "../generic_reflection.h"
-#include "../object.h"
+#include "../object/object.h"
 #include "../engine.h"
 #include <unordered_map>
 
@@ -13,12 +13,10 @@ DEFINE_HAS_SIGNATURE(has_create_prefab_non_static,T::CreatePrefab,Object (T::*)(
 template<typename T>
 class Prefab : public Reflection::IsInitializedStatically<Prefab<T>> {
 public:
-    virtual std::string GetPrefabName() {
-        return HelperFunctions::GetClassNameString<T>();
-    }
+    
 
     virtual std::string GetPrefabPath() {
-        return "";
+        return HelperFunctions::GetClassNameString<T>();
     }
 
     virtual Object CreatePrefab() {
@@ -32,6 +30,13 @@ class PrefabInternals {
 public:
 
     static std::string GetPrefabsJSON();
+    static Object CreatePrefabFromID(int64_t id) {
+        if(prefabsIDToFunction.find(id) != prefabsIDToFunction.end()){
+            return prefabsIDToFunction[id]();
+        }
+        std::cout << "Trying to create a prefab from an unknown prefab ID!" << std::endl;
+        return Object();
+    }
 
 
     static std::unordered_map<std::string,int64_t> prefabsInstantiationMap;
@@ -40,8 +45,8 @@ public:
 
 template<typename T>
 void Prefab<T>::InitializeStatically() {
+    std::string prefabPath = T().GetPrefabPath();
     if constexpr (has_create_prefab<T>::value) {
-        std::string prefabPath = T().GetPrefabPath() + "/" + T().GetPrefabName();
         int64_t hash = HelperFunctions::HashString(prefabPath);
         PrefabInternals::prefabsInstantiationMap[prefabPath] = hash;
         PrefabInternals::prefabsIDToFunction[hash] = [](){
@@ -49,7 +54,7 @@ void Prefab<T>::InitializeStatically() {
         };
     }
     if constexpr (has_create_prefab_non_static<T>::value) {
-        std::string prefabPath = T().GetPrefabPath() + "/" + T().GetPrefabName();
+        
         int64_t hash = HelperFunctions::HashString(prefabPath);
         PrefabInternals::prefabsInstantiationMap[prefabPath] = hash;
         PrefabInternals::prefabsIDToFunction[hash] = [](){
