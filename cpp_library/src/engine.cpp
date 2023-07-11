@@ -1,5 +1,4 @@
 #include "engine.h"
-#include "game_object_traits.h"
 #include "crunch_texture_packer.h"
 #include <filesystem>
 #include <fstream>
@@ -9,7 +8,6 @@ namespace fs = std::filesystem;
 
 Vector2f Engine::mousePosition;
 std::map<std::string,TextureAtlasImageProperties> Engine::textureAtlas;
-std::unordered_map<int64_t,std::shared_ptr<GameObject>> Engine::aliveObjects;
 std::bitset<std::size(Keys::IndicesOfKeys)> EngineInternals::keysPressed;
 std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> EngineInternals::enqueueRenderFunc = [](double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double){};
 std::function<void()> EngineInternals::onChildrenChangedFunc = [](){};
@@ -56,9 +54,7 @@ void Engine::Unload()
 
     std::cout << "Another time!" << std::endl;
 
-    GameObject::instantiableClasses.clear();
-    GameObject::instantiableClassesIDs.clear();
-    GameObject::instantiableClassesNames.clear();
+    
     Engine::isInitialized = false;
     
     std::cout << "Unloaded Engine!" << std::endl;
@@ -100,11 +96,11 @@ std::string Engine::GetPathToAtlas()
 
 void Engine::Update(double dt)
 {
-    for(const auto& [handle,func] : Traits::HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate) {
+    /* for(const auto& [handle,func] : Traits::HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate) {
         func(dt);
-    } 
+    }  */
 
-    for(const auto& [handle,spriteData] : Traits::UsesSpriteAnimationInternals::objectsToBeRendered) {
+    /* for(const auto& [handle,spriteData] : Traits::UsesSpriteAnimationInternals::objectsToBeRendered) {
         auto& properties = Engine::textureAtlas[spriteData.objectPointer->className];
         
         double anchorX,anchorY;
@@ -165,7 +161,7 @@ void Engine::Update(double dt)
             *spriteData.scale,
             *spriteData.angle
         );
-    }
+    } */
 
 }
 
@@ -252,17 +248,7 @@ std::string Engine::SerializeCurrent() {
 json Engine::SerializeCurrentJSON() {
     json finalData = json();
 
-    std::vector<json> objects;
-    for(const auto& [handle,objPtr] : aliveObjects) { 
-        json objData = json();
-
-        objPtr->GameObjectSerialize(objData);
-
-
-        objects.push_back(objData);
-    }
-
-    finalData["Objects"] = objects;
+    //TODO
 
     return finalData;
 }
@@ -272,14 +258,7 @@ bool Engine::DeserializeToCurrent(std::string scene) {
     try{
         json sceneData = json::parse(scene);
 
-        /* if(sceneData.contains("Objects")) {
-            for(const auto& object : sceneData.at("Objects")){
-                auto ptr = Engine::CreateNewGameObject(object.items().begin().key());
-                if(ptr != nullptr) {
-                    ptr->GameObjectDeserialize(object);
-                }
-            }
-        } */
+        //TODO
 
         return true;
     }

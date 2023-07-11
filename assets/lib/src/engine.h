@@ -1,9 +1,7 @@
 #pragma once
 #include "general.h"
 #include "generic_reflection.h"
-#include "game_object.h"
 #include "ecs_registry.h"
-#include "game_object_traits.h"
 #include "keyboard_adaptations.h"
 #include "crunch_texture_packer.h"
 #include "object/object.h"
@@ -121,11 +119,9 @@ private:
     static bool isInitialized;
     static std::map<std::string,TextureAtlasImageProperties> CreateTextureAtlasFromImages();
     static std::map<std::string,TextureAtlasImageProperties> textureAtlas;
-    static std::unordered_map<int64_t,std::shared_ptr<GameObject>> aliveObjects;
     static Vector2f mousePosition;
 
 
-    friend class GameObject;
     friend class EngineInternals;
 };
 

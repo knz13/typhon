@@ -74,8 +74,6 @@ private:
 #endif
 
 
-typedef int64_t (*CreateGameObjectFunc)();
-typedef void (*RemoveGameObjectFunc)(int64_t);
 typedef void (*FindFrameFunc)(int64_t);
 typedef void (*AttachPointersToObjectFunc)(int64_t);
 typedef void (*SetDefaultsFunc)(int64_t);
