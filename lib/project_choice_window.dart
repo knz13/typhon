@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:menu_bar/menu_bar.dart';
+import 'package:typhon/config/colors.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/main_engine_frontend.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
@@ -46,15 +47,13 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
   String? projectName;
   // Colors
   Color leadingIconColor = Colors.white.withOpacity(0.8);
-  Color activeColor = const Color.fromRGBO(62,62,62,1);
   Color dividerColor = Colors.black26;
-  Color searchColor = const Color.fromRGBO(159, 159, 159  , 1);
 
   Container tileLeftMenu(Tile tile){
     return Container(
       height: 50,
       decoration: BoxDecoration(
-          color: selectedOptionSideMenu == tile.idx? activeColor: Colors.transparent,
+          color: selectedOptionSideMenu == tile.idx? Config.activeColor: Colors.transparent,
           borderRadius: BorderRadius.circular(5)
       ),
       child: Center(
@@ -233,11 +232,11 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                         fontWeight: FontWeight.w600
                                       ),
                                       decoration: InputDecoration(
-                                        icon: Icon(Icons.search,color: searchColor),
+                                        icon: Icon(Icons.search,color: Config.searchColor),
                                         hintText: "Search all templates",
                                         hoverColor: Colors.white,
                                         hintStyle: TextStyle(
-                                          color: searchColor
+                                          color: Config.searchColor
                                         ),
                                         border: InputBorder.none,
                                       ),
@@ -400,7 +399,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                                 label: const Text("Project Name",style: TextStyle(color: Colors.white38)),
                                                 hoverColor: Colors.white,
                                                 hintStyle: TextStyle(
-                                                    color: searchColor
+                                                    color: Config.searchColor
                                                 ),
                                                 border: InputBorder.none,
                                               ),
@@ -471,7 +470,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                             height: 40,
                             width: 100,
                             decoration: BoxDecoration(
-                              color: activeColor,
+                              color: Config.activeColor,
                               borderRadius: BorderRadius.circular(4)
                             ),
                             child: const Center(
@@ -538,7 +537,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
     return Container(
       height: 60,
       decoration: BoxDecoration(
-          color: selectedOptionSideMenu == tile.idx? activeColor: Colors.transparent,
+          color: selectedOptionSideMenu == tile.idx? Config.activeColor: Colors.transparent,
           borderRadius: BorderRadius.circular(5)
       ),
       child: Center(
@@ -562,14 +561,14 @@ class _ProjectsPageState extends State<ProjectsPage> {
         children: [
           Expanded(
             child: Container(
-              color: secondaryBlack,
+              color: Config.secondaryBlack,
               child: Column(
                 children: [
                   RawMaterialButton(
                     onPressed: (){},
                     child: Container(
                         height: 175,
-                        color: secondaryBlack
+                        color: Config.secondaryBlack
                     ),
                   ),
                   const Divider(
@@ -579,7 +578,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                   Expanded(
                       flex: 8,
                       child: Container(
-                        color: secondaryBlack,
+                        color: Config.secondaryBlack,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
                           child: Column(
@@ -649,7 +648,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                   ),
                   Expanded(
                       child: Container(
-                        color: secondaryBlack,
+                        color: Config.secondaryBlack,
                         child: RawMaterialButton(
                             onPressed: (){},
                             child: Row(
@@ -677,7 +676,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
           Expanded(
             flex: 3,
             child: Container(
-              color: primaryBlack,
+              color: Config.primaryBlack,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -707,7 +706,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                       height: 40,
                                       width: 80,
                                       decoration: BoxDecoration(
-                                          color: activeColor,
+                                          color: Config.activeColor,
                                           borderRadius: const BorderRadius.horizontal(left: Radius.circular(3))
                                       ),
                                       child: RawMaterialButton(
@@ -729,7 +728,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                       height: 40,
                                       width: 40,
                                       decoration: BoxDecoration(
-                                          color: activeColor,
+                                          color: Config.activeColor,
                                           borderRadius: const BorderRadius.horizontal(right: Radius.circular(3))
                                       ),
                                       child: RawMaterialButton(
@@ -880,7 +879,7 @@ class ProjectListItem extends StatelessWidget {
       flex: flex ?? 1,
       child: Container(
         decoration: BoxDecoration(
-          color: primaryBlack.withAlpha(0),
+          color: Config.primaryBlack.withAlpha(0),
         ),
         child: Padding(
           padding: EdgeInsets.all(10),
@@ -913,7 +912,7 @@ class ProjectHeaderItem extends StatelessWidget {
       flex: flex ?? 1,
       child: Container(
         decoration: BoxDecoration(
-          color: activeColor,
+          color: Config.activeColor,
           border: Border.all(
           )
         ),

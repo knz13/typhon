@@ -318,9 +318,20 @@ public:
                               });
 
                               }
-                            )
+                            ),
+                            
                           ]
                         ),
+                        if(hoveringPath != "" && path.basename(hoveringPath) != "entry.h")
+                        ContextMenuSeparator(),
+                        if(hoveringPath != "" && path.basename(hoveringPath) != "entry.h")
+                        ContextMenuOption(
+                          title: "Delete",
+                          callback: () {
+                            File(path.join(FileViewerPanel.currentDirectory.value.absolute.path,hoveringPath)).deleteSync(recursive: true);
+                            _refreshFiles();
+                          }
+                        )
                         
                       ]);
                     },

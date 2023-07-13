@@ -289,6 +289,20 @@ class TyphonBindings {
           'getObjectSerializationByID');
   late final _getObjectSerializationByID = _getObjectSerializationByIDPtr
       .asFunction<ffi.Pointer<ffi.Char> Function(int)>();
+
+  ffi.Pointer<ffi.Char> getObjectInspectorUIByID(
+    int id,
+  ) {
+    return _getObjectInspectorUIByID(
+      id,
+    );
+  }
+
+  late final _getObjectInspectorUIByIDPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int64)>>(
+          'getObjectInspectorUIByID');
+  late final _getObjectInspectorUIByID = _getObjectInspectorUIByIDPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(int)>();
 }
 
 typedef EnqueueObjectRender = ffi.Pointer<

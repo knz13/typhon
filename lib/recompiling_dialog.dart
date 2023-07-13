@@ -11,6 +11,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:typhon/config/colors.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/main.dart';
 
@@ -137,7 +138,7 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
           children: [
             Expanded(
               child: Container(
-                color: primaryBlack,
+                color: Config.primaryBlack,
                 height: 2,
               ),
             ),
@@ -167,11 +168,11 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
         width: 375,
         height: 400,
         decoration: BoxDecoration(
-          color: activeColor.withOpacity(0.5),
+          color: Config.activeColor.withOpacity(0.5),
           borderRadius: BorderRadius.circular(3),
           boxShadow: [
             BoxShadow(
-              color: activeColor,
+              color: Config.activeColor,
               blurRadius: 1,
             ),
             const BoxShadow(

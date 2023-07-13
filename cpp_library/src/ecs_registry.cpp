@@ -7,7 +7,7 @@ entt::registry ECSRegistry::registry;
 bool ECSRegistry::DeleteObject(entt::entity objID) {
     if(ValidateEntity(objID)){
         Object(objID).ForEachComponent([](Component& comp){
-            comp.Destroy();
+            comp.CallDestroy();
         });
         registry.destroy(objID);
         return true;

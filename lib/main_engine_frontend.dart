@@ -11,6 +11,7 @@ import 'dart:io';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:flutter/material.dart';
 import 'package:menu_bar/menu_bar.dart';
+import 'package:typhon/config/colors.dart';
 import 'package:typhon/engine.dart';
 import 'package:typhon/project_choice_window.dart';
 import 'package:typhon/scene_viewer_panel.dart';
@@ -19,7 +20,7 @@ import 'console_panel.dart';
 import 'engine_sub_window.dart';
 import 'file_viewer_panel.dart';
 import 'general_widgets.dart';
-import 'hierarchy_panel.dart';
+import 'hierarchy_panel/hierarchy_panel.dart';
 import 'inspector_panel.dart';
 import 'main.dart';
 
@@ -103,7 +104,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
         child: Platform.isWindows? MenuBarWidget(
               barStyle:  MenuStyle(
                 backgroundColor:  MaterialStateColor.resolveWith((states) {
-                  return primaryBlack;
+                  return Config.primaryBlack;
                 }),
               ),
               barButtonStyle: ButtonStyle(
@@ -116,15 +117,15 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                 BarButton(text: GeneralText("Typhon"), submenu: SubMenu(
                   menuItems: [
                     MenuButton(
-                      text: GeneralText("About",color: primaryBlack,),
+                      text: GeneralText("About",color: Config.primaryBlack,),
                       onTap: null
                     ),
                     MenuButton(
-                      text: GeneralText("Preferences",color: primaryBlack,),
+                      text: GeneralText("Preferences",color: Config.primaryBlack,),
                       onTap: null
                     ),
                     MenuButton(
-                      text: GeneralText("Shortcuts",color: primaryBlack,),
+                      text: GeneralText("Shortcuts",color: Config.primaryBlack,),
                       onTap: null
                     ),
 
@@ -133,7 +134,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                 BarButton(text: GeneralText("Project"),submenu: SubMenu(
                   menuItems:[
                     MenuButton(
-                      text: GeneralText("Project Selection",color: primaryBlack,),
+                      text: GeneralText("Project Selection",color: Config.primaryBlack,),
                       onTap: () {
                         Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
                         Navigator.of(MyApp.globalContext.currentContext!).push(MaterialPageRoute(builder:(context) {

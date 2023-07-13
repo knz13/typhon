@@ -48,6 +48,7 @@ extern "C" {
     FFI_PLUGIN_EXPORT const char* getObjectNameByID(int64_t id);
     FFI_PLUGIN_EXPORT void removeObjectByID(int64_t id);
     FFI_PLUGIN_EXPORT const char* getObjectSerializationByID(int64_t id);
+    FFI_PLUGIN_EXPORT const char* getObjectInspectorUIByID(int64_t id);
     
     //__END__CPP__EXPORTS__
 

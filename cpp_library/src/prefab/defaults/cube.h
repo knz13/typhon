@@ -1,6 +1,6 @@
 #pragma once
 #include "../prefab.h"
-
+#include "../../component/default_components/transform.h"
 
 class Cube : public Prefab<Cube> {
 public:
@@ -10,6 +10,8 @@ public:
     }
 
     Object CreatePrefab() override {
-        return Engine::CreateObject("Cube");
+        Object obj = Engine::CreateObject("Cube");
+        obj.AddComponent<Transform>();
+        return obj;
     };
 };

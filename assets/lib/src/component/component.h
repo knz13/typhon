@@ -17,20 +17,35 @@ DEFINE_HAS_SIGNATURE(has_title_on_editor_function,T::TitleOnEditor,std::string (
 class Component {
 public:
 
-    virtual void Update(double dt){};
+    virtual void CallUpdate(double dt){};
 
-    virtual void Create() {};
+    virtual void CallCreate() {};
 
-    virtual void Destroy() {
+    virtual void CallDestroy() {
         removeFromObjectFunc();
     };
+    
+    virtual void CallSerialize(json& json) {};
 
-    virtual void Serialize(json& json) {};
+    virtual void CallDeserialize(const json& json) {};
 
-    virtual void Deserialize(const json& json) {};
-
-    virtual UIBuilder BuildEditorUI() {
+    virtual UIBuilder CallBuildEditorUI() {
         return UIBuilder();
+    }
+
+    template<typename T>
+    bool IsOfType() {
+        if (HelperFunctions::GetClassID<T>() == typeID) {
+            return true;
+        }
+        return false;
+    }
+
+    bool IsOfType(std::string typeName) {
+        if (typeName == componentName) {
+            return true;
+        }
+        return false;
     }
 
 private:

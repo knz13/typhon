@@ -47,7 +47,7 @@ public:
 
     UIElement AddVectorField(std::string name,Vector3f& value) {
         json element = json::object();  
-        element[name] = json::object(); 
+        element[name] = json::object();
         element[name]["address"] = reinterpret_cast<int64_t>(&value);   
         element[name]["type"] = "vec3";
         std::ostringstream ss;

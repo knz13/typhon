@@ -7,7 +7,7 @@ import 'package:menu_bar/menu_bar.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/general_widgets.dart';
-import 'package:typhon/hierarchy_panel.dart';
+import 'package:typhon/hierarchy_panel/hierarchy_panel.dart';
 import 'package:typhon/inspector_panel.dart';
 import 'package:typhon/project_choice_window.dart';
 import 'package:typhon/scene_viewer_panel.dart';
@@ -19,10 +19,7 @@ import 'main_engine_frontend.dart';
 import 'package:window_size/window_size.dart';
 import 'dart:io';
 
-Color activeColor = const Color.fromRGBO(62,62,62,1);
-Color blueColor = const Color.fromRGBO(63,117,195,1);
-Color primaryBlack = const Color.fromRGBO(20,20,20,1);
-Color secondaryBlack = const Color.fromRGBO(36,36,36,1);
+
 
 class Tile {
   int idx = 0;

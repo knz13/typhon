@@ -11,14 +11,15 @@ import 'package:ffi/ffi.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:typhon/engine_sub_window.dart';
+import 'package:typhon/hierarchy_panel/hierarchy_widget.dart';
 import 'package:typhon/inspector_panel.dart';
 import 'package:typhon/tree_viewer.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
-import 'engine.dart';
-import 'general_widgets.dart';
-import 'main.dart';
+import '../engine.dart';
+import '../general_widgets.dart';
+import '../main.dart';
 
 
 class HierarchyPanelWindow extends EngineSubWindowData {
@@ -85,7 +86,7 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
               Pointer<Char> ptr = TyphonCPPInterface.getCppFunctions().getInstantiableClasses();
               String jsonClasses = ptr.cast<Utf8>().toDartString();
               Map<String,dynamic> map = jsonDecode(jsonClasses);
-              
+
 
               return buildMenuOptionsFromJson(map);
               
@@ -233,12 +234,20 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
                     return;
                   }
                   
-                  Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectSerializationByID(idChosen);
+                  Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectInspectorUIByID(idChosen);
                   if(val != nullptr){
                     var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
-                    /* InspectorPanelWindow.dataToShow.value = (jsonData[e.first]["traits"] as Map).keys.map((key)  {
-                      return GeneralText(jsonData[e.first]["traits"][key].toString());
-                    }).toList(); */
+                    print(jsonData);
+                    List<Widget> newWidgets = [];
+                    newWidgets.add(
+                      HierarchyWidget(jsonData["name"])
+                    );
+
+                    for(var component in jsonData["components"]) {
+                      newWidgets.add(HierarchyWidget(component["component_name"]));
+                    }
+                    
+                    InspectorPanelWindow.dataToShow.value = newWidgets;
                   }
           
                 },

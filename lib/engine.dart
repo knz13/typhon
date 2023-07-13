@@ -564,7 +564,75 @@ const char* getObjectSerializationByID(int64_t id) {
 
     obj.Serialize(jsonData);
 
-    std::cout << jsonData.dump() << std::endl;
+
+
+    std::string jsonDataStr = jsonData.dump();
+
+
+
+    temp.resize(jsonDataStr.size() + 1);
+
+    memcpy(temp.data(),jsonDataStr.c_str(),jsonDataStr.size() + 1);
+
+    ptr = temp.data();
+
+    
+
+    return ptr;
+
+}
+
+
+
+const char* getObjectInspectorUIByID(int64_t id) {
+
+    static std::vector<char> temp = std::vector<char>();
+
+    static const char* ptr = nullptr;
+
+
+
+    temp.clear(); 
+
+
+
+    Object obj = Engine::GetObjectFromID(id);
+
+    
+
+    if(!obj.Valid()){
+
+        std::cout << "object not valid!" << std::endl;
+
+        temp.resize(3);
+
+        temp.push_back('{');
+
+        temp.push_back('}');
+
+        temp.push_back('\0');
+
+        ptr = temp.data();
+
+        return ptr;
+
+    }
+
+
+
+
+
+    json jsonData = json::object();
+
+    jsonData["name"] = obj.Name();
+
+    jsonData["components"] = json::array();
+
+    obj.ForEachComponent([&](Component& comp){
+
+        jsonData["components"].push_back(comp.InternalBuildEditorUI().GetJSON());
+
+    });
 
 
 
@@ -942,6 +1010,8 @@ extern "C" {
     FFI_PLUGIN_EXPORT void removeObjectByID(int64_t id);
 
     FFI_PLUGIN_EXPORT const char* getObjectSerializationByID(int64_t id);
+
+    FFI_PLUGIN_EXPORT const char* getObjectInspectorUIByID(int64_t id);
 
     
 

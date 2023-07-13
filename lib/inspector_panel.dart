@@ -31,6 +31,7 @@ class _InspectorPanelState extends State<InspectorPanel> {
 
   void onSelectedChanged() {
       setState(() {
+        
       });
   }
 

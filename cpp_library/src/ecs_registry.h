@@ -60,7 +60,7 @@ public:
         static_cast<Component*>(&obj)->removeFromObjectFunc = [=](){
             ECSRegistry::Get().remove<T>(e);
         };
-        static_cast<Component*>(&obj)->Create();
+        static_cast<Component*>(&obj)->CallCreate();
         GetStorageForEntity(e)->componentNames.push_back(HelperFunctions::GetClassNameString<T>());
         return true;
     }
@@ -87,7 +87,7 @@ public:
             return false;
         }
         
-        static_cast<Component*>(GetComponentFromEntity<T>(e))->Destroy();
+        static_cast<Component*>(GetComponentFromEntity<T>(e))->CallDestroy();
 
         return true;
     }

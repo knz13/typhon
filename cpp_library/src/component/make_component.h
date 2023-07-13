@@ -20,29 +20,28 @@ public:
         typeID = staticTypeID;
     }
 
-    void Update(double dt) override {
+    void CallUpdate(double dt) final {
         (CallUpdateForOne<T>(dt));
     };
 
-    void Create() override {
+    void CallCreate() final {
         (CallCreateForOne<T>());
-
     };
     
-    void Destroy() override {
+    void CallDestroy() final {
         (CallDestroyForOne<T>());
-        Component::Destroy();
+        Component::CallDestroy();
     };
     
-    void Serialize(json& jsonData) override {
+    void CallSerialize(json& jsonData) final {
         (CallSerializeForOne<T>(jsonData));
     };
     
-    void Deserialize(const json& jsonData) override {
+    void CallDeserialize(const json& jsonData) final {
         (CallDeserializeForOne<T>(jsonData));
     };
 
-    UIBuilder BuildEditorUI() override {
+    UIBuilder CallBuildEditorUI() final {
         return (CallBuildEditorUIForOne<T>());
     }
 
@@ -116,7 +115,9 @@ private:
     template<typename A>
     UIBuilder CallBuildEditorUIForOne() {
         if constexpr (has_build_editor_ui<A>::value) {
-            return static_cast<A*>(this)->BuildEditorUI();
+            UIBuilder builder = static_cast<A*>(this)->BuildEditorUI();
+            builder.SetName(HelperFunctions::GetClassNameString<A>());
+            return builder;
         }
         return UIBuilder();
     }
