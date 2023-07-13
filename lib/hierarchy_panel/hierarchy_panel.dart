@@ -244,11 +244,10 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
                     );
 
                     for(var component in jsonData["components"]) {
-                      newWidgets.add(HierarchyWidget(component["component_name"]));
+                      newWidgets.add(HierarchyWidget(component["component_name"],componentData: component["children"]));
                     }
-                    
                     InspectorPanelWindow.dataToShow.value = newWidgets;
-                  }
+                  } 
           
                 },
                 color:idChosen == e.second? Colors.red : null,
@@ -257,6 +256,9 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
               InkWell(
                 onTap: () {
                   if(TyphonCPPInterface.checkIfLibraryLoaded()){
+                    if(idChosen == e.second){
+                      InspectorPanelWindow.dataToShow.value = [];
+                    }
                     TyphonCPPInterface.getCppFunctions().removeObjectByID(e.second);
                   }
                 },

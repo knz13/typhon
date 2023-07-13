@@ -20,52 +20,52 @@ public:
         typeID = staticTypeID;
     }
 
-    void CallUpdate(double dt) final {
-        (CallUpdateForOne<T>(dt));
+    void InternalUpdate(double dt)  {
+        (InternalUpdateForOne<T>(dt));
     };
 
-    void CallCreate() final {
-        (CallCreateForOne<T>());
+    void InternalCreate()  {
+        (InternalCreateForOne<T>());
     };
     
-    void CallDestroy() final {
-        (CallDestroyForOne<T>());
-        Component::CallDestroy();
+    void InternalDestroy()  {
+        (InternalDestroyForOne<T>());
+        Component::InternalDestroy();
     };
     
-    void CallSerialize(json& jsonData) final {
-        (CallSerializeForOne<T>(jsonData));
+    void InternalSerialize(json& jsonData)  {
+        (InternalSerializeForOne<T>(jsonData));
     };
     
-    void CallDeserialize(const json& jsonData) final {
-        (CallDeserializeForOne<T>(jsonData));
+    void InternalDeserialize(const json& jsonData)  {
+        (InternalDeserializeForOne<T>(jsonData));
     };
 
-    UIBuilder CallBuildEditorUI() final {
-        return (CallBuildEditorUIForOne<T>());
+    UIBuilder InternalBuildEditorUI()  {
+        return (InternalBuildEditorUIForOne<T>());
     }
 
 private:
     template<typename A>
-    void CallUpdateForOne(double dt) {
+    void InternalUpdateForOne(double dt) {
         if constexpr (has_update<A>::value){
             static_cast<A*>(this)->Update(dt);
         }
     }
     template<typename A>
-    void CallCreateForOne() {
+    void InternalCreateForOne() {
         if constexpr (has_on_create<A>::value){
             static_cast<A*>(this)->Create();
         }
     }
     template<typename A>
-    void CallDestroyForOne() {
+    void InternalDestroyForOne() {
         if constexpr (has_on_destroy<A>::value){
             static_cast<A*>(this)->Destroy();
         }
     }
     template<typename A>
-    void CallSerializeForOne(json& jsonData) {
+    void InternalSerializeForOne(json& jsonData) {
         constexpr bool hasInternalToJsonFunc = requires (json& j,A& a) {
             a.InternalSerialize(j);
         };
@@ -87,7 +87,7 @@ private:
         }
     }
     template<typename A>
-    void CallDeserializeForOne(const json& jsonData) {
+    void InternalDeserializeForOne(const json& jsonData) {
 
         constexpr bool hasInternalFromJsonFunc = requires (const json& j,A& a) {
             a.InternalDeserialize(j);
@@ -113,8 +113,9 @@ private:
     }
 
     template<typename A>
-    UIBuilder CallBuildEditorUIForOne() {
+    UIBuilder InternalBuildEditorUIForOne() {
         if constexpr (has_build_editor_ui<A>::value) {
+            std::cout << "calling build here!" << std::endl;
             UIBuilder builder = static_cast<A*>(this)->BuildEditorUI();
             builder.SetName(HelperFunctions::GetClassNameString<A>());
             return builder;

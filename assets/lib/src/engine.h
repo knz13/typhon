@@ -93,7 +93,7 @@ public:
         ECSRegistry::Get().each([](entt::entity e){
             if(ECSRegistry::ValidateEntity(e)){
                 Object(e).ForEachComponent([](Component& comp){
-                    comp.CallDestroy();
+                    comp.InternalDestroy();
                 });
             }
         });

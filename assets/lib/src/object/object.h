@@ -42,7 +42,7 @@ public:
         ForEachComponent([&](Component& comp){
             val["components"].push_back(json::object());
             auto& compJSON = val["components"].back();
-            comp.CallSerialize(compJSON);
+            comp.InternalSerialize(compJSON);
         });
         val["children"] = json::array();
         ExecuteForEveryChildInTree([&](Object& obj){
@@ -130,7 +130,7 @@ public:
     void EraseAllComponents(){
         for(auto [name,storage] : ECSRegistry::Get().storage()){
             if(storage.contains(ID())){
-                ((Component*)storage.get(ID()))->CallDestroy();
+                ((Component*)storage.get(ID()))->InternalDestroy();
             }
         }
     }

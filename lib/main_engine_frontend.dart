@@ -50,6 +50,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
     // TODO: implement dispose
     super.dispose();
 
+    InspectorPanelWindow.dataToShow.value = [];
     Engine.instance.unload();
 
   }

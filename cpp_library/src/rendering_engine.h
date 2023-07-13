@@ -44,7 +44,7 @@ public:
     }
 
 protected:
-    void CallUpdateFunc() {
+    void InternalUpdateFunc() {
         std::chrono::time_point<std::chrono::system_clock> newTime = std::chrono::system_clock::now();
 
         auto difference = std::chrono::duration_cast<std::chrono::milliseconds>(newTime - lastUpdateTime);

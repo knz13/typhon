@@ -206,9 +206,9 @@ class Engine {
 
     AliveObjectsArray arr = TyphonCPPInterface.getCppFunctions().getAliveObjects();
 
-    Int64List list = arr.array.asTypedList(arr.size);
+    List<int> list = arr.array.asTypedList(arr.size).toList();
 
-    Engine.instance.currentChildren.value = list.toList();
+    Engine.instance.currentChildren.value = list;
 
 
   }

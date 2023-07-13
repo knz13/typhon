@@ -24,8 +24,7 @@ public:
         }
         
         viewDelegate = std::make_unique<MacOSViewDelegate>(device,[&](){
-            //std::cout << "Calling update!" << std::endl;
-            this->CallUpdateFunc();
+            this->InternalUpdateFunc();
         });
         
 

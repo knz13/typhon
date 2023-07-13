@@ -153,8 +153,8 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
                 print("initializing metal view!")
                 metalView = MTKView(frame: NSRect(x: 0, y: 0, width: 500, height: 500),device: MTLCreateSystemDefaultDevice())
                 metalView?.delegate = delegate
-                //metalView?.clearColor = MTLClearColorMake(10, 20, 30, 255)
-                MainFlutterWindow.mainViewController!.view.addSubview(metalView!, positioned: .below, relativeTo: nil)
+
+                MainFlutterWindow.flutterViewController!.view.addSubview(metalView!, positioned: .below, relativeTo: nil)
             }
 
             result(0);

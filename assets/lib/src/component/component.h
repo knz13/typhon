@@ -17,19 +17,19 @@ DEFINE_HAS_SIGNATURE(has_title_on_editor_function,T::TitleOnEditor,std::string (
 class Component {
 public:
 
-    virtual void CallUpdate(double dt){};
+    virtual void InternalUpdate(double dt){};
 
-    virtual void CallCreate() {};
+    virtual void InternalCreate() {};
 
-    virtual void CallDestroy() {
+    virtual void InternalDestroy() {
         removeFromObjectFunc();
     };
     
-    virtual void CallSerialize(json& json) {};
+    virtual void InternalSerialize(json& json) {};
 
-    virtual void CallDeserialize(const json& json) {};
+    virtual void InternalDeserialize(const json& json) {};
 
-    virtual UIBuilder CallBuildEditorUI() {
+    virtual UIBuilder InternalBuildEditorUI() {
         return UIBuilder();
     }
 
