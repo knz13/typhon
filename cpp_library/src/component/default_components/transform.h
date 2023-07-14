@@ -7,7 +7,7 @@ public:
     UIBuilder BuildEditorUI() {
         UIBuilder builder;
 
-        builder.DefineBuild()
+        builder.DefineFields()
             .AddVectorField("Position",position)
             .AddVectorField("Rotation",rotation)
             .AddVectorField("Scale",scale);

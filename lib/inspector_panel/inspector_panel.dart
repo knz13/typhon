@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:typhon/typhon_bindings.dart';
 
-import 'engine_sub_window.dart';
+import '../engine_sub_window.dart';
 
 
 class InspectorPanelWindow extends EngineSubWindowData {

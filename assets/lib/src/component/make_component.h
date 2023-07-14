@@ -2,6 +2,14 @@
 #include "../general.h"
 #include "../ecs_registry.h"
 
+
+namespace ComponentInternals {
+    class ComponentStatics {
+    public:
+        static std::vector<entt::id_type> componentTypes;
+    };
+}
+
 template<typename T>
 class MakeComponent : public Component,public Reflection::IsInitializedStatically<MakeComponent<T>>{
 private:
@@ -11,7 +19,8 @@ private:
 public:
 
     static void InitializeStatically() {
-        std::cout << "initializing statically for " << HelperFunctions::GetClassNameString<T>() << std::endl;
+        std::cout << "INITIALIZING STATICALLY FOR: " << staticComponentName << std::endl;
+        ComponentInternals::ComponentStatics::componentTypes.push_back(staticTypeID);
         AddToECSRegistryIDsMap<T>();
     }
 
@@ -115,23 +124,33 @@ private:
     template<typename A>
     UIBuilder InternalBuildEditorUIForOne() {
         if constexpr (has_build_editor_ui<A>::value) {
-            std::cout << "calling build here!" << std::endl;
             UIBuilder builder = static_cast<A*>(this)->BuildEditorUI();
             builder.SetName(HelperFunctions::GetClassNameString<A>());
             return builder;
         }
-        return UIBuilder();
+        else {
+            UIBuilder builder = UIBuilder();
+            builder.SetName(HelperFunctions::GetClassNameString<A>());
+            return builder;
+        }
     }
 
     
 
     template<typename A>
     static void AddToECSRegistryIDsMap() {
+
         entt::meta<A>().type(entt::hashed_string(staticComponentName.c_str()));
         entt::meta<A>().template data<&MakeComponent<T>::staticTypeID>(entt::hashed_string(std::string(staticComponentName + "_type_id").c_str()));
         entt::meta<A>().template func<&ECSRegistry::AddComponentToEntity<A>>(entt::hashed_string(std::string("AddComponent").c_str()));
-        entt::meta<A>().template func<&ECSRegistry::EraseComponentFromEntity<A>>(entt::hashed_string(std::string("EraseComponent").c_str()));
+        entt::meta<A>().template func<&ECSRegistry::EraseComponentFromEntity<A>>(entt::hashed_string(std::string("RemoveComponent").c_str()));
         entt::meta<A>().template func<&ECSRegistry::GetComponentFromEntity<A>>(entt::hashed_string(std::string("GetComponent").c_str()));
     }
 
 };
+
+namespace ObjectInternals {
+    class ParentlessTag {
+        
+    };
+}

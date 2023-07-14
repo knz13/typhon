@@ -4,29 +4,59 @@
 #include "../ecs_registry.h"
 
 
+namespace ObjectInternals {
+    class ParentlessTag;
+}
+
+namespace Typhon {
 class Object {
 public:
     bool operator==(const Object&) const = default;
 
     
     //includes self
-    void ExecuteForEveryChildInTree(std::function<void(Object&)> func) {
+    void ExecuteForEveryChildInTree(std::function<void(Object&)> func,bool includeSelf = false) {
+        if(includeSelf){
+            func(*this);
+        }
         for(auto& id : Storage().children){
-            Object(id).ExecuteForEveryChildInTree(func);
-        }
-    }
-
-    void ForEachComponent(std::function<void(Component&)> func){
-        if(!Valid()){
-            return;
-        }
-        for(auto [name,storage] : ECSRegistry::Get().storage()){
-            if(storage.contains(ID()) && storage.type() != entt::type_id<ObjectStorage>()){
-                func(*((Component*)storage.get(ID())));
+            Object tempObj(id);
+            if(!includeSelf){
+                func(tempObj);
             }
-
+            tempObj.ExecuteForEveryChildInTree(func,includeSelf);
         }
     }
+
+    template<typename T>
+    bool HasTag() {
+        if(!Valid()){
+            return false;
+        }
+        return ECSRegistry::Get().all_of<T>(ID());
+    }
+
+    template<typename T>
+    bool AddTag() {
+        if(!Valid()){
+            return false;
+        }
+        ECSRegistry::Get().emplace<T>(ID());
+        return true;
+    }
+
+    template<typename T>
+    bool RemoveTag() {
+        if(!Valid()){
+            return false;
+        }
+        if(!HasTag<T>()){
+            return false;
+        }
+        return ECSRegistry::Get().remove<T>(ID()) > 0;
+    }
+
+    void ForEachComponent(std::function<void(Component&)> func);
 
     void Clear() {
         EraseAllComponents();
@@ -68,49 +98,23 @@ public:
         return Storage().parent.GetAsObject().Valid();
     }
 
-    void SetParent(Object e) {
-        Storage().parent = e.ID();
-        if(e.Valid()){
-            e.Storage().children.push_back(ID());
-        }
-	}
+    void SetParent(Object e);
 
-    void RemoveFromParent() {
-        if(Storage().parent){
-            auto& children = Storage().parent.GetAsObject().Storage().children;
-            children.erase(std::find(children.begin(),children.end(),ID()));
-        }
-        Storage().parent = ObjectHandle();
-    }
+    void RemoveFromParent();
 
-    void RemoveChild(Object e) {
-        auto pos = std::find(Storage().children.begin(),Storage().children.end(),e.ID());
-        if(pos != Storage().children.end()){
-            Object(*pos).Storage().parent = ObjectHandle();
-            Storage().children.erase(pos);
-        }
-    }
+    void RemoveChild(Object e);
 
-	void RemoveChildren() {
-        auto it = Storage().children.begin();
-        while(it != Storage().children.end()){
-            Object(*it).Storage().parent = ObjectHandle();
-            Storage().children.erase(it);
-            it = Storage().children.begin();
-        }
-	}
+	void RemoveChildren();
 
-	void AddChild(Object e) {
-        auto pos =std::find(Storage().children.begin(),Storage().children.end(),e.ID());
-		if (pos == Storage().children.end()) {
-			Storage().children.push_back(e.ID());
-            e.Storage().parent = this->ID();
-		}
-	}
+	void AddChild(Object e);
 
     size_t NumberOfChildren() {
         return Storage().children.size();
     }
+
+    const std::vector<entt::entity>& Children() {
+        return Storage().children;
+    };
 
     template<typename T>
     T* GetComponent() {
@@ -123,7 +127,7 @@ public:
     }
     
     template<typename T>
-    bool EraseComponent(){
+    bool RemoveComponent(){
         return ECSRegistry::EraseComponentFromEntity<T>(handle);
     }
 
@@ -196,3 +200,4 @@ private:
 
 
 };
+}

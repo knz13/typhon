@@ -1,14 +1,16 @@
 #pragma once
 #include "../general.h"
 
-class Object;
+namespace Typhon {
+    class Object;
+}
 class ObjectHandle {
 public:
     ObjectHandle(entt::entity e) : handle(e) {};
 
     ObjectHandle() {};
 
-    Object GetAsObject();
+    Typhon::Object GetAsObject();
 
     entt::entity ID() {
         return handle;

@@ -204,9 +204,10 @@ class Engine {
 
   static void onCppChildrenChanged() {
 
-    AliveObjectsArray arr = TyphonCPPInterface.getCppFunctions().getAliveObjects();
-
+    AliveObjectsArray arr = TyphonCPPInterface.getCppFunctions().getAliveParentlessObjects();
+    
     List<int> list = arr.array.asTypedList(arr.size).toList();
+    print("found these objects that are parentless: ${list}");
 
     Engine.instance.currentChildren.value = list;
 
@@ -279,8 +280,13 @@ public:
 
 //__INCLUDE__CREATED__CLASSES__
 
+
+//including internal prefabs
 #include "prefab/defaults/cube.h"
 #include "prefab/defaults/empty_object.h"
+
+//including internal components
+#include "component/default_components/transform.h"
 
 
 bool initializeCppLibrary() {
@@ -295,9 +301,13 @@ bool initializeCppLibrary() {
 
 
 
+
     //initializing prefabs!
     Cube();
     EmptyObject();
+
+    //initializing internal components!
+    Transform();
 
 
     Engine::Initialize();
@@ -422,7 +432,7 @@ void onRenderCall() {
 
 
 
-AliveObjectsArray getAliveObjects() {
+AliveObjectsArray getAliveParentlessObjects() {
 
     static std::vector<int64_t> ids;
 
@@ -434,7 +444,7 @@ AliveObjectsArray getAliveObjects() {
 
     ids.reserve(Engine::NumberAlive());
 
-    Engine::View([&](Object obj){
+    Engine::View<ObjectInternals::ParentlessTag>([&](Typhon::Object obj){
 
         ids.push_back(static_cast<int64_t>(obj.ID()));
 
@@ -474,7 +484,7 @@ const char* getObjectNameByID(int64_t id) {
 
 
 
-    Object obj = Engine::GetObjectFromID(id);
+    Typhon::Object obj = Engine::GetObjectFromID(id);
 
 
 
@@ -534,7 +544,7 @@ const char* getObjectSerializationByID(int64_t id) {
 
 
 
-    Object obj = Engine::GetObjectFromID(id);
+    Typhon::Object obj = Engine::GetObjectFromID(id);
 
     
 
@@ -596,7 +606,7 @@ const char* getObjectInspectorUIByID(int64_t id) {
 
 
 
-    Object obj = Engine::GetObjectFromID(id);
+    Typhon::Object obj = Engine::GetObjectFromID(id);
 
     
 
@@ -653,6 +663,84 @@ const char* getObjectInspectorUIByID(int64_t id) {
 }
 
 
+
+const char *getObjectChildTree(int64_t id)
+
+{
+
+    static std::vector<char> temp = std::vector<char>();
+
+    static const char* ptr = nullptr;
+
+
+
+    temp.clear(); 
+
+
+
+    Typhon::Object obj = Engine::GetObjectFromID(id);
+
+    
+
+    if(!obj.Valid()){
+
+        std::cout << "object not valid!" << std::endl;
+
+        temp.resize(3);
+
+        temp.push_back('{');
+
+        temp.push_back('}');
+
+        temp.push_back('\0');
+
+        ptr = temp.data();
+
+        return ptr;
+
+    }
+
+    
+
+    json jsonData = json::object();
+
+    obj.ExecuteForEveryChildInTree([&](Typhon::Object& tempObj){
+
+        if(tempObj.NumberOfChildren() > 0){
+
+            jsonData[static_cast<int64_t>(tempObj.ID())] = json::array();
+
+            for(auto entity : tempObj.Children()){
+
+                jsonData[static_cast<int64_t>(tempObj.ID())].push_back(static_cast<int64_t>(entity));
+
+            }
+
+        }
+
+    },true);
+
+
+
+    std::string jsonDataStr = jsonData.dump();
+
+
+
+    temp.resize(jsonDataStr.size() + 1);
+
+    memcpy(temp.data(),jsonDataStr.c_str(),jsonDataStr.size() + 1);
+
+    ptr = temp.data();
+
+
+
+    return ptr;
+
+    
+
+
+
+}
 
 
 
@@ -1003,7 +1091,7 @@ extern "C" {
 
     FFI_PLUGIN_EXPORT bool isEngineInitialized();
 
-    FFI_PLUGIN_EXPORT AliveObjectsArray getAliveObjects();
+    FFI_PLUGIN_EXPORT AliveObjectsArray getAliveParentlessObjects();
 
     FFI_PLUGIN_EXPORT const char* getObjectNameByID(int64_t id);
 
@@ -1012,6 +1100,8 @@ extern "C" {
     FFI_PLUGIN_EXPORT const char* getObjectSerializationByID(int64_t id);
 
     FFI_PLUGIN_EXPORT const char* getObjectInspectorUIByID(int64_t id);
+
+    FFI_PLUGIN_EXPORT const char* getObjectChildTree(int64_t id);
 
     
 

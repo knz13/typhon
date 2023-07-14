@@ -13,5 +13,5 @@ private:
     
 
     friend class ECSRegistry;
-    friend class Object;
+    friend class Typhon::Object;
 };

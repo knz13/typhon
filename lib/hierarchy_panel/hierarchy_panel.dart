@@ -12,7 +12,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/hierarchy_panel/hierarchy_widget.dart';
-import 'package:typhon/inspector_panel.dart';
+import 'package:typhon/inspector_panel/inspector_panel.dart';
+import 'package:typhon/inspector_panel/inspector_panel_builder.dart';
 import 'package:typhon/tree_viewer.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
@@ -20,6 +21,16 @@ import 'package:typhon/typhon_bindings_generated.dart';
 import '../engine.dart';
 import '../general_widgets.dart';
 import '../main.dart';
+
+
+class ObjectFromCPP {
+
+  ObjectFromCPP({required this.id,this.name = ""});
+
+  int id;
+  String name;
+  List<ObjectFromCPP> children = [];
+}
 
 
 class HierarchyPanelWindow extends EngineSubWindowData {
@@ -173,14 +184,45 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
       return children;
   } */
 
-  List<Pair<String,int>> currentObjects = [];
+  List<ObjectFromCPP> currentObjects = [];
 
+  void buildChildrenMapAndAddToObject(ObjectFromCPP obj, Map<int,List<int>> map){
+    if(!map.containsKey(obj.id)){
+      print("Map does not contain id while building children map in hierarchy panel!");
+      return;
+    }
+
+    obj.name = TyphonCPPInterface.getCppFunctions().getObjectNameByID(obj.id).cast<Utf8>().toDartString();
+
+    if(map[obj.id]!.length == 0){
+      return;
+    }
+
+    obj.children = map[obj.id]!.map((e) => ObjectFromCPP(id: e)).toList();
+
+    for(var childObj in obj.children){
+      buildChildrenMapAndAddToObject(childObj, map);
+    }
+
+
+  }
 
   void callbackToEngineChanges() async {
 
     if(mounted) {
       setState(() {
-        currentObjects = Engine.instance.currentChildren.value.map((e) => Pair(TyphonCPPInterface.getCppFunctions().getObjectNameByID(e).cast<Utf8>().toDartString(),e)).toList();
+        currentObjects = Engine.instance.currentChildren.value.map((e) {
+          ObjectFromCPP obj = ObjectFromCPP(id: e);
+          obj.name = TyphonCPPInterface.getCppFunctions().getObjectNameByID(obj.id).cast<Utf8>().toDartString();
+
+          var childrenMap = json.decode(TyphonCPPInterface.getCppFunctions().getObjectChildTree(e).cast<Utf8>().toDartString());
+          if(childrenMap is Map<int,List<int>>){
+            buildChildrenMapAndAddToObject(obj, childrenMap);
+          }
+
+
+          return obj;
+        }).toList();
       });
     }
   }
@@ -226,7 +268,7 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
               GeneralButton(
                 onPressed: () {
                   setState(() {
-                    idChosen = e.second;
+                    idChosen = e.id;
                   });
           
                   if(!TyphonCPPInterface.checkIfLibraryLoaded()){
@@ -237,29 +279,20 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
                   Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectInspectorUIByID(idChosen);
                   if(val != nullptr){
                     var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
-                    print(jsonData);
-                    List<Widget> newWidgets = [];
-                    newWidgets.add(
-                      HierarchyWidget(jsonData["name"])
-                    );
-
-                    for(var component in jsonData["components"]) {
-                      newWidgets.add(HierarchyWidget(component["component_name"],componentData: component["children"]));
-                    }
-                    InspectorPanelWindow.dataToShow.value = newWidgets;
+                    buildInspectorPanelFromComponent(jsonData);
                   } 
-          
+
                 },
-                color:idChosen == e.second? Colors.red : null,
-                child: GeneralText(e.first)
+                color:idChosen == e.id? Colors.red : null,
+                child: GeneralText(e.name)
               ),
               InkWell(
                 onTap: () {
                   if(TyphonCPPInterface.checkIfLibraryLoaded()){
-                    if(idChosen == e.second){
+                    if(idChosen == e.id){
                       InspectorPanelWindow.dataToShow.value = [];
                     }
-                    TyphonCPPInterface.getCppFunctions().removeObjectByID(e.second);
+                    TyphonCPPInterface.getCppFunctions().removeObjectByID(e.id);
                   }
                 },
                 child: Icon(Icons.delete),

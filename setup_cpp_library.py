@@ -269,6 +269,7 @@ with open("cpp_library/src/typhon.h",'r') as f:
 
 
 prefabs = []
+components = []
 for root, dirs, files in os.walk("cpp_library/src"):
     if "vendor" in root:
         continue
@@ -279,11 +280,16 @@ for root, dirs, files in os.walk("cpp_library/src"):
                 value = f.read()
             classes = CPPParser.get_classes_properties(value)
             for klass in classes:
+                if "MakeComponent" in classes[klass]["inheritance"]:
+                    components.append((klass,os.path.relpath(file_path,"cpp_library/src")))
                 if "Prefab" in classes[klass]["inheritance"]:
                     prefabs.append((klass,os.path.relpath(file_path,"cpp_library/src")))
         except Exception as e:
             print(f"Couldn't open {file_path}: {e}")
 print(f'PREFABS FOUND: {prefabs}')
+print(f'COMPONENTS FOUND: {components}')
+
+
 
 with open("cpp_library/src/typhon.cpp",'r') as f:
     lines = f.readlines()
@@ -296,13 +302,22 @@ with open("cpp_library/src/typhon.cpp",'r') as f:
             shouldAddLine = False
             break
         if "//__INCLUDE__INTERNALS__STATICALLY__" in line:
+            cpp_exports_impl += f'\n//including internal prefabs\n'
             for prefab in prefabs:
                 cpp_exports_impl += f'#include "{prefab[1]}"\n'
+
+            cpp_exports_impl += f'\n//including internal components\n'
+            for component in components:
+                cpp_exports_impl += f'#include "{component[1]}"\n'
+
             continue
         if "//__INITIALIZE__INTERNALS__STATICALLY__" in line:
-            cpp_exports_impl += f'    //initializing prefabs!\n'
+            cpp_exports_impl += f'\n    //initializing prefabs!\n'
             for prefab in prefabs:
                 cpp_exports_impl += f'    {prefab[0]}();\n'
+            cpp_exports_impl += f'\n    //initializing internal components!\n'
+            for component in components:
+                cpp_exports_impl += f'    {component[0]}();\n'
             continue
         if shouldAddLine:
             cpp_exports_impl += line + "\n"

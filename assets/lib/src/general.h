@@ -259,7 +259,6 @@ namespace HelperFunctions {
 
     template<typename T>
     static int64_t GetClassID() {
-
         return entt::hashed_string(GetClassNameString<T>().c_str()).operator entt::id_type();
     };
 

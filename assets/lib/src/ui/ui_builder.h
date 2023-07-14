@@ -8,14 +8,12 @@ public:
     UIBuilder() : elementOnJSON(json::object()) {
     }
 
-    UIElement DefineBuild() {
-        elementOnJSON["children"] = json::array();
-        return UIElement(elementOnJSON["children"]);
+    UIElement DefineFields() {
+        elementOnJSON["fields"] = json::array();
+        return UIElement(elementOnJSON["fields"]);
     };
 
     void SetName(std::string name) {
-        std::cout << "calling set name!" << std::endl;
-        std::cout << "current => " << elementOnJSON.dump() << std::endl;
         elementOnJSON["component_name"] = name;
     }
 

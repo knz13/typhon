@@ -6,7 +6,7 @@ entt::registry ECSRegistry::registry;
 
 bool ECSRegistry::DeleteObject(entt::entity objID) {
     if(ValidateEntity(objID)){
-        Object(objID).ForEachComponent([](Component& comp){
+        Typhon::Object(objID).ForEachComponent([](Component& comp){
             comp.InternalDestroy();
         });
         registry.destroy(objID);

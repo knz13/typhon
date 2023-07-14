@@ -77,13 +77,13 @@ void onRenderCall() {
     RenderingEngine::Render();
 }
 
-AliveObjectsArray getAliveObjects() {
+AliveObjectsArray getAliveParentlessObjects() {
     static std::vector<int64_t> ids;
 
     
     ids.clear();
     ids.reserve(Engine::NumberAlive());
-    Engine::View([&](Object obj){
+    Engine::View<ObjectInternals::ParentlessTag>([&](Typhon::Object obj){
         ids.push_back(static_cast<int64_t>(obj.ID()));
     });
 
@@ -103,7 +103,7 @@ const char* getObjectNameByID(int64_t id) {
 
     temp.clear(); 
 
-    Object obj = Engine::GetObjectFromID(id);
+    Typhon::Object obj = Engine::GetObjectFromID(id);
 
     if(!obj.Valid()){
         temp.push_back('\0');
@@ -133,7 +133,7 @@ const char* getObjectSerializationByID(int64_t id) {
 
     temp.clear(); 
 
-    Object obj = Engine::GetObjectFromID(id);
+    Typhon::Object obj = Engine::GetObjectFromID(id);
     
     if(!obj.Valid()){
         std::cout << "object not valid!" << std::endl;
@@ -164,7 +164,7 @@ const char* getObjectInspectorUIByID(int64_t id) {
 
     temp.clear(); 
 
-    Object obj = Engine::GetObjectFromID(id);
+    Typhon::Object obj = Engine::GetObjectFromID(id);
     
     if(!obj.Valid()){
         std::cout << "object not valid!" << std::endl;
@@ -193,6 +193,45 @@ const char* getObjectInspectorUIByID(int64_t id) {
     return ptr;
 }
 
+const char *getObjectChildTree(int64_t id)
+{
+    static std::vector<char> temp = std::vector<char>();
+    static const char* ptr = nullptr;
+
+    temp.clear(); 
+
+    Typhon::Object obj = Engine::GetObjectFromID(id);
+    
+    if(!obj.Valid()){
+        std::cout << "object not valid!" << std::endl;
+        temp.resize(3);
+        temp.push_back('{');
+        temp.push_back('}');
+        temp.push_back('\0');
+        ptr = temp.data();
+        return ptr;
+    }
+    
+    json jsonData = json::object();
+    obj.ExecuteForEveryChildInTree([&](Typhon::Object& tempObj){
+        if(tempObj.NumberOfChildren() > 0){
+            jsonData[static_cast<int64_t>(tempObj.ID())] = json::array();
+            for(auto entity : tempObj.Children()){
+                jsonData[static_cast<int64_t>(tempObj.ID())].push_back(static_cast<int64_t>(entity));
+            }
+        }
+    },true);
+
+    std::string jsonDataStr = jsonData.dump();
+
+    temp.resize(jsonDataStr.size() + 1);
+    memcpy(temp.data(),jsonDataStr.c_str(),jsonDataStr.size() + 1);
+    ptr = temp.data();
+
+    return ptr;
+    
+
+}
 
 char* getInstantiableClasses()
 {

@@ -238,15 +238,15 @@ class TyphonBindings {
   late final _isEngineInitialized =
       _isEngineInitializedPtr.asFunction<bool Function()>();
 
-  AliveObjectsArray getAliveObjects() {
-    return _getAliveObjects();
+  AliveObjectsArray getAliveParentlessObjects() {
+    return _getAliveParentlessObjects();
   }
 
-  late final _getAliveObjectsPtr =
+  late final _getAliveParentlessObjectsPtr =
       _lookup<ffi.NativeFunction<AliveObjectsArray Function()>>(
-          'getAliveObjects');
-  late final _getAliveObjects =
-      _getAliveObjectsPtr.asFunction<AliveObjectsArray Function()>();
+          'getAliveParentlessObjects');
+  late final _getAliveParentlessObjects =
+      _getAliveParentlessObjectsPtr.asFunction<AliveObjectsArray Function()>();
 
   ffi.Pointer<ffi.Char> getObjectNameByID(
     int id,
@@ -303,6 +303,20 @@ class TyphonBindings {
           'getObjectInspectorUIByID');
   late final _getObjectInspectorUIByID = _getObjectInspectorUIByIDPtr
       .asFunction<ffi.Pointer<ffi.Char> Function(int)>();
+
+  ffi.Pointer<ffi.Char> getObjectChildTree(
+    int id,
+  ) {
+    return _getObjectChildTree(
+      id,
+    );
+  }
+
+  late final _getObjectChildTreePtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function(ffi.Int64)>>(
+          'getObjectChildTree');
+  late final _getObjectChildTree =
+      _getObjectChildTreePtr.asFunction<ffi.Pointer<ffi.Char> Function(int)>();
 }
 
 typedef EnqueueObjectRender = ffi.Pointer<

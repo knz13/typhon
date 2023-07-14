@@ -9,8 +9,8 @@ public:
         return "Solids/3D/Cube";
     }
 
-    Object CreatePrefab() override {
-        Object obj = Engine::CreateObject("Cube");
+    Typhon::Object CreatePrefab() override {
+        Typhon::Object obj = Engine::CreateObject("Cube");
         obj.AddComponent<Transform>();
         return obj;
     };

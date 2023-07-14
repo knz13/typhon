@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <fstream>
 #include "rendering_engine.h"
+#include "component/make_component.h"
 
 namespace fs = std::filesystem;
 
@@ -268,4 +269,18 @@ bool Engine::DeserializeToCurrent(std::string scene) {
     }
 
 
+}
+
+
+Typhon::Object Engine::CreateObject(std::string name) {
+    Typhon::Object obj{ECSRegistry::CreateEntity()};
+    if(name != ""){
+        obj.SetName(name);
+        obj.AddTag<ObjectInternals::ParentlessTag>();
+        EngineInternals::onChildrenChangedFunc();
+        return obj;
+    }
+    obj.AddTag<ObjectInternals::ParentlessTag>();
+    EngineInternals::onChildrenChangedFunc();
+    return {ECSRegistry::CreateEntity()};
 }

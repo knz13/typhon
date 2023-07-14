@@ -2,7 +2,7 @@
 #include "filesystem"
 
 std::unordered_map<std::string,int64_t> PrefabInternals::prefabsInstantiationMap;
-std::unordered_map<int64_t,std::function<Object()>> PrefabInternals::prefabsIDToFunction;
+std::unordered_map<int64_t,std::function<Typhon::Object()>> PrefabInternals::prefabsIDToFunction;
 
 std::string PrefabInternals::GetPrefabsJSON() {
     json prefabs;

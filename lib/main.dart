@@ -8,7 +8,7 @@ import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/general_widgets.dart';
 import 'package:typhon/hierarchy_panel/hierarchy_panel.dart';
-import 'package:typhon/inspector_panel.dart';
+import 'package:typhon/inspector_panel/inspector_panel.dart';
 import 'package:typhon/project_choice_window.dart';
 import 'package:typhon/scene_viewer_panel.dart';
 import 'package:typhon/typhon_bindings.dart';

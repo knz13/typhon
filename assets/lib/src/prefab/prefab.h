@@ -7,8 +7,8 @@
 
 class PrefabInternals;
 
-DEFINE_HAS_SIGNATURE(has_create_prefab,T::CreatePrefab,Object (*)());
-DEFINE_HAS_SIGNATURE(has_create_prefab_non_static,T::CreatePrefab,Object (T::*)());
+DEFINE_HAS_SIGNATURE(has_create_prefab,T::CreatePrefab,Typhon::Object (*)());
+DEFINE_HAS_SIGNATURE(has_create_prefab_non_static,T::CreatePrefab,Typhon::Object (T::*)());
 
 template<typename T>
 class Prefab : public Reflection::IsInitializedStatically<Prefab<T>> {
@@ -19,7 +19,7 @@ public:
         return HelperFunctions::GetClassNameString<T>();
     }
 
-    virtual Object CreatePrefab() {
+    virtual Typhon::Object CreatePrefab() {
         return Engine::CreateObject("");
     };
 
@@ -30,17 +30,17 @@ class PrefabInternals {
 public:
 
     static std::string GetPrefabsJSON();
-    static Object CreatePrefabFromID(int64_t id) {
+    static Typhon::Object CreatePrefabFromID(int64_t id) {
         if(prefabsIDToFunction.find(id) != prefabsIDToFunction.end()){
             return prefabsIDToFunction[id]();
         }
         std::cout << "Trying to create a prefab from an unknown prefab ID!" << std::endl;
-        return Object();
+        return Typhon::Object();
     }
 
 
     static std::unordered_map<std::string,int64_t> prefabsInstantiationMap;
-    static std::unordered_map<int64_t,std::function<Object()>> prefabsIDToFunction;
+    static std::unordered_map<int64_t,std::function<Typhon::Object()>> prefabsIDToFunction;
 };
 
 template<typename T>

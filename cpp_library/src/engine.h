@@ -25,6 +25,8 @@ private:
     
 };
 
+
+
 class Engine {
 public:
     static void Initialize();
@@ -34,10 +36,27 @@ public:
     static const std::map<std::string,TextureAtlasImageProperties>& GetTextureAtlas();
     static std::string GetPathToAtlas();
 
-    static void View(std::function<void(Object)> viewFunc) {
+    static void View(std::function<void(Typhon::Object)> viewFunc) {
         return ECSRegistry::Get().each([=](entt::entity e){
-            viewFunc(Object(e));
+            viewFunc(Typhon::Object(e));
         });
+    }
+
+    template<typename T>
+    static void View(std::function<void(Typhon::Object)> viewFunc) {
+        for(auto entity : ECSRegistry::Get().view<T>()) {
+            viewFunc(Typhon::Object(entity));
+        }
+    }
+    
+    static void View(entt::id_type typeID,std::function<void(Typhon::Object)> viewFunc) {
+        auto storage = ECSRegistry::Get().storage(typeID);
+        if(storage == nullptr) {
+            return;
+        }
+        for(auto it = storage->begin(); it != storage->end(); it++) {
+            viewFunc(Typhon::Object(*it));
+        }
     }
 
     static int64_t NumberAlive() {
@@ -45,11 +64,11 @@ public:
     }
     
 
-    static Object GetObjectFromID(int64_t id) {
+    static Typhon::Object GetObjectFromID(int64_t id) {
         entt::entity objID{static_cast<std::underlying_type_t<entt::entity>>(id)};
 
         if(ECSRegistry::ValidateEntity(objID)){
-            return Object(objID);
+            return Typhon::Object(objID);
         }
         else {
             return {};
@@ -69,16 +88,7 @@ public:
         }
     }
 
-    static Object CreateObject(std::string name = "") {
-        Object obj{ECSRegistry::CreateEntity()};
-        if(name != ""){
-            obj.SetName(name);
-            EngineInternals::onChildrenChangedFunc();
-            return obj;
-        }
-        EngineInternals::onChildrenChangedFunc();
-        return {ECSRegistry::CreateEntity()};
-    }
+    static Typhon::Object CreateObject(std::string name = "");
     
 
 
@@ -92,7 +102,7 @@ public:
     static void Clear() {
         ECSRegistry::Get().each([](entt::entity e){
             if(ECSRegistry::ValidateEntity(e)){
-                Object(e).ForEachComponent([](Component& comp){
+                Typhon::Object(e).ForEachComponent([](Component& comp){
                     comp.InternalDestroy();
                 });
             }

@@ -10,7 +10,7 @@ public:
         return "Empty Object";
     }
 
-    Object CreatePrefab() override {
+    Typhon::Object CreatePrefab() override {
         return Engine::CreateObject("Empty Object");
     };
 };

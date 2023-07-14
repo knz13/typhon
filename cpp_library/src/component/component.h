@@ -13,7 +13,9 @@ DEFINE_HAS_SIGNATURE(has_build_editor_ui,T::BuildEditorUI,UIBuilder (T::*) ());
 DEFINE_HAS_SIGNATURE(has_title_on_editor_function,T::TitleOnEditor,std::string (*)());
 
 
-
+namespace Typhon {
+    class Object;
+}
 class Component {
 public:
 
@@ -53,7 +55,8 @@ private:
     entt::id_type typeID = -1;
     std::function<void()> removeFromObjectFunc = [](){};
 
-    friend class Object;
+    friend class Typhon::Object;
+
     template<typename>
     friend class MakeComponent;
 
