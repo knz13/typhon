@@ -16,7 +16,7 @@ In order to build the project you're gonna need to setup a few things:
 
 __*CMake is only optional, we can download it for you as a dependency of the program when you run the python code but it might increase the time for building the c++ library at the first time__
 
-After downloading and installing the dependencies, download the repository and run the script create_library_and_add_to_assets.py with the command below to generate the libraries that are bigger than what Github allows in their website
+After downloading and installing the dependencies, download the repository and run the script setup_cpp_library.py with the command below to generate the libraries that are bigger than what Github allows in their website
 
 ```
 python setup_cpp_library.py
