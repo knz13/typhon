@@ -3,14 +3,12 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:math';
 
-import 'package:flame/components.dart';
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:ffi/ffi.dart';
-
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:typhon/engine_sub_window.dart';
+import 'package:typhon/general_widgets/custom_expansion_tile.dart';
 import 'package:typhon/hierarchy_panel/hierarchy_widget.dart';
 import 'package:typhon/inspector_panel/inspector_panel.dart';
 import 'package:typhon/inspector_panel/inspector_panel_builder.dart';
@@ -23,14 +21,6 @@ import '../general_widgets.dart';
 import '../main.dart';
 
 
-class ObjectFromCPP {
-
-  ObjectFromCPP({required this.id,this.name = ""});
-
-  int id;
-  String name;
-  List<ObjectFromCPP> children = [];
-}
 
 
 class HierarchyPanelWindow extends EngineSubWindowData {
@@ -157,32 +147,7 @@ class HierarchyPanelContents extends StatefulWidget {
 
 class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   
-/*   List<TreeNode> buildTreeFromComponents(List<GameObject> components) {
-        final children = <TreeNode>[];
-        for (final component in components) {
-        bool isExpanded = false;
-        final componentChildren = component.children.toList().whereType<GameObject>().toList();
-        children.add(TreeNode(
-          content: Row(
-            children: [
-              if(componentChildren.isNotEmpty)
-              InkWell(
-                onTap: () {},
-                child: Icon(MdiIcons.menuDown)
-              ),
-              Icon(MdiIcons.cubeOutline),
-              GeneralText(
-                component.name
-              ),
 
-            ],
-          ),
-          children: buildTreeFromComponents(componentChildren)
-        ));
-        
-      }
-      return children;
-  } */
 
   List<ObjectFromCPP> currentObjects = [];
 
@@ -248,60 +213,67 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   }
 
   int idChosen = -1;
+  int idHovered = -1;
+  
+
+  
   
   @override
   Widget build(BuildContext context) {
-
-    
-
-    // TODO: implement build
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      physics: NeverScrollableScrollPhysics(),
-      child: Column(
-        children: currentObjects.map((e) =>
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-              GeneralButton(
-                onPressed: () {
-                  setState(() {
-                    idChosen = e.id;
-                  });
-          
-                  if(!TyphonCPPInterface.checkIfLibraryLoaded()){
-                    print("Tried pressing while library not loaded!");
-                    return;
-                  }
-                  
-                  Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectInspectorUIByID(idChosen);
-                  if(val != nullptr){
-                    var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
-                    buildInspectorPanelFromComponent(jsonData);
-                  } 
-
-                },
-                color:idChosen == e.id? Colors.red : null,
-                child: GeneralText(e.name)
-              ),
-              InkWell(
-                onTap: () {
-                  if(TyphonCPPInterface.checkIfLibraryLoaded()){
-                    if(idChosen == e.id){
-                      InspectorPanelWindow.dataToShow.value = [];
-                    }
-                    TyphonCPPInterface.getCppFunctions().removeObjectByID(e.id);
-                  }
-                },
-                child: Icon(Icons.delete),
-              )
-          
-            ],),
-          )
-        ).toList(),
-      ),
+    return ListView.builder(
+      itemCount: currentObjects.length,
+      itemBuilder: (context, index) {
+        return MouseRegion(
+          onEnter: (event) {
+            setState(() {
+              idHovered = currentObjects[index].id;
+            });
+          },
+          onExit: (event) {
+            setState(() {
+              idHovered = -1;
+            });
+            
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: idChosen == currentObjects[index].id ? Colors.blue : idHovered == currentObjects[index].id ? Colors.blue.withAlpha(100) : null
+            ),
+            child: HierarchyWidget(objectData: currentObjects[index], onClick: (obj) {
+              setState(() {
+                idChosen = obj.id;
+              });
+            
+              if(!TyphonCPPInterface.checkIfLibraryLoaded()){
+                print("Tried pressing while library not loaded!");
+                return;
+              }
+              
+              Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectInspectorUIByID(idChosen);
+              if(val != nullptr){
+                var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
+                buildInspectorPanelFromComponent(jsonData);
+              } 
+            }, onDragEnd: (details,obj) {
+              
+            },
+            childBasedOnID: (obj) {
+              return Container(
+                child: GeneralText(obj.name),
+              );
+            },
+            feedbackBasedOnID: (obj) {
+              return Container(
+                decoration: BoxDecoration(
+                  border: Border.fromBorderSide(BorderSide(color: Colors.black))
+                ),
+                child: GeneralText(obj.name),
+              );
+            },
+            ),
+          ),
+        );
+      },
     );
   }
 }

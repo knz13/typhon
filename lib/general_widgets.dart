@@ -103,12 +103,14 @@ class GeneralButton extends StatelessWidget {
   GeneralButton({
     required this.onPressed,
     this.child,
-    this.color
+    this.color,
+    this.needsHoverColor = true
   });
 
   void Function() onPressed;
   Widget? child;
   Color? color;
+  bool needsHoverColor;
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +121,7 @@ class GeneralButton extends StatelessWidget {
         minWidth: 0,
         padding: EdgeInsets.zero,
         splashColor: Colors.transparent,
-        hoverColor: Colors.white24,
+        hoverColor: needsHoverColor ? Colors.white24 : Colors.transparent,
         highlightColor: Colors.white24,
         color: color,
         onPressed: onPressed,

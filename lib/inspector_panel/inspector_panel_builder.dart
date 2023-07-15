@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:typhon/config/colors.dart';
+import 'package:typhon/general_widgets.dart';
 import 'package:typhon/inspector_panel/component_widget.dart';
 import 'package:typhon/inspector_panel/inspector_panel.dart';
 
@@ -28,7 +29,7 @@ void buildInspectorPanelFromComponent(Map<String,dynamic> map) {
   newWidgets.add(
     Container(
       color: Config.midGray,
-      child: Text(map["name"]),
+      child: GeneralText(map["name"]),
     )
   );
 

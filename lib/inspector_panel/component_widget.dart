@@ -4,6 +4,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:typhon/general_widgets.dart';
 import 'package:typhon/inspector_panel/inspector_panel_builder.dart';
 
 class ComponentWidget extends StatelessWidget {
@@ -20,11 +21,11 @@ class ComponentWidget extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            child: Text(componentData["component_name"]),
+            child: GeneralText(componentData["component_name"]),
           ),
           blackSpacer(),
           Container(
-            child: Text(componentData["fields"].toString()),
+            child:GeneralText(componentData["fields"].toString(),overflow: TextOverflow.visible,),
           )
         ],
       ),
