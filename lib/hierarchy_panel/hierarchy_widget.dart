@@ -6,7 +6,9 @@
 import 'package:flutter/material.dart';
 import 'package:typhon/config/colors.dart';
 import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/arrow_up.dart';
 import 'package:typhon/general_widgets/half_square.dart';
+import 'package:typhon/general_widgets/horizontal_line.dart';
 import 'package:typhon/general_widgets/spacings.dart';
 import 'package:typhon/general_widgets/t_line.dart';
 import 'package:typhon/general_widgets/vertical_line.dart';
@@ -97,8 +99,9 @@ class _HierarchyWidgetState extends State<HierarchyWidget> {
           width: widget.spacingAddedBeforeChildren,
           child: VerticalLine(size: widget.spacingAddedBeforeChildren,color: platinumGray,)
         ),
-        SizedBox(
-          width: (node.children.isEmpty ? HierarchyWidget.iconSize : 0),
+        Container(
+          width: widget.spacingAddedBeforeChildren,
+          child: TLine(size: widget.spacingAddedBeforeChildren,color: platinumGray,)
         ),
         DragTarget(
           onWillAccept:(data) {
@@ -153,8 +156,13 @@ class _HierarchyWidgetState extends State<HierarchyWidget> {
                     child: AnimatedRotation(
                       duration: Duration(milliseconds: 200),
                       turns: node.isOpen? 0.5 : 0.25,
-                      child: Icon(Icons.expand_less,size: HierarchyWidget.iconSize,color: platinumGray,)
+                      child: ArrowUp(size: widget.spacingAddedBeforeChildren,color: platinumGray,)
                     ),
+                  )
+                  else 
+                  Container(
+                    width: widget.spacingAddedBeforeChildren,
+                    child: HorizontalLine(size: widget.spacingAddedBeforeChildren,color: platinumGray,)
                   ),
                   Container(
                     child: widget.childBasedOnID(node)
