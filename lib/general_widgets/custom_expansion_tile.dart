@@ -41,7 +41,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTi
   void initState() {
     super.initState();
     _controller = AnimationController(duration: kThemeAnimationDuration, vsync: this);
-    _iconTurns = _controller.drive(Tween<double>(begin: 0.25, end: 0));
+    _iconTurns = _controller.drive(Tween<double>(begin: 0, end: 0.25));
   }
 
   @override
@@ -69,6 +69,6 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTi
         ),
         if (_isExpanded) ...widget.children
       ],
-    ) :  widget.title;
+    ) : widget.title;
   }
 }

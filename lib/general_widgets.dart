@@ -116,7 +116,7 @@ class GeneralButton extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return FittedBox(
-      fit: BoxFit.scaleDown,
+      fit: BoxFit.contain,
       child: MaterialButton(
         minWidth: 0,
         padding: EdgeInsets.zero,

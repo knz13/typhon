@@ -108,10 +108,9 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
           ),
           Expanded(
             child: SizedBox(
-              width: MediaQuery.of(context).size.width*0.8,
               height: 20,
               child: TextField(
-
+          
                 style: TextStyle(
                   fontSize: 13,
                   color: platinumGray
@@ -151,19 +150,18 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
 
   List<ObjectFromCPP> currentObjects = [];
 
-  void buildChildrenMapAndAddToObject(ObjectFromCPP obj, Map<int,List<int>> map){
-    if(!map.containsKey(obj.id)){
-      print("Map does not contain id while building children map in hierarchy panel!");
-      return;
-    }
-
+  void buildChildrenMapAndAddToObject(ObjectFromCPP obj, Map<String,dynamic> map){
     obj.name = TyphonCPPInterface.getCppFunctions().getObjectNameByID(obj.id).cast<Utf8>().toDartString();
 
-    if(map[obj.id]!.length == 0){
+    if(!map.containsKey(obj.id.toString())){
       return;
     }
 
-    obj.children = map[obj.id]!.map((e) => ObjectFromCPP(id: e)).toList();
+    if(map[obj.id.toString()]!.isEmpty){
+      return;
+    }
+
+    obj.children = (map[obj.id.toString()]! as List<dynamic>).map((e) => ObjectFromCPP(id:e)).toList();
 
     for(var childObj in obj.children){
       buildChildrenMapAndAddToObject(childObj, map);
@@ -181,10 +179,9 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
           obj.name = TyphonCPPInterface.getCppFunctions().getObjectNameByID(obj.id).cast<Utf8>().toDartString();
 
           var childrenMap = json.decode(TyphonCPPInterface.getCppFunctions().getObjectChildTree(e).cast<Utf8>().toDartString());
-          if(childrenMap is Map<int,List<int>>){
+          if(childrenMap is Map<String,dynamic>){
             buildChildrenMapAndAddToObject(obj, childrenMap);
           }
-
 
           return obj;
         }).toList();
@@ -220,61 +217,73 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: currentObjects.length,
-      itemBuilder: (context, index) {
-        return MouseRegion(
-          onEnter: (event) {
+    
+    
+    return LayoutBuilder(
+      builder:(context, constraints) => Container(
+        width: constraints.maxWidth,
+        child: HierarchyWidget(
+            rootObjects: currentObjects, 
+            onClick: (obj) {
             setState(() {
-              idHovered = currentObjects[index].id;
+              idChosen = obj.id;
             });
-          },
-          onExit: (event) {
-            setState(() {
-              idHovered = -1;
-            });
+          
+            if(!TyphonCPPInterface.checkIfLibraryLoaded()){
+              print("Tried pressing while library not loaded!");
+              return;
+            }
             
+            Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectInspectorUIByID(idChosen);
+            if(val != nullptr){
+              var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
+              buildInspectorPanelFromComponent(jsonData);
+            } 
+          }, onWillAcceptDrag: (data,obj) {
+    
+            return data is String? (json.decode(data)["type"] == "cpp_object"? (json.decode(data)["id"] == obj.id? false : true) : false ): false;
           },
-          child: Container(
-            decoration: BoxDecoration(
-              color: idChosen == currentObjects[index].id ? Colors.blue : idHovered == currentObjects[index].id ? Colors.blue.withAlpha(100) : null
-            ),
-            child: HierarchyWidget(objectData: currentObjects[index], onClick: (obj) {
-              setState(() {
-                idChosen = obj.id;
-              });
-            
-              if(!TyphonCPPInterface.checkIfLibraryLoaded()){
-                print("Tried pressing while library not loaded!");
-                return;
-              }
-              
-              Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectInspectorUIByID(idChosen);
-              if(val != nullptr){
-                var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
-                buildInspectorPanelFromComponent(jsonData);
-              } 
-            }, onDragEnd: (details,obj) {
-              
-            },
-            childBasedOnID: (obj) {
-              return Container(
-                child: GeneralText(obj.name),
-              );
-            },
-            feedbackBasedOnID: (obj) {
-              return Container(
+          onAccept: (data, obj) {
+            if(TyphonCPPInterface.checkIfLibraryLoaded()) {
+              TyphonCPPInterface.getCppFunctions().setObjectParent(json.decode(data as String)["id"], obj.id);
+            }
+            else {
+              print("Library not loaded while ended drag!");
+            }
+          },
+          childBasedOnID: (obj) {
+            return MouseRegion(
+              hitTestBehavior: HitTestBehavior.deferToChild,
+              onEnter: (event) {
+                setState(() {
+                  idHovered = obj.id;
+                });
+              },
+              onExit: (event) {
+                setState(() {
+                  idHovered = -1;
+                });
+                
+              },
+              child: Container(
                 decoration: BoxDecoration(
-                  border: Border.fromBorderSide(BorderSide(color: Colors.black))
+                  color: idChosen == obj.id ? Colors.blue : idHovered == obj.id ? Colors.blue.withAlpha(100) : null,
                 ),
-                child: GeneralText(obj.name),
-              );
-            },
-            ),
+                child: GeneralText("${obj.name} ${obj.id}"),
+              )
+            );
+          },
+          feedbackBasedOnID: (obj) {
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.fromBorderSide(BorderSide(color: Colors.black))
+              ),
+              child: GeneralText(obj.name),
+            );
+          },
           ),
-        );
-      },
-    );
+        ),
+      );
   }
 }
 

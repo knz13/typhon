@@ -44,12 +44,21 @@ void Typhon::Object::ForEachComponent(std::function<void(Component&)> func){
 
 
 void Typhon::Object::SetParent(Object e) {
+    if(!(e.Valid() || this->Valid())){
+        return;
+    }
+    RemoveFromParent();
+    if(e.Storage().parent.ID() == this->ID()){
+        e.RemoveFromParent();
+    }
+    
     Storage().parent = e.ID();
-    if(e.Valid() && this->Valid()){
+    if(e.Valid() && this->Valid() && std::find(e.Storage().children.begin(),e.Storage().children.end(),*this) == e.Storage().children.end()){
         e.Storage().children.push_back(ID());
         if(HasTag<ObjectInternals::ParentlessTag>()){
             RemoveTag<ObjectInternals::ParentlessTag>();
         }
+        EngineInternals::onChildrenChangedFunc();
     }
 }
 
@@ -58,6 +67,7 @@ void Typhon::Object::RemoveFromParent() {
         auto& children = Storage().parent.GetAsObject().Storage().children;
         children.erase(std::find(children.begin(),children.end(),ID()));
         AddTag<ObjectInternals::ParentlessTag>();
+        EngineInternals::onChildrenChangedFunc();
     }
     Storage().parent = ObjectHandle();
 }
@@ -68,6 +78,7 @@ void Typhon::Object::RemoveChild(Object e) {
         Object(*pos).Storage().parent = ObjectHandle();
         Storage().children.erase(pos);
         Object(*pos).AddTag<ObjectInternals::ParentlessTag>();
+        EngineInternals::onChildrenChangedFunc();
     }
 }
 
@@ -79,6 +90,8 @@ void Typhon::Object::RemoveChildren() {
         Object(*it).AddTag<ObjectInternals::ParentlessTag>();
         it = Storage().children.begin();
     }
+    EngineInternals::onChildrenChangedFunc();
+
 }
 
 
@@ -88,5 +101,7 @@ void Typhon::Object::AddChild(Object e) {
         Storage().children.push_back(e.ID());
         e.Storage().parent = this->ID();
         e.RemoveTag<ObjectInternals::ParentlessTag>();
+        EngineInternals::onChildrenChangedFunc();
+
     }
 }

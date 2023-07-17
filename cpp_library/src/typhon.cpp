@@ -215,12 +215,14 @@ const char *getObjectChildTree(int64_t id)
     json jsonData = json::object();
     obj.ExecuteForEveryChildInTree([&](Typhon::Object& tempObj){
         if(tempObj.NumberOfChildren() > 0){
-            jsonData[static_cast<int64_t>(tempObj.ID())] = json::array();
+            jsonData[std::to_string(static_cast<int64_t>(tempObj.ID()))] = json::array();
             for(auto entity : tempObj.Children()){
-                jsonData[static_cast<int64_t>(tempObj.ID())].push_back(static_cast<int64_t>(entity));
+                jsonData[std::to_string(static_cast<int64_t>(tempObj.ID()))].push_back(static_cast<int64_t>(entity));
             }
         }
     },true);
+
+    std::cout << "JSON DATA FROM C++ for id " << id << " => " << jsonData.dump() << std::endl;
 
     std::string jsonDataStr = jsonData.dump();
 
@@ -270,6 +272,21 @@ void* getPlatformSpecificPointer() {
         return nullptr;
     }
     return RenderingEngine::GetPlatformSpecificPointer();
+}
+
+bool setObjectParent(int64_t objectID,int64_t parentID) {
+    if(!Engine::ValidateHandle(objectID) || !Engine::ValidateHandle(parentID)){
+        return false;
+    }
+    Typhon::Object(Engine::IDFromHandle(objectID)).SetParent(Typhon::Object(Engine::IDFromHandle(parentID)));
+    return true;
+}
+bool removeObjectFromParent(int64_t objectID) {
+    if(!Engine::ValidateHandle(objectID)) {
+        return false;
+    }
+    Typhon::Object(Engine::IDFromHandle(objectID)).RemoveFromParent();
+    return true;
 }
 
 

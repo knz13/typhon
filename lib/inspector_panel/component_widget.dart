@@ -14,7 +14,6 @@ class ComponentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(componentData);
     // TODO: implement build
     return Container(
       width: double.infinity,

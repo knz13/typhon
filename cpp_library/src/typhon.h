@@ -50,6 +50,8 @@ extern "C" {
     FFI_PLUGIN_EXPORT const char* getObjectSerializationByID(int64_t id);
     FFI_PLUGIN_EXPORT const char* getObjectInspectorUIByID(int64_t id);
     FFI_PLUGIN_EXPORT const char* getObjectChildTree(int64_t id);
+    FFI_PLUGIN_EXPORT bool setObjectParent(int64_t objectID,int64_t parentID);
+    FFI_PLUGIN_EXPORT bool removeObjectFromParent(int64_t objectID);
     
     //__END__CPP__EXPORTS__
 
