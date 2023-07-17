@@ -171,7 +171,6 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   }
 
   void callbackToEngineChanges() async {
-
     if(mounted) {
       setState(() {
         currentObjects = Engine.instance.currentChildren.value.map((e) {

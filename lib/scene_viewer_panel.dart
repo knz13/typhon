@@ -141,48 +141,6 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
     // TODO: implement initState
     super.initState();
 
-    (() async {
-      while(true){
-        if (SceneViewerWindow.key.currentContext != null) {
-          break;
-        }
-        print("waiting to key to begin...");
-        await Future.delayed(Duration(milliseconds: 100));
-      }
-      print("key begun!");
-      if(!SceneViewerWindow.key.currentContext!.mounted || !mounted){
-        print("sadly not mounted!");
-        return;
-      }
-      var box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;
-      var position = box.localToGlobal(Offset.zero);
-      var windowSize = (ui.window.physicalSize / ui.window.devicePixelRatio);
-      position = Offset(position.dx,position.dy);
-      var physSize = box.size;
-      var rectToSend = Rect.fromLTWH(position.dx,windowSize.height - position.dy - physSize.height,physSize.width,physSize.height);
-      NativeViewInterface.updateSubViewRect(rectToSend);
-
-      await Future.delayed(Duration(milliseconds: 500));
-        
-      while(!shouldStopUpdatingSubWindow){
-        if(!SceneViewerWindow.key.currentContext!.mounted || !mounted){
-          return;
-        }
-       
-        box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;
-        position = box.localToGlobal(Offset.zero);
-        windowSize = (ui.window.physicalSize / ui.window.devicePixelRatio);
-        position = Offset(position.dx,position.dy);
-        physSize = box.size;
-        rectToSend = Rect.fromLTWH(position.dx,windowSize.height - position.dy - physSize.height,physSize.width,physSize.height);
-        if(rectToSend != lastRect) {
-          NativeViewInterface.updateSubViewRect(rectToSend);
-          lastRect = rectToSend;
-        }
-        await Future.delayed(Duration(milliseconds: 20));
-      }
-    })();
-
     SceneViewerWindow.exists = true;
     
   }
@@ -198,9 +156,28 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
   }
 
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.transparent,
-      key: SceneViewerWindow.key,
+    return NotificationListener(
+      onNotification: (SizeChangedLayoutNotification notification) {
+        WidgetsBinding.instance.addPostFrameCallback((_) { 
+          var box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;
+          var position = box.localToGlobal(Offset.zero);
+          var windowSize = (ui.window.physicalSize / ui.window.devicePixelRatio);
+          position = Offset(position.dx,position.dy);
+          var physSize = box.size;
+          var rectToSend = Rect.fromLTWH(position.dx,windowSize.height - position.dy - physSize.height,physSize.width,physSize.height);
+          if(rectToSend != lastRect) {
+            NativeViewInterface.updateSubViewRect(rectToSend);
+            lastRect = rectToSend;
+          }
+        });
+        return true;
+      },
+      child: SizeChangedLayoutNotifier(
+        key: SceneViewerWindow.key,
+        child: Container(
+          color: Colors.transparent,
+        ),
+      ),
     );
   }
 
