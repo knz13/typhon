@@ -59,7 +59,6 @@ public:
     void ForEachComponent(std::function<void(Component&)> func);
 
     void Clear() {
-        EraseAllComponents();
         RemoveFromParent();
         RemoveChildren();
     };
@@ -132,11 +131,9 @@ public:
     }
 
     void EraseAllComponents(){
-        for(auto [name,storage] : ECSRegistry::Get().storage()){
-            if(storage.contains(ID())){
-                ((Component*)storage.get(ID()))->InternalDestroy();
-            }
-        }
+        ForEachComponent([](Component& comp){
+            comp.InternalDestroy();
+        });
     }
 
     std::string Name() {

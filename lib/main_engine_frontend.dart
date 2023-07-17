@@ -50,48 +50,50 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
     // TODO: implement dispose
     super.dispose();
 
-    InspectorPanelWindow.dataToShow.value = [];
+    InspectorPanelWindow.data.value = InspectorPanelData();
     Engine.instance.unload();
 
   }
 
   Widget buildMainFrontend() {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-                body:EngineSubWindow(
-                  division: SubWindowDivision.left,
-                  mainChildProportion: 0.75,
-                  mainSubWindow: EngineSubWindow(
-                    mainChildProportion: 0.7,
-                    division: SubWindowDivision.top,
+    return MouseRegion(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+                  body:EngineSubWindow(
+                    division: SubWindowDivision.left,
+                    mainChildProportion: 0.75,
                     mainSubWindow: EngineSubWindow(
-                      division: SubWindowDivision.right,
-                      mainChildProportion: 0.75,
+                      mainChildProportion: 0.7,
+                      division: SubWindowDivision.top,
                       mainSubWindow: EngineSubWindow(
-                        tabs: [
-                          SceneViewerWindow()
-                        ]
+                        division: SubWindowDivision.right,
+                        mainChildProportion: 0.75,
+                        mainSubWindow: EngineSubWindow(
+                          tabs: [
+                            SceneViewerWindow()
+                          ]
+                        ),
+                        splitSubWindow: EngineSubWindow(
+                          tabs: [
+                            HierarchyPanelWindow()
+                          ],
+                        ),
                       ),
                       splitSubWindow: EngineSubWindow(
                         tabs: [
-                          HierarchyPanelWindow()
+                          FileViewerPanelWindow(),
+                          ConsolePanelSubWindow()
                         ],
                       ),
                     ),
                     splitSubWindow: EngineSubWindow(
                       tabs: [
-                        FileViewerPanelWindow(),
-                        ConsolePanelSubWindow()
+                        InspectorPanelWindow()
                       ],
                     ),
-                  ),
-                  splitSubWindow: EngineSubWindow(
-                    tabs: [
-                      InspectorPanelWindow()
-                    ],
-                  ),
-                )
-              );
+                  )
+                ),
+    );
   }
 
   @override

@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:typhon/config/colors.dart';
 import 'package:typhon/general_widgets.dart';
+import 'package:typhon/hierarchy_panel/hierarchy_widget.dart';
 import 'package:typhon/inspector_panel/component_widget.dart';
 import 'package:typhon/inspector_panel/inspector_panel.dart';
 
@@ -22,7 +23,7 @@ Widget blackSpacer() {
   );
 }
 
-void buildInspectorPanelFromComponent(Map<String,dynamic> map) {
+void buildInspectorPanelFromComponent(ObjectFromCPP obj,Map<String,dynamic> map) {
   List<Widget> newWidgets = [];
   
   //name
@@ -39,6 +40,6 @@ void buildInspectorPanelFromComponent(Map<String,dynamic> map) {
     newWidgets.add(ComponentWidget(componentData: component));
     newWidgets.add(blackSpacer());
   }
-
-  InspectorPanelWindow.dataToShow.value = newWidgets;
+  print(map);
+  InspectorPanelWindow.data.value = InspectorPanelData(dataToShow: newWidgets,objectID: obj.id);
 }

@@ -82,7 +82,10 @@ public:
 
     static bool RemoveObject(int64_t id) {
         entt::entity objID{static_cast<std::underlying_type_t<entt::entity>>(id)};
-
+        if(!ValidateHandle(id)){
+            return false;
+        }
+        Typhon::Object(objID).Clear();
         if(ECSRegistry::DeleteObject(objID)){
             EngineInternals::onChildrenChangedFunc();
             return true;

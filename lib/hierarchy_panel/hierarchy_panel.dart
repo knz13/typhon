@@ -12,6 +12,7 @@ import 'package:typhon/general_widgets/custom_expansion_tile.dart';
 import 'package:typhon/hierarchy_panel/hierarchy_widget.dart';
 import 'package:typhon/inspector_panel/inspector_panel.dart';
 import 'package:typhon/inspector_panel/inspector_panel_builder.dart';
+import 'package:typhon/main_engine_frontend.dart';
 import 'package:typhon/tree_viewer.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
@@ -236,7 +237,7 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
             Pointer<Char> val = TyphonCPPInterface.getCppFunctions().getObjectInspectorUIByID(idChosen);
             if(val != nullptr){
               var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
-              buildInspectorPanelFromComponent(jsonData);
+              buildInspectorPanelFromComponent(obj,jsonData);
             } 
           }, onWillAcceptDrag: (data,obj) {
     
@@ -251,25 +252,37 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
             }
           },
           childBasedOnID: (obj) {
-            return MouseRegion(
-              hitTestBehavior: HitTestBehavior.deferToChild,
-              onEnter: (event) {
-                setState(() {
-                  idHovered = obj.id;
-                });
+            return GestureDetector(
+              onSecondaryTap: () {
+                showNativeContextMenu(context, MainEngineFrontend.mousePosition.dx, MainEngineFrontend.mousePosition.dy, [
+                  
+                  ContextMenuOption(title: "Remove Object",callback: () {
+                    if(TyphonCPPInterface.checkIfLibraryLoaded()){
+                      TyphonCPPInterface.getCppFunctions().removeObjectByID(obj.id);
+                    }
+                  })
+                ]);
               },
-              onExit: (event) {
-                setState(() {
-                  idHovered = -1;
-                });
-                
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: idChosen == obj.id ? Colors.blue : idHovered == obj.id ? Colors.blue.withAlpha(100) : null,
-                ),
-                child: GeneralText("${obj.name} ${obj.id}"),
-              )
+              child: MouseRegion(
+                hitTestBehavior: HitTestBehavior.deferToChild,
+                onEnter: (event) {
+                  setState(() {
+                    idHovered = obj.id;
+                  });
+                },
+                onExit: (event) {
+                  setState(() {
+                    idHovered = -1;
+                  });
+                  
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: idChosen == obj.id ? Colors.blue : idHovered == obj.id ? Colors.blue.withAlpha(100) : null,
+                  ),
+                  child: GeneralText("${obj.name} ${obj.id}"),
+                )
+              ),
             );
           },
           feedbackBasedOnID: (obj) {

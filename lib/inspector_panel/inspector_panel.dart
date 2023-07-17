@@ -3,14 +3,22 @@
 
 
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
+import 'package:typhon/engine.dart';
 import 'package:typhon/typhon_bindings.dart';
 
 import '../engine_sub_window.dart';
 
+class InspectorPanelData {
+
+  InspectorPanelData({this.dataToShow = const [],this.objectID});
+
+  List<Widget> dataToShow;
+  int? objectID;
+}
 
 class InspectorPanelWindow extends EngineSubWindowData {
 
-  static ValueNotifier<List<Widget>> dataToShow = ValueNotifier([Container()]);
+  static ValueNotifier<InspectorPanelData> data = ValueNotifier(InspectorPanelData());
 
   InspectorPanelWindow() : super(child: InspectorPanel(), title: "Inspector",onTabSelected: () {
     
@@ -35,10 +43,18 @@ class _InspectorPanelState extends State<InspectorPanel> {
       });
   }
 
+  void onChildrenChangedCallback() {
+    if(mounted && !Engine.instance.currentChildren.value.contains(InspectorPanelWindow.data.value.objectID)){
+      InspectorPanelWindow.data.value = InspectorPanelData();
+      
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
-    InspectorPanelWindow.dataToShow.addListener(onSelectedChanged);
+    Engine.instance.currentChildren.addListener(onChildrenChangedCallback);
+    InspectorPanelWindow.data.addListener(onSelectedChanged);
     super.initState();
 
   }
@@ -46,7 +62,8 @@ class _InspectorPanelState extends State<InspectorPanel> {
   @override
   void dispose() {
     // TODO: implement dispose
-    InspectorPanelWindow.dataToShow.removeListener(onSelectedChanged);
+    Engine.instance.currentChildren.removeListener(onChildrenChangedCallback);
+    InspectorPanelWindow.data.removeListener(onSelectedChanged);
     super.dispose();
   }
 
@@ -54,7 +71,7 @@ class _InspectorPanelState extends State<InspectorPanel> {
   Widget build(BuildContext context) {
     // TODO: implement build
     return Column(
-      children: InspectorPanelWindow.dataToShow.value,
+      children: InspectorPanelWindow.data.value.dataToShow,
     );
   }
 }
