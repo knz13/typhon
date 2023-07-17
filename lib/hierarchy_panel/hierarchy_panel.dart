@@ -16,6 +16,7 @@ import 'package:typhon/main_engine_frontend.dart';
 import 'package:typhon/tree_viewer.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
+import 'package:window_manager/window_manager.dart';
 
 import '../engine.dart';
 import '../general_widgets.dart';
@@ -145,7 +146,7 @@ class HierarchyPanelContents extends StatefulWidget {
   State<HierarchyPanelContents> createState() => _HierarchyPanelContentsState();
 }
 
-class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
+class _HierarchyPanelContentsState extends State<HierarchyPanelContents> with WindowListener {
   
 
 
@@ -195,7 +196,7 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   void initState() {
     // TODO: implement initState
     super.initState();
-
+    windowManager.addListener(this);
     Engine.instance.currentChildren.addListener(callbackToEngineChanges);
 
   } 
@@ -206,6 +207,7 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    windowManager.removeListener(this);
     Engine.instance.currentChildren.removeListener(callbackToEngineChanges);
   }
 
@@ -213,12 +215,17 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   int idHovered = -1;
   
 
-  
+  @override
+  void onWindowResize() {
+    // TODO: implement onWindowResize
+    super.onWindowResize();
+
+    callbackToEngineChanges();
+  }
   
   @override
   Widget build(BuildContext context) {
-    
-    
+
     return LayoutBuilder(
       builder:(context, constraints) => Container(
         width: constraints.maxWidth,
