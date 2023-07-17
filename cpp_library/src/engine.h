@@ -36,6 +36,10 @@ public:
     static const std::map<std::string,TextureAtlasImageProperties>& GetTextureAtlas();
     static std::string GetPathToAtlas();
 
+    static entt::entity IDFromHandle(int64_t handle) {
+        return entt::entity{static_cast<std::underlying_type_t<entt::entity>>(handle)};
+    };
+
     static void View(std::function<void(Typhon::Object)> viewFunc) {
         return ECSRegistry::Get().each([=](entt::entity e){
             viewFunc(Typhon::Object(e));
@@ -123,6 +127,8 @@ public:
     static const Vector2f& GetMousePosition() {
         return mousePosition;
     }
+
+
 
     static bool IsKeyPressed(Keys::Key key);
 private:

@@ -317,6 +317,36 @@ class TyphonBindings {
           'getObjectChildTree');
   late final _getObjectChildTree =
       _getObjectChildTreePtr.asFunction<ffi.Pointer<ffi.Char> Function(int)>();
+
+  bool setObjectParent(
+    int objectID,
+    int parentID,
+  ) {
+    return _setObjectParent(
+      objectID,
+      parentID,
+    );
+  }
+
+  late final _setObjectParentPtr =
+      _lookup<ffi.NativeFunction<ffi.Bool Function(ffi.Int64, ffi.Int64)>>(
+          'setObjectParent');
+  late final _setObjectParent =
+      _setObjectParentPtr.asFunction<bool Function(int, int)>();
+
+  bool removeObjectFromParent(
+    int objectID,
+  ) {
+    return _removeObjectFromParent(
+      objectID,
+    );
+  }
+
+  late final _removeObjectFromParentPtr =
+      _lookup<ffi.NativeFunction<ffi.Bool Function(ffi.Int64)>>(
+          'removeObjectFromParent');
+  late final _removeObjectFromParent =
+      _removeObjectFromParentPtr.asFunction<bool Function(int)>();
 }
 
 typedef EnqueueObjectRender = ffi.Pointer<

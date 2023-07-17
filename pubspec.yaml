@@ -52,6 +52,7 @@ dependencies:
   flutter_spinkit:
   menu_bar:
   window_manager:
+  flutter_treeview:
   
 dev_dependencies:
   flutter_test:
@@ -89,6 +90,7 @@ flutter:
     - assets/lib/src/object/
     - assets/lib/src/prefab/
     - assets/lib/src/prefab/defaults/
+    - assets/lib/src/vendor/
     - assets/lib/src/vendor/metal-cpp/
     - assets/lib/src/vendor/metal-cpp/metal-cpp/
     - assets/lib/src/vendor/metal-cpp/metal-cpp/Metal/
@@ -111,6 +113,8 @@ flutter:
     - assets/lib/src/vendor/dylib/.git/hooks/
     - assets/lib/src/vendor/dylib/.git/refs/heads/
     - assets/lib/src/vendor/dylib/.git/refs/remotes/origin/
+    - assets/lib/src/vendor/cmake/
+    - assets/lib/src/vendor/cmake/cmake-3.26.3-macos-universal/
     - assets/lib/src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/
     - assets/lib/src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/_CodeSignature/
     - assets/lib/src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/man/man1/

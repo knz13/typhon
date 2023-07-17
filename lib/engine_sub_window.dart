@@ -242,28 +242,33 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
             closable: false,
             text: data.title,
             leading:data.tabLeading,
-            content: Container(
-              color: data.backgroundOpaque? EngineSubWindow.tabColor : Colors.transparent,
-              child: Column(
-                children: [
-                  Container(
-                    color: midGray,
-                    child: data.topPanelWidgets ?? Container(
-                    ),
+            content: LayoutBuilder(
+              builder: (context, constraints) {
+                return Container(
+                  constraints: constraints,
+                  color: data.backgroundOpaque? EngineSubWindow.tabColor : Colors.transparent,
+                  child: Column(
+                    children: [
+                      Container(
+                        color: midGray,
+                        child: data.topPanelWidgets ?? Container(
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 1,
+                        decoration: const BoxDecoration(
+                          boxShadow: [BoxShadow(
+                            blurRadius: 1,
+                
+                          )]
+                        ),
+                      ),
+                      Expanded(child: data.child),
+                    ],
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: 1,
-                    decoration: const BoxDecoration(
-                      boxShadow: [BoxShadow(
-                        blurRadius: 1,
-            
-                      )]
-                    ),
-                  ),
-                  Expanded(child: data.child),
-                ],
-              ),
+                );
+              }
             ),
           )
         );
