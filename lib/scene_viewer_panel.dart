@@ -108,8 +108,8 @@ class _SceneViewerTopState extends State<SceneViewerTop> {
           : 
           Tooltip(
             message: "Recompile Project",
-            child: GeneralButton(
-              onPressed: () {
+            child: InkWell(
+              onTap: () {
                 Engine.instance.enqueueRecompilation();
               },
               child: Icon(Icons.close,color: Colors.red,),

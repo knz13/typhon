@@ -5,22 +5,26 @@
 
 import 'package:flutter/material.dart';
 import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/rotating_arrow_button.dart';
 
 class CustomExpansionTile extends StatefulWidget {
   final Widget title;
   final List<Widget> children;
   final Widget icon;
+  final bool initialValue;
 
-  CustomExpansionTile({required this.title, required this.children,this.icon = const Icon(Icons.expand_more)});
+  CustomExpansionTile({required this.title, required this.children,this.initialValue = true,this.icon = const Icon(Icons.expand_more)});
 
   @override
   _CustomExpansionTileState createState() => _CustomExpansionTileState();
 }
 
 class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTickerProviderStateMixin {
-  bool _isExpanded = false;
+  late bool _isExpanded;
   late AnimationController _controller;
   late Animation<double> _iconTurns;
+
+  
 
   void _handleTap() {
     setState(() {
@@ -40,6 +44,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTi
   @override
   void initState() {
     super.initState();
+    _isExpanded = widget.initialValue;
     _controller = AnimationController(duration: kThemeAnimationDuration, vsync: this);
     _iconTurns = _controller.drive(Tween<double>(begin: 0, end: 0.25));
   }
@@ -51,17 +56,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTi
       children: [
         Row(
           children: <Widget>[
-            GeneralButton(
-              needsHoverColor: false,
-              child: RotationTransition(
-                turns: _iconTurns,
-                child: RotatedBox(
-                  quarterTurns: 3,
-                  child: widget.icon,
-                )
-              ),
-              onPressed: _handleTap,
-            ),
+            RotatingArrowButton(onTap: _handleTap, size: 20, value: _isExpanded),
             Expanded(
               child: widget.title,
             ),

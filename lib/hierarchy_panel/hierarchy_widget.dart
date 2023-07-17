@@ -9,6 +9,7 @@ import 'package:typhon/general_widgets.dart';
 import 'package:typhon/general_widgets/arrow_up.dart';
 import 'package:typhon/general_widgets/half_square.dart';
 import 'package:typhon/general_widgets/horizontal_line.dart';
+import 'package:typhon/general_widgets/rotating_arrow_button.dart';
 import 'package:typhon/general_widgets/spacings.dart';
 import 'package:typhon/general_widgets/t_line.dart';
 import 'package:typhon/general_widgets/vertical_line.dart';
@@ -147,17 +148,14 @@ class _HierarchyWidgetState extends State<HierarchyWidget> {
               child: Row(
                 children: [
                   if(node.children.isNotEmpty)
-                  InkWell(
+                  RotatingArrowButton(
                     onTap: (){
                       setState(() {
                         node.isOpen = !node.isOpen;
                       });
                     },
-                    child: AnimatedRotation(
-                      duration: Duration(milliseconds: 200),
-                      turns: node.isOpen? 0.5 : 0.25,
-                      child: ArrowUp(size: widget.spacingAddedBeforeChildren,color: platinumGray,)
-                    ),
+                    value: node.isOpen,
+                    size: widget.spacingAddedBeforeChildren,
                   )
                   else 
                   Container(

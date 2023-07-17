@@ -4,6 +4,7 @@
 #include <fstream>
 #include "rendering_engine.h"
 #include "component/make_component.h"
+#include "component/default_components/transform.h"
 
 namespace fs = std::filesystem;
 
@@ -274,6 +275,7 @@ bool Engine::DeserializeToCurrent(std::string scene) {
 
 Typhon::Object Engine::CreateObject(std::string name) {
     Typhon::Object obj{ECSRegistry::CreateEntity()};
+    obj.AddComponent<Transform>();
     if(name != ""){
         obj.SetName(name);
         obj.AddTag<ObjectInternals::ParentlessTag>();

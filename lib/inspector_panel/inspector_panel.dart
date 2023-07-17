@@ -10,9 +10,10 @@ import '../engine_sub_window.dart';
 
 class InspectorPanelData {
 
-  InspectorPanelData({this.dataToShow = const [],this.objectID});
+  InspectorPanelData({this.dataToShow = const [],this.objectID,this.topPanelData});
 
   List<Widget> dataToShow;
+  Widget? topPanelData;
   int? objectID;
 }
 
@@ -20,15 +21,48 @@ class InspectorPanelWindow extends EngineSubWindowData {
 
   static ValueNotifier<InspectorPanelData> data = ValueNotifier(InspectorPanelData());
 
-  InspectorPanelWindow() : super(child: InspectorPanel(), title: "Inspector",onTabSelected: () {
+  InspectorPanelWindow() : super(child: InspectorPanel(),topPanelWidgets: InspectorPanelTopWidget(), title: "Inspector",onTabSelected: () {
     
   });
 
 }
 
-class InspectorPanel extends StatefulWidget {
+class InspectorPanelTopWidget extends StatefulWidget {
+  @override
+  State<InspectorPanelTopWidget> createState() => _InspectorPanelTopWidgetState();
+}
 
-  
+class _InspectorPanelTopWidgetState extends State<InspectorPanelTopWidget> {
+
+  void callbackToDataChanged() {
+    setState(() {
+      
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    InspectorPanelWindow.data.addListener(callbackToDataChanged);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    InspectorPanelWindow.data.removeListener(callbackToDataChanged);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return InspectorPanelWindow.data.value.topPanelData ?? Container();
+  }
+}
+
+class InspectorPanel extends StatefulWidget {
 
   @override
   State<InspectorPanel> createState() => _InspectorPanelState();
@@ -70,8 +104,11 @@ class _InspectorPanelState extends State<InspectorPanel> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return Column(
-      children: InspectorPanelWindow.data.value.dataToShow,
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        children: InspectorPanelWindow.data.value.dataToShow,
+      ),
     );
   }
 }

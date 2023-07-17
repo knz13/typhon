@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/general_widgets/custom_expansion_tile.dart';
+import 'package:typhon/general_widgets/general_text_field.dart';
 import 'package:typhon/hierarchy_panel/hierarchy_widget.dart';
 import 'package:typhon/inspector_panel/inspector_panel.dart';
 import 'package:typhon/inspector_panel/inspector_panel_builder.dart';
@@ -111,22 +112,7 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
           Expanded(
             child: SizedBox(
               height: 20,
-              child: TextField(
-          
-                style: TextStyle(
-                  fontSize: 13,
-                  color: platinumGray
-                ),
-                decoration: InputDecoration(
-                  
-                  fillColor: jetBlack,
-                  filled: true,
-                  prefixIcon: Icon(Icons.search,size: 15,color: Colors.white,),
-                  prefixIconConstraints: BoxConstraints(minWidth: 30),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 5),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(5))
-                ),
-              ),
+              child: GeneralTextField("",prefixIcon: Icon(Icons.search,size: 15,color: Colors.white,),),
             ),
           ),
           SizedBox(
@@ -136,6 +122,8 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
       );
   }
 }
+
+
 
 
 class HierarchyPanelContents extends StatefulWidget {

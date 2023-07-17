@@ -11,7 +11,6 @@ public:
 
     Typhon::Object CreatePrefab() override {
         Typhon::Object obj = Engine::CreateObject("Cube");
-        obj.AddComponent<Transform>();
         return obj;
     };
 };

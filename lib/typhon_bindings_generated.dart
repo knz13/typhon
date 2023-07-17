@@ -334,6 +334,25 @@ class TyphonBindings {
   late final _setObjectParent =
       _setObjectParentPtr.asFunction<bool Function(int, int)>();
 
+  bool setObjectName(
+    int objectID,
+    ffi.Pointer<ffi.Char> str,
+    int size,
+  ) {
+    return _setObjectName(
+      objectID,
+      str,
+      size,
+    );
+  }
+
+  late final _setObjectNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Bool Function(
+              ffi.Int64, ffi.Pointer<ffi.Char>, ffi.Int64)>>('setObjectName');
+  late final _setObjectName = _setObjectNamePtr
+      .asFunction<bool Function(int, ffi.Pointer<ffi.Char>, int)>();
+
   bool removeObjectFromParent(
     int objectID,
   ) {

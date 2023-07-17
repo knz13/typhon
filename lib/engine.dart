@@ -526,6 +526,20 @@ void removeObjectByID(int64_t id) {
 
 
 
+bool setObjectName(int64_t objectID, const char* str,int64_t size) {
+
+    if(Engine::ValidateHandle(objectID)){
+
+        Engine::GetObjectFromID(objectID).SetName(std::string(str,size));
+
+        EngineInternals::onChildrenChangedFunc();
+
+    }
+
+}
+
+
+
 
 
 const char* getObjectSerializationByID(int64_t id) {
@@ -1138,6 +1152,8 @@ extern "C" {
     FFI_PLUGIN_EXPORT const char* getObjectChildTree(int64_t id);
 
     FFI_PLUGIN_EXPORT bool setObjectParent(int64_t objectID,int64_t parentID);
+
+    FFI_PLUGIN_EXPORT bool setObjectName(int64_t objectID,const char* str,int64_t size);
 
     FFI_PLUGIN_EXPORT bool removeObjectFromParent(int64_t objectID);
 

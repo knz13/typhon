@@ -125,6 +125,13 @@ void removeObjectByID(int64_t id) {
     }
 }
 
+bool setObjectName(int64_t objectID, const char* str,int64_t size) {
+    if(Engine::ValidateHandle(objectID)){
+        Engine::GetObjectFromID(objectID).SetName(std::string(str,size));
+        EngineInternals::onChildrenChangedFunc();
+    }
+}
+
 
 const char* getObjectSerializationByID(int64_t id) {
 
