@@ -14,6 +14,7 @@ import tarfile
 from subprocess import check_output
 import requests
 from python_scripts.cpp_parser import CPPParser
+import distutils.dir_util
 
 def get_first_available_cpp_compiler():
     system = platform.system()
@@ -55,9 +56,24 @@ parser.add_argument("--run-tests",action='store_true')
 
 args = parser.parse_args()
 
+
+
+if shutil.which("cmake") is None:
+    if platform.system() == "Darwin":
+        #only for macos and windows x64
+        download_and_extract("https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-macos-universal.tar.gz","src/vendor/cmake")
+    else:
+        download_and_extract("https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-windows-x86_64.zip","src/vendor/cmake")
+
+
+cmake_command = ("src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe") if shutil.which("cmake") is None else "cmake"
+
+
 import create_shader_compiler_library as shader_lib
 
 shader_lib.compile(run_tests=args.run_tests,release=False)
+
+
 
 is_64bits = sys.maxsize > 2**32
 
@@ -75,12 +91,6 @@ if not os.path.exists("src/vendor"):
 #if get_first_available_cpp_compiler() == None:
 
 
-if not os.path.exists("src/vendor/cmake"):
-    if platform.system() == "Darwin":
-        #only for macos and windows x64
-        download_and_extract("https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-macos-universal.tar.gz","src/vendor/cmake")
-    else:
-        download_and_extract("https://github.com/Kitware/CMake/releases/download/v3.26.3/cmake-3.26.3-windows-x86_64.zip","src/vendor/cmake")
 
 if not os.path.exists("src/vendor/dylib"):
     os.system('git clone --recursive https://github.com/martin-olivier/dylib src/vendor/dylib')
@@ -92,6 +102,8 @@ if not os.path.exists("src/vendor/random"):
     os.system('git clone --recursive https://github.com/effolkronium/random src/vendor/random')
 if not os.path.exists("src/vendor/glm"):
     os.system('git clone --recursive https://github.com/g-truc/glm src/vendor/glm')
+if not os.path.exists("src/vendor/json"):
+    os.system('git clone --recursive https://github.com/nlohmann/json src/vendor/json')
 if not os.path.exists("src/vendor/crunch"):
     os.system('git clone --recursive https://github.com/johnfredcee/crunch src/vendor/crunch')
 
@@ -128,8 +140,8 @@ namespace Crunch {
             f.write(file_data)
         
 
-if not os.path.exists("src/vendor/json"):
-    os.system('git clone --recursive https://github.com/nlohmann/json src/vendor/json')
+
+
 if platform.system() == "Darwin":
     if not os.path.exists("src/vendor/metal-cpp"):
         os.system('git clone --recursive https://github.com/LeeTeng2001/metal-cpp-cmake src/vendor/metal-cpp')
@@ -172,10 +184,14 @@ target_link_libraries(METAL_CPP
         )
 """)
 
-os.system(' '.join(["src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe", '-DTYPHON_RUN_TESTS=OFF',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
+os.system("echo Running CMake Configuration for Main Library!")
+os.system(' '.join([cmake_command, '-DTYPHON_RUN_TESTS=OFF',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-G Ninja") if platform.system() != "Darwin" else "",'-S ./', '-B build']))
+os.system("echo Finished Running CMake Configuration for Main Library!")
 
 os.chdir(os.path.join(current_dir,"cpp_library","build"))
-os.system(f'{"make typhon" if platform.system() == "Darwin" else "msbuild typhon.sln /target:shader_compiler_dynamic /p:Configuration=" + ("Release" if args.Release else "Debug")}')
+os.system("echo Building Typhon Library!")
+os.system(f'{"make typhon" if platform.system() == "Darwin" else "ninja"}')
+os.system("echo Built Typhon Library!")
 os.chdir(os.path.join(current_dir,"cpp_library"))
 
 roots = []
@@ -201,18 +217,15 @@ for root, dirs, files in os.walk('src'):
 os.chdir(current_dir)
 
 print("Copying Files To Assets!")
-copying_index = 0
-def copy2_verbose(src, dst):
-    global copying_index
-    global num_files
-    shutil.copy2(src,dst)
-    if copying_index % 1000 == 0:
-        print('Copied Files To Assets: {0}/{1}'.format(copying_index,num_files))
-    copying_index += 1
 
-os.system("rm -rf assets/lib/src")
 os.chdir("cpp_library")
-shutil.copytree("src",os.path.join("../assets","lib",'src'), copy_function=copy2_verbose)
+
+distutils.dir_util.copy_tree(
+    "src",
+    os.path.join("../assets","lib",'src'),
+    update=1,
+    verbose=1,
+)
 
 print("Finished Copying Files To Assets!")
 
@@ -274,7 +287,7 @@ for root, dirs, files in os.walk("cpp_library/src"):
     if "vendor" in root:
         continue
     for file in files:
-        file_path = os.path.join(root, file)
+        file_path = os.path.join(root, file).replace(r"\\","/").replace("\\","/")
         try:
             with open(file_path, 'r') as f:
                 value = f.read()
@@ -364,18 +377,19 @@ os.system('echo "Done updating dart bindings file!"')
 if not args.run_tests:
     quit()
 
-os.system('echo "Building tests...')
-
 os.chdir("cpp_library/build")
+if platform.system() == "Darwin":
+    os.system('echo "Building tests...')
 
-os.system(f'{"make typhon_tests" if platform.system() == "Darwin" else "msbuild project_typhon.sln /target:typhon_tests /p:Configuration=" + ("Release" if args.Release else "Debug")}')
 
-os.system('echo "Build finished!"')
+    os.system(f'{"make typhon_tests"}')
+
+    os.system('echo "Build finished!"')
 
 os.system('echo "Running tests"')
 
 if platform.system() == "Darwin":
     subprocess.call(["open","typhon_tests"])
 else:
-    subprocess.call(["Debug/typhon_tests.exe"])
+    subprocess.call(["typhon_tests.exe"])
     

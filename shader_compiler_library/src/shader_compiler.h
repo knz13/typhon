@@ -89,7 +89,7 @@ private:
         compilationResult.succeeded = true;
         compilationResult.shaderText = shaderSPIRVCompiler.get()->compile();
         compilationResult.resources = resources;
-        compilationResult.entryPoints = shaderSPIRVCompiler.get()->get_entry_points_and_stages().operator std::__1::vector<spirv_cross::EntryPoint, std::__1::allocator<spirv_cross::EntryPoint>>();
+        compilationResult.entryPoints = shaderSPIRVCompiler.get()->get_entry_points_and_stages().operator std::vector<spirv_cross::EntryPoint, std::allocator<spirv_cross::EntryPoint>>();
         compilationResult.jsonResources = json::parse(jsonData);
         
         return compilationResult; 

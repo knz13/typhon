@@ -13,7 +13,11 @@ def compile(run_tests=False,release=False):
 
     is_64bits = sys.maxsize > 2**32
 
-    os.system('echo "Creating shader compiler library!"')
+    os.system('echo Creating shader compiler library!')
+
+    if platform.system() != "Darwin":
+        os.system('echo Installing Ninja build system!')
+        os.system("pip install ninja")
 
     os.chdir("shader_compiler_library")
 
@@ -36,30 +40,29 @@ def compile(run_tests=False,release=False):
         if not os.path.exists("src/vendor/catch2"):
             os.system('git clone --recursive https://github.com/catchorg/Catch2 src/vendor/catch2')
 
-    cmake_command = "cmake"
+    cmake_command = ("src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe") if shutil.which("cmake") is None else "cmake"
 
-    if os.path.exists("src/vendor/cmake"):
-        cmake_command = "src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe"
+    os.system(' '.join([cmake_command,"-DSHADER_COMPILER_RUN_TESTS=0",("-DCMAKE_BUILD_TYPE=" + ("Release" if release else "Debug")),("-G Ninja") if platform.system() != "Darwin" else "",'-S ./', '-B build']))
 
-    os.system(' '.join([cmake_command,"-DSHADER_COMPILER_RUN_TESTS=0",("-DCMAKE_BUILD_TYPE=" + ("Release" if release else "Debug")),("-DCMAKE_GENERATOR_PLATFORM=" + ("x64" if is_64bits else "x86")) if platform.system() != "Darwin" else "",'-S ./', '-B build']))
-
-    os.system('echo "Finished CMake Proccess!"')
+    os.system('echo Finished CMake Proccess!')
 
     os.chdir("build")
-
-    os.system(f'{"make shader_compiler_dynamic" if platform.system() == "Darwin" else "msbuild project_shader_compiler_library.sln /target:shader_compiler_dynamic /p:Configuration=" + ("Release" if release else "Debug")}')
+    
+    os.system('echo Building Shader Compiler Library!')
+    os.system(f'{"make shader_compiler_dynamic" if platform.system() == "Darwin" else "ninja"}')
     if run_tests:
         os.system(f'{"make shader_compiler_tests" if platform.system() == "Darwin" else "msbuild project_shader_compiler_library.sln /target:shader_compiler_tests /p:Configuration=" + ("Release" if release else "Debug")}')
 
-    os.system('echo "Finished Building Shader Compiler Library!"')
+    os.system('echo Finished Building Shader Compiler Library!')
 
-    os.system('echo "Moving Shader Compiler Library To Assets!"')
+    os.system('echo Moving Shader Compiler Library To Assets!')
 
     if platform.system() == "Darwin":
         shutil.copy("libshader_compiler_dynamic.dylib","../../assets/lib/libshader_compiler_dynamic.dylib")
     else:
-        shutil.copy(("Release" if release else "Debug") + "/" + "shader_compiler_dynamic.dll","../../assets/lib/shader_compiler_dynamic.dll")
+        shutil.copy("libshader_compiler_dynamic.dll","../../assets/lib/shader_compiler_dynamic.dll")
 
+    os.system('echo Finished Moving Shader Compiler Library To Assets!')
         
     os.chdir('../../')
 
