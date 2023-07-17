@@ -151,7 +151,7 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
       }
       print("key begun!");
       if(!SceneViewerWindow.key.currentContext!.mounted || !mounted){
-        print("saddly not mounted!");
+        print("sadly not mounted!");
         return;
       }
       var box = SceneViewerWindow.key.currentContext!.findRenderObject() as RenderBox;

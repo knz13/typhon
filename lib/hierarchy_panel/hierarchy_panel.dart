@@ -151,12 +151,11 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
   List<ObjectFromCPP> currentObjects = [];
 
   void buildChildrenMapAndAddToObject(ObjectFromCPP obj, Map<String,dynamic> map){
-    print(map);
+    obj.name = TyphonCPPInterface.getCppFunctions().getObjectNameByID(obj.id).cast<Utf8>().toDartString();
+
     if(!map.containsKey(obj.id.toString())){
       return;
     }
-
-    obj.name = TyphonCPPInterface.getCppFunctions().getObjectNameByID(obj.id).cast<Utf8>().toDartString();
 
     if(map[obj.id.toString()]!.isEmpty){
       return;
@@ -254,6 +253,7 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
           },
           childBasedOnID: (obj) {
             return MouseRegion(
+              hitTestBehavior: HitTestBehavior.deferToChild,
               onEnter: (event) {
                 setState(() {
                   idHovered = obj.id;
@@ -269,7 +269,7 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents> {
                 decoration: BoxDecoration(
                   color: idChosen == obj.id ? Colors.blue : idHovered == obj.id ? Colors.blue.withAlpha(100) : null,
                 ),
-                child: GeneralText(obj.name),
+                child: GeneralText("${obj.name} ${obj.id}"),
               )
             );
           },

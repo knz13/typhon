@@ -69,6 +69,6 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTi
         ),
         if (_isExpanded) ...widget.children
       ],
-    ) :  widget.title;
+    ) : widget.title;
   }
 }
