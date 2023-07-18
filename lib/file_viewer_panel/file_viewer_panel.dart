@@ -26,9 +26,11 @@ class FileViewerFileToCreate {
 }
 
 class FileViewerHierarchyData
-    implements HierarchyWidgetData<FileViewerHierarchyData> {
-  FileViewerHierarchyData({required Directory directory, this.isOpen = false})
-      : _directory = directory, id = directory.path;
+    extends HierarchyWidgetData<FileViewerHierarchyData> {
+  FileViewerHierarchyData({required Directory directory, super.isOpen = false})
+      : _directory = directory {
+    id = directory.path;
+  }
 
   Directory _directory;
 
@@ -40,18 +42,9 @@ class FileViewerHierarchyData
   }
 
   @override
-  List<FileViewerHierarchyData> children = [];
-
-  @override
-  bool isOpen;
-
-  @override
   String getDraggingJSON() {
     return '{"type":"file"}';
   }
-
-  @override
-  String id;
 }
 
 class FileViewerPanelWindow extends EngineSubWindowData {
@@ -154,11 +147,9 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
         });
         _buildFolderTree(FileViewerPanel.leftInitialDirectory.value)
             .then((value) {
-          if (mounted) {
-            setState(() {
-              updateOpenedHierarchyWidgetData(folderHierarchyData, value);
-            });
-          }
+          setState(() {
+            folderHierarchyDataController.objects = value;
+          });
         });
       }
     } catch (e) {
@@ -227,7 +218,8 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
 
   double leftWidthPercent = 0.3;
   String hoveringPath = "";
-  List<FileViewerHierarchyData> folderHierarchyData = [];
+  HierarchyWidgetController<FileViewerHierarchyData>
+      folderHierarchyDataController = HierarchyWidgetController([]);
 
   @override
   Widget build(BuildContext context) {
@@ -241,7 +233,7 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
           Container(
               width: leftWidthPercent * constraints.maxWidth,
               child: HierarchyWidget<FileViewerHierarchyData>(
-                rootObjects: folderHierarchyData,
+                controller: folderHierarchyDataController,
                 onClick: (data) {
                   _navigateToDirectory(data.directory);
                 },

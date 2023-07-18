@@ -13,12 +13,36 @@ import 'package:typhon/general_widgets/vertical_line.dart';
 
 import 'custom_expansion_tile.dart';
 
-abstract class HierarchyWidgetData<T> {
-  HierarchyWidgetData({this.isOpen = true});
+abstract class HierarchyWidgetData<T extends HierarchyWidgetData<T>> {
+  HierarchyWidgetData({this.isOpen = true, this.id = ""});
 
-  String id = "";
+  String id;
   bool isOpen;
-  List<T> children = [];
+  List<T> _children = [];
+
+  List<T> get children => _children;
+
+  set children(List<T> value) {
+    for (var element in value) {
+      element.parent = this as T;
+    }
+    _children = value;
+  }
+
+  T? _parent;
+
+  T? get parent => _parent;
+
+  set parent(T? value) {
+    if (_parent != null && value != _parent) {
+      _parent!._children.remove(this);
+    }
+    if (value != null) {
+      value.children.add(this as T);
+    }
+
+    _parent = value;
+  }
 
   String getDraggingJSON();
 }
@@ -73,18 +97,29 @@ class _HierarchyWidgetWhenDraggingState
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return displayWidget;
   }
 }
 
-class HierarchyWidget<T extends HierarchyWidgetData> extends StatefulWidget {
+class HierarchyWidgetController<T extends HierarchyWidgetData<T>> {
+  HierarchyWidgetController(this._objects);
+
+  List<T> _objects;
+
+  List<T> get objects => _objects;
+
+  set objects(List<T> value) {
+    updateOpenedHierarchyWidgetData(_objects, value);
+  }
+}
+
+class HierarchyWidget<T extends HierarchyWidgetData<T>> extends StatefulWidget {
   static double initialSpacing = 0;
   static double iconSize = 16;
 
   HierarchyWidget(
       {super.key,
-      required this.rootObjects,
+      required this.controller,
       required this.onClick,
       required this.childBasedOnID,
       required this.feedbackBasedOnID,
@@ -92,8 +127,8 @@ class HierarchyWidget<T extends HierarchyWidgetData> extends StatefulWidget {
       this.onAccept,
       this.spacingAddedBeforeChildren = 16});
 
+  HierarchyWidgetController<T> controller;
   double spacingAddedBeforeChildren;
-  final List<T> rootObjects;
   void Function(T) onClick;
   bool Function(Object?, T)? onWillAcceptDrag;
   Widget Function(T) childBasedOnID;
@@ -104,7 +139,7 @@ class HierarchyWidget<T extends HierarchyWidgetData> extends StatefulWidget {
   State<HierarchyWidget<T>> createState() => _HierarchyWidgetState<T>();
 }
 
-class _HierarchyWidgetState<T extends HierarchyWidgetData>
+class _HierarchyWidgetState<T extends HierarchyWidgetData<T>>
     extends State<HierarchyWidget<T>> {
   bool mouseInside = false;
   bool dragging = false;
@@ -218,7 +253,7 @@ class _HierarchyWidgetState<T extends HierarchyWidgetData>
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: widget.rootObjects
+            children: widget.controller.objects
                 .expand((node) => _buildTree(node as T, 0))
                 .toList(),
           ),

@@ -22,10 +22,11 @@ import '../engine.dart';
 import '../general_widgets.dart';
 import '../main.dart';
 
-class ObjectFromCPP implements HierarchyWidgetData<ObjectFromCPP> {
-  ObjectFromCPP({required int objectID, this.name = "", this.isOpen = true})
-      : _objectID = objectID,
-        id = objectID.toString();
+class ObjectFromCPP extends HierarchyWidgetData<ObjectFromCPP> {
+  ObjectFromCPP({required int objectID, this.name = "", super.isOpen = true})
+      : _objectID = objectID {
+    id = objectID.toString();
+  }
 
   int _objectID;
 
@@ -39,18 +40,9 @@ class ObjectFromCPP implements HierarchyWidgetData<ObjectFromCPP> {
   String name;
 
   @override
-  List<ObjectFromCPP> children = [];
-
-  @override
-  bool isOpen;
-
-  @override
   String getDraggingJSON() {
     return '{"type":"cpp_object","id":$id}';
   }
-
-  @override
-  String id;
 }
 
 class HierarchyPanelWindow extends EngineSubWindowData {
@@ -163,7 +155,8 @@ class HierarchyPanelContents extends StatefulWidget {
 
 class _HierarchyPanelContentsState extends State<HierarchyPanelContents>
     with WindowListener {
-  List<ObjectFromCPP> currentObjects = [];
+  HierarchyWidgetController<ObjectFromCPP> currentObjectsController =
+      HierarchyWidgetController<ObjectFromCPP>([]);
 
   void buildChildrenMapAndAddToObject(
       ObjectFromCPP obj, Map<String, dynamic> map) {
@@ -191,27 +184,25 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents>
 
   void callbackToEngineChanges() async {
     if (mounted) {
-      List<ObjectFromCPP> newObjects =
-          Engine.instance.currentChildren.value.map((e) {
-        ObjectFromCPP obj = ObjectFromCPP(objectID: e);
-        obj.name = TyphonCPPInterface.getCppFunctions()
-            .getObjectNameByID(obj.objectID)
-            .cast<Utf8>()
-            .toDartString();
-
-        var childrenMap = json.decode(TyphonCPPInterface.getCppFunctions()
-            .getObjectChildTree(e)
-            .cast<Utf8>()
-            .toDartString());
-        if (childrenMap is Map<String, dynamic>) {
-          buildChildrenMapAndAddToObject(obj, childrenMap);
-        }
-
-        return obj;
-      }).toList();
-
       setState(() {
-        updateOpenedHierarchyWidgetData(currentObjects, newObjects);
+        currentObjectsController.objects =
+            Engine.instance.currentChildren.value.map((e) {
+          ObjectFromCPP obj = ObjectFromCPP(objectID: e);
+          obj.name = TyphonCPPInterface.getCppFunctions()
+              .getObjectNameByID(obj.objectID)
+              .cast<Utf8>()
+              .toDartString();
+
+          var childrenMap = json.decode(TyphonCPPInterface.getCppFunctions()
+              .getObjectChildTree(e)
+              .cast<Utf8>()
+              .toDartString());
+          if (childrenMap is Map<String, dynamic>) {
+            buildChildrenMapAndAddToObject(obj, childrenMap);
+          }
+
+          return obj;
+        }).toList();
       });
     }
   }
@@ -249,7 +240,7 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents>
       builder: (context, constraints) => Container(
         width: constraints.maxWidth,
         child: HierarchyWidget<ObjectFromCPP>(
-          rootObjects: currentObjects,
+          controller: currentObjectsController,
           onClick: (obj) {
             setState(() {
               idChosen = obj.objectID;

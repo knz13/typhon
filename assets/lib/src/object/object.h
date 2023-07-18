@@ -28,6 +28,17 @@ public:
         }
     }
 
+    bool FindInChildren(Object& obj) {
+        bool found = false;
+        for(auto entity : Storage().children){
+            if(obj.ID() == entity){
+                return true;
+            }
+            found = Object(entity).FindInChildren(obj);
+        }
+        return found;
+    }
+
     template<typename T>
     bool HasTag() {
         if(!Valid()){

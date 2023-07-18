@@ -734,8 +734,6 @@ const char *getObjectChildTree(int64_t id)
 
 
 
-    std::cout << "JSON DATA FROM C++ for id " << id << " => " << jsonData.dump() << std::endl;
-
 
 
     std::string jsonDataStr = jsonData.dump();
@@ -845,6 +843,8 @@ bool setObjectParent(int64_t objectID,int64_t parentID) {
         return false;
 
     }
+
+
 
     Typhon::Object(Engine::IDFromHandle(objectID)).SetParent(Typhon::Object(Engine::IDFromHandle(parentID)));
 
