@@ -18,7 +18,7 @@ import 'package:typhon/scene_viewer_panel.dart';
 
 import 'console_panel.dart';
 import 'engine_sub_window.dart';
-import 'file_viewer_panel.dart';
+import 'file_viewer_panel/file_viewer_panel.dart';
 import 'general_widgets.dart';
 import 'hierarchy_panel/hierarchy_panel.dart';
 import 'inspector_panel/inspector_panel.dart';

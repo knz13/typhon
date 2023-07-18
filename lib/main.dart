@@ -14,7 +14,7 @@ import 'package:typhon/scene_viewer_panel.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:window_manager/window_manager.dart';
 import 'engine.dart';
-import 'file_viewer_panel.dart';
+import 'file_viewer_panel/file_viewer_panel.dart';
 import 'main_engine_frontend.dart';
 import 'package:window_size/window_size.dart';
 import 'dart:io';

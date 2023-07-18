@@ -32,7 +32,7 @@ import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
 
-import 'file_viewer_panel.dart';
+import 'file_viewer_panel/file_viewer_panel.dart';
 
 
 class EngineRenderingDataFromAtlas {
