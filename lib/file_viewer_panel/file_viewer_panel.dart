@@ -75,55 +75,79 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
   FileViewerFileToCreate? tempFileData;
   FocusNode tempFileFocus = FocusNode();
 
-  @override
-  void initState() {
-    super.initState();
-
-    FileViewerPanel.shouldRefreshFiles.addListener(() {
-      if (FileViewerPanel.shouldRefreshFiles.value == true) {
-        _refreshFiles();
-        FileViewerPanel.shouldRefreshFiles.value = false;
-      }
+  void _currentDirectoryChangedCallback() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _watchers.clear();
+      _refreshWatchers(FileViewerPanel.currentDirectory.value);
+      _refreshFiles();
     });
+  }
 
-    FileViewerPanel.reAddWatchers.addListener(() {
-      if (FileViewerPanel.reAddWatchers.value == true) {
-        if (mounted) {
-          _watchers.clear();
-          _refreshWatchers(FileViewerPanel.currentDirectory.value);
-        }
+  void _shouldRefreshFilesCallback() {
+    if (FileViewerPanel.shouldRefreshFiles.value == true) {
+      _refreshFiles();
+      FileViewerPanel.shouldRefreshFiles.value = false;
+    }
+  }
 
-        FileViewerPanel.reAddWatchers.value = false;
-      }
-    });
-
-    FileViewerPanel.currentDirectory.addListener(() {
+  void _reAddWatchersCallback() {
+    if (FileViewerPanel.reAddWatchers.value == true) {
       if (mounted) {
         _watchers.clear();
         _refreshWatchers(FileViewerPanel.currentDirectory.value);
+      }
+
+      FileViewerPanel.reAddWatchers.value = false;
+    }
+  }
+
+  void _leftInitialDirectoryChanged() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (mounted) {
         setState(() {
           _refreshFiles();
         });
       }
     });
+  }
 
-    FileViewerPanel.leftInitialDirectory.addListener(() {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        if (mounted) {
-          setState(() {
-            _refreshFiles();
-          });
-        }
-      });
-    });
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+
+    FileViewerPanel.shouldRefreshFiles
+        .removeListener(_shouldRefreshFilesCallback);
+
+    FileViewerPanel.reAddWatchers.removeListener(_reAddWatchersCallback);
+
+    FileViewerPanel.currentDirectory
+        .removeListener(_currentDirectoryChangedCallback);
+
+    FileViewerPanel.leftInitialDirectory
+        .removeListener(_leftInitialDirectoryChanged);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    FileViewerPanel.shouldRefreshFiles.addListener(_shouldRefreshFilesCallback);
+
+    FileViewerPanel.reAddWatchers.addListener(_reAddWatchersCallback);
+
+    FileViewerPanel.currentDirectory
+        .addListener(_currentDirectoryChangedCallback);
+
+    FileViewerPanel.leftInitialDirectory
+        .addListener(_leftInitialDirectoryChanged);
   }
 
   Future<void> _refreshWatchers(Directory dir) async {
     var dirs = await dir.list().toList();
     for (var file in dirs) {
       if (file is File &&
-          [".h", ".cpp", ".c", ".cc"]
-              .contains(file.path.substring(file.path.lastIndexOf(".")))) {
+          [".h", ".cpp", ".c", ".cc"].contains(path.extension(file.path))) {
         var fileWatcher =
             FileWatcher(file.absolute.path, pollingDelay: Duration(seconds: 2));
         fileWatcher.events.listen((event) {
@@ -158,6 +182,7 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
   }
 
   Future<void> _navigateToDirectory(Directory directory) async {
+    folderHierarchyDataController.highlightObjectWithID(directory.path);
     FileViewerPanel.currentDirectory.value = directory;
   }
 
@@ -190,17 +215,18 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
         FileViewerPanel.currentDirectory.value.path,
         from: FileViewerPanel.leftInitialDirectory.value.path));
     var currentPath = FileViewerPanel.leftInitialDirectory.value.path;
-    for (final component in breadCrumbs) {
-      currentPath = path.join(currentPath, component);
+    for (final index in List.generate(breadCrumbs.length, (index) => index)) {
+      breadcrumbs.add(HorizontalSpacing(10));
       breadcrumbs.add(GeneralText('>'));
-      breadcrumbs.add(SizedBox(width: 4));
+      breadcrumbs.add(HorizontalSpacing(10));
       breadcrumbs.add(
         TextButton(
           onPressed: () async {
-            final targetDirectory = Directory(currentPath);
+            final targetDirectory = Directory(path.join(
+                currentPath, breadCrumbs.sublist(0, index + 1).join("/")));
             await _navigateToDirectory(targetDirectory);
           },
-          child: GeneralText(component),
+          child: GeneralText(breadCrumbs[index]),
         ),
       );
     }
@@ -230,29 +256,32 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
     return LayoutBuilder(
       builder: (context, constraints) => Row(
         children: [
-          Container(
+          SizedBox(
               width: leftWidthPercent * constraints.maxWidth,
-              child: HierarchyWidget<FileViewerHierarchyData>(
-                controller: folderHierarchyDataController,
-                onClick: (data) {
-                  _navigateToDirectory(data.directory);
-                },
-                childBasedOnID: (data) {
-                  return Row(
-                    children: [
-                      Icon(
-                        Icons.folder,
-                        color: platinumGray,
-                        size: 16,
-                      ),
-                      HorizontalSpacing(10),
-                      GeneralText(path.basename(data.directory.path)),
-                    ],
-                  );
-                },
-                feedbackBasedOnID: (data) {
-                  return GeneralText(path.basename(data.directory.path));
-                },
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: HierarchyWidget<FileViewerHierarchyData>(
+                  controller: folderHierarchyDataController,
+                  onClick: (data) {
+                    _navigateToDirectory(data.directory);
+                  },
+                  childBasedOnID: (data) {
+                    return Row(
+                      children: [
+                        Icon(
+                          Icons.folder,
+                          color: platinumGray,
+                          size: 16,
+                        ),
+                        HorizontalSpacing(10),
+                        GeneralText(path.basename(data.directory.path)),
+                      ],
+                    );
+                  },
+                  feedbackBasedOnID: (data) {
+                    return GeneralText(path.basename(data.directory.path));
+                  },
+                ),
               )),
           MouseRegion(
             cursor: SystemMouseCursors.resizeLeftRight,

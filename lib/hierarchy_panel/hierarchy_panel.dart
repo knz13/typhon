@@ -290,28 +290,7 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents>
                       })
                 ]);
               },
-              child: MouseRegion(
-                  hitTestBehavior: HitTestBehavior.deferToChild,
-                  onEnter: (event) {
-                    setState(() {
-                      idHovered = obj.objectID;
-                    });
-                  },
-                  onExit: (event) {
-                    setState(() {
-                      idHovered = -1;
-                    });
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: idChosen == obj.objectID
-                          ? Colors.blue
-                          : idHovered == obj.objectID
-                              ? Colors.blue.withAlpha(100)
-                              : null,
-                    ),
-                    child: GeneralText("${obj.name} ${obj.objectID}"),
-                  )),
+              child: GeneralText("${obj.name} ${obj.objectID}"),
             );
           },
           feedbackBasedOnID: (obj) {

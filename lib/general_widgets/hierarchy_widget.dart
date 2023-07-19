@@ -105,11 +105,45 @@ class HierarchyWidgetController<T extends HierarchyWidgetData<T>> {
   HierarchyWidgetController(this._objects);
 
   List<T> _objects;
+  ValueNotifier<String?> _idToHighlight = ValueNotifier(null);
 
   List<T> get objects => _objects;
 
   set objects(List<T> value) {
     updateOpenedHierarchyWidgetData(_objects, value);
+  }
+
+  T? _findObjectWithIDInChildren(T current, String id) {
+    if (current.id == id) {
+      return current;
+    }
+    for (var element in current._children) {
+      T? obj = _findObjectWithIDInChildren(element, id);
+      if (obj != null) {
+        return obj;
+      }
+    }
+    return null;
+  }
+
+  bool highlightObjectWithID(String id) {
+    T? obj;
+    for (var element in _objects) {
+      obj = _findObjectWithIDInChildren(element, id);
+      if (obj != null) {
+        _idToHighlight.value = obj.id;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void hightlightObject(T obj) {
+    _idToHighlight.value = obj.id;
+  }
+
+  void disableHightlight() {
+    _idToHighlight.value = null;
   }
 }
 
@@ -125,6 +159,8 @@ class HierarchyWidget<T extends HierarchyWidgetData<T>> extends StatefulWidget {
       required this.feedbackBasedOnID,
       this.onWillAcceptDrag,
       this.onAccept,
+      this.highlightColor = Colors.lightBlue,
+      this.selectedColor = Colors.blue,
       this.spacingAddedBeforeChildren = 16});
 
   HierarchyWidgetController<T> controller;
@@ -134,6 +170,8 @@ class HierarchyWidget<T extends HierarchyWidgetData<T>> extends StatefulWidget {
   Widget Function(T) childBasedOnID;
   Widget Function(T) feedbackBasedOnID;
   void Function(Object?, T)? onAccept;
+  Color highlightColor;
+  Color selectedColor;
 
   @override
   State<HierarchyWidget<T>> createState() => _HierarchyWidgetState<T>();
@@ -143,7 +181,26 @@ class _HierarchyWidgetState<T extends HierarchyWidgetData<T>>
     extends State<HierarchyWidget<T>> {
   bool mouseInside = false;
   bool dragging = false;
+  String? idHovered;
   final GlobalKey _draggableKey = GlobalKey();
+
+  void rebuild() {
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.controller._idToHighlight.addListener(rebuild);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    widget.controller._idToHighlight.removeListener(rebuild);
+  }
 
   List<Widget> _buildTree(T node, int level) {
     return [
@@ -181,6 +238,9 @@ class _HierarchyWidgetState<T extends HierarchyWidgetData<T>>
                       dragging = false;
                     });
                     if (mouseInside) {
+                      setState(() {
+                        widget.controller.highlightObjectWithID(node.id);
+                      });
                       widget.onClick(node);
                     }
                   },
@@ -193,6 +253,7 @@ class _HierarchyWidgetState<T extends HierarchyWidgetData<T>>
                     cursor: SystemMouseCursors.click,
                     onEnter: (event) {
                       setState(() {
+                        idHovered = node.id;
                         mouseInside = true;
                       });
                       if (dragging) {
@@ -203,6 +264,7 @@ class _HierarchyWidgetState<T extends HierarchyWidgetData<T>>
                     },
                     onExit: (event) {
                       setState(() {
+                        idHovered = null;
                         mouseInside = false;
                       });
                       if (dragging) {
@@ -232,7 +294,14 @@ class _HierarchyWidgetState<T extends HierarchyWidgetData<T>>
                                 size: widget.spacingAddedBeforeChildren,
                                 color: platinumGray,
                               )),
-                        Container(child: widget.childBasedOnID(node)),
+                        Container(
+                            color: widget.controller._idToHighlight.value ==
+                                    node.id
+                                ? widget.selectedColor
+                                : (idHovered == node.id
+                                    ? widget.highlightColor
+                                    : null),
+                            child: widget.childBasedOnID(node)),
                       ],
                     ),
                   ))),
