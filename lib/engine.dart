@@ -23,7 +23,7 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/console_panel.dart';
-import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/general_widgets.dart';
 import 'package:typhon/main.dart';
 import 'package:typhon/native_view_interface.dart';
 import 'package:typhon/recompiling_dialog.dart';

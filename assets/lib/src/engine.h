@@ -101,8 +101,11 @@ public:
 
         for (auto entity : ids)
         {
-            Typhon::Object(entity).Clear();
-            ECSRegistry::DeleteObject(entity);
+            if (ECSRegistry::ValidateEntity(entity))
+            {
+                Typhon::Object(entity).Clear();
+                ECSRegistry::DeleteObject(entity);
+            }
         }
 
         EngineInternals::onChildrenChangedFunc();

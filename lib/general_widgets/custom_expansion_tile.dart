@@ -4,7 +4,7 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/general_widgets.dart';
 import 'package:typhon/general_widgets/rotating_arrow_button.dart';
 
 class CustomExpansionTile extends StatefulWidget {

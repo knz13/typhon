@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:typhon/config/colors.dart';
-import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/general_widgets.dart';
 import 'package:typhon/general_widgets/arrow_up.dart';
 import 'package:typhon/general_widgets/half_square.dart';
 import 'package:typhon/general_widgets/horizontal_line.dart';

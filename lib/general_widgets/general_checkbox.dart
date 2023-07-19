@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/general_widgets.dart';
 
 class GeneralCheckbox extends StatefulWidget {
   GeneralCheckbox({

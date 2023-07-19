@@ -2,7 +2,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:typhon/config/colors.dart';
-import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/general_widgets.dart';
 import 'package:typhon/general_widgets/general_checkbox.dart';
 import 'package:typhon/general_widgets/general_text_field.dart';
 import 'package:typhon/general_widgets/spacings.dart';

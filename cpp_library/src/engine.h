@@ -7,6 +7,7 @@
 #include "object/object.h"
 #include <ranges>
 #include "shader_compiler.h"
+#include "component/make_component.h"
 
 class Engine;
 class EngineInternals
@@ -101,8 +102,11 @@ public:
 
         for (auto entity : ids)
         {
-            Typhon::Object(entity).Clear();
-            ECSRegistry::DeleteObject(entity);
+            if (ECSRegistry::ValidateEntity(entity))
+            {
+                Typhon::Object(entity).Clear();
+                ECSRegistry::DeleteObject(entity);
+            }
         }
 
         EngineInternals::onChildrenChangedFunc();

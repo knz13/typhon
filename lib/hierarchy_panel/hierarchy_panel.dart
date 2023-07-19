@@ -13,13 +13,16 @@ import 'package:typhon/general_widgets/hierarchy_widget.dart';
 import 'package:typhon/inspector_panel/inspector_panel.dart';
 import 'package:typhon/inspector_panel/inspector_panel_builder.dart';
 import 'package:typhon/main_engine_frontend.dart';
+import 'package:typhon/native_context_menu/native_context_menu.dart';
+import 'package:typhon/native_context_menu/native_context_menu_area.dart';
+import 'package:typhon/native_context_menu/native_context_menu_button.dart';
 import 'package:typhon/tree_viewer.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../engine.dart';
-import '../general_widgets.dart';
+import '../general_widgets/general_widgets.dart';
 import '../main.dart';
 
 class ObjectFromCPP extends HierarchyWidgetData<ObjectFromCPP> {
@@ -71,31 +74,6 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
     });
   }
 
-  List<ContextMenuOption> buildMenuOptionsFromJson(Map<String, dynamic> map) {
-    List<ContextMenuOption> options = [];
-
-    map.forEach((key, value) {
-      ContextMenuOption option = ContextMenuOption(
-        title: key,
-        enabled: true,
-        subOptions: value is Map<String, dynamic>
-            ? buildMenuOptionsFromJson(value)
-            : null,
-        callback: value is Map<String, dynamic>
-            ? null
-            : () {
-                if (TyphonCPPInterface.checkIfLibraryLoaded()) {
-                  TyphonCPPInterface.getCppFunctions()
-                      .createObjectFromClassID(value);
-                }
-              },
-      );
-      options.add(option);
-    });
-
-    return options;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -106,16 +84,8 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
                 context,
                 MyApp.globalMousePosition.dx,
                 MyApp.globalMousePosition.dy,
-                TyphonCPPInterface.checkIfLibraryLoaded()
-                    ? (() {
-                        Pointer<Char> ptr = TyphonCPPInterface.getCppFunctions()
-                            .getInstantiableClasses();
-                        String jsonClasses = ptr.cast<Utf8>().toDartString();
-                        Map<String, dynamic> map = jsonDecode(jsonClasses);
-
-                        return buildMenuOptionsFromJson(map);
-                      })()
-                    : []);
+                TyphonCPPInterface.getPrefabsContextMenuOptions()
+              );
           },
           child: Row(
             children: [
@@ -237,70 +207,74 @@ class _HierarchyPanelContentsState extends State<HierarchyPanelContents>
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => Container(
-        width: constraints.maxWidth,
-        child: HierarchyWidget<ObjectFromCPP>(
-          controller: currentObjectsController,
-          onClick: (obj) {
-            setState(() {
-              idChosen = obj.objectID;
-            });
+      builder: (context, constraints) => NativeContextMenuArea(
+        menuItems: [...TyphonCPPInterface.getPrefabsContextMenuOptions()],
+        secondaryTap: true,
+        child: Container(
+          width: constraints.maxWidth,
+          child: HierarchyWidget<ObjectFromCPP>(
+            controller: currentObjectsController,
+            onClick: (obj) {
+              setState(() {
+                idChosen = obj.objectID;
+              });
 
-            if (!TyphonCPPInterface.checkIfLibraryLoaded()) {
-              print("Tried pressing while library not loaded!");
-              return;
-            }
+              if (!TyphonCPPInterface.checkIfLibraryLoaded()) {
+                print("Tried pressing while library not loaded!");
+                return;
+              }
 
-            Pointer<Char> val = TyphonCPPInterface.getCppFunctions()
-                .getObjectInspectorUIByID(idChosen);
-            if (val != nullptr) {
-              var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
-              buildInspectorPanelFromComponent(obj, jsonData);
-            }
-          },
-          onWillAcceptDrag: (data, obj) {
-            return data is String
-                ? (json.decode(data)["type"] == "cpp_object"
-                    ? (json.decode(data)["id"] == obj.objectID ? false : true)
-                    : false)
-                : false;
-          },
-          onAccept: (data, obj) {
-            if (TyphonCPPInterface.checkIfLibraryLoaded()) {
-              TyphonCPPInterface.getCppFunctions().setObjectParent(
-                  json.decode(data as String)["id"], obj.objectID);
-            } else {
-              print("Library not loaded while ended drag!");
-            }
-          },
-          childBasedOnID: (obj) {
-            return GestureDetector(
-              onSecondaryTap: () {
-                showNativeContextMenu(
-                    context,
-                    MainEngineFrontend.mousePosition.dx,
-                    MainEngineFrontend.mousePosition.dy, [
-                  ContextMenuOption(
-                      title: "Remove Object",
-                      callback: () {
-                        if (TyphonCPPInterface.checkIfLibraryLoaded()) {
-                          TyphonCPPInterface.getCppFunctions()
-                              .removeObjectByID(obj.objectID);
-                        }
-                      })
-                ]);
-              },
-              child: GeneralText("${obj.name} ${obj.objectID}"),
-            );
-          },
-          feedbackBasedOnID: (obj) {
-            return Container(
-              decoration: BoxDecoration(
-                  border:
-                      Border.fromBorderSide(BorderSide(color: Colors.black))),
-              child: GeneralText(obj.name),
-            );
-          },
+              Pointer<Char> val = TyphonCPPInterface.getCppFunctions()
+                  .getObjectInspectorUIByID(idChosen);
+              if (val != nullptr) {
+                var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
+                buildInspectorPanelFromComponent(obj, jsonData);
+              }
+            },
+            onWillAcceptDrag: (data, obj) {
+              return data is String
+                  ? (json.decode(data)["type"] == "cpp_object"
+                      ? (json.decode(data)["id"] == obj.objectID ? false : true)
+                      : false)
+                  : false;
+            },
+            onAccept: (data, obj) {
+              if (TyphonCPPInterface.checkIfLibraryLoaded()) {
+                TyphonCPPInterface.getCppFunctions().setObjectParent(
+                    json.decode(data as String)["id"], obj.objectID);
+              } else {
+                print("Library not loaded while ended drag!");
+              }
+            },
+            childBasedOnID: (obj) {
+              return GestureDetector(
+                onSecondaryTap: () {
+                  showNativeContextMenu(
+                      context,
+                      MainEngineFrontend.mousePosition.dx,
+                      MainEngineFrontend.mousePosition.dy, [
+                    ContextMenuOption(
+                        title: "Remove Object",
+                        callback: () {
+                          if (TyphonCPPInterface.checkIfLibraryLoaded()) {
+                            TyphonCPPInterface.getCppFunctions()
+                                .removeObjectByID(obj.objectID);
+                          }
+                        })
+                  ]);
+                },
+                child: GeneralText("${obj.name} ${obj.objectID}"),
+              );
+            },
+            feedbackBasedOnID: (obj) {
+              return Container(
+                decoration: BoxDecoration(
+                    border:
+                        Border.fromBorderSide(BorderSide(color: Colors.black))),
+                child: GeneralText(obj.name),
+              );
+            },
+          ),
         ),
       ),
     );

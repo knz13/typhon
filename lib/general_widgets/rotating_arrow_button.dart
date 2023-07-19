@@ -2,7 +2,7 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/general_widgets.dart';
 import 'package:typhon/general_widgets/arrow_up.dart';
 
 class RotatingArrowButton extends StatefulWidget {

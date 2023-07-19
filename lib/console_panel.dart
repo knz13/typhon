@@ -9,7 +9,7 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:typhon/engine_sub_window.dart';
-import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/general_widgets.dart';
 
 enum ConsolePanelLevel {
   warning,

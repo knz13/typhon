@@ -12,11 +12,12 @@ import 'package:typhon/general_widgets/hierarchy_widget.dart';
 import 'package:typhon/general_widgets/spacings.dart';
 import 'package:typhon/hierarchy_panel/hierarchy_panel.dart';
 import 'package:typhon/main_engine_frontend.dart';
+import 'package:typhon/native_context_menu/native_context_menu.dart';
 import 'package:typhon/regex_parser.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:watcher/watcher.dart';
 
-import '../general_widgets.dart';
+import '../general_widgets/general_widgets.dart';
 
 class FileViewerFileToCreate {
   Icon? icon;
@@ -171,9 +172,11 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
         });
         _buildFolderTree(FileViewerPanel.leftInitialDirectory.value)
             .then((value) {
-          setState(() {
-            folderHierarchyDataController.objects = value;
-          });
+          if (mounted) {
+            setState(() {
+              folderHierarchyDataController.objects = value;
+            });
+          }
         });
       }
     } catch (e) {
@@ -357,20 +360,19 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
 #include <iostream>
 #include "engine.h"
 
-class ${str} : public DerivedFromGameObject<${str}
-  //Here you can add the class traits you wish to use
-  //for example: Traits::HasUpdate<${str}>,Traits::HasPosition...
-  
-  > {
+class ${str} : public MakeComponent<${str}> {
 private:
   //Add your private variables here
-
+  
 public:
-  //Function called when the object is created
+  //Function called when the component is created
   void Create() {};
 
-  //Function called when the object is destroyed
+  //Function called when the component is destroyed
   void Destroy() {};
+
+  //Function called when the component is updated
+  void Update(double dt) {};
 
 };
 """);

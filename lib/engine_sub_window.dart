@@ -12,10 +12,11 @@ import 'package:tabbed_view/tabbed_view.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine.dart';
 import 'package:typhon/file_viewer_panel/file_viewer_panel.dart';
-import 'package:typhon/general_widgets.dart';
+import 'package:typhon/general_widgets/general_widgets.dart';
 import 'package:typhon/hierarchy_panel/hierarchy_panel.dart';
 import 'package:typhon/inspector_panel/inspector_panel.dart';
 import 'package:typhon/main.dart';
+import 'package:typhon/native_context_menu/native_context_menu.dart';
 import 'package:typhon/scene_viewer_panel.dart';
 
 
