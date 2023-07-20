@@ -186,6 +186,7 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
 
   Future<void> _navigateToDirectory(Directory directory) async {
     folderHierarchyDataController.highlightObjectWithID(directory.path);
+    folderHierarchyDataController.openAllAboveObject(directory.path);
     FileViewerPanel.currentDirectory.value = directory;
   }
 

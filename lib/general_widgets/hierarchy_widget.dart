@@ -113,12 +113,12 @@ class HierarchyWidgetController<T extends HierarchyWidgetData<T>> {
     updateOpenedHierarchyWidgetData(_objects, value);
   }
 
-  T? _findObjectWithIDInChildren(T current, String id) {
-    if (current.id == id) {
-      return current;
-    }
-    for (var element in current._children) {
-      T? obj = _findObjectWithIDInChildren(element, id);
+  T? _findObjectWithIDInChildren(List<T> current, String id) {
+    for (var element in current) {
+      if (element.id == id) {
+        return element;
+      }
+      T? obj = _findObjectWithIDInChildren(element._children, id);
       if (obj != null) {
         return obj;
       }
@@ -126,14 +126,21 @@ class HierarchyWidgetController<T extends HierarchyWidgetData<T>> {
     return null;
   }
 
+  void openAllAboveObject(String id) {
+    T? obj;
+    obj = _findObjectWithIDInChildren(_objects, id);
+    while (obj != null) {
+      obj.isOpen = true;
+      obj = obj._parent;
+    }
+  }
+
   bool highlightObjectWithID(String id) {
     T? obj;
-    for (var element in _objects) {
-      obj = _findObjectWithIDInChildren(element, id);
-      if (obj != null) {
-        _idToHighlight.value = obj.id;
-        return true;
-      }
+    obj = _findObjectWithIDInChildren(_objects, id);
+    if (obj != null) {
+      _idToHighlight.value = obj.id;
+      return true;
     }
     return false;
   }
