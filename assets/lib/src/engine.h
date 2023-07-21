@@ -7,6 +7,7 @@
 #include "object/object.h"
 #include <ranges>
 #include "shader_compiler.h"
+#include "component/make_component.h"
 
 class Engine;
 class EngineInternals

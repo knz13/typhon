@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-
-
 #if _WIN32
 #include <windows.h>
 #else
@@ -20,23 +18,21 @@
 #define FFI_PLUGIN_EXPORT
 #endif
 
-struct CompilationResult {
+struct CompilationResult
+{
     std::string shaderText = "";
     std::string jsonResources = "";
     std::string error = "";
     bool result = false;
 };
 
-
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-    
-    FFI_PLUGIN_EXPORT CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText,std::string shaderName,int64_t shaderType);
-    
+    FFI_PLUGIN_EXPORT CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::string shaderName, int64_t shaderType);
 
 #ifdef __cplusplus
 }
 #endif
-

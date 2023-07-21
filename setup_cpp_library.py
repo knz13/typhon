@@ -69,9 +69,9 @@ if shutil.which("cmake") is None:
 cmake_command = ("src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe") if shutil.which("cmake") is None else "cmake"
 
 
-import create_shader_compiler_library as shader_lib
+import create_auxiliary_libraries as shader_lib
 
-shader_lib.compile(run_tests=args.run_tests,release=False)
+shader_lib.compile_auxiliary_libraries(run_tests=args.run_tests,release=False)
 
 
 

@@ -7,7 +7,7 @@ include(FetchContent)
 
 
 #project name
-project(project_shader_compiler_library)
+project(project_typhon_auxiliary_libraries)
 
 option(SHADER_COMPILER_RUN_TESTS "Run Tests" OFF)
 
@@ -62,20 +62,20 @@ set_target_properties(shader_compiler PROPERTIES
     C_STANDARD 20
 )
 
-add_library(shader_compiler_dynamic SHARED
+add_library(typhon_auxiliary_dynamic SHARED
     src/exports.cpp
 )
 
-target_link_libraries(shader_compiler_dynamic PRIVATE shader_compiler)
+target_link_libraries(typhon_auxiliary_dynamic PRIVATE shader_compiler)
 
 # setting c++ standard
-set_target_properties(shader_compiler_dynamic PROPERTIES
+set_target_properties(typhon_auxiliary_dynamic PROPERTIES
     CXX_STANDARD 20
 )
 
 # setting c standard
 
-set_target_properties(shader_compiler_dynamic PROPERTIES
+set_target_properties(typhon_auxiliary_dynamic PROPERTIES
     C_STANDARD 20
 )
 

@@ -9,7 +9,7 @@ import shutil
 import re
 from subprocess import check_output
 
-def compile(run_tests=False,release=False):
+def compile_auxiliary_libraries(run_tests=False,release=False):
 
     is_64bits = sys.maxsize > 2**32
 
@@ -19,7 +19,7 @@ def compile(run_tests=False,release=False):
         os.system('echo Installing Ninja build system!')
         os.system("pip install ninja")
 
-    os.chdir("shader_compiler_library")
+    os.chdir("auxiliary_libraries")
 
     if not os.path.exists("src/vendor"):
         os.mkdir("src/vendor")
@@ -48,21 +48,21 @@ def compile(run_tests=False,release=False):
 
     os.chdir("build")
     
-    os.system('echo Building Shader Compiler Library!')
-    os.system(f'{"make shader_compiler_dynamic" if platform.system() == "Darwin" else "ninja"}')
+    os.system('echo Building Auxiliary Library!')
+    os.system(f'{"make typhon_auxiliary_dynamic" if platform.system() == "Darwin" else "ninja"}')
     if run_tests:
-        os.system(f'{"make shader_compiler_tests" if platform.system() == "Darwin" else "msbuild project_shader_compiler_library.sln /target:shader_compiler_tests /p:Configuration=" + ("Release" if release else "Debug")}')
+        os.system(f'{"make shader_compiler_tests" if platform.system() == "Darwin" else "msbuild project_typhon_auxiliary_libraries.sln /target:shader_compiler_tests /p:Configuration=" + ("Release" if release else "Debug")}')
 
-    os.system('echo Finished Building Shader Compiler Library!')
+    os.system('echo Finished Building Auxiliary Library!')
 
-    os.system('echo Moving Shader Compiler Library To Assets!')
+    os.system('echo Moving Auxiliary Libraries To Assets!')
 
     if platform.system() == "Darwin":
-        shutil.copy("libshader_compiler_dynamic.dylib","../../assets/lib/libshader_compiler_dynamic.dylib")
+        shutil.copy("libtyphon_auxiliary_dynamic.dylib","../../assets/lib/libtyphon_auxiliary_dynamic.dylib")
     else:
-        shutil.copy("libshader_compiler_dynamic.dll","../../assets/lib/shader_compiler_dynamic.dll")
+        shutil.copy("libtyphon_auxiliary_dynamic.dll","../../assets/lib/typhon_auxiliary_dynamic.dll")
 
-    os.system('echo Finished Moving Shader Compiler Library To Assets!')
+    os.system('echo Finished Moving Auxiliary Library To Assets!')
         
     os.chdir('../../')
 
