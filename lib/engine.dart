@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
@@ -16,7 +10,14 @@ import 'package:ffi/ffi.dart';
 import 'package:flame/image_composition.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'dart:math';
-import 'package:flutter/services.dart' show ByteData, Clipboard, ClipboardData, RawKeyDownEvent, RawKeyUpEvent, rootBundle;
+import 'package:flutter/services.dart'
+    show
+        ByteData,
+        Clipboard,
+        ClipboardData,
+        RawKeyDownEvent,
+        RawKeyUpEvent,
+        rootBundle;
 import 'package:flutter/src/services/keyboard_key.g.dart';
 import 'package:path/path.dart' as path;
 import 'package:flame/components.dart';
@@ -31,9 +32,25 @@ import 'package:typhon/regex_parser.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
-
 import 'file_viewer_panel/file_viewer_panel.dart';
 
+void copyDirectorySync(Directory source, Directory destination) {
+  /// create destination folder if not exist
+  if (!destination.existsSync()) {
+    destination.createSync(recursive: true);
+  }
+
+  /// get all files from source (recursive: false is important here)
+  source.listSync(recursive: false).forEach((entity) {
+    final newPath =
+        destination.path + Platform.pathSeparator + path.basename(entity.path);
+    if (entity is File) {
+      entity.copySync(newPath);
+    } else if (entity is Directory) {
+      copyDirectorySync(entity, Directory(newPath));
+    }
+  });
+}
 
 class EngineRenderingDataFromAtlas {
   int width;
@@ -46,26 +63,22 @@ class EngineRenderingDataFromAtlas {
   double scale;
   double angle;
 
-  EngineRenderingDataFromAtlas({
-    required this.width,
-    required this.height,
-    required this.position,
-    required this.imageX,
-    required this.imageY,
-    required this.anchorX,
-    required this.anchorY,
-    required this.scale,
-    required this.angle
-  });
+  EngineRenderingDataFromAtlas(
+      {required this.width,
+      required this.height,
+      required this.position,
+      required this.imageX,
+      required this.imageY,
+      required this.anchorX,
+      required this.anchorY,
+      required this.scale,
+      required this.angle});
 }
 
-
-
 class Engine {
-
   static Random rng = Random();
   static Engine instance = Engine();
-  
+
   ValueNotifier onRecompileNotifier = ValueNotifier(0);
   String projectPath = "";
   String projectName = "";
@@ -80,9 +93,8 @@ class Engine {
 
   bool isInitialized = false;
 
-
   void enqueueRecompilation() {
-    if(hasInitializedProject()){
+    if (hasInitializedProject()) {
       _shouldRecompile = true;
       reloadProject();
     }
@@ -92,58 +104,58 @@ class Engine {
     return _shouldRecompile;
   }
 
-  Future<Map<String,dynamic>> getProjectsJSON() async {
+  Future<Map<String, dynamic>> getProjectsJSON() async {
     Directory privateDir = await getApplicationSupportDirectory();
-    File projectsFile = File(path.join(privateDir.path,"projects.json"));
-    if(projectsFile.existsSync()){
+    File projectsFile = File(path.join(privateDir.path, "projects.json"));
+    if (projectsFile.existsSync()) {
       String fileData = projectsFile.readAsStringSync();
       var map = jsonDecode(fileData);
       return map;
-    }
-    else {
+    } else {
       projectsFile.writeAsStringSync("{}");
-      
-      return <String,dynamic>{};
+
+      return <String, dynamic>{};
     }
   }
 
-  Future<void> saveProjectsJSON(Map<String,dynamic> projects) async {
+  Future<void> saveProjectsJSON(Map<String, dynamic> projects) async {
     Directory privateDir = await getApplicationSupportDirectory();
-    File projectsFile = File(path.join(privateDir.path,"projects.json"));
+    File projectsFile = File(path.join(privateDir.path, "projects.json"));
     projectsFile.writeAsStringSync(jsonEncode(projects));
-  } 
+  }
 
   bool hasInitializedProject() {
     return _isProjectLoaded;
-  } 
+  }
 
   void detachPlatformSpecificView() {
-    if(TyphonCPPInterface.checkIfLibraryLoaded()){
-       NativeViewInterface.detachCPPPointer();
+    if (TyphonCPPInterface.checkIfLibraryLoaded()) {
+      NativeViewInterface.detachCPPPointer();
     }
   }
 
   void attachPlatformSpecificView() {
-    if(TyphonCPPInterface.checkIfLibraryLoaded()){
-      var ptr = TyphonCPPInterface.getCppFunctions().getPlatformSpecificPointer();
-      if(ptr != nullptr){
+    if (TyphonCPPInterface.checkIfLibraryLoaded()) {
+      var ptr =
+          TyphonCPPInterface.getCppFunctions().getPlatformSpecificPointer();
+      if (ptr != nullptr) {
         NativeViewInterface.attachCPPPointer(ptr);
       }
     }
   }
 
   Future<void> reloadProject() async {
-    if(_isReloading){
+    if (_isReloading) {
       return;
     }
     _isReloading = true;
     unload();
 
-    
-    await TyphonCPPInterface.extractImagesFromAssets(path.join(projectPath,"build","images"));
-    
+    await TyphonCPPInterface.extractImagesFromAssets(
+        path.join(projectPath, "build", "images"));
+
     await recompileProject();
-    if(!TyphonCPPInterface.checkIfLibraryLoaded()){
+    if (!TyphonCPPInterface.checkIfLibraryLoaded()) {
       print("Could not load library!");
       _isReloading = false;
       return;
@@ -161,10 +173,10 @@ class Engine {
       library.passPlatformSpecificViewPointer(await NativeViewInterface.getMetalViewPointer());
       print("Passed from flutter!");
     } */
-    
-    (()async {
-      while(true){
-        if(library.isEngineInitialized() == true){
+
+    (() async {
+      while (true) {
+        if (library.isEngineInitialized() == true) {
           await loadAtlasImage();
           break;
         }
@@ -185,12 +197,12 @@ class Engine {
   }
 
   void unload() {
-    if(currentProcess != null){
+    if (currentProcess != null) {
       currentProcess!.kill();
     }
     currentProcess = null;
 
-    if(TyphonCPPInterface.checkIfLibraryLoaded()){
+    if (TyphonCPPInterface.checkIfLibraryLoaded()) {
       NativeViewInterface.detachCPPPointer().then((value) {
         TyphonCPPInterface.getCppFunctions().unloadLibrary();
         TyphonCPPInterface.detachLibrary();
@@ -198,52 +210,50 @@ class Engine {
     }
   }
 
-
-
   static void onCppChildrenChanged() {
+    AliveObjectsArray arr =
+        TyphonCPPInterface.getCppFunctions().getAliveParentlessObjects();
 
-    AliveObjectsArray arr = TyphonCPPInterface.getCppFunctions().getAliveParentlessObjects();
-    
     List<int> list = arr.array.asTypedList(arr.size).toList();
     print("found these objects that are parentless: ${list}");
 
     Engine.instance.currentChildren.value = list;
-
-
   }
 
-  Future<void> initializeProject(String projectDirectoryPath,String projectName) async {
-
+  Future<void> initializeProject(
+      String projectDirectoryPath, String projectName) async {
     //testing if project exists and loading it if true
     var map = await getProjectsJSON();
-    var projectFilteredName = projectName.replaceAllMapped(RegExp(r'[^a-zA-Z0-9]'), (match) => '_');
-    var projectPath = path.join(projectDirectoryPath,projectFilteredName);
+    var projectFilteredName =
+        projectName.replaceAllMapped(RegExp(r'[^a-zA-Z0-9]'), (match) => '_');
+    var projectPath = path.join(projectDirectoryPath, projectFilteredName);
 
-    
-    if(map.containsKey(projectPath)) {
+    if (map.containsKey(projectPath)) {
       this.projectPath = projectPath;
       this.projectName = projectName;
       this.projectFilteredName = projectFilteredName;
-      
+
       String cmakeFileData = "";
-      File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"));
+      File cmakeFile = File(path.join(projectPath, "CMakeLists.txt"));
       List<String> lines = cmakeFile.readAsLinesSync();
-      for(String line in lines) {
-        if(line.contains("__TYPHON__LIBRARY__LOCATION__")){
-          var projPath = (await TyphonCPPInterface.getLibraryPath()).replaceAll("\\","/").replaceAll(" ", "\\ ");
-          cmakeFileData += "set(TYPHON_LIBRARY_LOCATION $projPath) #__TYPHON__LIBRARY__LOCATION__";
+      for (String line in lines) {
+        if (line.contains("__TYPHON__LIBRARY__LOCATION__")) {
+          var projPath = (await TyphonCPPInterface.getLibraryPath())
+              .replaceAll("\\", "/")
+              .replaceAll(" ", "\\ ");
+          cmakeFileData +=
+              "set(TYPHON_LIBRARY_LOCATION $projPath) #__TYPHON__LIBRARY__LOCATION__";
           cmakeFileData += "\n";
           continue;
         }
-       
-      
+
         cmakeFileData += line;
         cmakeFileData += "\n";
       }
 
       await cmakeFile.writeAsString(cmakeFileData);
 
-      File entryFile = File(path.join(projectPath,"assets","entry.h"));
+      File entryFile = File(path.join(projectPath, "assets", "entry.h"));
 
       await entryFile.writeAsString("""#pragma once
 
@@ -261,7 +271,7 @@ public:
 };
 """);
 
-      File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
+      File bindingsFile = File(path.join(projectPath, "bindings.cpp"));
 
       await bindingsFile.writeAsString("""
 #include "bindings_generated.h"
@@ -877,123 +887,121 @@ bool removeObjectFromParent(int64_t objectID) {
 //__END__CPP__IMPL__
 """);
 
-      Directory(path.join(projectPath,"generated")).createSync(recursive: true);
+      Directory(path.join(projectPath, "generated"))
+          .createSync(recursive: true);
 
       FileViewerPanel.leftInitialDirectory.value = Directory(projectPath);
-      FileViewerPanel.currentDirectory.value = Directory(path.join(projectPath,"assets"));
+      FileViewerPanel.currentDirectory.value =
+          Directory(path.join(projectPath, "assets"));
 
       await reloadProject();
 
       _isProjectLoaded = true;
 
-
       return;
-
     }
-    
-    map[projectPath] = {
-      "name":projectName
-    };
 
+    map[projectPath] = {"name": projectName};
 
-    if(!Directory(projectPath).existsSync()) {
+    if (!Directory(projectPath).existsSync()) {
       Directory(projectPath).createSync(recursive: true);
     }
 
-    Directory(path.join(projectPath,"assets")).createSync(recursive: true);
+    Directory(path.join(projectPath, "assets")).createSync(recursive: true);
 
     //await TyphonCPPInterface.extractIncludesFromAssets(path.join(projectPath,"includes"));
 
-    ByteData cmakeTemplateData = await rootBundle.load("assets/cmake_template.txt");
-    String cmakeTemplateString = utf8.decode(cmakeTemplateData.buffer.asUint8List(cmakeTemplateData.offsetInBytes,cmakeTemplateData.lengthInBytes));
+    ByteData cmakeTemplateData =
+        await rootBundle.load("assets/cmake_template.txt");
+    String cmakeTemplateString = utf8.decode(cmakeTemplateData.buffer
+        .asUint8List(
+            cmakeTemplateData.offsetInBytes, cmakeTemplateData.lengthInBytes));
 
+    cmakeTemplateString = cmakeTemplateString
+        .replaceAll('__CMAKE__VERSION__', '3.16')
+        .replaceAll('__PROJECT__NAME__', projectFilteredName);
 
+    await File(path.join(projectPath, "CMakeLists.txt"))
+        .writeAsString(cmakeTemplateString);
 
-    cmakeTemplateString = cmakeTemplateString.replaceAll('__CMAKE__VERSION__','3.16')
-    .replaceAll('__PROJECT__NAME__',projectFilteredName);
+    Directory(path.join(projectPath, "build")).createSync();
 
+    copyDirectorySync(
+        Directory(path.join((await getApplicationSupportDirectory()).path,
+            "lib", "auxiliary_libraries")),
+        Directory(path.join(projectPath, "build")));
 
-    await File(path.join(projectPath,"CMakeLists.txt")).writeAsString(cmakeTemplateString);
-
-
-
-
-
-    Directory(path.join(projectPath,"build")).createSync();
-
-    File(path.join((await getApplicationSupportDirectory()).path,"lib",Platform.isMacOS ? "libshader_compiler_dynamic.dylib" : Platform.isWindows? "shader_compiler_dynamic.dll" : "shader_compiler_dynamic.so")).copySync(path.join(projectPath,"build",Platform.isMacOS ? "libshader_compiler_dynamic.dylib" : Platform.isWindows? "shader_compiler_dynamic.dll" : "shader_compiler_dynamic.so"));
-    
     await saveProjectsJSON(map);
 
     return await initializeProject(projectDirectoryPath, projectName);
-
   }
 
   Future<List<String>> __findPathsToInclude(Directory directory) async {
     List<String> arr = [];
-    for(var maybeFile in await directory.list().toList()){
-      if(maybeFile is File && maybeFile.path.substring(maybeFile.path.lastIndexOf(".")) == ".h") {
-        arr.add(path.relative(maybeFile.path,from:projectPath));
+    for (var maybeFile in await directory.list().toList()) {
+      if (maybeFile is File &&
+          maybeFile.path.substring(maybeFile.path.lastIndexOf(".")) == ".h") {
+        arr.add(path.relative(maybeFile.path, from: projectPath));
       }
-      if(maybeFile is Directory){
+      if (maybeFile is Directory) {
         arr.addAll(await __findPathsToInclude(maybeFile));
       }
-    } 
+    }
     return arr;
-
   }
 
   Future<List<String>> __findSourcesToAdd(Directory directory) async {
     List<String> sources = [];
-    for(var maybeFile in await directory.list().toList()){
-      if(maybeFile is File && [".cpp",".cc",".c"].contains(maybeFile.path.substring(maybeFile.path.lastIndexOf(".")))) {
-        sources.add(path.relative(maybeFile.path,from:projectPath));
+    for (var maybeFile in await directory.list().toList()) {
+      if (maybeFile is File &&
+          [".cpp", ".cc", ".c"].contains(
+              maybeFile.path.substring(maybeFile.path.lastIndexOf(".")))) {
+        sources.add(path.relative(maybeFile.path, from: projectPath));
       }
-      if(maybeFile is Directory){
+      if (maybeFile is Directory) {
         sources.addAll(await __findSourcesToAdd(maybeFile));
       }
-    } 
+    }
     return sources;
-
   }
-
 
   Process? currentProcess;
 
   Future<void> recompileProject() async {
-    
-    if(projectPath == "" || projectName == "" || projectFilteredName == ""){
+    if (projectPath == "" || projectName == "" || projectFilteredName == "") {
       return;
     }
     print("recompiling...");
 
-
-    if(Directory(path.join(projectPath,"generated")).existsSync()){
-      Directory(path.join(projectPath,"generated")).deleteSync(recursive: true);
+    if (Directory(path.join(projectPath, "generated")).existsSync()) {
+      Directory(path.join(projectPath, "generated"))
+          .deleteSync(recursive: true);
     }
-    
-    
-    List<String> includes = await __findPathsToInclude(Directory(path.join(projectPath,"assets")));
 
-    Directory(path.join(projectPath,"generated")).createSync();
+    List<String> includes =
+        await __findPathsToInclude(Directory(path.join(projectPath, "assets")));
 
-    for(String include in includes){
-      String pathGenerated = path.join(Engine.instance.projectPath,"generated",path.relative(include,from:"assets"));
+    Directory(path.join(projectPath, "generated")).createSync();
 
-      String fileText = File(path.join(projectPath,include)).readAsStringSync();
+    for (String include in includes) {
+      String pathGenerated = path.join(Engine.instance.projectPath, "generated",
+          path.relative(include, from: "assets"));
+
+      String fileText =
+          File(path.join(projectPath, include)).readAsStringSync();
       fileText = CPPParser.removeComments(fileText);
 
       var mapWithClassesProperties = CPPParser.getClassesProperties(fileText);
 
-
-      for(String className in mapWithClassesProperties.keys){
-        if(!mapWithClassesProperties[className]["inheritance"].contains("DerivedFromGameObject")) {
+      for (String className in mapWithClassesProperties.keys) {
+        if (!mapWithClassesProperties[className]["inheritance"]
+            .contains("DerivedFromGameObject")) {
           continue;
         }
         String classText = mapWithClassesProperties[className]["class_text"]!;
         int lastIndex = classText.lastIndexOf("}");
 
-        String newClassText = """${classText.substring(0,lastIndex)}
+        String newClassText = """${classText.substring(0, lastIndex)}
     void InternalSerialize(json& jsonData) {
       ${mapWithClassesProperties[className]["variables"]!.map((e) => 'jsonData["${e}"] = ${e};').toList().join("\n")}
     }
@@ -1003,82 +1011,81 @@ bool removeObjectFromParent(int64_t objectID) {
     }
 };""";
         fileText = fileText.replaceAll("$classText;", newClassText);
-
       }
-
-
-
 
       File(pathGenerated).createSync();
       File(pathGenerated).writeAsStringSync(fileText);
     }
-    
-    includes = await __findPathsToInclude(Directory(path.join(projectPath,"generated")));
 
+    includes = await __findPathsToInclude(
+        Directory(path.join(projectPath, "generated")));
 
     //adding source files to cmakelists
-    List<String> sourcesPathRelative = await __findSourcesToAdd(Directory(path.join(projectPath,"generated")));
+    List<String> sourcesPathRelative = await __findSourcesToAdd(
+        Directory(path.join(projectPath, "generated")));
 
-    File cmakeFile = File(path.join(projectPath,"CMakeLists.txt"));
+    File cmakeFile = File(path.join(projectPath, "CMakeLists.txt"));
 
     List<String> cmakeLines = cmakeFile.readAsLinesSync();
     String cmakeFileNewText = "";
     bool shouldAdd = true;
-    for(String line in cmakeLines){
-      if(line.contains("#__BEGIN__PROJECT__SOURCES__")){
+    for (String line in cmakeLines) {
+      if (line.contains("#__BEGIN__PROJECT__SOURCES__")) {
         shouldAdd = false;
       }
-      if(line.contains("#__END__PROJECT__SOURCES__")){
+      if (line.contains("#__END__PROJECT__SOURCES__")) {
         line += "   #__BEGIN__PROJECT__SOURCES__\n";
-        for(String path in sourcesPathRelative){
+        for (String path in sourcesPathRelative) {
           line += "   $path\n";
         }
         shouldAdd = true;
       }
 
-      if(shouldAdd){
+      if (shouldAdd) {
         cmakeFileNewText += line + "\n";
       }
-
     }
-  
+
     cmakeFile.writeAsStringSync(cmakeFileNewText);
 
     //finding includes
-    File bindingsFile = File(path.join(projectPath,"bindings.cpp"));
+    File bindingsFile = File(path.join(projectPath, "bindings.cpp"));
     String bindingsGeneratedData = "";
     List<String> lines = bindingsFile.readAsLinesSync();
-    for(String line in lines) {
-      
-      if(line.contains("//__INCLUDE__CREATED__CLASSES__")){
-        includes.forEach((element) { 
-          if(element == "generated/entry.h" || element == "generated\\entry.h"){
+    for (String line in lines) {
+      if (line.contains("//__INCLUDE__CREATED__CLASSES__")) {
+        includes.forEach((element) {
+          if (element == "generated/entry.h" ||
+              element == "generated\\entry.h") {
             return;
           }
           bindingsGeneratedData += '#include "${element}"\n';
         });
         continue;
       }
-      if(line.contains("//__INITIALIZE__CREATED__CLASSES__")){
+      if (line.contains("//__INITIALIZE__CREATED__CLASSES__")) {
         includes.forEach((element) {
-          if(element == "generated/entry.h" || element == "generated\\entry.h"){
+          if (element == "generated/entry.h" ||
+              element == "generated\\entry.h") {
             return;
           }
-          bindingsGeneratedData += "    ${path.basenameWithoutExtension(element)}();\n";
+          bindingsGeneratedData +=
+              "    ${path.basenameWithoutExtension(element)}();\n";
         });
         continue;
       }
       bindingsGeneratedData += line;
 
       bindingsGeneratedData += "\n";
-
     }
-    
-    File bindingsGenerated = File(path.join(projectPath,"bindings_generated.cpp"));
+
+    File bindingsGenerated =
+        File(path.join(projectPath, "bindings_generated.cpp"));
     bindingsGenerated.createSync();
     bindingsGenerated.writeAsStringSync(bindingsGeneratedData);
 
-    File bindingsGeneratedCPP = File(path.join(projectPath,"bindings_generated.h"));
+    File bindingsGeneratedCPP =
+        File(path.join(projectPath, "bindings_generated.h"));
     bindingsGeneratedCPP.createSync();
     bindingsGeneratedCPP.writeAsString("""#pragma once
 #include "engine.h"
@@ -1169,64 +1176,76 @@ extern "C" {
 
     var libPath = await TyphonCPPInterface.getLibraryPath();
     var cmakeLocationCommand = await TyphonCPPInterface.getCMakeCommand();
-    currentProcess = await Process.start(cmakeLocationCommand, ["./","-B build"],workingDirectory: projectPath,runInShell: true);
+    currentProcess = await Process.start(
+        cmakeLocationCommand, ["./", "-B build"],
+        workingDirectory: projectPath, runInShell: true);
     showDialog(
-        barrierDismissible: false,
-        context: MyApp.globalContext.currentContext!,
-        builder:(context) {
+      barrierDismissible: false,
+      context: MyApp.globalContext.currentContext!,
+      builder: (context) {
         return RecompilingDialog(
           process: currentProcess!,
           onLeaveRequest: () {
             currentProcess!.kill();
           },
         );
-      },);
+      },
+    );
 
-    if(await currentProcess?.exitCode != 0){
+    if (await currentProcess?.exitCode != 0) {
       lastCompilationResult.value = false;
       Navigator.of(MyApp.globalContext.currentContext!).pop();
       return;
     }
     Navigator.of(MyApp.globalContext.currentContext!).pop();
 
-    if(Platform.isMacOS){
+    if (Platform.isMacOS) {
+      currentProcess = await Process.start("make", [projectFilteredName],
+          runInShell: true, workingDirectory: path.join(projectPath, "build"));
 
-      currentProcess = await Process.start("make",[projectFilteredName],runInShell: true,workingDirectory: path.join(projectPath,"build"));
-      
-    showDialog(
+      showDialog(
         barrierDismissible: false,
-        context: MyApp.globalContext.currentContext!, 
-        builder:(context) {
-        return RecompilingDialog(
-          process: currentProcess!,
-          onLeaveRequest: () {
-            currentProcess!.kill();
-          },
-        );
-      },);
+        context: MyApp.globalContext.currentContext!,
+        builder: (context) {
+          return RecompilingDialog(
+            process: currentProcess!,
+            onLeaveRequest: () {
+              currentProcess!.kill();
+            },
+          );
+        },
+      );
 
-      if(await currentProcess?.exitCode != 0){
+      if (await currentProcess?.exitCode != 0) {
         lastCompilationResult.value = false;
         Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
       }
+    }
+    if (Platform.isWindows) {
+      currentProcess = await Process.start(
+          "msbuild",
+          [
+            "${projectFilteredName}.sln",
+            "/target:${projectFilteredName}",
+            "/p:Configuration=Debug"
+          ],
+          workingDirectory: path.join(projectPath, "build"),
+          runInShell: true);
 
-    } 
-    if(Platform.isWindows){
-      currentProcess = await Process.start("msbuild",["${projectFilteredName}.sln","/target:${projectFilteredName}","/p:Configuration=Debug"],workingDirectory: path.join(projectPath,"build"),runInShell: true);
-      
       showDialog(
         barrierDismissible: false,
-        context: MyApp.globalContext.currentContext!, 
-        builder:(context) {
-        return RecompilingDialog(
-          process: currentProcess!,
-          onLeaveRequest: () {
-            currentProcess!.kill();
-          },
-        );
-      },);
-      if(await currentProcess?.exitCode != 0){
+        context: MyApp.globalContext.currentContext!,
+        builder: (context) {
+          return RecompilingDialog(
+            process: currentProcess!,
+            onLeaveRequest: () {
+              currentProcess!.kill();
+            },
+          );
+        },
+      );
+      if (await currentProcess?.exitCode != 0) {
         lastCompilationResult.value = false;
         Navigator.of(MyApp.globalContext.currentContext!).pop();
         return;
@@ -1234,33 +1253,35 @@ extern "C" {
     }
     Navigator.of(MyApp.globalContext.currentContext!).pop();
     lastCompilationResult.value = true;
-    
+
     loadProjectLibrary();
 
-    
     onRecompileNotifier.value++;
-        
-    
   }
 
   Future<TyphonBindings?> loadProjectLibrary() async {
-    return await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(projectPath,"build",
-      Platform.isMacOS ? "lib${projectFilteredName}.dylib" : Platform.isWindows? "Debug/${projectFilteredName}.dll" : "" //TODO!
-    ));
+    return await TyphonCPPInterface.initializeLibraryAndGetBindings(path.join(
+        projectPath,
+        "build",
+        Platform.isMacOS
+            ? "lib${projectFilteredName}.dylib"
+            : Platform.isWindows
+                ? "Debug/${projectFilteredName}.dll"
+                : "" //TODO!
+        ));
   }
 
   Future<void> loadAtlasImage() async {
-    File atlasImageFile = File(path.join(projectPath,"build","texture_atlas","atlas0.png"));
-    if(!atlasImageFile.existsSync()){
+    File atlasImageFile =
+        File(path.join(projectPath, "build", "texture_atlas", "atlas0.png"));
+    if (!atlasImageFile.existsSync()) {
       print("could not load atlas image!");
-    }
-    else {
-      
+    } else {
       Uint8List bytes = await atlasImageFile.readAsBytes();
-      atlasImage = (await (await instantiateImageCodec(bytes)).getNextFrame()).image;
+      atlasImage =
+          (await (await instantiateImageCodec(bytes)).getNextFrame()).image;
       print("loaded atlas image!");
     }
-
   }
 
   /* @override
@@ -1289,27 +1310,35 @@ extern "C" {
   }  */
 
   Future<void> waitingForInitialization() async {
-    while(true) {
-      if(isInitialized) {
+    while (true) {
+      if (isInitialized) {
         return;
       }
       await Future.delayed(Duration(milliseconds: 100));
     }
   }
 
-  static void enqueueRender(double x,double y, int width,int height, int imageX, int imageY,double anchorX,double anchorY,double scale,double angle) {
-    
+  static void enqueueRender(
+      double x,
+      double y,
+      int width,
+      int height,
+      int imageX,
+      int imageY,
+      double anchorX,
+      double anchorY,
+      double scale,
+      double angle) {
     renderingObjects.add(EngineRenderingDataFromAtlas(
-      width: width,
-      height: height,
-      position: Vector2(x,y),
-      imageX: imageX,
-      imageY: imageY,
-      anchorX: anchorX,
-      anchorY: anchorX,
-      scale: scale,
-      angle: angle
-    ));
+        width: width,
+        height: height,
+        position: Vector2(x, y),
+        imageX: imageX,
+        imageY: imageY,
+        anchorX: anchorX,
+        anchorY: anchorX,
+        scale: scale,
+        angle: angle));
   }
 
   /* @override
@@ -1354,5 +1383,4 @@ extern "C" {
     }
 
   } */
-
 }

@@ -104,6 +104,8 @@ if not os.path.exists("src/vendor/glm"):
     os.system('git clone --recursive https://github.com/g-truc/glm src/vendor/glm')
 if not os.path.exists("src/vendor/json"):
     os.system('git clone --recursive https://github.com/nlohmann/json src/vendor/json')
+if not os.path.exists("src/vendor/igl"):
+        os.system('git clone --recursive https://github.com/facebook/igl/ src/vendor/igl')    
 if not os.path.exists("src/vendor/crunch"):
     os.system('git clone --recursive https://github.com/johnfredcee/crunch src/vendor/crunch')
 
@@ -234,7 +236,12 @@ for root in roots:
     path = os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")).replace("\\","/")
     paths_to_add_to_pubspec.append(f'    - assets/lib/src/{path}/')
 
+
+
 os.chdir(current_dir)
+
+for file in os.listdir("assets/lib/auxiliary_libraries"):
+    paths_to_add_to_pubspec.append(f'    - assets/lib/auxiliary_libraries/{file}')
 
 pubspecNew = ""
 with open("pubspec.yaml",'r') as f:

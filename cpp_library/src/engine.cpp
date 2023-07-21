@@ -9,72 +9,65 @@
 namespace fs = std::filesystem;
 
 Vector2f Engine::mousePosition;
-std::map<std::string,TextureAtlasImageProperties> Engine::textureAtlas;
+std::map<std::string, TextureAtlasImageProperties> Engine::textureAtlas;
 std::bitset<std::size(Keys::IndicesOfKeys)> EngineInternals::keysPressed;
-std::function<void(double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double)> EngineInternals::enqueueRenderFunc = [](double,double,int64_t,int64_t,int64_t,int64_t,double,double,double,double){};
-std::function<void()> EngineInternals::onChildrenChangedFunc = [](){};
+std::function<void(double, double, int64_t, int64_t, int64_t, int64_t, double, double, double, double)> EngineInternals::enqueueRenderFunc = [](double, double, int64_t, int64_t, int64_t, int64_t, double, double, double, double) {};
+std::function<void()> EngineInternals::onChildrenChangedFunc = []() {};
 bool Engine::isInitialized = false;
 
 void Engine::Initialize()
-{   
+{
     std::cout << "initializing engine!" << std::endl;
-    if(isInitialized){
+    if (isInitialized)
+    {
         Engine::Unload();
     }
 
-    
-    for(auto& [key,func] : Reflection::InitializedStaticallyStorage::functionsFromDerivedClasses){
+    for (auto &[key, func] : Reflection::InitializedStaticallyStorage::functionsFromDerivedClasses)
+    {
         func();
     }
 
-
-    #ifndef __TYPHON_TESTING__
+#ifndef __TYPHON_TESTING__
     ShaderCompiler::Initialize();
-    #endif
-        
+#endif
 
     textureAtlas = CreateTextureAtlasFromImages();
-    
+
     RenderingEngine::InitializeEngine();
     RenderingEngine::SetUpdateFunction(&Engine::Update);
-    
+
     Engine::isInitialized = true;
 }
 
 void Engine::Unload()
-{   
+{
 
     RenderingEngine::UnloadEngine();
-    std::cout << "Here!" << std::endl;
-    #ifndef __TYPHON_TESTING__
+#ifndef __TYPHON_TESTING__
     ShaderCompiler::Unload();
-    #endif
-    std::cout << "Here again!" << std::endl;
-        
+#endif
 
     Clear();
 
-    std::cout << "Another time!" << std::endl;
-
-    
     Engine::isInitialized = false;
-    
-    std::cout << "Unloaded Engine!" << std::endl;
 }
 
 std::vector<std::string> Engine::GetImagePathsFromLibrary()
 {
     std::vector<std::string> inputs;
-    try {
+    try
+    {
 
-        for(const auto& file : fs::directory_iterator(
-            fs::path(HelperStatics::projectPath) / fs::path("build") / fs::path("images")))
-        {            
+        for (const auto &file : fs::directory_iterator(
+                 fs::path(HelperStatics::projectPath) / fs::path("build") / fs::path("images")))
+        {
             inputs.push_back(file.path().string());
         }
     }
-    catch(exception& e) {
-        //std::cout << "Error found while loading image paths from library:\n" << e.what() << std::endl;
+    catch (exception &e)
+    {
+        // std::cout << "Error found while loading image paths from library:\n" << e.what() << std::endl;
     }
     return inputs;
 }
@@ -83,7 +76,8 @@ const std::map<std::string, TextureAtlasImageProperties> &Engine::GetTextureAtla
 {
     return textureAtlas;
 }
-void EngineInternals::SetMousePosition(Vector2f mousePos)  {
+void EngineInternals::SetMousePosition(Vector2f mousePos)
+{
     Engine::mousePosition = mousePos;
 }
 
@@ -98,13 +92,14 @@ std::string Engine::GetPathToAtlas()
 
 void Engine::Update(double dt)
 {
+
     /* for(const auto& [handle,func] : Traits::HasUpdate<Reflection::NullClassHelper>::objectsThatNeedUpdate) {
         func(dt);
     }  */
 
     /* for(const auto& [handle,spriteData] : Traits::UsesSpriteAnimationInternals::objectsToBeRendered) {
         auto& properties = Engine::textureAtlas[spriteData.objectPointer->className];
-        
+
         double anchorX,anchorY;
 
         if(spriteData.anchor->type == "TopLeft") {
@@ -164,14 +159,14 @@ void Engine::Update(double dt)
             *spriteData.angle
         );
     } */
-
 }
 
 void EngineInternals::PushKeyDown(int64_t key)
-{      
-    auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(),Keys::IndicesOfKeys.end(),key);
-    
-    if(indexOfKey == Keys::IndicesOfKeys.end()){
+{
+    auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(), Keys::IndicesOfKeys.end(), key);
+
+    if (indexOfKey == Keys::IndicesOfKeys.end())
+    {
         std::cout << "tried to push a key into the keys pressed stack with a wrong id!" << std::endl;
     }
     keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()] = 1;
@@ -179,9 +174,10 @@ void EngineInternals::PushKeyDown(int64_t key)
 
 void EngineInternals::PushKeyUp(int64_t key)
 {
-    auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(),Keys::IndicesOfKeys.end(),key);
-    
-    if(indexOfKey == Keys::IndicesOfKeys.end()){
+    auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(), Keys::IndicesOfKeys.end(), key);
+
+    if (indexOfKey == Keys::IndicesOfKeys.end())
+    {
         std::cout << "tried to push a key into the keys pressed stack with a wrong id!" << std::endl;
     }
     keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()] = 0;
@@ -189,21 +185,22 @@ void EngineInternals::PushKeyUp(int64_t key)
 
 bool Engine::IsKeyPressed(Keys::Key key)
 {
-    auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(),Keys::IndicesOfKeys.end(),key);
-    
+    auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(), Keys::IndicesOfKeys.end(), key);
+
     return EngineInternals::keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()];
 }
 
-std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFromImages()
+std::map<std::string, TextureAtlasImageProperties> Engine::CreateTextureAtlasFromImages()
 {
     std::vector<std::string> inputs = Engine::GetImagePathsFromLibrary();
-    
-    if(inputs.size() == 0){
+
+    if (inputs.size() == 0)
+    {
         return {};
     }
-    
-    Crunch::PackFromFolder(inputs,GetPathToAtlas(),"atlas",Crunch::CrunchOptions::optVerbose | Crunch::CrunchOptions::optJson);
-    
+
+    Crunch::PackFromFolder(inputs, GetPathToAtlas(), "atlas", Crunch::CrunchOptions::optVerbose | Crunch::CrunchOptions::optJson);
+
     std::ifstream stream(GetPathToAtlas() + "atlas.json");
 
     std::stringstream sstream;
@@ -212,71 +209,77 @@ std::map<std::string,TextureAtlasImageProperties> Engine::CreateTextureAtlasFrom
 
     std::string sstreamRead = sstream.str();
 
-    HelperFunctions::ReplaceAll(sstreamRead,"\\","\\\\");
+    HelperFunctions::ReplaceAll(sstreamRead, "\\", "\\\\");
 
-    try {
+    try
+    {
 
-    json data = json::parse(sstreamRead);
+        json data = json::parse(sstreamRead);
 
-    std::map<std::string,TextureAtlasImageProperties> outMap;
+        std::map<std::string, TextureAtlasImageProperties> outMap;
 
-    for(auto& texture : data["textures"][0]["images"]){
-        outMap[texture["n"]] = TextureAtlasImageProperties(
-            texture["n"].get<std::string>(),
-            texture["w"].get<int>(),
-            texture["h"].get<int>(),
-            texture["x"].get<int>(),
-            texture["y"].get<int>()
-        );
+        for (auto &texture : data["textures"][0]["images"])
+        {
+            outMap[texture["n"]] = TextureAtlasImageProperties(
+                texture["n"].get<std::string>(),
+                texture["w"].get<int>(),
+                texture["h"].get<int>(),
+                texture["x"].get<int>(),
+                texture["y"].get<int>());
+        }
+
+        return outMap;
     }
+    catch (std::exception &e)
+    {
 
-    return outMap;
-    }
-    catch(std::exception& e) {
-
-        std::cout << "Error found while loading atlas:\n" << e.what()<<std::endl;
+        std::cout << "Error found while loading atlas:\n"
+                  << e.what() << std::endl;
 
         return {};
     }
-
 }
 
-
-std::string Engine::SerializeCurrent() {
+std::string Engine::SerializeCurrent()
+{
 
     return Engine::SerializeCurrentJSON().dump();
 }
 
-json Engine::SerializeCurrentJSON() {
+json Engine::SerializeCurrentJSON()
+{
     json finalData = json();
 
-    //TODO
+    // TODO
 
     return finalData;
 }
 
-bool Engine::DeserializeToCurrent(std::string scene) {
+bool Engine::DeserializeToCurrent(std::string scene)
+{
 
-    try{
+    try
+    {
         json sceneData = json::parse(scene);
 
-        //TODO
+        // TODO
 
         return true;
     }
-    catch(std::exception& e) {
-        std::cout << "Error while deserializing to current engine:\n" << e.what() << std::endl;
+    catch (std::exception &e)
+    {
+        std::cout << "Error while deserializing to current engine:\n"
+                  << e.what() << std::endl;
         return false;
     }
-
-
 }
 
-
-Typhon::Object Engine::CreateObject(std::string name) {
+Typhon::Object Engine::CreateObject(std::string name)
+{
     Typhon::Object obj{ECSRegistry::CreateEntity()};
     obj.AddComponent<Transform>();
-    if(name != ""){
+    if (name != "")
+    {
         obj.SetName(name);
         obj.AddTag<ObjectInternals::ParentlessTag>();
         EngineInternals::onChildrenChangedFunc();

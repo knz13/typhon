@@ -47,7 +47,7 @@ SET(FETCHCONTENT_QUIET FALSE)
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/random)
     
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/glm)
-    
+        
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/crunch)
         
     if(APPLE)
@@ -75,7 +75,13 @@ SET(FETCHCONTENT_QUIET FALSE)
     
 
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/crunch/crunch/)
+
+    
+
+
     list(APPEND typhon_LIBRARIES libcrunch)
+
+
 
 
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/json/single_include)

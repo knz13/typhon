@@ -1,5 +1,7 @@
 #include "exports.h"
 #include "shader_compiler.h"
+#include <filesystem>
+
 
 CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::string shaderName, int64_t shaderType)
 {
@@ -46,3 +48,4 @@ CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::str
 
     return result;
 }
+

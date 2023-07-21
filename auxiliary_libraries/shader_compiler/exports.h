@@ -30,8 +30,11 @@ struct CompilationResult
 extern "C"
 {
 #endif
+   
 
     FFI_PLUGIN_EXPORT CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::string shaderName, int64_t shaderType);
+   
+
 
 #ifdef __cplusplus
 }
