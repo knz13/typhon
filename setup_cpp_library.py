@@ -290,6 +290,7 @@ with open("cpp_library/src/typhon.h",'r') as f:
 
 prefabs = []
 components = []
+auxiliary_libraries = []
 for root, dirs, files in os.walk("cpp_library/src"):
     if "vendor" in root:
         continue
@@ -304,10 +305,13 @@ for root, dirs, files in os.walk("cpp_library/src"):
                     components.append((klass,os.path.relpath(file_path,"cpp_library/src")))
                 if "Prefab" in classes[klass]["inheritance"]:
                     prefabs.append((klass,os.path.relpath(file_path,"cpp_library/src")))
+                if "AuxiliaryLibrary" in classes[klass]["inheritance"]:
+                    auxiliary_libraries.append((klass,os.path.relpath(file_path,"cpp_library/src")))
         except Exception as e:
             print(f"Couldn't open {file_path}: {e}")
 print(f'PREFABS FOUND: {prefabs}')
 print(f'COMPONENTS FOUND: {components}')
+print(f'AUXILIARY LIBRARIES C++ INTERFACES FOUND: {auxiliary_libraries}')
 
 
 
@@ -330,15 +334,25 @@ with open("cpp_library/src/typhon.cpp",'r') as f:
             for component in components:
                 cpp_exports_impl += f'#include "{component[1]}"\n'
 
+            cpp_exports_impl += f'\n//including internal auxiliary libraries\n'
+            for lib in auxiliary_libraries:
+                cpp_exports_impl += f'#include "{lib[1]}"\n'
+
             continue
         if "//__INITIALIZE__INTERNALS__STATICALLY__" in line:
             cpp_exports_impl += f'\n    //initializing prefabs!\n'
             for prefab in prefabs:
                 cpp_exports_impl += f'    {prefab[0]}();\n'
+
             cpp_exports_impl += f'\n    //initializing internal components!\n'
             for component in components:
                 cpp_exports_impl += f'    {component[0]}();\n'
+                
+            cpp_exports_impl += f'\n//initializing internal auxiliary libraries!\n'
+            for lib in auxiliary_libraries:
+                cpp_exports_impl += f'    {lib[0]}();\n'
             continue
+        
         if shouldAddLine:
             cpp_exports_impl += line + "\n"
 

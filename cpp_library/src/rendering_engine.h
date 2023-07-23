@@ -1,6 +1,6 @@
 #pragma once
 #include "general.h"
-#include "shader_compiler.h"
+#include "auxiliary_libraries/shader_compiler.h"
 #include <chrono>
 
 struct RenderPassData

@@ -1,6 +1,6 @@
 #pragma once
 #include "general.h"
-#include "auxiliary_libraries_helpers/auxiliary_library.h"
+#include "../auxiliary_libraries_helpers/auxiliary_library.h"
 
 struct ShaderCompilationResult
 {
@@ -31,19 +31,17 @@ enum class ShaderType
 class ShaderCompiler : public AuxiliaryLibrary<ShaderCompiler>
 {
 public:
-    void InitializeLibrary()
+    static void InitializeLibrary()
     {
-
-       
     }
 
-    std::string GetLibraryName() {
+    static std::string GetLibraryName()
+    {
         return "shader_compiler";
     }
 
-    void UnloadLibrary()
+    static void UnloadLibrary()
     {
-        
     }
 
     static ShaderCompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::string shaderName, ShaderType type)
@@ -54,7 +52,7 @@ public:
             return {};
         }
 
-        auto func = shaderCompilerLib.get()->get_function<CompilationResult(std::string, std::string, int64_t)>("CompileGLSLToPlatformSpecific");
+        auto func = GetLibrary()->get_function<CompilationResult(std::string, std::string, int64_t)>("CompileGLSLToPlatformSpecific");
 
         if (func == nullptr)
         {
@@ -79,7 +77,4 @@ public:
 
         return res;
     }
-
-private:
-    static std::shared_ptr<dylib> shaderCompilerLib;
 };

@@ -85,9 +85,11 @@ flutter:
     - assets/lib/src/./
     - assets/lib/src/ui/
     - assets/lib/src/macos/
+    - assets/lib/src/auxiliary_libraries_helpers/
     - assets/lib/src/component/
     - assets/lib/src/component/default_components/
     - assets/lib/src/object/
+    - assets/lib/src/auxiliary_libraries/
     - assets/lib/src/prefab/
     - assets/lib/src/prefab/defaults/
     - assets/lib/src/vendor/

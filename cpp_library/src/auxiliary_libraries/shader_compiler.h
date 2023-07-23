@@ -1,5 +1,6 @@
 #pragma once
 #include "general.h"
+#include "../auxiliary_libraries_helpers/auxiliary_library.h"
 
 struct ShaderCompilationResult
 {
@@ -27,40 +28,31 @@ enum class ShaderType
     Fragment = 1
 };
 
-class ShaderCompiler
+class ShaderCompiler : public AuxiliaryLibrary<ShaderCompiler>
 {
 public:
-    static void Initialize()
+    static void InitializeLibrary()
     {
-
-        try
-        {
-            shaderCompilerLib = std::make_shared<dylib>((std::filesystem::path(HelperStatics::projectPath) / std::filesystem::path("build")).string(), "shader_compiler");
-            std::cout << "Loaded Shader Compiler Lib!" << std::endl;
-        }
-        catch (std::exception &e)
-        {
-            std::cout << "Could not load dynamic library:\n"
-                      << e.what() << std::endl;
-            shaderCompilerLib.reset();
-        }
     }
 
-    static void Unload()
+    static std::string GetLibraryName()
     {
-        std::cout << "Reseting shader compiler!" << std::endl;
-        shaderCompilerLib.reset();
+        return "shader_compiler";
+    }
+
+    static void UnloadLibrary()
+    {
     }
 
     static ShaderCompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::string shaderName, ShaderType type)
     {
         std::cout << "Compiling shader!" << std::endl;
-        if (!shaderCompilerLib)
+        if (!LibraryLoaded())
         {
             return {};
         }
 
-        auto func = shaderCompilerLib.get()->get_function<CompilationResult(std::string, std::string, int64_t)>("CompileGLSLToPlatformSpecific");
+        auto func = GetLibrary()->get_function<CompilationResult(std::string, std::string, int64_t)>("CompileGLSLToPlatformSpecific");
 
         if (func == nullptr)
         {
@@ -85,7 +77,4 @@ public:
 
         return res;
     }
-
-private:
-    static std::shared_ptr<dylib> shaderCompilerLib;
 };

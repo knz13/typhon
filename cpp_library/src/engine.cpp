@@ -5,6 +5,7 @@
 #include "rendering_engine.h"
 #include "component/make_component.h"
 #include "component/default_components/transform.h"
+#include "auxiliary_libraries_helpers/auxiliary_library.h"
 
 namespace fs = std::filesystem;
 
@@ -28,9 +29,10 @@ void Engine::Initialize()
         func();
     }
 
-#ifndef __TYPHON_TESTING__
-    ShaderCompiler::Initialize();
-#endif
+    for (auto func : AuxiliaryLibrariesInternals::initializeFunctions)
+    {
+        func();
+    }
 
     textureAtlas = CreateTextureAtlasFromImages();
 
@@ -44,9 +46,11 @@ void Engine::Unload()
 {
 
     RenderingEngine::UnloadEngine();
-#ifndef __TYPHON_TESTING__
-    ShaderCompiler::Unload();
-#endif
+
+    for (auto func : AuxiliaryLibrariesInternals::unloadFunctions)
+    {
+        func();
+    }
 
     Clear();
 
