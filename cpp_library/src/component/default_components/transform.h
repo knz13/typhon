@@ -1,20 +1,25 @@
 #pragma once
 #include "../make_component.h"
 
-
-class Transform : public MakeComponent<Transform> { 
+class Transform : public MakeComponent<Transform>, Internals::DefaultComponent<Transform>
+{
 public:
-    UIBuilder BuildEditorUI() {
+    std::string GetComponentMenuPath() override
+    {
+        return "Miscellaneous/Transform";
+    }
+
+    UIBuilder BuildEditorUI()
+    {
         UIBuilder builder;
 
         builder.DefineFields()
-            .AddVectorField("Position",position)
-            .AddVectorField("Rotation",rotation)
-            .AddVectorField("Scale",scale);
-        
+            .AddVectorField("Position", position)
+            .AddVectorField("Rotation", rotation)
+            .AddVectorField("Scale", scale);
+
         return builder;
     };
-    
 
     Vector3f position;
     Vector3f rotation;

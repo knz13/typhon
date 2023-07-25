@@ -32,6 +32,9 @@ void buildInspectorPanelFromComponent(
     ));
     newWidgets.add(blackSpacer());
   }
+
+  
+
   InspectorPanelWindow.data.value = InspectorPanelData(
       dataToShow: newWidgets,
       objectID: obj.objectID,

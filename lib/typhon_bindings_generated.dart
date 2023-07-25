@@ -229,6 +229,16 @@ class TyphonBindings {
   late final _getInstantiableClasses =
       _getInstantiableClassesPtr.asFunction<ffi.Pointer<ffi.Char> Function()>();
 
+  ffi.Pointer<ffi.Char> getInstantiableComponents() {
+    return _getInstantiableComponents();
+  }
+
+  late final _getInstantiableComponentsPtr =
+      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Char> Function()>>(
+          'getInstantiableComponents');
+  late final _getInstantiableComponents = _getInstantiableComponentsPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function()>();
+
   bool isEngineInitialized() {
     return _isEngineInitialized();
   }
@@ -400,6 +410,22 @@ class TyphonBindings {
       'loadModelFromPath');
   late final _loadModelFromPath = _loadModelFromPathPtr
       .asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
+
+  void addComponentToObject(
+    int objectID,
+    int componentClassID,
+  ) {
+    return _addComponentToObject(
+      objectID,
+      componentClassID,
+    );
+  }
+
+  late final _addComponentToObjectPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64, ffi.Int64)>>(
+          'addComponentToObject');
+  late final _addComponentToObject =
+      _addComponentToObjectPtr.asFunction<void Function(int, int)>();
 }
 
 typedef EnqueueObjectRender = ffi.Pointer<

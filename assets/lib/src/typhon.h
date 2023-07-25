@@ -42,6 +42,7 @@ extern "C"
     FFI_PLUGIN_EXPORT void unloadLibrary();
     FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
     FFI_PLUGIN_EXPORT char *getInstantiableClasses();
+    FFI_PLUGIN_EXPORT char *getInstantiableComponents();
     FFI_PLUGIN_EXPORT bool isEngineInitialized();
     FFI_PLUGIN_EXPORT AliveObjectsArray getAliveParentlessObjects();
     FFI_PLUGIN_EXPORT const char *getObjectNameByID(int64_t id);
@@ -54,6 +55,7 @@ extern "C"
     FFI_PLUGIN_EXPORT bool removeObjectFromParent(int64_t objectID);
     FFI_PLUGIN_EXPORT char *getContextMenuForFilePath(const char *filePath, int64_t size);
     FFI_PLUGIN_EXPORT void loadModelFromPath(const char *filePath, int64_t size);
+    FFI_PLUGIN_EXPORT void addComponentToObject(int64_t objectID,int64_t componentClassID);
 
     //__END__CPP__EXPORTS__
 

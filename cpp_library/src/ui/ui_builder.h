@@ -1,27 +1,29 @@
 #pragma once
 #include "ui_element.h"
 
-
-
-class UIBuilder {
+class UIBuilder
+{
 public:
-    UIBuilder() : elementOnJSON(json::object()) {
+    UIBuilder() : elementOnJSON(json::object())
+    {
+        elementOnJSON["fields"] = json::array();
     }
 
-    UIElement DefineFields() {
-        elementOnJSON["fields"] = json::array();
+    UIElement DefineFields()
+    {
         return UIElement(elementOnJSON["fields"]);
     };
 
-    void SetName(std::string name) {
+    void SetName(std::string name)
+    {
         elementOnJSON["component_name"] = name;
     }
 
-    json& GetJSON() {
+    json &GetJSON()
+    {
         return elementOnJSON;
     }
 
 private:
     json elementOnJSON;
-
 };

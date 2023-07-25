@@ -55,7 +55,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
       height: 50,
       decoration: BoxDecoration(
           color: selectedOptionSideMenu == tile.idx
-              ? Config.activeColor
+              ? ConfigColors.activeColor
               : Colors.transparent,
           borderRadius: BorderRadius.circular(5)),
       child: Center(
@@ -237,11 +237,11 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                             fontWeight: FontWeight.w600),
                                         decoration: InputDecoration(
                                           icon: Icon(Icons.search,
-                                              color: Config.searchColor),
+                                              color: ConfigColors.searchColor),
                                           hintText: "Search all templates",
                                           hoverColor: Colors.white,
                                           hintStyle: TextStyle(
-                                              color: Config.searchColor),
+                                              color: ConfigColors.searchColor),
                                           border: InputBorder.none,
                                         ),
                                         cursorColor: Colors.white,
@@ -424,8 +424,8 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                                                 .white38)),
                                                     hoverColor: Colors.white,
                                                     hintStyle: TextStyle(
-                                                        color:
-                                                            Config.searchColor),
+                                                        color: ConfigColors
+                                                            .searchColor),
                                                     border: InputBorder.none,
                                                   ),
                                                   cursorColor: Colors.white,
@@ -515,7 +515,7 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                               height: 40,
                               width: 100,
                               decoration: BoxDecoration(
-                                  color: Config.activeColor,
+                                  color: ConfigColors.activeColor,
                                   borderRadius: BorderRadius.circular(4)),
                               child: const Center(
                                 child: Text(
@@ -601,7 +601,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
       height: 60,
       decoration: BoxDecoration(
           color: selectedOptionSideMenu == tile.idx
-              ? Config.activeColor
+              ? ConfigColors.activeColor
               : Colors.transparent,
           borderRadius: BorderRadius.circular(5)),
       child: Center(
@@ -630,7 +630,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
           Expanded(
             flex: 3,
             child: Container(
-              color: Config.primaryBlack,
+              color: ConfigColors.primaryBlack,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -659,7 +659,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                       height: 40,
                                       width: 80,
                                       decoration: BoxDecoration(
-                                          color: Config.activeColor,
+                                          color: ConfigColors.activeColor,
                                           borderRadius:
                                               const BorderRadius.horizontal(
                                                   left: Radius.circular(3))),
@@ -681,7 +681,7 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                       height: 40,
                                       width: 40,
                                       decoration: BoxDecoration(
-                                          color: Config.activeColor,
+                                          color: ConfigColors.activeColor,
                                           borderRadius:
                                               const BorderRadius.horizontal(
                                                   right: Radius.circular(3))),
@@ -876,7 +876,7 @@ class ProjectListItem extends StatelessWidget {
       flex: flex ?? 1,
       child: Container(
         decoration: BoxDecoration(
-          color: Config.primaryBlack.withAlpha(0),
+          color: ConfigColors.primaryBlack.withAlpha(0),
         ),
         child: Padding(
             padding: EdgeInsets.all(10),
@@ -910,8 +910,8 @@ class ProjectHeaderItem extends StatelessWidget {
     return Expanded(
       flex: flex ?? 1,
       child: Container(
-        decoration:
-            BoxDecoration(color: Config.activeColor, border: Border.all()),
+        decoration: BoxDecoration(
+            color: ConfigColors.activeColor, border: Border.all()),
         child: Padding(
             padding: EdgeInsets.all(10),
             child: GeneralText(

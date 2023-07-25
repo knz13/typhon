@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:collection';
@@ -18,8 +12,7 @@ import 'package:typhon/main.dart';
 import 'general_widgets/general_widgets.dart';
 
 class RecompilingDialog extends StatefulWidget {
-
-  RecompilingDialog({required this.process,this.onLeaveRequest});
+  RecompilingDialog({required this.process, this.onLeaveRequest});
 
   Process process;
   void Function()? onLeaveRequest;
@@ -31,8 +24,8 @@ class RecompilingDialog extends StatefulWidget {
 class RecompilingMessage {
   String message;
   String type;
-    
-  RecompilingMessage({this.message ="",this.type = ""});
+
+  RecompilingMessage({this.message = "", this.type = ""});
 }
 
 class _RecompilingDialogState extends State<RecompilingDialog> {
@@ -41,53 +34,54 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
   bool moveFreely = false;
 
   void stdOutEvent(event) {
-      if(mounted) {
-        setState(() {
-        currentMessage.addLast(RecompilingMessage(message: String.fromCharCodes(event),type: "LOG"));
-        if(!moveFreely){
+    if (mounted) {
+      setState(() {
+        currentMessage.addLast(RecompilingMessage(
+            message: String.fromCharCodes(event), type: "LOG"));
+        if (!moveFreely) {
           controller.animateTo(
-              controller.position.maxScrollExtent,
-              curve: Curves.easeOut,
-              duration: const Duration(milliseconds: 1),
+            controller.position.maxScrollExtent,
+            curve: Curves.easeOut,
+            duration: const Duration(milliseconds: 1),
           );
         }
       });
-      }
+    }
   }
 
   void stdErrEvent(event) {
-      if(mounted) {
-        setState(() {
-        currentMessage.addLast(RecompilingMessage(message: String.fromCharCodes(event),type: "ERROR"));
-        if(!moveFreely){
+    if (mounted) {
+      setState(() {
+        currentMessage.addLast(RecompilingMessage(
+            message: String.fromCharCodes(event), type: "ERROR"));
+        if (!moveFreely) {
           controller.animateTo(
-              controller.position.maxScrollExtent,
-              curve: Curves.easeOut,
-              duration: const Duration(milliseconds: 1),
+            controller.position.maxScrollExtent,
+            curve: Curves.easeOut,
+            duration: const Duration(milliseconds: 1),
           );
         }
       });
-      }
+    }
   }
-
-  
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    
+
     widget.process.stdout.listen(stdOutEvent);
-    
+
     widget.process.exitCode.then((value) {
-      if(value != 0){
+      if (value != 0) {
         String value = "";
-        for(int i in List.generate(currentMessage.length > 30 ? 30 : currentMessage.length, (index) => currentMessage.length - index - 1)){
-            value += currentMessage.elementAt(i).message;
+        for (int i in List.generate(
+            currentMessage.length > 30 ? 30 : currentMessage.length,
+            (index) => currentMessage.length - index - 1)) {
+          value += currentMessage.elementAt(i).message;
         }
-        if(value != ""){
-          ConsolePanel.show(value,level: ConsolePanelLevel.error);
+        if (value != "") {
+          ConsolePanel.show(value, level: ConsolePanelLevel.error);
         }
       }
     });
@@ -102,7 +96,7 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
     super.dispose();
   }
 
-  Widget dialogBodyContent(String title){
+  Widget dialogBodyContent(String title) {
     return Column(
       children: [
         Padding(
@@ -110,16 +104,18 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
           child: Row(
             children: [
               Expanded(
-                flex:1,
+                flex: 1,
                 child: GeneralButton(
-                  onPressed: widget.onLeaveRequest ?? (){},
+                  onPressed: widget.onLeaveRequest ?? () {},
                   child: Icon(Icons.close),
                 ),
               ),
               Expanded(
-                flex:9,
-                child: GeneralText(title,alignment: TextAlign.center,)
-              ),
+                  flex: 9,
+                  child: GeneralText(
+                    title,
+                    alignment: TextAlign.center,
+                  )),
               Expanded(
                 flex: 1,
                 child: GeneralButton(
@@ -128,7 +124,9 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
                       moveFreely = !moveFreely;
                     });
                   },
-                  child: moveFreely? Icon(Icons.lock_open_outlined) : Icon(Icons.lock_outline),
+                  child: moveFreely
+                      ? Icon(Icons.lock_open_outlined)
+                      : Icon(Icons.lock_outline),
                 ),
               )
             ],
@@ -138,7 +136,7 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
           children: [
             Expanded(
               child: Container(
-                color: Config.primaryBlack,
+                color: ConfigColors.primaryBlack,
                 height: 2,
               ),
             ),
@@ -146,11 +144,17 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
         ),
         Expanded(
           child: ListView.builder(
-            physics: moveFreely? null : const NeverScrollableScrollPhysics(),
+            physics: moveFreely ? null : const NeverScrollableScrollPhysics(),
             controller: controller,
-            itemBuilder:(context, index) {
+            itemBuilder: (context, index) {
               return ListTile(
-                title: GeneralText(currentMessage.elementAt(index).message,color: currentMessage.elementAt(index).type == "LOG"? platinumGray : Colors.red,overflow: TextOverflow.visible,),
+                title: GeneralText(
+                  currentMessage.elementAt(index).message,
+                  color: currentMessage.elementAt(index).type == "LOG"
+                      ? platinumGray
+                      : Colors.red,
+                  overflow: TextOverflow.visible,
+                ),
               );
             },
             itemCount: currentMessage.length,
@@ -160,19 +164,18 @@ class _RecompilingDialogState extends State<RecompilingDialog> {
     );
   }
 
-
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Dialog(
       child: Container(
         width: 375,
         height: 400,
         decoration: BoxDecoration(
-          color: Config.activeColor.withOpacity(0.5),
+          color: ConfigColors.activeColor.withOpacity(0.5),
           borderRadius: BorderRadius.circular(3),
           boxShadow: [
             BoxShadow(
-              color: Config.activeColor,
+              color: ConfigColors.activeColor,
               blurRadius: 1,
             ),
             const BoxShadow(

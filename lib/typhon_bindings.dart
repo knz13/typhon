@@ -8,11 +8,12 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/general_widgets/general_widgets.dart';
+import 'package:typhon/inspector_panel/inspector_panel.dart';
 import 'package:typhon/native_context_menu/native_context_menu.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
 class TyphonCPPInterface {
-  static List<ContextMenuOption> _buildMenuOptionsFromJson(
+  static List<ContextMenuOption> _buildMenuOptionsForPrefabFromJSON(
       Map<String, dynamic> map) {
     List<ContextMenuOption> options = [];
 
@@ -21,7 +22,7 @@ class TyphonCPPInterface {
         title: key,
         enabled: true,
         subOptions: value is Map<String, dynamic>
-            ? _buildMenuOptionsFromJson(value)
+            ? _buildMenuOptionsForPrefabFromJSON(value)
             : null,
         callback: value is Map<String, dynamic>
             ? null
@@ -38,6 +39,32 @@ class TyphonCPPInterface {
     return options;
   }
 
+  static List<ContextMenuOption> _buildMenuOptionsForComponentsFromJSON(
+      Map<String, dynamic> map) {
+    List<ContextMenuOption> options = [];
+
+    map.forEach((key, value) {
+      ContextMenuOption option = ContextMenuOption(
+        title: key,
+        enabled: true,
+        subOptions: value is Map<String, dynamic>
+            ? _buildMenuOptionsForComponentsFromJSON(value)
+            : null,
+        callback: value is Map<String, dynamic>
+            ? null
+            : () {
+                if (TyphonCPPInterface.checkIfLibraryLoaded()) {
+                  TyphonCPPInterface.getCppFunctions().addComponentToObject(
+                      InspectorPanelWindow.data.value.objectID!, value);
+                }
+              },
+      );
+      options.add(option);
+    });
+
+    return options;
+  }
+
   static List<ContextMenuOption> getPrefabsContextMenuOptions() {
     return TyphonCPPInterface.checkIfLibraryLoaded()
         ? (() {
@@ -45,7 +72,19 @@ class TyphonCPPInterface {
                 TyphonCPPInterface.getCppFunctions().getInstantiableClasses();
             String jsonClasses = ptr.cast<Utf8>().toDartString();
             Map<String, dynamic> map = jsonDecode(jsonClasses);
-            return _buildMenuOptionsFromJson(map);
+            return _buildMenuOptionsForPrefabFromJSON(map);
+          })()
+        : [];
+  }
+
+  static List<ContextMenuOption> getComponentsContextMenuOptions() {
+    return TyphonCPPInterface.checkIfLibraryLoaded()
+        ? (() {
+            Pointer<Char> ptr = TyphonCPPInterface.getCppFunctions()
+                .getInstantiableComponents();
+            String jsonClasses = ptr.cast<Utf8>().toDartString();
+            Map<String, dynamic> map = jsonDecode(jsonClasses);
+            return _buildMenuOptionsForComponentsFromJSON(map);
           })()
         : [];
   }

@@ -6,6 +6,7 @@
 #include "rendering_engine.h"
 #include "prefab/prefab.h"
 #include "auxiliary_libraries/model_loader.h"
+#include "component/make_component.h"
 //__INCLUDE__CREATED__CLASSES__
 //__INCLUDE__INTERNALS__STATICALLY__
 
@@ -252,6 +253,23 @@ char *getInstantiableClasses()
     return classesJSONChar;
 }
 
+char *getInstantiableComponents()
+{
+    static std::vector<char> classesJSON;
+    static char *classesJSONChar = nullptr;
+
+    classesJSON.clear();
+
+    std::string jsonData = ComponentInternals::GetDefaultComponentsJSON();
+
+    classesJSON.resize(jsonData.size() + 1);
+
+    memcpy(classesJSON.data(), jsonData.c_str(), jsonData.size() + 1);
+    classesJSONChar = classesJSON.data();
+
+    return classesJSONChar;
+}
+
 void createObjectFromClassID(int64_t classID)
 {
     PrefabInternals::CreatePrefabFromID(classID);
@@ -317,6 +335,28 @@ void loadModelFromPath(const char *filePath, int64_t size)
     std::string path = std::string(filePath, size);
 
     std::cout << ModelLoader::LoadModelFromFile(path).meshes.size() << std::endl;
+}
+
+void addComponentToObject(int64_t objectID, int64_t componentClassID)
+{
+    if (Engine::ValidateHandle(objectID))
+    {
+        Typhon::Object obj = Engine::GetObjectFromID(objectID);
+        auto componentMeta = entt::resolve(entt::hashed_string(std::to_string(componentClassID).c_str()));
+        if (componentMeta)
+        {
+            auto func = componentMeta.func(entt::hashed_string(std::string("AddComponent").c_str()));
+            if (func)
+            {
+                func.invoke({}, obj.ID());
+                EngineInternals::onChildrenChangedFunc();
+            }
+        }
+        else
+        {
+            std::cout << "Could not find component with id => " << componentClassID << std::endl;
+        }
+    }
 }
 
 //__END__CPP__IMPL__
