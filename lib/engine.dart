@@ -286,18 +286,17 @@ public:
 
 #include "prefab/prefab.h"
 
+#include "auxiliary_libraries/model_loader.h"
+
 //__INCLUDE__CREATED__CLASSES__
 
 
-//including internal prefabs
+//including internal classes
+#include "component/default_components/transform.h"
+#include "auxiliary_libraries/model_loader.h"
+#include "auxiliary_libraries/shader_compiler.h"
 #include "prefab/defaults/cube.h"
 #include "prefab/defaults/empty_object.h"
-
-//including internal components
-#include "component/default_components/transform.h"
-
-//including internal auxiliary libraries
-#include "auxiliary_libraries/shader_compiler.h"
 
 
 bool initializeCppLibrary()
@@ -316,14 +315,11 @@ bool initializeCppLibrary()
 
 
     //initializing prefabs!
+    Transform();
+    ModelLoader();
+    ShaderCompiler();
     Cube();
     EmptyObject();
-
-    //initializing internal components!
-    Transform();
-
-//initializing internal auxiliary libraries!
-    ShaderCompiler();
 
 
     Engine::Initialize();
@@ -492,7 +488,7 @@ const char *getObjectNameByID(int64_t id)
 
     {
 
-        temp.push_back('\0');
+        temp.push_back(' ');
 
         ptr = temp.data();
 
@@ -584,8 +580,6 @@ const char *getObjectSerializationByID(int64_t id)
 
         temp.push_back('}');
 
-        temp.push_back('\0');
-
         ptr = temp.data();
 
         return ptr;
@@ -642,13 +636,9 @@ const char *getObjectInspectorUIByID(int64_t id)
 
         std::cout << "object not valid!" << std::endl;
 
-        temp.resize(3);
-
         temp.push_back('{');
 
         temp.push_back('}');
-
-        temp.push_back('\0');
 
         ptr = temp.data();
 
@@ -717,8 +707,6 @@ const char *getObjectChildTree(int64_t id)
         temp.push_back('{');
 
         temp.push_back('}');
-
-        temp.push_back('\0');
 
         ptr = temp.data();
 
@@ -887,6 +875,50 @@ bool removeObjectFromParent(int64_t objectID)
     Typhon::Object(Engine::IDFromHandle(objectID)).RemoveFromParent();
 
     return true;
+
+}
+
+
+
+char *getContextMenuForFilePath(const char *filePath, int64_t size)
+
+{
+
+    static std::vector<char> responseJSON;
+
+    static char *responsePtr = nullptr;
+
+
+
+    responseJSON.clear();
+
+
+
+    responseJSON.push_back('[');
+
+    responseJSON.push_back(']');
+
+
+
+    responsePtr = responseJSON.data();
+
+
+
+    return responsePtr;
+
+}
+
+
+
+void loadModelFromPath(const char *filePath, int64_t size)
+
+{
+
+    std::string path = std::string(filePath, size);
+
+
+
+    std::cout << ModelLoader::LoadModelFromFile(path).meshes.size() << std::endl;
 
 }
 
@@ -1120,17 +1152,17 @@ extern "C" {
   //__BEGIN__CPP__EXPORTS__
 
 
-    FFI_PLUGIN_EXPORT void passPlatformSpecificViewPointer(void* view);
+    FFI_PLUGIN_EXPORT void passPlatformSpecificViewPointer(void *view);
 
 
 
-    FFI_PLUGIN_EXPORT void setPlatformSpecificWindowSizeAndPos(double x,double y,double width,double height);
+    FFI_PLUGIN_EXPORT void setPlatformSpecificWindowSizeAndPos(double x, double y, double width, double height);
 
-    FFI_PLUGIN_EXPORT void* getPlatformSpecificPointer();
+    FFI_PLUGIN_EXPORT void *getPlatformSpecificPointer();
 
     FFI_PLUGIN_EXPORT bool initializeCppLibrary();
 
-    FFI_PLUGIN_EXPORT void onMouseMove(double positionX,double positionY);
+    FFI_PLUGIN_EXPORT void onMouseMove(double positionX, double positionY);
 
     FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);
 
@@ -1140,7 +1172,7 @@ extern "C" {
 
     FFI_PLUGIN_EXPORT void onRenderCall(double dt);
 
-    FFI_PLUGIN_EXPORT void passProjectPath(const char* path);
+    FFI_PLUGIN_EXPORT void passProjectPath(const char *path);
 
     FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
 
@@ -1150,29 +1182,33 @@ extern "C" {
 
     FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
 
-    FFI_PLUGIN_EXPORT char* getInstantiableClasses();
+    FFI_PLUGIN_EXPORT char *getInstantiableClasses();
 
     FFI_PLUGIN_EXPORT bool isEngineInitialized();
 
     FFI_PLUGIN_EXPORT AliveObjectsArray getAliveParentlessObjects();
 
-    FFI_PLUGIN_EXPORT const char* getObjectNameByID(int64_t id);
+    FFI_PLUGIN_EXPORT const char *getObjectNameByID(int64_t id);
 
     FFI_PLUGIN_EXPORT void removeObjectByID(int64_t id);
 
-    FFI_PLUGIN_EXPORT const char* getObjectSerializationByID(int64_t id);
+    FFI_PLUGIN_EXPORT const char *getObjectSerializationByID(int64_t id);
 
-    FFI_PLUGIN_EXPORT const char* getObjectInspectorUIByID(int64_t id);
+    FFI_PLUGIN_EXPORT const char *getObjectInspectorUIByID(int64_t id);
 
-    FFI_PLUGIN_EXPORT const char* getObjectChildTree(int64_t id);
+    FFI_PLUGIN_EXPORT const char *getObjectChildTree(int64_t id);
 
-    FFI_PLUGIN_EXPORT bool setObjectParent(int64_t objectID,int64_t parentID);
+    FFI_PLUGIN_EXPORT bool setObjectParent(int64_t objectID, int64_t parentID);
 
-    FFI_PLUGIN_EXPORT bool setObjectName(int64_t objectID,const char* str,int64_t size);
+    FFI_PLUGIN_EXPORT bool setObjectName(int64_t objectID, const char *str, int64_t size);
 
     FFI_PLUGIN_EXPORT bool removeObjectFromParent(int64_t objectID);
 
-    
+    FFI_PLUGIN_EXPORT char *getContextMenuForFilePath(const char *filePath, int64_t size);
+
+    FFI_PLUGIN_EXPORT void loadModelFromPath(const char *filePath, int64_t size);
+
+
 
 //__END__CPP__EXPORTS__
 

@@ -366,6 +366,40 @@ class TyphonBindings {
           'removeObjectFromParent');
   late final _removeObjectFromParent =
       _removeObjectFromParentPtr.asFunction<bool Function(int)>();
+
+  ffi.Pointer<ffi.Char> getContextMenuForFilePath(
+    ffi.Pointer<ffi.Char> filePath,
+    int size,
+  ) {
+    return _getContextMenuForFilePath(
+      filePath,
+      size,
+    );
+  }
+
+  late final _getContextMenuForFilePathPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Pointer<ffi.Char> Function(
+              ffi.Pointer<ffi.Char>, ffi.Int64)>>('getContextMenuForFilePath');
+  late final _getContextMenuForFilePath = _getContextMenuForFilePathPtr
+      .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<ffi.Char>, int)>();
+
+  void loadModelFromPath(
+    ffi.Pointer<ffi.Char> filePath,
+    int size,
+  ) {
+    return _loadModelFromPath(
+      filePath,
+      size,
+    );
+  }
+
+  late final _loadModelFromPathPtr = _lookup<
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int64)>>(
+      'loadModelFromPath');
+  late final _loadModelFromPath = _loadModelFromPathPtr
+      .asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
 }
 
 typedef EnqueueObjectRender = ffi.Pointer<

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 
 import 'dart:async';
@@ -14,6 +17,7 @@ import 'package:typhon/hierarchy_panel/hierarchy_panel.dart';
 import 'package:typhon/main_engine_frontend.dart';
 import 'package:typhon/native_context_menu/native_context_menu.dart';
 import 'package:typhon/regex_parser.dart';
+import 'package:typhon/typhon_bindings.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:watcher/watcher.dart';
 
@@ -164,8 +168,10 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
 
   Future<void> _refreshFiles() async {
     try {
-      final files =
-          await FileViewerPanel.currentDirectory.value.list().toList();
+      final files = (await FileViewerPanel.currentDirectory.value
+          .list()
+          .toList())
+        ..removeWhere((element) => path.basename(element.path).startsWith("."));
       if (mounted) {
         setState(() {
           _files = files;
@@ -329,6 +335,18 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
                 Expanded(
                   child: GestureDetector(
                     onSecondaryTap: () {
+                      if (TyphonCPPInterface.checkIfLibraryLoaded()) {
+                        String contextMenuJSONString =
+                            TyphonCPPInterface.getCppFunctions()
+                                .getContextMenuForFilePath(
+                                    hoveringPath.toNativeUtf8().cast(),
+                                    hoveringPath.length)
+                                .cast<Utf8>()
+                                .toDartString();
+                        List<dynamic> contextMenuJSON =
+                            jsonDecode(contextMenuJSONString);
+                      }
+
                       showNativeContextMenu(
                           context,
                           MainEngineFrontend.mousePosition.dx,
@@ -394,7 +412,19 @@ public:
                                         hoveringPath))
                                     .deleteSync(recursive: true);
                                 _refreshFiles();
-                              })
+                              }),
+                        if (path.extension(hoveringPath) == ".obj")
+                          ContextMenuOption(
+                            title: "Import Model",
+                            callback: () {
+                              if (TyphonCPPInterface.checkIfLibraryLoaded()) {
+                                TyphonCPPInterface.getCppFunctions()
+                                    .loadModelFromPath(
+                                        hoveringPath.toNativeUtf8().cast(),
+                                        hoveringPath.length);
+                              }
+                            },
+                          )
                       ]);
                     },
                     child: ListView.separated(

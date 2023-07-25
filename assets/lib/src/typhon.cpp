@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "rendering_engine.h"
 #include "prefab/prefab.h"
+#include "auxiliary_libraries/model_loader.h"
 //__INCLUDE__CREATED__CLASSES__
 //__INCLUDE__INTERNALS__STATICALLY__
 
@@ -100,7 +101,7 @@ const char *getObjectNameByID(int64_t id)
 
     if (!obj.Valid())
     {
-        temp.push_back('\0');
+        temp.push_back(' ');
         ptr = temp.data();
         return ptr;
     }
@@ -146,7 +147,6 @@ const char *getObjectSerializationByID(int64_t id)
         temp.resize(3);
         temp.push_back('{');
         temp.push_back('}');
-        temp.push_back('\0');
         ptr = temp.data();
         return ptr;
     }
@@ -175,10 +175,8 @@ const char *getObjectInspectorUIByID(int64_t id)
     if (!obj.Valid())
     {
         std::cout << "object not valid!" << std::endl;
-        temp.resize(3);
         temp.push_back('{');
         temp.push_back('}');
-        temp.push_back('\0');
         ptr = temp.data();
         return ptr;
     }
@@ -213,7 +211,6 @@ const char *getObjectChildTree(int64_t id)
         temp.resize(3);
         temp.push_back('{');
         temp.push_back('}');
-        temp.push_back('\0');
         ptr = temp.data();
         return ptr;
     }
@@ -298,6 +295,28 @@ bool removeObjectFromParent(int64_t objectID)
     }
     Typhon::Object(Engine::IDFromHandle(objectID)).RemoveFromParent();
     return true;
+}
+
+char *getContextMenuForFilePath(const char *filePath, int64_t size)
+{
+    static std::vector<char> responseJSON;
+    static char *responsePtr = nullptr;
+
+    responseJSON.clear();
+
+    responseJSON.push_back('[');
+    responseJSON.push_back(']');
+
+    responsePtr = responseJSON.data();
+
+    return responsePtr;
+}
+
+void loadModelFromPath(const char *filePath, int64_t size)
+{
+    std::string path = std::string(filePath, size);
+
+    std::cout << ModelLoader::LoadModelFromFile(path).meshes.size() << std::endl;
 }
 
 //__END__CPP__IMPL__

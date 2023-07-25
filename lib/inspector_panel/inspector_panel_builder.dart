@@ -25,7 +25,11 @@ void buildInspectorPanelFromComponent(
   List<Widget> newWidgets = [];
 
   for (var component in map["components"]) {
-    newWidgets.add(ComponentWidget(componentData: component));
+    newWidgets.add(ComponentWidget(
+      key: Key("CPP object ${obj.id}"),
+      componentData: component,
+      currentObject: obj,
+    ));
     newWidgets.add(blackSpacer());
   }
   InspectorPanelWindow.data.value = InspectorPanelData(

@@ -1,4 +1,3 @@
-import pytest
 from cpp_parser import CPPParser
 
 def test_remove_comments():
@@ -41,3 +40,6 @@ def test_complete():
         a = f.read()
     print(CPPParser.get_classes_properties(a))
     assert {"a":1} == {}
+
+if __name__ == "__main__":
+    test_complete()

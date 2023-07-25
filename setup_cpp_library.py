@@ -288,9 +288,8 @@ with open("cpp_library/src/typhon.h",'r') as f:
             cpp_exports += line + "\n"
 
 
-prefabs = []
-components = []
-auxiliary_libraries = []
+classes_found = {}
+classes_to_check = []
 for root, dirs, files in os.walk("cpp_library/src"):
     if "vendor" in root:
         continue
@@ -301,19 +300,32 @@ for root, dirs, files in os.walk("cpp_library/src"):
                 value = f.read()
             classes = CPPParser.get_classes_properties(value)
             for klass in classes:
-                if "MakeComponent" in classes[klass]["inheritance"]:
-                    components.append((klass,os.path.relpath(file_path,"cpp_library/src")))
-                if "Prefab" in classes[klass]["inheritance"]:
-                    prefabs.append((klass,os.path.relpath(file_path,"cpp_library/src")))
-                if "AuxiliaryLibrary" in classes[klass]["inheritance"]:
-                    auxiliary_libraries.append((klass,os.path.relpath(file_path,"cpp_library/src")))
+                classes[klass]["path"] = os.path.relpath(file_path,"cpp_library/src")
+                classes_found[klass] = classes[klass]
+                if "IsInitializedStatically" in classes[klass]['inheritance']:
+                    classes_to_check.append(klass)
+                if "Reflection::IsInitializedStatically" in classes[klass]['inheritance']:
+                    classes_to_check.append(klass)
+                
         except Exception as e:
             print(f"Couldn't open {file_path}: {e}")
-print(f'PREFABS FOUND: {prefabs}')
-print(f'COMPONENTS FOUND: {components}')
-print(f'AUXILIARY LIBRARIES C++ INTERFACES FOUND: {auxiliary_libraries}')
+
+classes_to_initialize = []
+while len(classes_to_check) > 0:
+    classes_to_check_next = []
+    for klass in classes_to_check:
+        if not classes_found[klass]['templated']:
+            classes_to_initialize.append((klass,classes_found[klass]['path']))
+        else:
+            classes_to_check_next.append(klass)
+    classes_to_check.clear()
+    for klass in classes_found:
+        for klass_templated in classes_to_check_next:
+            if klass_templated in classes_found[klass]['inheritance']:
+                classes_to_check.append(klass)
 
 
+print(f'CLASSES TO INITIALIZE: {classes_to_initialize}')
 
 with open("cpp_library/src/typhon.cpp",'r') as f:
     lines = f.readlines()
@@ -326,31 +338,15 @@ with open("cpp_library/src/typhon.cpp",'r') as f:
             shouldAddLine = False
             break
         if "//__INCLUDE__INTERNALS__STATICALLY__" in line:
-            cpp_exports_impl += f'\n//including internal prefabs\n'
-            for prefab in prefabs:
-                cpp_exports_impl += f'#include "{prefab[1]}"\n'
-
-            cpp_exports_impl += f'\n//including internal components\n'
-            for component in components:
-                cpp_exports_impl += f'#include "{component[1]}"\n'
-
-            cpp_exports_impl += f'\n//including internal auxiliary libraries\n'
-            for lib in auxiliary_libraries:
-                cpp_exports_impl += f'#include "{lib[1]}"\n'
-
+            cpp_exports_impl += f'\n//including internal classes\n'
+            for klass in classes_to_initialize:
+                cpp_exports_impl += f'#include "{klass[1]}"\n'
             continue
         if "//__INITIALIZE__INTERNALS__STATICALLY__" in line:
             cpp_exports_impl += f'\n    //initializing prefabs!\n'
-            for prefab in prefabs:
-                cpp_exports_impl += f'    {prefab[0]}();\n'
+            for klass in classes_to_initialize:
+                cpp_exports_impl += f'    {klass[0]}();\n'
 
-            cpp_exports_impl += f'\n    //initializing internal components!\n'
-            for component in components:
-                cpp_exports_impl += f'    {component[0]}();\n'
-                
-            cpp_exports_impl += f'\n//initializing internal auxiliary libraries!\n'
-            for lib in auxiliary_libraries:
-                cpp_exports_impl += f'    {lib[0]}();\n'
             continue
         
         if shouldAddLine:

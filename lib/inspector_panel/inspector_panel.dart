@@ -20,6 +20,7 @@ class InspectorPanelData {
 class InspectorPanelWindow extends EngineSubWindowData {
 
   static ValueNotifier<InspectorPanelData> data = ValueNotifier(InspectorPanelData());
+  static ValueNotifier<bool> shouldRefreshData = ValueNotifier(false);
 
   InspectorPanelWindow() : super(child: InspectorPanel(),topPanelWidgets: InspectorPanelTopWidget(), title: "Inspector",onTabSelected: () {
     
@@ -80,7 +81,6 @@ class _InspectorPanelState extends State<InspectorPanel> {
   void onChildrenChangedCallback() {
     if(mounted && !Engine.instance.currentChildren.value.contains(InspectorPanelWindow.data.value.objectID)){
       InspectorPanelWindow.data.value = InspectorPanelData();
-      
     }
   }
 

@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:ffi';
+
+import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:typhon/general_widgets/general_widgets.dart';
@@ -5,13 +9,18 @@ import 'package:typhon/general_widgets/custom_expansion_tile.dart';
 import 'package:typhon/general_widgets/general_text_field.dart';
 import 'package:typhon/general_widgets/rotating_arrow_button.dart';
 import 'package:typhon/general_widgets/spacings.dart';
+import 'package:typhon/hierarchy_panel/hierarchy_panel.dart';
+import 'package:typhon/inspector_panel/inspector_panel.dart';
 import 'package:typhon/inspector_panel/inspector_panel_builder.dart';
 import 'package:typhon/inspector_panel/vec3_field_builder.dart';
+import 'package:typhon/typhon_bindings.dart';
 
 class ComponentWidget extends StatefulWidget {
-  ComponentWidget({super.key, required this.componentData});
+  ComponentWidget(
+      {super.key, required this.componentData, required this.currentObject});
 
   Map<String, dynamic> componentData;
+  ObjectFromCPP currentObject;
 
   @override
   State<ComponentWidget> createState() => _ComponentWidgetState();
@@ -29,7 +38,9 @@ class _ComponentWidgetState extends State<ComponentWidget> {
                 Expanded(child: GeneralText(e.keys.first), flex: 1),
                 HorizontalSpacing(10),
                 buildFieldOfType(
-                    e[e.keys.first]["type"], e[e.keys.first]["current_value"])
+                    e[e.keys.first]["type"],
+                    e[e.keys.first]["current_value"],
+                    e[e.keys.first]["address"])
               ],
             ),
           )
@@ -37,7 +48,19 @@ class _ComponentWidgetState extends State<ComponentWidget> {
     );
   }
 
-  Expanded buildFieldOfType(String type, dynamic currentValue) {
+  void refreshData() {
+    if (InspectorPanelWindow.data.value.objectID != null) {
+      Pointer<Char> val = TyphonCPPInterface.getCppFunctions()
+          .getObjectInspectorUIByID(InspectorPanelWindow.data.value.objectID!);
+      if (val != nullptr) {
+        var jsonData = jsonDecode(val.cast<Utf8>().toDartString());
+        buildInspectorPanelFromComponent(widget.currentObject, jsonData);
+      }
+    }
+  }
+
+  Expanded buildFieldOfType(
+      String type, dynamic currentValue, String addresses) {
     switch (type) {
       case "vec3":
         List<double> values = (currentValue as String)
@@ -48,9 +71,30 @@ class _ComponentWidgetState extends State<ComponentWidget> {
         return Expanded(
             flex: 3,
             child: Vec3FieldBuilder(
+              key: Key(addresses),
               values: values,
+              onDragChange: (p0, p1, p2) {
+                Pointer<Float> p0Address =
+                    Pointer.fromAddress(int.parse(addresses.split(" ")[0]));
+                p0Address.value += p0;
+                Pointer<Float> p1Address =
+                    Pointer.fromAddress(int.parse(addresses.split(" ")[1]));
+                p1Address.value += p1;
+                Pointer<Float> p2Address =
+                    Pointer.fromAddress(int.parse(addresses.split(" ")[2]));
+                p2Address.value += p2;
+                refreshData();
+              },
               onChange: (p0, p1, p2) {
-                print("${p0},${p1},${p2}");
+                Pointer<Float> p0Address =
+                    Pointer.fromAddress(int.parse(addresses.split(" ")[0]));
+                p0Address.value = p0;
+                Pointer<Float> p1Address =
+                    Pointer.fromAddress(int.parse(addresses.split(" ")[1]));
+                p1Address.value = p1;
+                Pointer<Float> p2Address =
+                    Pointer.fromAddress(int.parse(addresses.split(" ")[2]));
+                p2Address.value = p2;
               },
             ));
       default:

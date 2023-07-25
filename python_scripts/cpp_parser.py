@@ -18,6 +18,20 @@ class CPPParser:
                 break
             input = output
         return output
+    
+    @staticmethod
+    def is_class_templated(text, class_name):
+        # Regex pattern to match a templated class with a specific class name
+        pattern = r"\btemplate\s*<[^>]*>\s*\bclass\s+" + re.escape(class_name) + r"\b"
+
+        # Use regex search to find the pattern
+        match = re.search(pattern, text)
+
+        # If match is found, it's a templated class
+        if match:
+            return True
+        else:
+            return False
 
     @staticmethod
     def extract_base_classes(file_content: str, class_name: str) -> List[str]:
@@ -43,19 +57,22 @@ class CPPParser:
         classes_text = {}
         classes_inheritance = {}
         class_names = []
-
+        
         class_name_exp = re.compile(r'class .*? {')
         for match in class_name_exp.finditer(text):
             class_names.append((text[match.start() + 6:].split(' ')[0], text[match.start():].find("{") + match.start() - 1))
 
         class_name_exp = re.compile(r'class .*? :')
         for match in class_name_exp.finditer(text):
+
             class_names.append((text[match.start() + 6:].split(' ')[0], text[match.start():].find("{") + match.start() - 1))
+
 
         class_names = list(set(class_names))
         class_names.sort(key=lambda x: x[1])
 
         for class_name in [item[0] for item in class_names]:
+            
             classes_inheritance[class_name] = CPPParser.extract_base_classes(text, class_name)
 
         # Extracting class text
@@ -77,10 +94,12 @@ class CPPParser:
         # Constructing final map
         final_map = {}
         for class_name in classes_text:
+            is_templated = CPPParser.is_class_templated(text,class_name)
             final_map[class_name] = {
                 "variables": classes_variables[class_name],
                 "class_text": classes_text[class_name],
-                "inheritance": classes_inheritance[class_name]
+                "inheritance": classes_inheritance[class_name],
+                "templated":is_templated
             }
 
         return final_map

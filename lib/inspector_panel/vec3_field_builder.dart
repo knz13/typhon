@@ -10,10 +10,12 @@ class Vec3FieldBuilder extends StatefulWidget {
       {super.key,
       required this.values,
       required this.onChange,
+      required this.onDragChange,
       this.spacingBetweenObjects = 4});
 
   List<double> values;
   void Function(double, double, double) onChange;
+  void Function(double, double, double) onDragChange;
   double spacingBetweenObjects;
 
   @override
@@ -26,7 +28,11 @@ class _Vec3FieldBuilderState extends State<Vec3FieldBuilder> {
     // TODO: implement build
     return Row(
       children: [
-        DraggableTextLeftRight("X"),
+        DraggableTextLeftRight(
+          "X",
+          onMoveLeftRight: (dx) => widget.onDragChange(
+              dx,0,0),
+        ),
         HorizontalSpacing(widget.spacingBetweenObjects),
         Expanded(
           child: GeneralTextField(
@@ -44,7 +50,11 @@ class _Vec3FieldBuilderState extends State<Vec3FieldBuilder> {
           ),
         ),
         HorizontalSpacing(widget.spacingBetweenObjects),
-        DraggableTextLeftRight("Y"),
+        DraggableTextLeftRight(
+          "Y",
+          onMoveLeftRight: (dy) => widget.onDragChange(
+              0,dy,0),
+        ),
         HorizontalSpacing(widget.spacingBetweenObjects),
         Expanded(
           child: GeneralTextField(
@@ -63,7 +73,11 @@ class _Vec3FieldBuilderState extends State<Vec3FieldBuilder> {
           ),
         ),
         HorizontalSpacing(widget.spacingBetweenObjects),
-        DraggableTextLeftRight("Z"),
+        DraggableTextLeftRight(
+          "Z",
+          onMoveLeftRight: (dz) => widget.onDragChange(
+              0,0,dz),
+        ),
         HorizontalSpacing(widget.spacingBetweenObjects),
         Expanded(
           child: GeneralTextField(
