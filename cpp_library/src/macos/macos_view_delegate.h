@@ -11,7 +11,7 @@ public:
     MacOSRenderer* GetRenderer() {
         return renderer.get();
     };
-
+    
     ~MacOSViewDelegate()  { 
         renderer.reset();
     };

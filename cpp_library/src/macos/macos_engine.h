@@ -17,7 +17,7 @@ public:
         std::cout << "initializing macos engine!" << std::endl;
         device = MTL::CreateSystemDefaultDevice();
 
-        
+            
         if(!device){
             std::cout << "Failed to initialize macos rendering engine: metal not supported" << std::endl;
             return;

@@ -3,6 +3,7 @@
 #include "auxiliary_libraries/shader_compiler.h"
 #include <chrono>
 
+
 struct RenderPassData
 {
 public:
