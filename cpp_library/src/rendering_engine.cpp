@@ -3,54 +3,31 @@
 #include "macos/macos_engine.h"
 #endif
 
-#include "bgfx/bgfx.h"
 
 std::unique_ptr<PlatformSpecificRenderingEngine> RenderingEngine::platformSpecificRenderingEngine;
 
-void RenderingEngine::PassPlatformSpecificViewPointer(void *view)
-{
-    if (platformSpecificRenderingEngine)
-    {
+
+void RenderingEngine::PassPlatformSpecificViewPointer(void* view) {
+    if(platformSpecificRenderingEngine){
         platformSpecificRenderingEngine.get()->ReceivePlatformSpecificViewPointer(view);
-
-        bgfx::PlatformData pd;
-
-        pd.nwh = view;
-        bgfx::setPlatformData(pd);
-
-        bgfx::Init bgfxInit;
-#ifdef __APPLE__
-        bgfxInit.type = bgfx::RendererType::Metal;
-#else
-
-#endif
-        bgfxInit.resolution.width = 500;
-        bgfxInit.resolution.height = 500;
-        bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
-        bgfx::init(bgfxInit);
-
-        bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x443355FF, 1.0f, 0);
-        bgfx::setViewRect(0, 0, 0, 500, 500);
     }
 }
 
-void *RenderingEngine::GetPlatformSpecificPointer()
-{
-    if (platformSpecificRenderingEngine)
-    {
+void* RenderingEngine::GetPlatformSpecificPointer() {
+    if(platformSpecificRenderingEngine){
         return platformSpecificRenderingEngine.get()->GetPlatformSpecificPointer();
     }
     return nullptr;
 }
 
-void RenderingEngine::InitializeEngine()
-{
-#ifdef __APPLE__
+void RenderingEngine::InitializeEngine() {
+    #ifdef __APPLE__
     platformSpecificRenderingEngine = std::make_unique<MacOSEngine>();
-#endif
+    #endif 
 
     platformSpecificRenderingEngine.get()->InitializeRenderingEngine();
 
+    
     std::string vertexShader = R"(
 #version 330 core
 
@@ -64,7 +41,7 @@ gl_Position = vec4(vertexPosition, 1.0);
 vertexColor = color;
 }
 )";
-    std::string fragShader = R"(
+std::string fragShader = R"(
 #version 330 core
 
 in vec3 vertexColor;
@@ -76,20 +53,21 @@ FragColor = vec4(1,0,1, 1.0);
 }
     )";
 
-    auto vertResult = ShaderCompiler::CompileGLSLToPlatformSpecific(vertexShader, "Vertex", ShaderType::Vertex);
-    auto fragResult = ShaderCompiler::CompileGLSLToPlatformSpecific(fragShader, "Frag", ShaderType::Fragment);
+    auto vertResult = ShaderCompiler::CompileGLSLToPlatformSpecific(vertexShader,"Vertex",ShaderType::Vertex);
+    auto fragResult = ShaderCompiler::CompileGLSLToPlatformSpecific(fragShader,"Frag",ShaderType::Fragment);
 
-    if (!vertResult.Valid())
-    {
+    if(!vertResult.Valid()){
         std::cout << vertResult.error << std::endl;
         return;
     }
-    if (!fragResult.Valid())
-    {
+    if(!fragResult.Valid()){
         std::cout << fragResult.error << std::endl;
         return;
     }
+    
 
-    platformSpecificRenderingEngine.get()->LoadVertexShader("MyVertex", vertResult);
-    platformSpecificRenderingEngine.get()->LoadFragmentShader("MyFragment", fragResult);
+
+    platformSpecificRenderingEngine.get()->LoadVertexShader("MyVertex",vertResult);
+    platformSpecificRenderingEngine.get()->LoadFragmentShader("MyFragment",fragResult);
+
 };

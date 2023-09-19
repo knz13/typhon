@@ -25,9 +25,9 @@ class NativeViewInterface {
 
   static var waitingToFinishDetaching = true;
 
-  static Future<Pointer<Void>> getPlatformSpecificViewPointer() async {
+  static Future<Pointer<Void>> getMetalViewPointer() async {
 
-    return Pointer.fromAddress(await _channel.invokeMethod("getPlatformSpecificViewPointer"));
+    return Pointer.fromAddress(await _channel.invokeMethod("getMetalViewPointer"));
   }
 
   static void attachCPPPointer(Pointer<Void> ptr) async {

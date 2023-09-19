@@ -148,6 +148,7 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if call.method == "attachCPPPointer" {
+
             if metalView == nil {
                 print("initializing metal view!")
                 metalView = MTKView(frame: NSRect(x: 0, y: 0, width: 500, height: 500),device: MTLCreateSystemDefaultDevice())
@@ -155,7 +156,7 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
 
                 MainFlutterWindow.flutterViewController!.view.addSubview(metalView!, positioned: .below, relativeTo: nil)
             }
-                
+
             result(0);
         } else if call.method == "setFrameRenderableView" {
             let args = convertToDictionary(text: call.arguments as? String ?? "")
@@ -172,8 +173,7 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
             
             self.channel?.invokeMethod("pointerDetached", arguments: nil)
             result(0)
-        } else if call.method == "getPlatformSpecificViewPointer" {
-            
+        } else if call.method == "getMetalViewPointer" {
             
             result(Int(bitPattern: Unmanaged.passUnretained(metalView!).toOpaque()))
         } else {

@@ -49,20 +49,7 @@ SET(FETCHCONTENT_QUIET FALSE)
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/glm)
         
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/crunch)
-
-    set(BX_AMALGAMATED ON)
-    set(BGFX_AMALGAMATED ON)
-
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/bgfx)
-    
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bx/include/)
-
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bimg/include/)
-
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bgfx/include/)
-
-    list(APPEND typhon_LIBRARIES METAL_CPP bx bgfx bimg) 
-
+        
     if(APPLE)
       add_compile_definitions(OBJC_DEBUG_MISSING_POOLS=1)
 
@@ -74,7 +61,6 @@ SET(FETCHCONTENT_QUIET FALSE)
 
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/macos/macos_engine.cpp)
     endif()
-    
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/single_include/)
     
