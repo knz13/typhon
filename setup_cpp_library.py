@@ -90,12 +90,13 @@ if not os.path.exists("src/vendor"):
 
 #if get_first_available_cpp_compiler() == None:
 
-
+if not os.path.exists("src/vendor/bgfx"):
+    os.system('git clone --recursive https://github.com/bkaradzic/bgfx.cmake src/vendor/bgfx')
 
 if not os.path.exists("src/vendor/dylib"):
     os.system('git clone --recursive https://github.com/martin-olivier/dylib src/vendor/dylib')
 if not os.path.exists("src/vendor/entt"):
-    os.system('git clone --recursive https://github.com/skypjack/entt src/vendor/entt')
+    os.system('git clone --recursive --branch v3.11.1 https://github.com/skypjack/entt/ src/vendor/entt')
 if not os.path.exists("src/vendor/yael"):
     os.system('git clone --recursive https://github.com/knz13/YAEL src/vendor/yael')
 if not os.path.exists("src/vendor/random"):
@@ -157,7 +158,7 @@ if platform.system() == "Darwin":
         with open("src/vendor/metal-cpp/CMakeLists.txt",'w') as f:
             f.write("""# Library definition
 add_library(METAL_CPP
-        ${CMAKE_CURRENT_SOURCE_DIR}/defination.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/definition.cpp
         )
 
 set_target_properties(METAL_CPP PROPERTIES

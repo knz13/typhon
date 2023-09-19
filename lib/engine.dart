@@ -166,13 +166,12 @@ class Engine {
     library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
     library.attachOnChildrenChanged(Pointer.fromFunction(onCppChildrenChanged));
     library.initializeCppLibrary();
-    var ptr = library.getPlatformSpecificPointer();
-    NativeViewInterface.attachCPPPointer(ptr);
-    /* if(Platform.isMacOS){
-      print("Passing from flutter!");
-      library.passPlatformSpecificViewPointer(await NativeViewInterface.getMetalViewPointer());
-      print("Passed from flutter!");
-    } */
+    if (Platform.isMacOS) {
+      var ptr = library.getPlatformSpecificPointer();
+      NativeViewInterface.attachCPPPointer(ptr);
+    }
+    library.passPlatformSpecificViewPointer(
+        await NativeViewInterface.getPlatformSpecificViewPointer());
 
     (() async {
       while (true) {
@@ -294,10 +293,9 @@ public:
 
 
 //including internal classes
-#include "component/default_components/some_component.h"
-#include "component/default_components/transform.h"
 #include "auxiliary_libraries/model_loader.h"
 #include "auxiliary_libraries/shader_compiler.h"
+#include "component/default_components/transform.h"
 #include "prefab/defaults/cube.h"
 #include "prefab/defaults/empty_object.h"
 
@@ -318,10 +316,9 @@ bool initializeCppLibrary()
 
 
     //initializing prefabs!
-    SomeComponent();
-    Transform();
     ModelLoader();
     ShaderCompiler();
+    Transform();
     Cube();
     EmptyObject();
 
