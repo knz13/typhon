@@ -11,27 +11,30 @@ void RenderingEngine::PassPlatformSpecificViewPointer(void *view)
 {
     if (platformSpecificRenderingEngine)
     {
-        platformSpecificRenderingEngine.get()->ReceivePlatformSpecificViewPointer(view);
+        // platformSpecificRenderingEngine.get()->ReceivePlatformSpecificViewPointer(view);
+    }
+    bgfx::PlatformData pd;
 
-        bgfx::PlatformData pd;
+    pd.nwh = view;
 
-        pd.nwh = view;
-        bgfx::setPlatformData(pd);
+    bgfx::Init bgfxInit;
 
-        bgfx::Init bgfxInit;
+    bgfxInit.platformData = pd;
 #ifdef __APPLE__
-        bgfxInit.type = bgfx::RendererType::Metal;
+    bgfxInit.type = bgfx::RendererType::Metal;
 #else
 
 #endif
-        bgfxInit.resolution.width = 500;
-        bgfxInit.resolution.height = 500;
-        bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
-        bgfx::init(bgfxInit);
 
-        bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x443355FF, 1.0f, 0);
-        bgfx::setViewRect(0, 0, 0, 500, 500);
-    }
+    bgfxInit.resolution.width = 1500;
+    bgfxInit.resolution.height = 1500;
+    bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
+    bgfx::init(bgfxInit);
+
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xffA2EB00, 1.0f, 0);
+    bgfx::setViewRect(0, 0, 0, 1500, 1500);
+
+    bgfx::frame();
 }
 
 void *RenderingEngine::GetPlatformSpecificPointer()
@@ -46,10 +49,10 @@ void *RenderingEngine::GetPlatformSpecificPointer()
 void RenderingEngine::InitializeEngine()
 {
 #ifdef __APPLE__
-    platformSpecificRenderingEngine = std::make_unique<MacOSEngine>();
+    // platformSpecificRenderingEngine = std::make_unique<MacOSEngine>();
 #endif
 
-    platformSpecificRenderingEngine.get()->InitializeRenderingEngine();
+    // platformSpecificRenderingEngine.get()->InitializeRenderingEngine();
 
     std::string vertexShader = R"(
 #version 330 core
@@ -90,6 +93,6 @@ FragColor = vec4(1,0,1, 1.0);
         return;
     }
 
-    platformSpecificRenderingEngine.get()->LoadVertexShader("MyVertex", vertResult);
-    platformSpecificRenderingEngine.get()->LoadFragmentShader("MyFragment", fragResult);
+    // platformSpecificRenderingEngine.get()->LoadVertexShader("MyVertex", vertResult);
+    // platformSpecificRenderingEngine.get()->LoadFragmentShader("MyFragment", fragResult);
 };

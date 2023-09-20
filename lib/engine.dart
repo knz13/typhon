@@ -166,10 +166,10 @@ class Engine {
     library.attachEnqueueRender(Pointer.fromFunction(enqueueRender));
     library.attachOnChildrenChanged(Pointer.fromFunction(onCppChildrenChanged));
     library.initializeCppLibrary();
-    if (Platform.isMacOS) {
+    /* if (Platform.isMacOS) {
       var ptr = library.getPlatformSpecificPointer();
       NativeViewInterface.attachCPPPointer(ptr);
-    }
+    } */
     library.passPlatformSpecificViewPointer(
         await NativeViewInterface.getPlatformSpecificViewPointer());
 

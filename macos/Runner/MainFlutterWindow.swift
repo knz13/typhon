@@ -173,7 +173,13 @@ public class NativeWindowInterfacePlugin: NSObject, FlutterPlugin {
             self.channel?.invokeMethod("pointerDetached", arguments: nil)
             result(0)
         } else if call.method == "getPlatformSpecificViewPointer" {
-            
+            if metalView == nil {
+                print("initializing metal view!")
+                metalView = MTKView(frame: NSRect(x: 0, y: 0, width: 500, height: 500),device: MTLCreateSystemDefaultDevice())
+                metalView?.delegate = delegate
+
+                MainFlutterWindow.flutterViewController!.view.addSubview(metalView!, positioned: .below, relativeTo: nil)
+            }
             
             result(Int(bitPattern: Unmanaged.passUnretained(metalView!).toOpaque()))
         } else {

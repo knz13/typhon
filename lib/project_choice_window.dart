@@ -41,6 +41,7 @@ class ProjectChoiceWindow extends StatefulWidget {
 }
 
 class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
+  bool pickingFile = false;
   // Controllers
   int selectedMiddleOptionMenu = 0;
   int selectedOptionSideMenu = 0;
@@ -445,40 +446,53 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                               borderRadius:
                                                   BorderRadius.circular(5),
                                             ),
-                                            child: RawMaterialButton(
-                                              onPressed: () async {
-                                                var path = await FilePicker
-                                                    .platform
-                                                    .getDirectoryPath(
-                                                        dialogTitle:
-                                                            "Select Project Directory");
-                                                setState(() {
-                                                  projectLocationPath = path;
-                                                });
-                                              },
-                                              child: Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 15),
-                                                child: ListTile(
-                                                  subtitle: projectLocationPath !=
-                                                          null
-                                                      ? GeneralText(
-                                                          projectLocationPath!)
-                                                      : null,
-                                                  title: Text(
-                                                    "Location",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.w600),
+                                            child: pickingFile
+                                                ? Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  )
+                                                : RawMaterialButton(
+                                                    onPressed: () async {
+                                                      setState(() =>
+                                                          pickingFile = true);
+                                                      var path = await FilePicker
+                                                          .platform
+                                                          .getDirectoryPath(
+                                                              dialogTitle:
+                                                                  "Select Project Directory");
+                                                      setState(() {
+                                                        pickingFile = false;
+                                                        projectLocationPath =
+                                                            path;
+                                                      });
+                                                    },
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 15),
+                                                      child: ListTile(
+                                                        subtitle:
+                                                            projectLocationPath !=
+                                                                    null
+                                                                ? GeneralText(
+                                                                    projectLocationPath!)
+                                                                : null,
+                                                        title: Text(
+                                                          "Location",
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        ),
+                                                        trailing: Icon(
+                                                          MdiIcons.folder,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
                                                   ),
-                                                  trailing: Icon(
-                                                    MdiIcons.folder,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
                                           ),
                                         ),
                                       ],
