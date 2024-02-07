@@ -7,7 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart' show MethodCall, MethodChannel;
+import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter/widgets.dart' show Offset;
 
 

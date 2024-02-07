@@ -5,7 +5,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:typhon/config/colors.dart';
+import 'package:typhon/config/theme.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/main.dart';
 

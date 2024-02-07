@@ -7,7 +7,6 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:ffi/ffi.dart';
-import 'package:flame/image_composition.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'dart:math';
 import 'package:flutter/services.dart'
@@ -20,8 +19,6 @@ import 'package:flutter/services.dart'
         rootBundle;
 import 'package:flutter/src/services/keyboard_key.g.dart';
 import 'package:path/path.dart' as path;
-import 'package:flame/components.dart';
-import 'package:flame/game.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/general_widgets/general_widgets.dart';
@@ -32,6 +29,7 @@ import 'package:typhon/regex_parser.dart';
 import 'package:typhon/typhon_bindings.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
 
+import 'features/project_choice_panel/data/project_model.dart';
 import 'file_viewer_panel/file_viewer_panel.dart';
 
 void copyDirectorySync(Directory source, Directory destination) {
@@ -55,7 +53,6 @@ void copyDirectorySync(Directory source, Directory destination) {
 class EngineRenderingDataFromAtlas {
   int width;
   int height;
-  Vector2 position;
   int imageX;
   int imageY;
   double anchorX;
@@ -66,7 +63,6 @@ class EngineRenderingDataFromAtlas {
   EngineRenderingDataFromAtlas(
       {required this.width,
       required this.height,
-      required this.position,
       required this.imageX,
       required this.imageY,
       required this.anchorX,
@@ -104,24 +100,37 @@ class Engine {
     return _shouldRecompile;
   }
 
-  Future<Map<String, dynamic>> getProjectsJSON() async {
+  Future<List<ProjectModel>> getProjectsJSON() async {
     Directory privateDir = await getApplicationSupportDirectory();
     File projectsFile = File(path.join(privateDir.path, "projects.json"));
     if (projectsFile.existsSync()) {
       String fileData = projectsFile.readAsStringSync();
-      var map = jsonDecode(fileData);
-      return map;
+      var map = (jsonDecode(fileData)) as Map<String,dynamic>;
+
+      List<ProjectModel> projects = [];
+
+      projects = map.entries
+          .map((e) => ProjectModel.fromJson({
+                "name": e.value["name"],
+                "location": e.key,
+              }))
+          .toList();
+
+      return projects;
     } else {
       projectsFile.writeAsStringSync("{}");
 
-      return <String, dynamic>{};
+      return [];
     }
   }
 
-  Future<void> saveProjectsJSON(Map<String, dynamic> projects) async {
+  Future<void> saveProjectsJSON(List<ProjectModel> projects) async {
     Directory privateDir = await getApplicationSupportDirectory();
     File projectsFile = File(path.join(privateDir.path, "projects.json"));
-    projectsFile.writeAsStringSync(jsonEncode(projects));
+
+    var mapToSave = Map<String, dynamic>.fromEntries(projects.map((e) => MapEntry(e.location, e.toJson())));
+
+    projectsFile.writeAsStringSync(jsonEncode(mapToSave));
   }
 
   bool hasInitializedProject() {
@@ -222,12 +231,12 @@ class Engine {
   Future<void> initializeProject(
       String projectDirectoryPath, String projectName) async {
     //testing if project exists and loading it if true
-    var map = await getProjectsJSON();
+    var projectsList = await getProjectsJSON();
     var projectFilteredName =
         projectName.replaceAllMapped(RegExp(r'[^a-zA-Z0-9]'), (match) => '_');
     var projectPath = path.join(projectDirectoryPath, projectFilteredName);
 
-    if (map.containsKey(projectPath)) {
+    if (projectsList.where((element) => element.location == projectPath).isNotEmpty) {
       this.projectPath = projectPath;
       this.projectName = projectName;
       this.projectFilteredName = projectFilteredName;
@@ -1020,7 +1029,7 @@ void addComponentToObject(int64_t objectID, int64_t componentClassID)
       return;
     }
 
-    map[projectPath] = {"name": projectName};
+    projectsList.add(ProjectModel(name: projectName, location: projectPath,lastModified: DateTime.now()));
 
     if (!Directory(projectPath).existsSync()) {
       Directory(projectPath).createSync(recursive: true);
@@ -1050,7 +1059,9 @@ void addComponentToObject(int64_t objectID, int64_t componentClassID)
             "lib", "auxiliary_libraries")),
         Directory(path.join(projectPath, "build")));
 
-    await saveProjectsJSON(map);
+    
+
+    await saveProjectsJSON(projectsList);
 
     return await initializeProject(projectDirectoryPath, projectName);
   }
@@ -1459,7 +1470,6 @@ extern "C" {
     renderingObjects.add(EngineRenderingDataFromAtlas(
         width: width,
         height: height,
-        position: Vector2(x, y),
         imageX: imageX,
         imageY: imageY,
         anchorX: anchorX,

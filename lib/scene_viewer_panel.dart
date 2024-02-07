@@ -4,17 +4,13 @@
 
 
 
-import 'dart:ffi';
-import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/general_widgets/general_widgets.dart';
 import 'package:typhon/native_view_interface.dart';
-import 'package:typhon/typhon_bindings.dart';
 
 import 'engine.dart';
 
@@ -27,8 +23,8 @@ class SceneViewerWindow extends EngineSubWindowData {
     title: "Scene",
     backgroundOpaque: false,
     closable: false,
-    topPanelWidgets: SceneViewerTop(),
-    child: SceneViewerContents(),
+    topPanelWidgets: const SceneViewerTop(),
+    child: const SceneViewerContents(),
     onLeavingTab: () {
       Engine.instance.detachPlatformSpecificView();
     },
@@ -43,6 +39,8 @@ class SceneViewerWindow extends EngineSubWindowData {
 
 
 class SceneViewerTop extends StatefulWidget {
+  const SceneViewerTop({super.key});
+
   @override
   State<SceneViewerTop> createState() => _SceneViewerTopState();
 }
@@ -57,7 +55,6 @@ class _SceneViewerTopState extends State<SceneViewerTop> {
 
   @override
   void initState() {
-    // TODO: implement initState
     Engine.instance.lastCompilationResult.addListener(callback);
     super.initState();
 
@@ -65,14 +62,12 @@ class _SceneViewerTopState extends State<SceneViewerTop> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     Engine.instance.lastCompilationResult.removeListener(callback);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -112,7 +107,7 @@ class _SceneViewerTopState extends State<SceneViewerTop> {
               onTap: () {
                 Engine.instance.enqueueRecompilation();
               },
-              child: Icon(Icons.close,color: Colors.red,),
+              child: const Icon(Icons.close,color: Colors.red,),
             ),
           )
           ,
@@ -126,7 +121,7 @@ class _SceneViewerTopState extends State<SceneViewerTop> {
 class SceneViewerContents extends StatefulWidget {
 
   
-  SceneViewerContents();
+  const SceneViewerContents({super.key});
 
   @override
   State<SceneViewerContents> createState() => _SceneViewerContentsState();
@@ -135,10 +130,9 @@ class SceneViewerContents extends StatefulWidget {
 class _SceneViewerContentsState extends State<SceneViewerContents> {
   bool shouldStopUpdatingSubWindow = false;
 
-  Rect lastRect = Rect.fromLTRB(1, 1, 1, 1);
+  Rect lastRect = const Rect.fromLTRB(1, 1, 1, 1);
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     SceneViewerWindow.exists = true;
@@ -147,7 +141,6 @@ class _SceneViewerContentsState extends State<SceneViewerContents> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     shouldStopUpdatingSubWindow = true;
     

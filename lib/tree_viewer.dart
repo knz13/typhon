@@ -11,6 +11,7 @@ class TreeViewer<T> extends StatefulWidget {
   final List<T> Function(T) getSubItems;
 
   const TreeViewer({
+    super.key,
     required this.items,
     required this.itemHeight,
     required this.itemBuilder,

@@ -5,9 +5,9 @@ import 'dart:io';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:flutter/material.dart';
 import 'package:menu_bar/menu_bar.dart';
-import 'package:typhon/config/colors.dart';
+import 'package:typhon/config/theme.dart';
 import 'package:typhon/engine.dart';
-import 'package:typhon/project_choice_window.dart';
+import 'package:typhon/features/project_choice_panel/presentation/project_choice_panel.dart';
 import 'package:typhon/scene_viewer_panel.dart';
 
 import 'console_panel.dart';
@@ -130,7 +130,7 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                                   .push(MaterialPageRoute(
                                 builder: (context) {
                                   Engine.instance.unloadProject();
-                                  return ProjectsPage();
+                                  return ProjectChoicePanel();
                                 },
                               ));
                             }),
