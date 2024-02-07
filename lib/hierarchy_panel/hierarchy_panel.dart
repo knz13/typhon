@@ -82,10 +82,9 @@ class _HierarchyPanelTopState extends State<HierarchyPanelTop> {
           onPressed: () {
             showNativeContextMenu(
                 context,
-                MyApp.globalMousePosition.dx,
-                MyApp.globalMousePosition.dy,
-                TyphonCPPInterface.getPrefabsContextMenuOptions()
-              );
+                MainEngineApp.globalMousePosition.dx,
+                MainEngineApp.globalMousePosition.dy,
+                TyphonCPPInterface.getPrefabsContextMenuOptions());
           },
           child: Row(
             children: [

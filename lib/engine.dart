@@ -293,9 +293,9 @@ public:
 
 
 //including internal classes
+#include "component/default_components/transform.h"
 #include "auxiliary_libraries/model_loader.h"
 #include "auxiliary_libraries/shader_compiler.h"
-#include "component/default_components/transform.h"
 #include "prefab/defaults/cube.h"
 #include "prefab/defaults/empty_object.h"
 
@@ -316,9 +316,9 @@ bool initializeCppLibrary()
 
 
     //initializing prefabs!
+    Transform();
     ModelLoader();
     ShaderCompiler();
-    Transform();
     Cube();
     EmptyObject();
 
@@ -1308,7 +1308,7 @@ extern "C" {
         workingDirectory: projectPath, runInShell: true);
     showDialog(
       barrierDismissible: false,
-      context: MyApp.globalContext.currentContext!,
+      context: MainEngineApp.globalContext.currentContext!,
       builder: (context) {
         return RecompilingDialog(
           process: currentProcess!,
@@ -1321,10 +1321,10 @@ extern "C" {
 
     if (await currentProcess?.exitCode != 0) {
       lastCompilationResult.value = false;
-      Navigator.of(MyApp.globalContext.currentContext!).pop();
+      Navigator.of(MainEngineApp.globalContext.currentContext!).pop();
       return;
     }
-    Navigator.of(MyApp.globalContext.currentContext!).pop();
+    Navigator.of(MainEngineApp.globalContext.currentContext!).pop();
 
     if (Platform.isMacOS) {
       currentProcess = await Process.start("make", [projectFilteredName],
@@ -1332,7 +1332,7 @@ extern "C" {
 
       showDialog(
         barrierDismissible: false,
-        context: MyApp.globalContext.currentContext!,
+        context: MainEngineApp.globalContext.currentContext!,
         builder: (context) {
           return RecompilingDialog(
             process: currentProcess!,
@@ -1345,7 +1345,7 @@ extern "C" {
 
       if (await currentProcess?.exitCode != 0) {
         lastCompilationResult.value = false;
-        Navigator.of(MyApp.globalContext.currentContext!).pop();
+        Navigator.of(MainEngineApp.globalContext.currentContext!).pop();
         return;
       }
     }
@@ -1362,7 +1362,7 @@ extern "C" {
 
       showDialog(
         barrierDismissible: false,
-        context: MyApp.globalContext.currentContext!,
+        context: MainEngineApp.globalContext.currentContext!,
         builder: (context) {
           return RecompilingDialog(
             process: currentProcess!,
@@ -1374,11 +1374,11 @@ extern "C" {
       );
       if (await currentProcess?.exitCode != 0) {
         lastCompilationResult.value = false;
-        Navigator.of(MyApp.globalContext.currentContext!).pop();
+        Navigator.of(MainEngineApp.globalContext.currentContext!).pop();
         return;
       }
     }
-    Navigator.of(MyApp.globalContext.currentContext!).pop();
+    Navigator.of(MainEngineApp.globalContext.currentContext!).pop();
     lastCompilationResult.value = true;
 
     loadProjectLibrary();

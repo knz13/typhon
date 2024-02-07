@@ -6,6 +6,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:menu_bar/menu_bar.dart';
 import 'package:typhon/console_panel.dart';
 import 'package:typhon/engine_sub_window.dart';
+import 'package:typhon/environment.dart';
+import 'package:typhon/features/utils/typhon_multi_panel/typhon_multi_panel.dart';
 import 'package:typhon/general_widgets/general_widgets.dart';
 import 'package:typhon/hierarchy_panel/hierarchy_panel.dart';
 import 'package:typhon/inspector_panel/inspector_panel.dart';
@@ -36,6 +38,9 @@ double contextHeight(var context){
 }
 
 void main() async {
+
+  Environment.setEnvironment(Environment.devBackend);
+
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     setWindowTitle('Typhon');
@@ -57,21 +62,21 @@ void main() async {
   String libsDir = await TyphonCPPInterface.extractLib();
   
 
-  runApp(const MyApp());
+  runApp(const MainEngineApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class MainEngineApp extends StatefulWidget {
+  const MainEngineApp({super.key});
 
   static Offset globalMousePosition = Offset.zero;
   static GlobalKey<NavigatorState> globalContext = GlobalKey();
   static bool isInteractingWithWindow = false;
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<MainEngineApp> createState() => _MainEngineAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MainEngineAppState extends State<MainEngineApp> {
   @override
   void initState() {
 
@@ -81,8 +86,8 @@ class _MyAppState extends State<MyApp> {
 
     (() async {
       while(true){
-        if(MyApp.isInteractingWithWindow){
-          MyApp.isInteractingWithWindow = false;
+        if(MainEngineApp.isInteractingWithWindow){
+          MainEngineApp.isInteractingWithWindow = false;
         }
 
         await Future.delayed(Duration(seconds: 3));
@@ -92,19 +97,19 @@ class _MyAppState extends State<MyApp> {
 
   }
 
-  Widget buildMainApp() {
+  Widget buildMainEngine() {
     Widget mainAppWidget =  MouseRegion(
         onHover: (ev) {
-          MyApp.globalMousePosition = ev.position;
-          if(!MyApp.isInteractingWithWindow){
+          MainEngineApp.globalMousePosition = ev.position;
+          if(!MainEngineApp.isInteractingWithWindow){
             if(Engine.instance.shouldRecompile()){
               Engine.instance.reloadProject();
             }
-            MyApp.isInteractingWithWindow = true;
+            MainEngineApp.isInteractingWithWindow = true;
           }
         },
         child: MaterialApp(
-          navigatorKey: MyApp.globalContext,
+          navigatorKey: MainEngineApp.globalContext,
           theme: ThemeData(
   primaryColor: Colors.transparent,
   primaryColorLight: Colors.transparent,
@@ -175,9 +180,9 @@ class _MyAppState extends State<MyApp> {
                         label: "Project Selection",
                         onSelected: () {
                           Engine.instance.unload();
-                          Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
-                          Navigator.of(MyApp.globalContext.currentContext!).pop();
-                          Navigator.of(MyApp.globalContext.currentContext!).push(MaterialPageRoute(builder:(context) {
+                          Navigator.of(MainEngineApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
+                          Navigator.of(MainEngineApp.globalContext.currentContext!).pop();
+                          Navigator.of(MainEngineApp.globalContext.currentContext!).push(MaterialPageRoute(builder:(context) {
                             print("loading projects page!");
                             return ProjectsPage();
                           },));
@@ -194,6 +199,16 @@ class _MyAppState extends State<MyApp> {
   int page = 1;
   @override
   Widget build(BuildContext context) {
-    return buildMainApp();
+
+    if(Environment.getEnvironment() == Environment.devBackend || Environment.getEnvironment() == Environment.prodBackend) {
+      return buildMainEngine();
+    } else if(Environment.getEnvironment() == Environment.devMultipanels) {
+      return TyphonMultiPanel();
+    }
+    else {
+      return Container();
+    }
+
+
   }
 }

@@ -122,9 +122,11 @@ class _MainEngineFrontendState extends State<MainEngineFrontend> {
                               color: ConfigColors.primaryBlack,
                             ),
                             onTap: () {
-                              Navigator.of(MyApp.globalContext.currentContext!)
+                              Navigator.of(MainEngineApp
+                                      .globalContext.currentContext!)
                                   .popUntil((route) => route.isFirst);
-                              Navigator.of(MyApp.globalContext.currentContext!)
+                              Navigator.of(MainEngineApp
+                                      .globalContext.currentContext!)
                                   .push(MaterialPageRoute(
                                 builder: (context) {
                                   Engine.instance.unloadProject();

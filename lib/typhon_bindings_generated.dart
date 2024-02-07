@@ -405,9 +405,9 @@ class TyphonBindings {
   }
 
   late final _loadModelFromPathPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.Pointer<ffi.Char>, ffi.Int64)>>('loadModelFromPath');
+          ffi
+          .NativeFunction<ffi.Void Function(ffi.Pointer<ffi.Char>, ffi.Int64)>>(
+      'loadModelFromPath');
   late final _loadModelFromPath = _loadModelFromPathPtr
       .asFunction<void Function(ffi.Pointer<ffi.Char>, int)>();
 

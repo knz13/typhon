@@ -558,7 +558,8 @@ class _ProjectChoiceWindowState extends State<ProjectChoiceWindow> {
                                     context: context);
                                 return;
                               }
-                              Navigator.of(MyApp.globalContext.currentContext!)
+                              Navigator.of(MainEngineApp
+                                      .globalContext.currentContext!)
                                   .popUntil((route) => route.isFirst);
                               Navigator.of(context).pop();
                               Navigator.push(
@@ -720,8 +721,8 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                       borderRadius: BorderRadius.circular(5)),
                                   child: RawMaterialButton(
                                     onPressed: () {
-                                      //Navigator.of(MyApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
-                                      //Navigator.of(MyApp.globalContext.currentContext!).pop();
+                                      //Navigator.of(MainEngineApp.globalContext.currentContext!).popUntil((route) => route.isFirst);
+                                      //Navigator.of(MainEngineApp.globalContext.currentContext!).pop();
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -791,8 +792,8 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                         snapshot.data![snapshot.data!.keys
                                             .toList()[index]]["name"]);
                                   });
-                                  Navigator.of(
-                                          MyApp.globalContext.currentContext!)
+                                  Navigator.of(MainEngineApp
+                                          .globalContext.currentContext!)
                                       .popUntil((route) => route.isFirst);
                                   Navigator.pop(context);
                                   Navigator.push(
@@ -822,8 +823,10 @@ class _ProjectsPageState extends State<ProjectsPage> {
                                             onPressed: () {
                                               showNativeContextMenu(
                                                   context,
-                                                  MyApp.globalMousePosition.dx,
-                                                  MyApp.globalMousePosition.dy,
+                                                  MainEngineApp
+                                                      .globalMousePosition.dx,
+                                                  MainEngineApp
+                                                      .globalMousePosition.dy,
                                                   [
                                                     ContextMenuOption(
                                                         title: "Remove Project",
