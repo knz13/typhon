@@ -1,6 +1,6 @@
 # Typhon Engine
 
-A Game Engine written in Flutter/C++ to ease the entry barrier for C++ learners with an interactive UI made with flutter and make it easier to integrate existing C++ libraries in any game
+A Game Engine written in Flutter/C++ to ease the entry barrier for C++ learners with an interactive UI made with flutter to make it easier to integrate with existing C++ libraries in any game.
 
 ## Building
 
