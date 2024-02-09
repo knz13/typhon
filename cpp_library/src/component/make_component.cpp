@@ -1,32 +1,35 @@
 #include "make_component.h"
 
-std::vector<entt::id_type> ComponentInternals::ComponentStatics::componentTypes;
-std::map<std::string, int64_t> ComponentInternals::ComponentStatics::defaultComponentMenuMap;
-
-std::string ComponentInternals::GetDefaultComponentsJSON()
+namespace Typhon
 {
-    json prefabs;
-    for (const auto &[path, hash] : ComponentStatics::defaultComponentMenuMap)
+
+    std::vector<entt::id_type> ComponentInternals::ComponentStatics::componentTypes;
+    std::map<std::string, int64_t> ComponentInternals::ComponentStatics::defaultComponentMenuMap;
+
+    std::string ComponentInternals::GetDefaultComponentsJSON()
     {
-        auto strVector = HelperFunctions::SplitString(path, "/");
-        std::string componentName = strVector.back();
-        json *jsonPtr = &prefabs;
-        for (auto &str : strVector)
+        json prefabs;
+        for (const auto &[path, hash] : ComponentStatics::defaultComponentMenuMap)
         {
-            if (str == componentName)
+            auto strVector = HelperFunctions::SplitString(path, "/");
+            std::string componentName = strVector.back();
+            json *jsonPtr = &prefabs;
+            for (auto &str : strVector)
             {
-                break;
+                if (str == componentName)
+                {
+                    break;
+                }
+                if ((*jsonPtr).find(str) == (*jsonPtr).end())
+                {
+                    (*jsonPtr)[str] = json::object();
+                }
+                jsonPtr = &(*jsonPtr)[str];
             }
-            if ((*jsonPtr).find(str) == (*jsonPtr).end())
-            {
-                (*jsonPtr)[str] = json::object();
-            }
-            jsonPtr = &(*jsonPtr)[str];
+            (*jsonPtr)[componentName] = hash;
         }
-        (*jsonPtr)[componentName] = hash;
+
+        return prefabs.dump();
     }
 
-    return prefabs.dump();
 }
-
-

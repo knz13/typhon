@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
+#project name
+project(project_typhon)
 
 #adding extra cmake libs
 
@@ -6,8 +8,6 @@ include(ExternalProject)
 include(FetchContent)
 
 
-#project name
-project(project_typhon)
 
 option(TYPHON_RUN_TESTS "Run Tests" OFF)
 option(TYPHON_RENDER_2D "Use 2D Rendered" ON)
@@ -38,7 +38,7 @@ SET(FETCHCONTENT_QUIET FALSE)
     # libraries for target typhon...
     
    # list(APPEND typhon_LIBRARIES monopp)
-
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/glfw)
 
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/entt)
     
@@ -50,30 +50,18 @@ SET(FETCHCONTENT_QUIET FALSE)
         
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/crunch)
 
-    set(BX_AMALGAMATED ON)
-    set(BGFX_AMALGAMATED ON)
 
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/bgfx)
-    
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bx/include/)
 
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bimg/include/)
+    list(APPEND typhon_LIBRARIES bgfx bx bimg)
 
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bgfx/include/)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bgfx/include)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bx/include)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bimg/include)
 
-    list(APPEND typhon_LIBRARIES METAL_CPP bx bgfx bimg) 
+   
 
-    if(APPLE)
-      add_compile_definitions(OBJC_DEBUG_MISSING_POOLS=1)
-
-      add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/metal-cpp)
-    
-      list(APPEND typhon_LIBRARIES METAL_CPP)
-
-      list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/metal-cpp/metal-cpp/)
-
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/macos/macos_engine.cpp)
-    endif()
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/glfw/include/)
     
     
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/single_include/)
@@ -93,7 +81,7 @@ SET(FETCHCONTENT_QUIET FALSE)
     
 
 
-    list(APPEND typhon_LIBRARIES libcrunch)
+    list(APPEND typhon_LIBRARIES libcrunch glfw)
 
 
 
@@ -119,11 +107,12 @@ SET(FETCHCONTENT_QUIET FALSE)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/object/object_handle.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/prefab/prefab.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/component/make_component.cpp)
+      #list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon_generated.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/main.cpp)
     # creating target
 
 
-    add_library(typhon
-
+    add_executable(typhon
         ${typhon_SOURCE_FILES}
     )
 

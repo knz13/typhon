@@ -20,6 +20,7 @@ class AuxiliaryLibrary : public Reflection::IsInitializedStatically<AuxiliaryLib
 public:
     static void InitializeStatically()
     {
+        std::cout << "Initializing auxiliary library " << T::GetLibraryName() << std::endl;
         static std::string withName = ([]()
                                        {
             std::stringstream ss;
@@ -36,7 +37,9 @@ public:
                                                                                {
                                                                             try
                                                                             {
-                                                                                auxiliaryLibraryLib = std::make_shared<dylib>((std::filesystem::path(HelperStatics::projectPath) / std::filesystem::path("build")).string(), T::GetLibraryName());
+                                                                                std::filesystem::path path = "../assets/lib/auxiliary_libraries";
+
+                                                                                auxiliaryLibraryLib = std::make_shared<dylib>(std::filesystem::absolute(path).string(), T::GetLibraryName());
                                                                                 std::cout << "Loaded " << T::GetLibraryName() << " Auxiliary Library!" << std::endl;
                                                                             }
                                                                             catch (std::exception &e)

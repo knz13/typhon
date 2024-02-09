@@ -1,27 +1,32 @@
 #pragma once
 #include "../make_component.h"
 
-class Transform : public MakeComponent<Transform>, Internals::DefaultComponent<Transform>
+namespace Typhon
 {
-public:
-    std::string GetComponentMenuPath() override
+
+    class Transform : public MakeComponent<Transform>, Internals::DefaultComponent<Transform>
     {
-        return "Miscellaneous/Transform";
-    }
+    public:
+        std::string GetComponentMenuPath() override
+        {
+            return "Miscellaneous/Transform";
+        }
 
-    UIBuilder BuildEditorUI()
-    {
-        UIBuilder builder;
+        UIBuilder BuildEditorUI()
+        {
+            UIBuilder builder;
 
-        builder.DefineFields()
-            .AddVectorField("Position", position)
-            .AddVectorField("Rotation", rotation)
-            .AddVectorField("Scale", scale);
+            builder.DefineFields()
+                .AddVectorField("Position", position)
+                .AddVectorField("Rotation", rotation)
+                .AddVectorField("Scale", scale);
 
-        return builder;
+            return builder;
+        };
+
+        Vector3f position;
+        Vector3f rotation;
+        Vector3f scale;
     };
 
-    Vector3f position;
-    Vector3f rotation;
-    Vector3f scale;
-};
+}

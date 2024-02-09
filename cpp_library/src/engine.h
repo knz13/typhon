@@ -43,14 +43,14 @@ public:
 
     static void View(std::function<void(Typhon::Object)> viewFunc)
     {
-        return ECSRegistry::Get().each([=](entt::entity e)
-                                       { viewFunc(Typhon::Object(e)); });
+        return Typhon::ECSRegistry::Get().each([=](entt::entity e)
+                                               { viewFunc(Typhon::Object(e)); });
     }
 
     template <typename T>
     static void View(std::function<void(Typhon::Object)> viewFunc)
     {
-        for (auto entity : ECSRegistry::Get().view<T>())
+        for (auto entity : Typhon::ECSRegistry::Get().view<T>())
         {
             viewFunc(Typhon::Object(entity));
         }
@@ -58,7 +58,7 @@ public:
 
     static void View(entt::id_type typeID, std::function<void(Typhon::Object)> viewFunc)
     {
-        auto storage = ECSRegistry::Get().storage(typeID);
+        auto storage = Typhon::ECSRegistry::Get().storage(typeID);
         if (storage == nullptr)
         {
             return;
@@ -71,14 +71,14 @@ public:
 
     static int64_t NumberAlive()
     {
-        return ECSRegistry::Get().alive();
+        return Typhon::ECSRegistry::Get().alive();
     }
 
     static Typhon::Object GetObjectFromID(int64_t id)
     {
         entt::entity objID{static_cast<std::underlying_type_t<entt::entity>>(id)};
 
-        if (ECSRegistry::ValidateEntity(objID))
+        if (Typhon::ECSRegistry::ValidateEntity(objID))
         {
             return Typhon::Object(objID);
         }
@@ -101,10 +101,10 @@ public:
 
         for (auto entity : ids)
         {
-            if (ECSRegistry::ValidateEntity(entity))
+            if (Typhon::ECSRegistry::ValidateEntity(entity))
             {
                 Typhon::Object(entity).Clear();
-                ECSRegistry::DeleteObject(entity);
+                Typhon::ECSRegistry::DeleteObject(entity);
             }
         }
 
@@ -119,20 +119,20 @@ public:
 
     static bool ValidateHandle(int64_t handle)
     {
-        return ECSRegistry::ValidateEntity(entt::entity{static_cast<std::underlying_type_t<entt::entity>>(handle)});
+        return Typhon::ECSRegistry::ValidateEntity(entt::entity{static_cast<std::underlying_type_t<entt::entity>>(handle)});
     }
 
     static void Clear()
     {
-        ECSRegistry::Get().each([](entt::entity e)
-                                {
-            if(ECSRegistry::ValidateEntity(e)){
-                Typhon::Object(e).ForEachComponent([](Component& comp){
+        Typhon::ECSRegistry::Get().each([](entt::entity e)
+                                        {
+            if(Typhon::ECSRegistry::ValidateEntity(e)){
+                Typhon::Object(e).ForEachComponent([](Typhon::Component& comp){
                     comp.InternalDestroy();
                 });
             } });
 
-        ECSRegistry::Clear();
+        Typhon::ECSRegistry::Clear();
     };
 
     static bool DeserializeToCurrent(std::string scene);

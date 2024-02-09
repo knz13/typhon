@@ -90,9 +90,6 @@ if not os.path.exists("src/vendor"):
 
 #if get_first_available_cpp_compiler() == None:
 
-if not os.path.exists("src/vendor/bgfx"):
-    os.system('git clone --recursive https://github.com/bkaradzic/bgfx.cmake src/vendor/bgfx')
-
 if not os.path.exists("src/vendor/dylib"):
     os.system('git clone --recursive https://github.com/martin-olivier/dylib src/vendor/dylib')
 if not os.path.exists("src/vendor/entt"):
@@ -105,8 +102,10 @@ if not os.path.exists("src/vendor/glm"):
     os.system('git clone --recursive https://github.com/g-truc/glm src/vendor/glm')
 if not os.path.exists("src/vendor/json"):
     os.system('git clone --recursive https://github.com/nlohmann/json src/vendor/json')
-if not os.path.exists("src/vendor/igl"):
-        os.system('git clone --recursive https://github.com/facebook/igl/ src/vendor/igl')    
+if not os.path.exists("src/vendor/bgfx"):
+    os.system('git clone --recursive https://github.com/bkaradzic/bgfx.cmake src/vendor/bgfx')
+if not os.path.exists("src/vendor/glfw"):
+    os.system('git clone --recursive https://github.com/glfw/glfw src/vendor/glfw')
 if not os.path.exists("src/vendor/crunch"):
     os.system('git clone --recursive https://github.com/johnfredcee/crunch src/vendor/crunch')
 
@@ -141,133 +140,93 @@ namespace Crunch {
 
         with open(f'src/vendor/crunch/crunch/{file}','w') as f:
             f.write(file_data)
-        
 
 
+print("Finished downloading dependencies!")
 
-if platform.system() == "Darwin":
-    if not os.path.exists("src/vendor/metal-cpp"):
-        os.system('git clone --recursive https://github.com/LeeTeng2001/metal-cpp-cmake src/vendor/metal-cpp')
-        for file in os.listdir('src/vendor/metal-cpp'):
-            if file != "metal-cmake":
-                os.system(f'rm -rf src/vendor/metal-cpp/{file}')
 
-        shutil.copytree("src/vendor/metal-cpp/metal-cmake",'src/vendor/metal-cpp/',dirs_exist_ok=True)
-        os.system("rm -rf src/vendor/metal-cpp/metal-cmake")
+if False:
+    os.system("echo Running CMake Configuration for Main Library!")
+    os.system(' '.join([cmake_command, '-DTYPHON_RUN_TESTS=OFF',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-G Ninja") if platform.system() != "Darwin" else "",'-S ./', '-B build']))
+    os.system("echo Finished Running CMake Configuration for Main Library!")
 
-        with open("src/vendor/metal-cpp/CMakeLists.txt",'w') as f:
-            f.write("""# Library definition
-add_library(METAL_CPP
-        ${CMAKE_CURRENT_SOURCE_DIR}/definition.cpp
-        )
+    os.chdir(os.path.join(current_dir,"cpp_library","build"))
+    os.system("echo Building Typhon Library!")
+    os.system(f'{"make typhon" if platform.system() == "Darwin" else "ninja"}')
+    os.system("echo Built Typhon Library!")
+    os.chdir(os.path.join(current_dir,"cpp_library"))
 
-set_target_properties(METAL_CPP PROPERTIES
-    CXX_STANDARD 20
-)
-
-# setting c standard
-
-set_target_properties(METAL_CPP PROPERTIES
-    C_STANDARD 20
-)
-
-# Metal cpp headers
-target_include_directories(METAL_CPP PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/metal-cpp-extensions"
-        )
-
-# Metal cpp library (linker)
-target_link_libraries(METAL_CPP
-        "-framework Metal"
-        "-framework MetalKit"
-        "-framework AppKit"
-        "-framework Foundation"
-        "-framework QuartzCore"
-        )
-""")
-
-os.system("echo Running CMake Configuration for Main Library!")
-os.system(' '.join([cmake_command, '-DTYPHON_RUN_TESTS=OFF',("-DCMAKE_BUILD_TYPE=" + ("Release" if args.Release else "Debug")),("-G Ninja") if platform.system() != "Darwin" else "",'-S ./', '-B build']))
-os.system("echo Finished Running CMake Configuration for Main Library!")
-
-os.chdir(os.path.join(current_dir,"cpp_library","build"))
-os.system("echo Building Typhon Library!")
-os.system(f'{"make typhon" if platform.system() == "Darwin" else "ninja"}')
-os.system("echo Built Typhon Library!")
-os.chdir(os.path.join(current_dir,"cpp_library"))
-
-roots = []
-os.makedirs("../assets/lib",exist_ok=True)
-shutil.copyfile("CMakeLists.txt","../assets/lib/CMakeLists.txt")
-dir = os.listdir("src")
-num_files = 0
-for root, dirs, files in os.walk('src'):
-    root = os.path.abspath(root)
-    if os.path.basename(root).startswith("."):
-        continue
-    for file in files:
+    roots = []
+    os.makedirs("../assets/lib",exist_ok=True)
+    shutil.copyfile("CMakeLists.txt","../assets/lib/CMakeLists.txt")
+    dir = os.listdir("src")
+    num_files = 0
+    for root, dirs, files in os.walk('src'):
+        root = os.path.abspath(root)
         if os.path.basename(root).startswith("."):
             continue
-        if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")))):
-            os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src"))),exist_ok=True)
-        if root not in roots:
-            roots.append(root)
-        num_files += 1
+        for file in files:
+            if os.path.basename(root).startswith("."):
+                continue
+            if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")))):
+                os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src"))),exist_ok=True)
+            if root not in roots:
+                roots.append(root)
+            num_files += 1
+                
+        #print(f"Done dir {root}")
+
+    os.chdir(current_dir)
+
+    print("Copying Files To Assets!")
+
+    os.chdir("cpp_library")
+
+    distutils.dir_util.copy_tree(
+        "src",
+        os.path.join("../assets","lib",'src'),
+        update=1,
+        verbose=1,
+    )
+
+    print("Finished Copying Files To Assets!")
+
+    paths_to_add_to_pubspec = []
+    for root in roots:
+        path = os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")).replace("\\","/")
+        paths_to_add_to_pubspec.append(f'    - assets/lib/src/{path}/')
+
+
+
+    os.chdir(current_dir)
+
+    for file in os.listdir("assets/lib/auxiliary_libraries"):
+        paths_to_add_to_pubspec.append(f'    - assets/lib/auxiliary_libraries/{file}')
+
+    pubspecNew = ""
+    with open("pubspec.yaml",'r') as f:
+        lines = f.readlines()
+        shouldStartIncluding = False
+
+        for line in lines:
+            if "__BEGIN__ASSETS__INCLUSION__" in line:
+                pubspecNew += line
+                shouldStartIncluding = True
             
-    #print(f"Done dir {root}")
-
-os.chdir(current_dir)
-
-print("Copying Files To Assets!")
-
-os.chdir("cpp_library")
-
-distutils.dir_util.copy_tree(
-    "src",
-    os.path.join("../assets","lib",'src'),
-    update=1,
-    verbose=1,
-)
-
-print("Finished Copying Files To Assets!")
-
-paths_to_add_to_pubspec = []
-for root in roots:
-    path = os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")).replace("\\","/")
-    paths_to_add_to_pubspec.append(f'    - assets/lib/src/{path}/')
+            if "__END__ASSETS__INCLUSION__" in line:
+                pubspecNew += "\n".join(paths_to_add_to_pubspec) + "\n"
+                pubspecNew += line
+                shouldStartIncluding = False
+                continue
 
 
+            if shouldStartIncluding:
+                continue
 
-os.chdir(current_dir)
-
-for file in os.listdir("assets/lib/auxiliary_libraries"):
-    paths_to_add_to_pubspec.append(f'    - assets/lib/auxiliary_libraries/{file}')
-
-pubspecNew = ""
-with open("pubspec.yaml",'r') as f:
-    lines = f.readlines()
-    shouldStartIncluding = False
-
-    for line in lines:
-        if "__BEGIN__ASSETS__INCLUSION__" in line:
             pubspecNew += line
-            shouldStartIncluding = True
-        
-        if "__END__ASSETS__INCLUSION__" in line:
-            pubspecNew += "\n".join(paths_to_add_to_pubspec) + "\n"
-            pubspecNew += line
-            shouldStartIncluding = False
-            continue
 
-
-        if shouldStartIncluding:
-            continue
-
-        pubspecNew += line
-
-with open("pubspec.yaml",'w') as f:
-    f.write(pubspecNew)
+    with open("pubspec.yaml",'w') as f:
+        f.write(pubspecNew)
 
 cpp_exports = ""
 cpp_exports_impl = ""
@@ -353,61 +312,36 @@ with open("cpp_library/src/typhon.cpp",'r') as f:
         if shouldAddLine:
             cpp_exports_impl += line + "\n"
 
-engine_new_code = ""
-with open("lib/engine.dart",'r') as f:
-    lines = f.readlines()
-    foundCppExportsLine = False
-    foundCppExportsImplLine = False
 
-    for line in lines:
-        if "//__BEGIN__CPP__EXPORTS__" in line:
-            foundCppExportsLine = True
-            engine_new_code += line
-        if "//__BEGIN__CPP__IMPL__" in line:
-            foundCppExportsImplLine = True
-            engine_new_code += line
-        if "//__END__CPP__EXPORTS__" in line:
-            foundCppExportsLine = False
-            engine_new_code += cpp_exports
-            engine_new_code += "//__END__CPP__EXPORTS__\n"
-            continue
-        if "//__END__CPP__IMPL__" in line:
-            foundCppExportsImplLine = False
-            engine_new_code += cpp_exports_impl
-            engine_new_code += "//__END__CPP__IMPL__\n"
-            continue
+print(f"Writting to cpp_library/src/typhon_generated.cpp")
+with open("cpp_library/src/typhon_generated.cpp","w") as f:
+    f.write(cpp_exports_impl)
 
-        if foundCppExportsImplLine or foundCppExportsLine:
-            continue
 
-        engine_new_code += line
+
+if False:
+    os.system('echo "Updating dart bindings file..."')
+
+    os.system(f'dart run ffigen --config ffigen_typhon.yaml')
+
+    os.system('echo "Done updating dart bindings file!"')
+
+    if not args.run_tests:
+        quit()
+
+    os.chdir("cpp_library/build")
+    if platform.system() == "Darwin":
+        os.system('echo "Building tests...')
+
+
+        os.system(f'{"make typhon_tests"}')
+
+        os.system('echo "Build finished!"')
+
+    os.system('echo "Running tests"')
+
+    if platform.system() == "Darwin":
+        subprocess.call(["open","typhon_tests"])
+    else:
+        subprocess.call(["typhon_tests.exe"])
         
-with open("lib/engine.dart",'w') as f:
-    f.write(engine_new_code)
-
-
-os.system('echo "Updating dart bindings file..."')
-
-os.system(f'dart run ffigen --config ffigen_typhon.yaml')
-
-os.system('echo "Done updating dart bindings file!"')
-
-if not args.run_tests:
-    quit()
-
-os.chdir("cpp_library/build")
-if platform.system() == "Darwin":
-    os.system('echo "Building tests...')
-
-
-    os.system(f'{"make typhon_tests"}')
-
-    os.system('echo "Build finished!"')
-
-os.system('echo "Running tests"')
-
-if platform.system() == "Darwin":
-    subprocess.call(["open","typhon_tests"])
-else:
-    subprocess.call(["typhon_tests.exe"])
-    

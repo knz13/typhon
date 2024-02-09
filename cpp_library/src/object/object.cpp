@@ -15,7 +15,7 @@ void Typhon::Object::Deserialize(const json &val)
     TODO
     if (val.contains("components")) {
         for (const auto& compJSON : val["components"]) {
-            Component& comp = AddComponent();
+            Typhon::Component& comp = AddComponent();
             comp.Deserialize(compJSON);
         }
     } */
@@ -34,7 +34,7 @@ void Typhon::Object::Deserialize(const json &val)
     }
 }
 
-void Typhon::Object::ForEachComponent(std::function<void(Component &)> func)
+void Typhon::Object::ForEachComponent(std::function<void(Typhon::Component &)> func)
 {
     if (!Valid())
     {
@@ -45,7 +45,7 @@ void Typhon::Object::ForEachComponent(std::function<void(Component &)> func)
         bool foundStorageType = std::find(ComponentInternals::ComponentStatics::componentTypes.begin(), ComponentInternals::ComponentStatics::componentTypes.end(), name) != ComponentInternals::ComponentStatics::componentTypes.end();
         if (storage.contains(ID()) && storage.type() != entt::type_id<ObjectStorage>() && foundStorageType)
         {
-            func(*((Component *)storage.get(ID())));
+            func(*((Typhon::Component *)storage.get(ID())));
         }
     }
 }

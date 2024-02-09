@@ -1,27 +1,40 @@
 #include "rendering_engine.h"
-#ifdef __APPLE__
+/* #ifdef __APPLE__
 #include "macos/macos_engine.h"
-#endif
+#endif */
 
-#include "bgfx/bgfx.h"
+bool RenderingEngine::bgfxInitialized = false;
 
-std::unique_ptr<PlatformSpecificRenderingEngine> RenderingEngine::platformSpecificRenderingEngine;
-
-void RenderingEngine::PassPlatformSpecificViewPointer(void *view)
+void RenderingEngine::Render()
 {
-    if (platformSpecificRenderingEngine)
+    if (RenderingEngine::bgfxInitialized)
     {
-        // platformSpecificRenderingEngine.get()->ReceivePlatformSpecificViewPointer(view);
     }
+}
+
+void RenderingEngine::UnloadEngine()
+{
+    std::cout << "Unloading engine completely!" << std::endl;
+
+    if (RenderingEngine::bgfxInitialized)
+    {
+    }
+};
+
+void RenderingEngine::PassPlatformSpecificViewPointer(void *window)
+{
+
+    /* std::cout << "starting bgfx section!" << std::endl;
     bgfx::PlatformData pd;
 
-    pd.nwh = view;
+    pd.nwh = window;
 
     bgfx::Init bgfxInit;
 
     bgfxInit.platformData = pd;
 #ifdef __APPLE__
     bgfxInit.type = bgfx::RendererType::Metal;
+
 #else
 
 #endif
@@ -29,32 +42,45 @@ void RenderingEngine::PassPlatformSpecificViewPointer(void *view)
     bgfxInit.resolution.width = 1500;
     bgfxInit.resolution.height = 1500;
     bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
-    bgfx::init(bgfxInit);
+
+    std::cout << "initializing bgfx!" << std::endl;
+
+    RenderingEngine::bgfxInitialized = bgfx::init(bgfxInit);
+
+    if (!RenderingEngine::bgfxInitialized)
+    {
+        std::cout << "bgfx failed to initialize!" << std::endl;
+
+        return;
+    }
+
+    std::cout << "setting debug!" << std::endl;
+
+    bgfx::setDebug(BGFX_DEBUG_TEXT);
+
+    std::cout << "setting view!" << std::endl;
 
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xffA2EB00, 1.0f, 0);
     bgfx::setViewRect(0, 0, 0, 1500, 1500);
 
+    std::cout << "frame!" << std::endl;
+
     bgfx::frame();
+
+    std::cout << "view pointer passed and rendered!" << std::endl; */
 }
 
 void *RenderingEngine::GetPlatformSpecificPointer()
 {
-    if (platformSpecificRenderingEngine)
-    {
-        return platformSpecificRenderingEngine.get()->GetPlatformSpecificPointer();
-    }
+
     return nullptr;
 }
 
-void RenderingEngine::InitializeEngine()
-{
-#ifdef __APPLE__
-    // platformSpecificRenderingEngine = std::make_unique<MacOSEngine>();
-#endif
+void RenderingEngine::InitializeEngine(){
 
     // platformSpecificRenderingEngine.get()->InitializeRenderingEngine();
 
-    std::string vertexShader = R"(
+    /* std::string vertexShader = R"(
 #version 330 core
 
 layout (location = 0) in vec3 vertexPosition;
@@ -91,7 +117,7 @@ FragColor = vec4(1,0,1, 1.0);
     {
         std::cout << fragResult.error << std::endl;
         return;
-    }
+    } */
 
     // platformSpecificRenderingEngine.get()->LoadVertexShader("MyVertex", vertResult);
     // platformSpecificRenderingEngine.get()->LoadFragmentShader("MyFragment", fragResult);

@@ -15,13 +15,7 @@
 #include <functional>
 #include <sstream>
 
-#ifdef __APPLE__
-#include "vendor/metal-cpp/metal-cpp-extensions/AppKit/AppKit.hpp"
-#include "vendor/metal-cpp/metal-cpp/Foundation/Foundation.hpp"
-#include "vendor/metal-cpp/metal-cpp/Metal/Metal.hpp"
-#include "vendor/metal-cpp/metal-cpp-extensions/MetalKit/MetalKit.hpp"
-#include "vendor/metal-cpp/metal-cpp/QuartzCore/QuartzCore.hpp"
-#endif
+
 
 #ifndef M_PI
 #define M_PI 3.141592653589793238462643383279502884197

@@ -2,11 +2,17 @@
 #include "../ecs_registry.h"
 #include "object.h"
 
+namespace Typhon
+{
 
-Typhon::Object ObjectHandle::GetAsObject() {
-    return Typhon::Object(handle);
-}
+    Object ObjectHandle::GetAsObject()
+    {
+        return Typhon::Object(handle);
+    }
 
-ObjectHandle::operator bool() const {
-    return ECSRegistry::Get().valid(handle);
+    ObjectHandle::operator bool() const
+    {
+        return ECSRegistry::Get().valid(handle);
+    }
+
 }

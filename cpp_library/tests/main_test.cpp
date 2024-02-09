@@ -6,14 +6,15 @@
 #include "../src/object.h"
 #include <algorithm>
 
-
-TEST_CASE("Get Class Name testing") {
-    REQUIRE(strcmp(HelperFunctions::GetClassNameStringCompileTime<Engine>(),"Engine")==0);
-    REQUIRE(HelperFunctions::GetClassNameString<Component>() == "Component");
+TEST_CASE("Get Class Name testing")
+{
+    REQUIRE(strcmp(HelperFunctions::GetClassNameStringCompileTime<Engine>(), "Engine") == 0);
+    REQUIRE(HelperFunctions::GetClassNameString<Typhon::Component>() == "Typhon::Component");
     REQUIRE(HelperFunctions::GetClassNameString<Object>() == "Object");
 }
 
-TEST_CASE("Initial object testing") {
+TEST_CASE("Initial object testing")
+{
     Object obj(ECSRegistry::CreateEntity());
 
     REQUIRE(obj.Valid());
@@ -23,10 +24,10 @@ TEST_CASE("Initial object testing") {
     ECSRegistry::Clear();
 }
 
-TEST_CASE("Object parenting") {
+TEST_CASE("Object parenting")
+{
     Object obj(ECSRegistry::CreateEntity());
     Object objTwo(ECSRegistry::CreateEntity());
-
 
     REQUIRE(!objTwo.HasParent());
     REQUIRE(!obj.HasParent());
@@ -53,25 +54,25 @@ TEST_CASE("Object parenting") {
     ECSRegistry::Clear();
 }
 
-
-class SomeComponent : public MakeComponent<SomeComponent> {
+class SomeComponent : public MakeComponent<SomeComponent>
+{
 public:
-
     int someValue = -1;
     int someOtherValue = 3;
 };
 
-TEST_CASE("Component names") {
+TEST_CASE("Typhon::Component names")
+{
     Engine::Initialize();
 
     Engine::Unload();
 }
 
-TEST_CASE("Components testing") {
+TEST_CASE("Components testing")
+{
     Engine::Initialize();
     Object obj = Engine::CreateObject();
 
-    
     REQUIRE(!obj.HasAnyOf<SomeComponent>());
     REQUIRE(!obj.HasAllOf<SomeComponent>());
     REQUIRE(obj.GetComponentsNames().size() == 0);
@@ -81,19 +82,18 @@ TEST_CASE("Components testing") {
     REQUIRE(obj.HasAnyOf<SomeComponent>());
     REQUIRE(obj.HasAllOf<SomeComponent>());
 
-    Component* comp = obj.GetComponent<SomeComponent>();
+    Typhon::Component *comp = obj.GetComponent<SomeComponent>();
 
     REQUIRE(comp != nullptr);
-    static_cast<SomeComponent*>(comp)->someValue = -1;
+    static_cast<SomeComponent *>(comp)->someValue = -1;
 
     REQUIRE(obj.GetComponent<SomeComponent>()->someValue == -1);
 
     Engine::Unload();
-
 }
 
-
-TEST_CASE("For multiple objects") {
+TEST_CASE("For multiple objects")
+{
 
     std::vector<Object> objects;
     Object parent;
@@ -104,7 +104,8 @@ TEST_CASE("For multiple objects") {
 
     REQUIRE(parent.Valid());
 
-    for(int i = 0;i< 100; i++){
+    for (int i = 0; i < 100; i++)
+    {
         Object temp = Object(ECSRegistry::CreateEntity());
         REQUIRE(temp.AddComponent<SomeComponent>());
         temp.GetComponent<SomeComponent>()->someValue = i;
@@ -113,41 +114,39 @@ TEST_CASE("For multiple objects") {
 
     REQUIRE(ECSRegistry::Get().alive() == 101);
 
-    for(auto& obj : objects) {
+    for (auto &obj : objects)
+    {
         obj.SetParent(parent);
     }
 
-    auto& someObj = *Random::get(objects);
+    auto &someObj = *Random::get(objects);
     REQUIRE(someObj.IsChildOf(parent));
-
 
     REQUIRE(parent.NumberOfChildren() == 100);
 
-    parent.RemoveChildren();    
+    parent.RemoveChildren();
 
     REQUIRE(parent.NumberOfChildren() == 0);
 
-    auto& obj = *Random::get(objects);
+    auto &obj = *Random::get(objects);
 
     REQUIRE(obj.HasComponent<SomeComponent>());
 
-    REQUIRE(obj.GetComponent<SomeComponent>()->someValue == std::distance(objects.begin(),std::find(objects.begin(),objects.end(),obj)));
+    REQUIRE(obj.GetComponent<SomeComponent>()->someValue == std::distance(objects.begin(), std::find(objects.begin(), objects.end(), obj)));
 
     REQUIRE(!obj.IsChildOf(parent));
 
-
     ECSRegistry::Clear();
-
 }
 
-class NamedComponent : public MakeComponent<NamedComponent> {
-
+class NamedComponent : public MakeComponent<NamedComponent>
+{
 };
 
-TEST_CASE("Components from names") {
+TEST_CASE("Components from names")
+{
     NamedComponent();
     Engine::Initialize();
-
 
     Object obj = Object(ECSRegistry::CreateEntity());
 
@@ -155,101 +154,95 @@ TEST_CASE("Components from names") {
     REQUIRE(resolved.operator bool());
     auto func = entt::resolve(entt::hashed_string("NamedComponent")).func(entt::hashed_string("AddComponent"));
     REQUIRE(func);
-    func.invoke({},obj.ID());
+    func.invoke({}, obj.ID());
 
     REQUIRE(obj.HasComponent<NamedComponent>());
 
     Engine::Unload();
-
 }
 
-
-template<typename... Derived>
-class A {
-
+template <typename... Derived>
+class A
+{
 };
 
-template<typename... Derived>
-class B : public A<B<Derived...>,Derived...> {
-
+template <typename... Derived>
+class B : public A<B<Derived...>, Derived...>
+{
 };
 
-
-
-class C {
-
+class C
+{
 };
 
-class COther {
-
+class COther
+{
 };
 
-
-class D : public C,public COther {
-    
+class D : public C, public COther
+{
 };
 
 int globalValue = 0;
 
-class InitializedStaticallyTest : public Reflection::IsInitializedStatically<InitializedStaticallyTest> {
+class InitializedStaticallyTest : public Reflection::IsInitializedStatically<InitializedStaticallyTest>
+{
 public:
-    static void InitializeStatically() {
+    static void InitializeStatically()
+    {
         globalValue = 1;
     };
 };
 
-class GameObjectDerived : public DerivedFromGameObject<GameObjectDerived> {
-
+class GameObjectDerived : public DerivedFromGameObject<GameObjectDerived>
+{
 };
 
-
-
-
-TEST_CASE("Testing General Templating And Engine Methods") {
-    SECTION("Testing IndexOfTopClass"){
-        REQUIRE(Reflection::IndexOfTopClass<C,D,COther>() == 1);
-        REQUIRE(Reflection::IndexOfTopClass<D,C,COther>() == 0);
-        REQUIRE(Reflection::IndexOfTopClass<COther,C,D>() == 2);
+TEST_CASE("Testing General Templating And Engine Methods")
+{
+    SECTION("Testing IndexOfTopClass")
+    {
+        REQUIRE(Reflection::IndexOfTopClass<C, D, COther>() == 1);
+        REQUIRE(Reflection::IndexOfTopClass<D, C, COther>() == 0);
+        REQUIRE(Reflection::IndexOfTopClass<COther, C, D>() == 2);
     }
 
-    SECTION("Engine initialization and unload") {
+    SECTION("Engine initialization and unload")
+    {
         Engine::Initialize();
 
         Engine::Unload();
-
     }
 
-    SECTION("Initialize statically test"){
+    SECTION("Initialize statically test")
+    {
         InitializedStaticallyTest();
 
         REQUIRE(globalValue == 0);
 
         Engine::Initialize();
-        
 
         REQUIRE(globalValue == 1);
 
-
         Engine::Unload();
     }
 
-    
-    
-
-    SECTION("GameObject Removal") {
+    SECTION("GameObject Removal")
+    {
         Engine::Initialize();
-/* 
-        GameObject& obj = Engine::CreateNewGameObject<GameObject>();
+        /*
+                GameObject& obj = Engine::CreateNewGameObject<GameObject>();
 
-        Engine::RemoveGameObject(obj);
+                Engine::RemoveGameObject(obj);
 
-        REQUIRE(Engine::AliveObjects() == 0);
-        REQUIRE(!obj.Valid()); */
+                REQUIRE(Engine::AliveObjects() == 0);
+                REQUIRE(!obj.Valid()); */
 
         Engine::Unload();
     }
 
-    SECTION("GameObject Removal By Handle") {
+    SECTION("GameObject Removal By Handle")
+    {
         Engine::Initialize();
 
         /* GameObject& obj = Engine::CreateNewGameObject<GameObject>();
@@ -262,27 +255,27 @@ TEST_CASE("Testing General Templating And Engine Methods") {
         Engine::Unload();
     }
 
-    SECTION("Keys pressed") {
+    SECTION("Keys pressed")
+    {
         Engine::PushKeyDown(Keys::Key::A);
 
         REQUIRE(Engine::IsKeyPressed(Keys::Key::A));
 
         REQUIRE(!Engine::IsKeyPressed(Keys::Key::B));
     }
-
-    
 }
 
-
-class E : public DerivedFromGameObject<E> {
+class E : public DerivedFromGameObject<E>
+{
 
 public:
-
-    void Create() {
+    void Create()
+    {
         someValue = 2;
     };
 
-    void Destroy() {
+    void Destroy()
+    {
         someValueOnDestroy = -1;
     };
 
@@ -290,310 +283,322 @@ public:
     static inline int someValueOnDestroy = 0;
 };
 
-TEST_CASE("Testing GameObject derivation") {
-    SECTION("GameObject creation") {
+TEST_CASE("Testing GameObject derivation")
+{
+    SECTION("GameObject creation")
+    {
         E();
         Engine::Initialize();
 
-       /*  E& obj = Engine::CreateNewGameObject<E>();
+        /*  E& obj = Engine::CreateNewGameObject<E>();
 
-        REQUIRE(obj.ClassName() == "E");
+         REQUIRE(obj.ClassName() == "E");
 
-        REQUIRE(obj.Valid());
- */
+         REQUIRE(obj.Valid());
+  */
         Engine::Unload();
     }
 
-    SECTION("Create GameObject from class name") {
+    SECTION("Create GameObject from class name")
+    {
 
         Engine::Initialize();
 
-       /*  GameObject* obj = Engine::CreateNewGameObject("E");
-        
-        REQUIRE(obj != nullptr);
+        /*  GameObject* obj = Engine::CreateNewGameObject("E");
 
-        REQUIRE(obj->ClassName() == "E");
+         REQUIRE(obj != nullptr);
 
-        REQUIRE(obj->Valid()); */
+         REQUIRE(obj->ClassName() == "E");
+
+         REQUIRE(obj->Valid()); */
 
         Engine::Unload();
     }
 
-    SECTION("GameObject Create function") {
+    SECTION("GameObject Create function")
+    {
         Engine::Initialize();
 
         REQUIRE(E().someValue == 0);
-/* 
-        REQUIRE(Engine::CreateNewGameObject<E>().someValue == 2);
- */
+        /*
+                REQUIRE(Engine::CreateNewGameObject<E>().someValue == 2);
+         */
         Engine::Unload();
     }
 
-    SECTION("GameObject Destroy function") {
+    SECTION("GameObject Destroy function")
+    {
         E::someValueOnDestroy = 0;
         Engine::Initialize();
 
-       /*  REQUIRE(E::someValueOnDestroy == 0);
+        /*  REQUIRE(E::someValueOnDestroy == 0);
 
-        E& obj = Engine::CreateNewGameObject<E>();
-        
-        REQUIRE(E::someValueOnDestroy == 0);
+         E& obj = Engine::CreateNewGameObject<E>();
 
-        Engine::RemoveGameObject(obj);
+         REQUIRE(E::someValueOnDestroy == 0);
 
-        REQUIRE(E::someValueOnDestroy == -1);
- */
+         Engine::RemoveGameObject(obj);
+
+         REQUIRE(E::someValueOnDestroy == -1);
+  */
         Engine::Unload();
     }
 
-    SECTION("OnDestroy event") {
+    SECTION("OnDestroy event")
+    {
         Engine::Initialize();
 
-       /*  std::string someString = "ababa";
-        E& obj = Engine::CreateNewGameObject<E>();
-        obj.OnBeingDestroyed().Connect([&](){
-            someString = "abracadabra";
-        });
+        /*  std::string someString = "ababa";
+         E& obj = Engine::CreateNewGameObject<E>();
+         obj.OnBeingDestroyed().Connect([&](){
+             someString = "abracadabra";
+         });
 
-        REQUIRE(someString == "ababa");
+         REQUIRE(someString == "ababa");
 
-        Engine::RemoveGameObject(obj);
+         Engine::RemoveGameObject(obj);
 
-        REQUIRE(someString == "abracadabra");
- */
+         REQUIRE(someString == "abracadabra");
+  */
         Engine::Unload();
     }
-
-    
-
 }
 
 class F : public DerivedFromGameObject<F,
-    Traits::HasUpdate<F>
-    > {
+                                       Traits::HasUpdate<F>>
+{
 public:
-    void Update(double dt) {
+    void Update(double dt)
+    {
         someValue += 1;
     }
 
     int someValue = 0;
-
 };
 
-namespace Traits {
-    class SomeTrait {
-    public: 
-        void Create() {
-            
+namespace Traits
+{
+    class SomeTrait
+    {
+    public:
+        void Create(){
+
         };
 
-        void Destroy() {
+        void Destroy(){
 
         };
     };
 }
 
-class G : public DerivedFromGameObject<G,Traits::SomeTrait> {};
+class G : public DerivedFromGameObject<G, Traits::SomeTrait>
+{
+};
 
-class H : public DerivedFromGameObject<H> {
+class H : public DerivedFromGameObject<H>
+{
 public:
-    static std::string TitleOnEditor() {
+    static std::string TitleOnEditor()
+    {
         return "Class H";
-    } 
+    }
 
-
-    void Serialize(json& json){
-
+    void Serialize(json &json)
+    {
     }
 };
 
+TEST_CASE("Traits testing")
+{
 
-
-TEST_CASE("Traits testing") {
-
-    SECTION("Simple trait") {
+    SECTION("Simple trait")
+    {
         Engine::Initialize();
 
-       /*  G& obj = Engine::CreateNewGameObject<G>();
- */
+        /*  G& obj = Engine::CreateNewGameObject<G>();
+         */
         Engine::Unload();
     }
 
-    SECTION("Update trait") {
+    SECTION("Update trait")
+    {
         Engine::Initialize();
 
-       /*  F& obj = Engine::CreateNewGameObject<F>();
-        REQUIRE(obj.someValue == 0);
+        /*  F& obj = Engine::CreateNewGameObject<F>();
+         REQUIRE(obj.someValue == 0);
 
-        Engine::Update(0.0f);
+         Engine::Update(0.0f);
 
-        REQUIRE(obj.someValue == 1);
+         REQUIRE(obj.someValue == 1);
 
-        Engine::Update(0.0f);
+         Engine::Update(0.0f);
 
-        REQUIRE(obj.someValue == 2);
- */
+         REQUIRE(obj.someValue == 2);
+  */
         Engine::Unload();
     }
-
 }
 
-
-
-class SomeTraitToBeSerialized {
+class SomeTraitToBeSerialized
+{
 public:
-
     int traitData = -2;
 
-    void Serialize(json& json) {
+    void Serialize(json &json)
+    {
         json["traitData"] = traitData;
     }
 
-
-    void Deserialize(const json& json){
-        if(json.contains("traitData")){
+    void Deserialize(const json &json)
+    {
+        if (json.contains("traitData"))
+        {
             json.at("traitData").get_to(traitData);
         }
     }
-
 };
 
-class SerializationClassA : public DerivedFromGameObject<SerializationClassA,SomeTraitToBeSerialized> {
+class SerializationClassA : public DerivedFromGameObject<SerializationClassA, SomeTraitToBeSerialized>
+{
 public:
-
     int someInsideValue = 0;
 
+    void Serialize(json &json)
+    {
 
-    void Serialize(json& json) {
-        
         someInsideValue = 1;
 
         json["someInsideValue"] = someInsideValue;
-
     }
 
-    void Deserialize(const json& json) {
-        if(json.contains("someInsideValue")){
+    void Deserialize(const json &json)
+    {
+        if (json.contains("someInsideValue"))
+        {
             json.at("someInsideValue").get_to(someInsideValue);
         }
     }
 };
 
-
-class SerializationClassB : public DerivedFromGameObject<SerializationClassB>{
+class SerializationClassB : public DerivedFromGameObject<SerializationClassB>
+{
 public:
     int someOtherValue = -2;
-    
-    void InternalSerialize(json& json) {
+
+    void InternalSerialize(json &json)
+    {
         someOtherValue = 10;
         json["someOtherValue"] = someOtherValue;
     };
 
-    void InternalDeserialize(const json& json){
+    void InternalDeserialize(const json &json)
+    {
         json.at("someOtherValue").get_to(someOtherValue);
     };
-    
 };
 
-TEST_CASE("Serialization/Deserialization") {
+TEST_CASE("Serialization/Deserialization")
+{
 
-    SECTION("Testing method call") {
+    SECTION("Testing method call")
+    {
         Engine::Initialize();
-    
-        
+
         /* SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
-        
+
         REQUIRE(obj.someInsideValue == 0);
 
-        
+
         std::string serializationData = Engine::SerializeCurrent();
-        
+
         REQUIRE(obj.someInsideValue == 1);
          */
         Engine::Unload();
-    }   
+    }
 
-    SECTION("Testing actual serialization") {
+    SECTION("Testing actual serialization")
+    {
         Engine::Initialize();
 
-       /*  SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
-        
-        json serializationData = Engine::SerializeCurrentJSON();
+        /*  SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
 
-        REQUIRE(serializationData.contains("Objects"));
+         json serializationData = Engine::SerializeCurrentJSON();
 
-        REQUIRE(serializationData.at("Objects").at(0).contains("SerializationClassA"));
+         REQUIRE(serializationData.contains("Objects"));
 
-        REQUIRE(serializationData.at("Objects").at(0).at("SerializationClassA").contains("someInsideValue"));
+         REQUIRE(serializationData.at("Objects").at(0).contains("SerializationClassA"));
 
-        REQUIRE(serializationData.at("Objects").at(0).at("SerializationClassA").at("someInsideValue").get<int>() == 1);
+         REQUIRE(serializationData.at("Objects").at(0).at("SerializationClassA").contains("someInsideValue"));
 
- */
+         REQUIRE(serializationData.at("Objects").at(0).at("SerializationClassA").at("someInsideValue").get<int>() == 1);
+
+  */
         Engine::Unload();
     }
 
-
-    SECTION("Simple deserialization") {
+    SECTION("Simple deserialization")
+    {
 
         Engine::Initialize();
-/* 
-        SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
-        
-        json serializationData = Engine::SerializeCurrentJSON();
+        /*
+                SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
 
+                json serializationData = Engine::SerializeCurrentJSON();
+
+
+                Engine::Unload();
+                Engine::Initialize();
+
+
+                REQUIRE(Engine::DeserializeToCurrent(serializationData.dump()));
+
+                REQUIRE(Engine::AliveObjects() == 1);
+
+                for(auto obj : Engine::View<SerializationClassA>()){
+                    REQUIRE(obj->someInsideValue == 1);
+                } */
 
         Engine::Unload();
+    }
+
+    SECTION("Trait Serialization/Deserialization")
+    {
+
         Engine::Initialize();
+
+        /*  SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
+         obj.traitData = -4;
+
+         json serializationData = Engine::SerializeCurrentJSON();
+
+
+         std::cout << serializationData.dump() << std::endl;
+
+
+         Engine::Unload();
+         Engine::Initialize();
 
 
         REQUIRE(Engine::DeserializeToCurrent(serializationData.dump()));
 
-        REQUIRE(Engine::AliveObjects() == 1);
+         REQUIRE(Engine::AliveObjects() == 1);
 
-        for(auto obj : Engine::View<SerializationClassA>()){
-            REQUIRE(obj->someInsideValue == 1);
-        } */
+         for(auto obj : Engine::View<SerializationClassA>()){
+             REQUIRE(obj->someInsideValue == 1);
+         }  */
 
         Engine::Unload();
     }
 
-    SECTION("Trait Serialization/Deserialization") {
-
-        Engine::Initialize();
-
-       /*  SerializationClassA& obj = Engine::CreateNewGameObject<SerializationClassA>();
-        obj.traitData = -4;
-        
-        json serializationData = Engine::SerializeCurrentJSON();
-
-
-        std::cout << serializationData.dump() << std::endl;
-
-
-        Engine::Unload();
-        Engine::Initialize();
-
-
-       REQUIRE(Engine::DeserializeToCurrent(serializationData.dump()));
-
-        REQUIRE(Engine::AliveObjects() == 1);
-
-        for(auto obj : Engine::View<SerializationClassA>()){
-            REQUIRE(obj->someInsideValue == 1);
-        }  */
-
-        Engine::Unload(); 
-    }
-
-
-    SECTION("Internal serialization/deserialization") {
+    SECTION("Internal serialization/deserialization")
+    {
 
         Engine::Initialize();
 
         /* SerializationClassB& obj = Engine::CreateNewGameObject<SerializationClassB>();
-        
+
         REQUIRE(obj.someOtherValue == -2);
-        
+
         json serializationData = Engine::SerializeCurrentJSON();
         REQUIRE(obj.someOtherValue == 10);
 
@@ -605,19 +610,20 @@ TEST_CASE("Serialization/Deserialization") {
         Engine::Unload();
         Engine::Initialize();
 
-/* 
-       REQUIRE(Engine::DeserializeToCurrent(serializationData.dump()));
+        /*
+               REQUIRE(Engine::DeserializeToCurrent(serializationData.dump()));
 
-        REQUIRE(Engine::AliveObjects() == 1);
+                REQUIRE(Engine::AliveObjects() == 1);
 
-        for(auto obj : Engine::View<SerializationClassB>()){
-            REQUIRE(obj->someOtherValue == 10);
-        }  */
+                for(auto obj : Engine::View<SerializationClassB>()){
+                    REQUIRE(obj->someOtherValue == 10);
+                }  */
 
-        Engine::Unload(); 
+        Engine::Unload();
     }
 
-    SECTION("Editor title testing"){
+    SECTION("Editor title testing")
+    {
 
         Engine::Initialize();
 
@@ -628,7 +634,5 @@ TEST_CASE("Serialization/Deserialization") {
         std::cout << serializationData.dump() << std::endl;
  */
         Engine::Unload();
-
     }
 }
-

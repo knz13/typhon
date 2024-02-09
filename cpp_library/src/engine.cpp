@@ -280,16 +280,16 @@ bool Engine::DeserializeToCurrent(std::string scene)
 
 Typhon::Object Engine::CreateObject(std::string name)
 {
-    Typhon::Object obj{ECSRegistry::CreateEntity()};
-    obj.AddComponent<Transform>();
+    Typhon::Object obj{Typhon::ECSRegistry::CreateEntity()};
+    obj.AddComponent<Typhon::Transform>();
     if (name != "")
     {
         obj.SetName(name);
-        obj.AddTag<ObjectInternals::ParentlessTag>();
+        obj.AddTag<Typhon::ObjectInternals::ParentlessTag>();
         EngineInternals::onChildrenChangedFunc();
         return obj;
     }
-    obj.AddTag<ObjectInternals::ParentlessTag>();
+    obj.AddTag<Typhon::ObjectInternals::ParentlessTag>();
     EngineInternals::onChildrenChangedFunc();
-    return {ECSRegistry::CreateEntity()};
+    return {Typhon::ECSRegistry::CreateEntity()};
 }

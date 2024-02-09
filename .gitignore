@@ -11,8 +11,8 @@ build/
 .history
 .svn/
 migrate_working_dir/
-
 *.dylib
+
 
 # IntelliJ related
 *.iml

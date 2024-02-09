@@ -6,14 +6,14 @@
 #include "general.h"
 #include "keyboard_adaptations.h"
 
-#if _WIN32
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <pthread.h>
 #include <unistd.h>
 #endif
 
-#if _WIN32
+#ifdef _WIN32
 #define FFI_PLUGIN_EXPORT __declspec(dllexport)
 #else
 #define FFI_PLUGIN_EXPORT
@@ -26,7 +26,7 @@ extern "C"
 
     //__BEGIN__CPP__EXPORTS__
 
-    FFI_PLUGIN_EXPORT void passPlatformSpecificViewPointer(void *view);
+    FFI_PLUGIN_EXPORT void passPlatformSpecificViewPointer(void *window);
 
     FFI_PLUGIN_EXPORT void setPlatformSpecificWindowSizeAndPos(double x, double y, double width, double height);
     FFI_PLUGIN_EXPORT void *getPlatformSpecificPointer();
@@ -44,6 +44,8 @@ extern "C"
     FFI_PLUGIN_EXPORT char *getInstantiableClasses();
     FFI_PLUGIN_EXPORT char *getInstantiableComponents();
     FFI_PLUGIN_EXPORT bool isEngineInitialized();
+    FFI_PLUGIN_EXPORT bool isRenderingEngineInitialized();
+
     FFI_PLUGIN_EXPORT AliveObjectsArray getAliveParentlessObjects();
     FFI_PLUGIN_EXPORT const char *getObjectNameByID(int64_t id);
     FFI_PLUGIN_EXPORT void removeObjectByID(int64_t id);
@@ -55,7 +57,7 @@ extern "C"
     FFI_PLUGIN_EXPORT bool removeObjectFromParent(int64_t objectID);
     FFI_PLUGIN_EXPORT char *getContextMenuForFilePath(const char *filePath, int64_t size);
     FFI_PLUGIN_EXPORT void loadModelFromPath(const char *filePath, int64_t size);
-    FFI_PLUGIN_EXPORT void addComponentToObject(int64_t objectID,int64_t componentClassID);
+    FFI_PLUGIN_EXPORT void addComponentToObject(int64_t objectID, int64_t componentClassID);
 
     //__END__CPP__EXPORTS__
 

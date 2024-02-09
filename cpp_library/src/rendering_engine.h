@@ -3,7 +3,6 @@
 #include "auxiliary_libraries/shader_compiler.h"
 #include <chrono>
 
-
 struct RenderPassData
 {
 public:
@@ -65,40 +64,28 @@ class RenderingEngine
 public:
     static PlatformSpecificRenderingEngine *GetPlatformSpecificEngine()
     {
-        return platformSpecificRenderingEngine ? platformSpecificRenderingEngine.get() : nullptr;
+        return nullptr;
     }
 
     static void InitializeEngine();
 
-    static void SetUpdateFunction(std::function<void(double)> func)
-    {
-        if (platformSpecificRenderingEngine)
-        {
-            platformSpecificRenderingEngine->SetUpdateFunction(func);
-        }
+    static void SetUpdateFunction(std::function<void(double)> func){
+
     };
 
-    static void Render()
+    static bool HasInitialized()
     {
-        if (platformSpecificRenderingEngine)
-        {
-            platformSpecificRenderingEngine->Render();
-        }
-    }
-
-    static void UnloadEngine()
-    {
-        std::cout << "Unloading engine completely!" << std::endl;
-        if (platformSpecificRenderingEngine)
-        {
-            platformSpecificRenderingEngine.get()->UnloadRenderingEngine();
-        }
+        return bgfxInitialized;
     };
+
+    static void Render();
+
+    static void UnloadEngine();
 
     static void *GetPlatformSpecificPointer();
 
-    static void PassPlatformSpecificViewPointer(void *view);
+    static void PassPlatformSpecificViewPointer(void *window);
 
 private:
-    static std::unique_ptr<PlatformSpecificRenderingEngine> platformSpecificRenderingEngine;
+    static bool bgfxInitialized;
 };
