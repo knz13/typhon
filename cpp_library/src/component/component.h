@@ -1,6 +1,6 @@
 #pragma once
-#include "../generic_reflection.h"
-#include "../general.h"
+#include "../utils/generic_reflection.h"
+#include "../utils/general.h"
 #include "../ui/ui_builder.h"
 
 DEFINE_HAS_SIGNATURE(has_on_create, T::Create, void (T::*)());

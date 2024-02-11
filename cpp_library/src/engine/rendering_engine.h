@@ -1,6 +1,6 @@
 #pragma once
-#include "general.h"
-#include "auxiliary_libraries/shader_compiler.h"
+#include "../utils/general.h"
+#include "../auxiliary_libraries/shader_compiler.h"
 #include <chrono>
 #include <bx/bx.h>
 #include <bgfx/bgfx.h>
@@ -76,6 +76,11 @@ public:
     static bool HasInitialized()
     {
         return bgfxInitialized;
+    };
+
+    static GLFWwindow *GetWindow()
+    {
+        return glfwWindow;
     };
 
     static void UnloadEngine();

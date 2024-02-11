@@ -1,5 +1,5 @@
 #pragma once
-#include "general.h"
+#include "../utils/general.h"
 #include "../auxiliary_libraries_helpers/auxiliary_library.h"
 
 struct ShaderCompilationResult

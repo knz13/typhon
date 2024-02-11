@@ -106,13 +106,13 @@ SET(FETCHCONTENT_QUIET FALSE)
 
     # adding sources
 
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine.cpp)
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/general.cpp)
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/ecs_registry.cpp)
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/generic_reflection.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine/engine.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/utils/general.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine/entity_component_system/ecs_registry.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/utils/generic_reflection.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/auxiliary_libraries/shader_compiler.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/auxiliary_libraries_helpers/auxiliary_library.cpp)
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/rendering_engine.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine/rendering_engine.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/object/object.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/object/object_handle.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/prefab/prefab.cpp)

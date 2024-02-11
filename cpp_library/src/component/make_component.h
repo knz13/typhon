@@ -1,6 +1,6 @@
 #pragma once
-#include "../general.h"
-#include "../ecs_registry.h"
+#include "../utils/general.h"
+#include "../engine/entity_component_system/ecs_registry.h"
 namespace Typhon
 {
 

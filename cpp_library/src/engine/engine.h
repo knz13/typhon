@@ -1,12 +1,12 @@
 #pragma once
-#include "general.h"
-#include "generic_reflection.h"
-#include "ecs_registry.h"
-#include "keyboard_adaptations.h"
-#include "crunch_texture_packer.h"
-#include "object/object.h"
+#include "../utils/general.h"
+#include "../utils/generic_reflection.h"
+#include "entity_component_system/ecs_registry.h"
+#include "../texture_packer/crunch_texture_packer.h"
+#include "../object/object.h"
 #include <ranges>
-#include "component/make_component.h"
+#include "../component/make_component.h"
+#include "../utils/keyboard_adaptations.h"
 
 class Engine;
 class EngineInternals
@@ -17,20 +17,13 @@ public:
 
     static void SetMousePosition(Vector2f mousePos);
 
-    static void PushKeyDown(int64_t key);
-    static void PushKeyUp(int64_t key);
-
 private:
-    static std::bitset<std::size(Keys::IndicesOfKeys)> keysPressed;
-
     friend class Engine;
 };
 
 class Engine
 {
 public:
-    
-
     static void Initialize();
     static void Unload();
 

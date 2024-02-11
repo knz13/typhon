@@ -1,5 +1,5 @@
 #pragma once
-#include "../general.h"
+#include "../utils/general.h"
 #include <sstream>
 
 class UIElement

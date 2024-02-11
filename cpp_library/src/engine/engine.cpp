@@ -1,17 +1,15 @@
 #include "engine.h"
-#include "crunch_texture_packer.h"
 #include <filesystem>
 #include <fstream>
 #include "rendering_engine.h"
-#include "component/make_component.h"
-#include "component/default_components/transform.h"
-#include "auxiliary_libraries_helpers/auxiliary_library.h"
+#include "../component/make_component.h"
+#include "../component/default_components/transform.h"
+#include "../auxiliary_libraries_helpers/auxiliary_library.h"
 
 namespace fs = std::filesystem;
 
 Vector2f Engine::mousePosition;
 std::map<std::string, TextureAtlasImageProperties> Engine::textureAtlas;
-std::bitset<std::size(Keys::IndicesOfKeys)> EngineInternals::keysPressed;
 std::function<void(double, double, int64_t, int64_t, int64_t, int64_t, double, double, double, double)> EngineInternals::enqueueRenderFunc = [](double, double, int64_t, int64_t, int64_t, int64_t, double, double, double, double) {};
 std::function<void()> EngineInternals::onChildrenChangedFunc = []() {};
 bool Engine::isInitialized = false;
@@ -165,33 +163,10 @@ void Engine::Update(double dt)
     } */
 }
 
-void EngineInternals::PushKeyDown(int64_t key)
-{
-    auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(), Keys::IndicesOfKeys.end(), key);
-
-    if (indexOfKey == Keys::IndicesOfKeys.end())
-    {
-        std::cout << "tried to push a key into the keys pressed stack with a wrong id!" << std::endl;
-    }
-    keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()] = 1;
-}
-
-void EngineInternals::PushKeyUp(int64_t key)
-{
-    auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(), Keys::IndicesOfKeys.end(), key);
-
-    if (indexOfKey == Keys::IndicesOfKeys.end())
-    {
-        std::cout << "tried to push a key into the keys pressed stack with a wrong id!" << std::endl;
-    }
-    keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()] = 0;
-}
-
 bool Engine::IsKeyPressed(Keys::Key key)
 {
-    auto indexOfKey = std::find(Keys::IndicesOfKeys.begin(), Keys::IndicesOfKeys.end(), key);
 
-    return EngineInternals::keysPressed[indexOfKey - Keys::IndicesOfKeys.begin()];
+    return glfwGetKey(RenderingEngine::GetWindow(), (int)key) == GLFW_PRESS;
 }
 
 std::map<std::string, TextureAtlasImageProperties> Engine::CreateTextureAtlasFromImages()

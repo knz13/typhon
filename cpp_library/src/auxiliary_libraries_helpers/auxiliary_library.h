@@ -1,6 +1,6 @@
 #pragma once
-#include "../general.h"
-#include "../generic_reflection.h"
+#include "../utils/general.h"
+#include "../utils/generic_reflection.h"
 #include <sstream>
 
 DEFINE_HAS_SIGNATURE(has_initialize_library, T::InitializeLibrary, void (*)());

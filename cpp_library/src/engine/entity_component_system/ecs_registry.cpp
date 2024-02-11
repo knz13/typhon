@@ -1,5 +1,5 @@
 #include "ecs_registry.h"
-#include "object/object.h"
+#include "../../object/object.h"
 
 namespace Typhon
 {

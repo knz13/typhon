@@ -1,7 +1,7 @@
 #pragma once
-#include "general.h"
-#include "component/component.h"
-#include "object/object_storage.h"
+#include "../../utils/general.h"
+#include "../../component/component.h"
+#include "../../object/object_storage.h"
 
 namespace Typhon
 {
