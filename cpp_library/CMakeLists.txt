@@ -18,77 +18,87 @@ endif()
 
 SET(FETCHCONTENT_QUIET FALSE)
 
-# --------------------- Repository declarations ------------------------
-# repository download and settings for mono...
 
+# --------------------- External Libraries ------------------------
 
-    #FetchContent_Declare(MONO
-    #    GIT_REPOSITORY https://github.com/volcoma/monopp
-    #    GIT_TAG origin/master
-    #    SOURCE_DIR ${PROJECT_SOURCE_DIR}/vendor/mono
-    #  
-    #) 
-    
+    # adding glfw library
 
-    #FetchContent_MakeAvailable(MONO)
-    # includes for target typhon...
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/glfw) 
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/glfw/include/)
 
-      #list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/vendor/mono/)
-
-    # libraries for target typhon...
-    
-   # list(APPEND typhon_LIBRARIES monopp)
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/glfw)
+    # adding entt library
 
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/entt)
-    
+
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/single_include/)  
+
+    # adding yael library
+
     add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/yael)
-    
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/random)
-    
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/glm)
-        
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/crunch)
 
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/yael/include)
 
-    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/bgfx)
+    # adding random library
 
-    list(APPEND typhon_LIBRARIES bgfx bx bimg)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/random) 
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/random/include)
 
+    # adding glm library
+
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/glm)  
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/glm/)
+
+    # adding crunch library
+
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/crunch) 
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/crunch/crunch/)  
+
+    # adding bgfx library
+
+    add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/bgfx) 
+    list(APPEND typhon_LIBRARIES bgfx bx bimg libcrunch glfw) 
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bgfx/include)
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bx/include)
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bimg/include)
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/bgfx/bimg/include) 
 
-   
+    # adding json library
 
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/glfw/include/)
-    
-    
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/entt/single_include/)
-    
-    
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/yael/include)
-  
-    
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/random/include)
-    
-    
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/glm/)
-    
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/json/single_include) 
 
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/crunch/crunch/)
+    # adding dylib library
 
-    
-
-
-    list(APPEND typhon_LIBRARIES libcrunch glfw)
-
-
-
-
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/json/single_include)
-    
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/dylib/include)
+    
+    # adding ImGui Library
+
+    # glob imgui files
+
+
+    list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/imgui.cpp)
+
+    list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/imgui_draw.cpp)
+
+    list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/imgui_widgets.cpp)
+
+    list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/imgui_tables.cpp)
+
+    # platform specific backends
+
+    if(WIN32)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/backends/imgui_impl_glfw.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/backends/imgui_impl_dx11.cpp)
+      list(APPEND typhon_LIBRARIES d3d11)
+    endif()
+
+    if(APPLE)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/backends/imgui_impl_glfw.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/backends/imgui_impl_metal.mm)
+    endif()
+
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/)
+
+    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/imgui/backends/)
+    
     
     # --------------------- Targets ------------------------
 
@@ -115,6 +125,7 @@ SET(FETCHCONTENT_QUIET FALSE)
     add_executable(typhon
         ${typhon_SOURCE_FILES}
     )
+
 
     # setting c++ standard
     set_target_properties(typhon PROPERTIES

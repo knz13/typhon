@@ -2,20 +2,23 @@
 #include "general.h"
 #include "auxiliary_libraries/shader_compiler.h"
 #include <chrono>
+#include <bx/bx.h>
+#include <bgfx/bgfx.h>
+#include <bgfx/platform.h>
 
-struct RenderPassData
-{
-public:
-    std::string vertexShaderName = "";
-    std::string fragmentShaderName = "";
-    std::vector<std::string> textureNames = {};
-};
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
+
+#ifdef __APPLE__
+#define GLFW_EXPOSE_NATIVE_COCOA
+#endif
+
+#include <GLFW/glfw3native.h>
 
 class PlatformSpecificRenderingEngine
 {
 public:
     // General
-    virtual void ReceivePlatformSpecificViewPointer(void *view){};
     virtual void *GetPlatformSpecificPointer() { return nullptr; };
     virtual void InitializeRenderingEngine(){};
     virtual void UnloadRenderingEngine(){};
@@ -32,31 +35,14 @@ public:
 
     virtual void Render(){};
 
-    // Rendering
-    virtual RenderPassData &EnqueueRenderLoadedTextureRect()
-    {
-        static RenderPassData temp;
-        return temp;
-    }
-
-    void SetUpdateFunction(std::function<void(double)> func)
-    {
-        updateFunc = func;
-    }
+    /*  // Rendering
+     virtual RenderPassData &EnqueueRenderLoadedTextureRect()
+     {
+         static RenderPassData temp;
+         return temp;
+     } */
 
 protected:
-    void InternalUpdateFunc()
-    {
-        std::chrono::time_point<std::chrono::system_clock> newTime = std::chrono::system_clock::now();
-
-        auto difference = std::chrono::duration_cast<std::chrono::milliseconds>(newTime - lastUpdateTime);
-
-        updateFunc(difference.count());
-    }
-
-private:
-    std::function<void(double)> updateFunc = [](double) {};
-    std::chrono::time_point<std::chrono::system_clock> lastUpdateTime = std::chrono::system_clock::now();
 };
 
 class RenderingEngine
@@ -73,19 +59,37 @@ public:
 
     };
 
+    static void Render();
+
+    static bool isRunning()
+    {
+        if (!bgfxInitialized || glfwWindow == nullptr)
+        {
+            return false;
+        }
+
+        return !glfwWindowShouldClose(glfwWindow);
+    };
+
+    static void HandleEvents();
+
     static bool HasInitialized()
     {
         return bgfxInitialized;
     };
 
-    static void Render();
-
     static void UnloadEngine();
 
     static void *GetPlatformSpecificPointer();
 
-    static void PassPlatformSpecificViewPointer(void *window);
-
 private:
+    static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+
+    static void glfwErrorCallback(int error, const char *description);
+
     static bool bgfxInitialized;
+    static GLFWwindow *glfwWindow;
+    static bgfx::ViewId mainViewId;
+
+    static std::function<void(double)> updateFunc;
 };

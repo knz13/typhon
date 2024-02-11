@@ -32,15 +32,25 @@ def get_first_available_cpp_compiler():
     return None
 
 def download_and_extract(url,save_location):
-    
+    save_location = os.path.abspath(save_location)
+    print(f"Downloading {url}...")
     if url.endswith(".zip"):
         with urlopen(url) as zipresp:
-            with ZipFile(BytesIO(zipresp.read())) as zfile:
-                zfile.extractall(save_location)
+            # save
+            with open("temp.zip", "wb") as f:
+                f.write(zipresp.read())
+            
+
+        with ZipFile("temp.zip","r") as zfile:
+            zfile.extractall(save_location)
+        
+
+
         return
     if url.endswith(".gz"):
         response = requests.get(url, stream=True)
         file = tarfile.open(fileobj=response.raw, mode="r|gz")
+        print(f"Extracting {url} to {save_location}...")
         file.extractall(path=save_location)
         return
             
@@ -71,7 +81,7 @@ cmake_command = ("src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Conten
 
 import create_auxiliary_libraries as shader_lib
 
-shader_lib.compile_auxiliary_libraries(run_tests=args.run_tests,release=False)
+#shader_lib.compile_auxiliary_libraries(run_tests=args.run_tests,release=False)
 
 
 
@@ -104,6 +114,8 @@ if not os.path.exists("src/vendor/json"):
     os.system('git clone --recursive https://github.com/nlohmann/json src/vendor/json')
 if not os.path.exists("src/vendor/bgfx"):
     os.system('git clone --recursive https://github.com/bkaradzic/bgfx.cmake src/vendor/bgfx')
+if not os.path.exists("src/vendor/imgui"):
+    os.system("git clone --recursive https://github.com/ocornut/imgui src/vendor/imgui")
 if not os.path.exists("src/vendor/glfw"):
     os.system('git clone --recursive https://github.com/glfw/glfw src/vendor/glfw')
 if not os.path.exists("src/vendor/crunch"):
@@ -345,3 +357,4 @@ if False:
     else:
         subprocess.call(["typhon_tests.exe"])
         
+

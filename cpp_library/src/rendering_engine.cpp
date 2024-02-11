@@ -3,13 +3,42 @@
 #include "macos/macos_engine.h"
 #endif */
 
+#include <stdio.h>
+
 bool RenderingEngine::bgfxInitialized = false;
+std::function<void(double)> RenderingEngine::updateFunc = [](double) {};
+GLFWwindow *RenderingEngine::glfwWindow = nullptr;
+bgfx::ViewId RenderingEngine::mainViewId = 0;
 
 void RenderingEngine::Render()
 {
-    if (RenderingEngine::bgfxInitialized)
+    static int width, height;
+    if (!RenderingEngine::bgfxInitialized)
     {
+        return;
     }
+    int oldWidth = width, oldHeight = height;
+    glfwGetWindowSize(glfwWindow, &width, &height);
+    if (width != oldWidth || height != oldHeight)
+    {
+        bgfx::reset((uint32_t)width, (uint32_t)height, BGFX_RESET_VSYNC);
+        bgfx::setViewRect(mainViewId, 0, 0, bgfx::BackbufferRatio::Equal);
+    }
+    // This dummy draw call is here to make sure that view 0 is cleared if no other draw calls are submitted to view 0.
+    bgfx::touch(mainViewId);
+    // Use debug font to print information about this example.
+    bgfx::dbgTextClear();
+    // bgfx::dbgTextImage(bx::max<uint16_t>(uint16_t(width / 2 / 8), 20) - 20, bx::max<uint16_t>(uint16_t(height / 2 / 16), 6) - 6, 40, 12, s_logo, 160);
+    bgfx::dbgTextPrintf(0, 0, 0x0f, "Press F1 to toggle stats.");
+    bgfx::dbgTextPrintf(0, 1, 0x0f, "Color can be changed with ANSI \x1b[9;me\x1b[10;ms\x1b[11;mc\x1b[12;ma\x1b[13;mp\x1b[14;me\x1b[0m code too.");
+    bgfx::dbgTextPrintf(80, 1, 0x0f, "\x1b[;0m    \x1b[;1m    \x1b[; 2m    \x1b[; 3m    \x1b[; 4m    \x1b[; 5m    \x1b[; 6m    \x1b[; 7m    \x1b[0m");
+    bgfx::dbgTextPrintf(80, 2, 0x0f, "\x1b[;8m    \x1b[;9m    \x1b[;10m    \x1b[;11m    \x1b[;12m    \x1b[;13m    \x1b[;14m    \x1b[;15m    \x1b[0m");
+    const bgfx::Stats *stats = bgfx::getStats();
+    bgfx::dbgTextPrintf(0, 2, 0x0f, "Backbuffer %dW x %dH in pixels, debug text %dW x %dH in characters.", stats->width, stats->height, stats->textWidth, stats->textHeight);
+    // Enable stats or debug text.
+    bgfx::setDebug(true ? BGFX_DEBUG_STATS : BGFX_DEBUG_TEXT);
+    // Advance to next frame. Process submitted rendering primitives.
+    bgfx::frame();
 }
 
 void RenderingEngine::UnloadEngine()
@@ -18,56 +47,34 @@ void RenderingEngine::UnloadEngine()
 
     if (RenderingEngine::bgfxInitialized)
     {
+        bgfx::shutdown();
+        glfwTerminate();
+        RenderingEngine::bgfxInitialized = false;
     }
 };
 
-void RenderingEngine::PassPlatformSpecificViewPointer(void *window)
+void RenderingEngine::glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
-
-    /* std::cout << "starting bgfx section!" << std::endl;
-    bgfx::PlatformData pd;
-
-    pd.nwh = window;
-
-    bgfx::Init bgfxInit;
-
-    bgfxInit.platformData = pd;
-#ifdef __APPLE__
-    bgfxInit.type = bgfx::RendererType::Metal;
-
-#else
-
-#endif
-
-    bgfxInit.resolution.width = 1500;
-    bgfxInit.resolution.height = 1500;
-    bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
-
-    std::cout << "initializing bgfx!" << std::endl;
-
-    RenderingEngine::bgfxInitialized = bgfx::init(bgfxInit);
-
-    if (!RenderingEngine::bgfxInitialized)
+    if (action == GLFW_PRESS)
     {
-        std::cout << "bgfx failed to initialize!" << std::endl;
-
-        return;
+        if (key == GLFW_KEY_ESCAPE)
+        {
+            RenderingEngine::UnloadEngine();
+        }
     }
+}
 
-    std::cout << "setting debug!" << std::endl;
+void RenderingEngine::HandleEvents()
+{
+    if (RenderingEngine::bgfxInitialized)
+    {
+        glfwPollEvents();
+    }
+}
 
-    bgfx::setDebug(BGFX_DEBUG_TEXT);
-
-    std::cout << "setting view!" << std::endl;
-
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xffA2EB00, 1.0f, 0);
-    bgfx::setViewRect(0, 0, 0, 1500, 1500);
-
-    std::cout << "frame!" << std::endl;
-
-    bgfx::frame();
-
-    std::cout << "view pointer passed and rendered!" << std::endl; */
+void RenderingEngine::glfwErrorCallback(int error, const char *description)
+{
+    std::cout << "Error: " << error << " " << description << std::endl;
 }
 
 void *RenderingEngine::GetPlatformSpecificPointer()
@@ -76,49 +83,54 @@ void *RenderingEngine::GetPlatformSpecificPointer()
     return nullptr;
 }
 
-void RenderingEngine::InitializeEngine(){
+void RenderingEngine::InitializeEngine()
+{
+    // Create a GLFW window without an OpenGL context.
+    glfwSetErrorCallback(&RenderingEngine::glfwErrorCallback);
 
-    // platformSpecificRenderingEngine.get()->InitializeRenderingEngine();
-
-    /* std::string vertexShader = R"(
-#version 330 core
-
-layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec3 color;
-
-out vec3 vertexColor;
-
-void main() {
-gl_Position = vec4(vertexPosition, 1.0);
-vertexColor = color;
-}
-)";
-    std::string fragShader = R"(
-#version 330 core
-
-in vec3 vertexColor;
-
-out vec4 FragColor;
-
-void main() {
-FragColor = vec4(1,0,1, 1.0);
-}
-    )";
-
-    auto vertResult = ShaderCompiler::CompileGLSLToPlatformSpecific(vertexShader, "Vertex", ShaderType::Vertex);
-    auto fragResult = ShaderCompiler::CompileGLSLToPlatformSpecific(fragShader, "Frag", ShaderType::Fragment);
-
-    if (!vertResult.Valid())
+    if (!glfwInit())
     {
-        std::cout << vertResult.error << std::endl;
+
         return;
     }
-    if (!fragResult.Valid())
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindow = glfwCreateWindow(1024, 768, "helloworld", nullptr, nullptr);
+    if (!glfwWindow)
     {
-        std::cout << fragResult.error << std::endl;
-        return;
-    } */
 
-    // platformSpecificRenderingEngine.get()->LoadVertexShader("MyVertex", vertResult);
-    // platformSpecificRenderingEngine.get()->LoadFragmentShader("MyFragment", fragResult);
+        return;
+    }
+    glfwSetWindowCloseCallback(glfwWindow, [](GLFWwindow *window)
+                               { RenderingEngine::UnloadEngine(); });
+
+    glfwSetKeyCallback(glfwWindow, &RenderingEngine::glfwKeyCallback);
+    // Call bgfx::renderFrame before bgfx::init to signal to bgfx not to create a render thread.
+    // Most graphics APIs must be used on the same thread that created the window.
+    bgfx::renderFrame();
+    // Initialize bgfx using the native window handle and window resolution.
+    bgfx::Init init;
+#if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
+    init.platformData.ndt = glfwGetX11Display();
+    init.platformData.nwh = (void *)(uintptr_t)glfwGetX11Window(glfwWindow);
+#elif BX_PLATFORM_OSX
+    init.platformData.nwh = glfwGetCocoaWindow(glfwWindow);
+#elif BX_PLATFORM_WINDOWS
+    init.platformData.nwh = glfwGetWin32Window(glfwWindow);
+#endif
+    int width, height;
+    glfwGetWindowSize(glfwWindow, &width, &height);
+    init.resolution.width = (uint32_t)width;
+    init.resolution.height = (uint32_t)height;
+    init.resolution.reset = BGFX_RESET_VSYNC;
+    if (!bgfx::init(init))
+    {
+        glfwDestroyWindow(glfwWindow);
+        return;
+    }
+    // Set view 0 to the same dimensions as the window and to clear the color buffer.
+    const bgfx::ViewId mainViewId = 0;
+    bgfx::setViewClear(mainViewId, BGFX_CLEAR_COLOR);
+    bgfx::setViewRect(mainViewId, 0, 0, bgfx::BackbufferRatio::Equal);
+
+    RenderingEngine::bgfxInitialized = true;
 };
