@@ -108,8 +108,9 @@ SET(FETCHCONTENT_QUIET FALSE)
 
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine/engine.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/utils/general.cpp)
-      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine/entity_component_system/ecs_registry.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/utils/color.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/utils/generic_reflection.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine/entity_component_system/ecs_registry.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/auxiliary_libraries/shader_compiler.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/auxiliary_libraries_helpers/auxiliary_library.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine/rendering_engine.cpp)
@@ -117,8 +118,13 @@ SET(FETCHCONTENT_QUIET FALSE)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/object/object_handle.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/prefab/prefab.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/component/make_component.cpp)
+      list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/features/project_selection/project_selection_canvas.cpp)
       #list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon_generated.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/main.cpp)
+
+      if(APPLE)
+        list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine/platform_specific/MacOS/metal_rendering_engine.mm)
+      endif()
     # creating target
 
 

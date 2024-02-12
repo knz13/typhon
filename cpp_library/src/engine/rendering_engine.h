@@ -5,6 +5,7 @@
 #include <bx/bx.h>
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
+#include "rendering_canvas.h"
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -19,44 +20,29 @@ class PlatformSpecificRenderingEngine
 {
 public:
     // General
-    virtual void *GetPlatformSpecificPointer() { return nullptr; };
-    virtual void InitializeRenderingEngine(){};
-    virtual void UnloadRenderingEngine(){};
-
-    // Shaders
-    virtual bool LoadFragmentShader(std::string shaderName, ShaderCompilationResult &shaderSource) { return false; }
-    virtual bool LoadVertexShader(std::string shaderName, ShaderCompilationResult &shaderSource) { return false; }
-    virtual bool UnloadVertexShader(std::string shaderName) { return false; }
-    virtual bool UnloadFragmentShader(std::string shaderName) { return false; }
-
-    // Textures
-    virtual void CreateTextureFromName(std::string name, int width, int height, std::vector<char> bufferData){};
-    virtual bool UnloadTextureFromName(std::string name) { return false; };
-
-    virtual void Render(){};
-
-    /*  // Rendering
-     virtual RenderPassData &EnqueueRenderLoadedTextureRect()
-     {
-         static RenderPassData temp;
-         return temp;
-     } */
-
-protected:
+    virtual void InitializeRenderingEngine() = 0;
+    virtual void UnloadRenderingEngine() = 0;
+    virtual void Render(RenderingCanvas& canvas) = 0;
 };
 
 class RenderingEngine
 {
 public:
-    static PlatformSpecificRenderingEngine *GetPlatformSpecificEngine()
-    {
-        return nullptr;
-    }
+    /*  static PlatformSpecificRenderingEngine *GetPlatformSpecificEngine()
+     {
+         return nullptr;
+     } */
 
     static void InitializeEngine();
 
-    static void SetUpdateFunction(std::function<void(double)> func){
+    static void SetCurrentCanvas(std::shared_ptr<RenderingCanvas> canvas)
+    {
+        currentCanvas = canvas;
+    }
 
+    static void SetUpdateFunction(std::function<void(double)> func)
+    {
+        updateFunc = func;
     };
 
     static void Render();
@@ -87,14 +73,26 @@ public:
 
     static void *GetPlatformSpecificPointer();
 
+    static glm::vec2 GetWindowSize()
+    {
+        return glm::vec2(windowWidth, windowHeight);
+    }
+
+    
+
 private:
     static void glfwKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
     static void glfwErrorCallback(int error, const char *description);
 
+    static int windowWidth;
+    static int windowHeight;
     static bool bgfxInitialized;
+    static std::shared_ptr<RenderingCanvas> currentCanvas;
+    static double lastTime;
     static GLFWwindow *glfwWindow;
     static bgfx::ViewId mainViewId;
-
     static std::function<void(double)> updateFunc;
+    static std::shared_ptr<PlatformSpecificRenderingEngine> platformSpecificEngine;
+
 };

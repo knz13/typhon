@@ -4,10 +4,13 @@
  */
 #include "src/engine/engine.h"
 #include "src/engine/rendering_engine.h"
+#include "src/features/project_selection/project_selection_canvas.h"
 
 int main()
 {
     Engine::Initialize();
+
+    RenderingEngine::SetCurrentCanvas(std::make_shared<ProjectSelectionCanvas>());
 
     while (RenderingEngine::isRunning())
     {

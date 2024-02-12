@@ -36,7 +36,7 @@ void Engine::Initialize()
 
     RenderingEngine::InitializeEngine();
     RenderingEngine::SetUpdateFunction(&Engine::Update);
-
+    
     Engine::isInitialized = true;
 }
 

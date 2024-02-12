@@ -122,7 +122,8 @@
         "cfenv": "cpp",
         "scoped_allocator": "cpp",
         "typeindex": "cpp",
-        "__std_stream": "cpp"
+        "__std_stream": "cpp",
+        "__verbose_abort": "cpp"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
