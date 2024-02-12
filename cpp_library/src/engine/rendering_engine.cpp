@@ -43,9 +43,9 @@ void RenderingEngine::Render()
     // This dummy draw call is here to make sure that view 0 is cleared if no other draw calls are submitted to view 0.
     bgfx::touch(mainViewId);
 
-    if (currentCanvas != nullptr)
+    if(platformSpecificEngine != nullptr)
     {
-        currentCanvas->Render();
+        platformSpecificEngine->Render(*currentCanvas);
     }
 
     // Advance to next frame. Process submitted rendering primitives.

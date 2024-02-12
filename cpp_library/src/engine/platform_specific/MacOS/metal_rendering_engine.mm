@@ -4,10 +4,12 @@
 #include "imgui_impl_glfw.h"
 
 
+
 void MetalRenderingEngine::InitializeRenderingEngine() {
     device = MTLCreateSystemDefaultDevice();
     commandQueue = [device newCommandQueue];
 
+    ImGui_ImplGlfw_InitForOpenGL(RenderingEngine::GetWindow(), true);
     ImGui_ImplMetal_Init(device);
 
     NSWindow *nswin = glfwGetCocoaWindow(RenderingEngine::GetWindow());
@@ -32,13 +34,8 @@ void MetalRenderingEngine::UnloadRenderingEngine() {
 void MetalRenderingEngine::Render(RenderingCanvas& canvas) {
     @autoreleasepool {
         
-        int width, height;
-
-        auto vec2Size = RenderingEngine::GetWindowSize();
-
-        width = vec2Size.x;
-        height = vec2Size.y;
-
+       int width, height;
+        glfwGetFramebufferSize(RenderingEngine::GetWindow(), &width, &height);
         layer.drawableSize = CGSizeMake(width, height);
         id<CAMetalDrawable> drawable = [layer nextDrawable];
 
