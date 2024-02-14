@@ -3,11 +3,11 @@
 #include <filesystem>
 
 
-CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::string shaderName, int64_t shaderType)
+ShaderCompilerInterface::CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::string shaderName, int64_t shaderType)
 {
 
     shaderc_shader_kind kind;
-    CompilationResult result;
+    ShaderCompilerInterface::CompilationResult result;
 
     switch (shaderType)
     {

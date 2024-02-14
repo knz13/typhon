@@ -11,6 +11,7 @@
 #include "vendor/yael/include/yael.h"
 #include "vendor/json/single_include/nlohmann/json.hpp"
 #include "vendor/dylib/include/dylib.hpp"
+#include "../../../auxiliary_libraries/auxiliary_libraries_interface.h"
 #include <bitset>
 #include <functional>
 #include <sstream>

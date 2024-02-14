@@ -2,12 +2,12 @@
 
 Assimp::Importer ModelLoader::staticImporter;
 
-bool MeshAttribute::Vertex::CheckValid() const
+bool ModelLoaderInterface::MeshAttribute::Vertex::CheckValid() const
 {
     return (positions.size() == normals.size()) && (positions.size() / 3 == texCoords.size() / 2) && (positions.size() == tangents.size()) && (positions.size() != 0);
 }
 
-void MeshAttribute::Vertex::SetEqualSize()
+void ModelLoaderInterface::MeshAttribute::Vertex::SetEqualSize()
 {
     size_t largestAttribute = positions.size() / 3;
 
@@ -36,10 +36,10 @@ void MeshAttribute::Vertex::SetEqualSize()
     }
 }
 
-Mesh AssimpGetMeshData(const aiMesh *mesh)
+ModelLoaderInterface::Mesh AssimpGetMeshData(const aiMesh *mesh)
 {
     aiFace *face;
-    MeshAttribute::Vertex vertex;
+    ModelLoaderInterface::MeshAttribute::Vertex vertex;
 
     for (unsigned int v = 0; v < mesh->mNumVertices; v++)
     {
@@ -96,21 +96,21 @@ Mesh AssimpGetMeshData(const aiMesh *mesh)
         vertex.indices.push_back(face->mIndices[2]);
     }
 
-    Mesh result;
+    ModelLoaderInterface::Mesh result;
     result.vertex = vertex;
     result.valid = true;
 
     return result;
 }
 
-std::vector<Mesh> AssimpProcessData(const aiScene &scene)
+std::vector<ModelLoaderInterface::Mesh> AssimpProcessData(const aiScene &scene)
 {
-    std::vector<Mesh> loadedMeshes;
+    std::vector<ModelLoaderInterface::Mesh> loadedMeshes;
     if (scene.mNumMeshes > 0)
     {
         for (unsigned int i = 0; i < scene.mNumMeshes; i++)
         {
-            Mesh meshDataResult = AssimpGetMeshData(scene.mMeshes[i]);
+            ModelLoaderInterface::Mesh meshDataResult = AssimpGetMeshData(scene.mMeshes[i]);
             if (meshDataResult.valid)
             {
                 meshDataResult.name = scene.mMeshes[i]->mName.C_Str();
@@ -121,12 +121,12 @@ std::vector<Mesh> AssimpProcessData(const aiScene &scene)
     return loadedMeshes;
 }
 
-ModelLoaderResult AssimpLoadModelFromFile(std::string fileName)
+ModelLoaderInterface::ModelLoaderResult AssimpLoadModelFromFile(std::string fileName)
 {
     if (!std::filesystem::exists(fileName))
     {
         LOG("Couldn't load model at " + fileName + " because the file was not found!");
-        return ModelLoaderResult();
+        return ModelLoaderInterface::ModelLoaderResult();
     }
 
     const aiScene *modelScene = ModelLoader::staticImporter.ReadFile(fileName, aiProcess_GenNormals | aiProcess_FlipUVs | aiProcess_ValidateDataStructure | aiProcess_Triangulate | aiProcess_EmbedTextures | aiProcess_FixInfacingNormals | aiProcess_OptimizeMeshes);
@@ -134,17 +134,17 @@ ModelLoaderResult AssimpLoadModelFromFile(std::string fileName)
     if (!modelScene)
     {
         LOG("Couldn't load model at " + fileName);
-        return ModelLoaderResult();
+        return ModelLoaderInterface::ModelLoaderResult();
     }
     else
     {
 
-        std::vector<Mesh> loadedMeshes = AssimpProcessData(*modelScene);
+        std::vector<ModelLoaderInterface::Mesh> loadedMeshes = AssimpProcessData(*modelScene);
         if (loadedMeshes.size() == 0)
         {
-            return ModelLoaderResult();
+            return ModelLoaderInterface::ModelLoaderResult();
         }
-        ModelLoaderResult finalResult;
+        ModelLoaderInterface::ModelLoaderResult finalResult;
         finalResult.meshes = loadedMeshes;
         return finalResult;
     }

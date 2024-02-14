@@ -14,19 +14,17 @@
 #endif
 
 #if _WIN32
-#define FFI_PLUGIN_EXPORT __declspec(dllexport)
+#define TYPHON_EXPORT __declspec(dllexport)
 #else
-#define FFI_PLUGIN_EXPORT
+#define TYPHON_EXPORT
 #endif
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-   
 
-    FFI_PLUGIN_EXPORT ModelLoaderResult LoadModelFile(std::string modelFilePath);
-
+    TYPHON_EXPORT ModelLoaderInterface::ModelLoaderResult LoadModelFile(std::string modelFilePath);
 
 #ifdef __cplusplus
 }

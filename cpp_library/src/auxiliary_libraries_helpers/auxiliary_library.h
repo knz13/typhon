@@ -25,7 +25,6 @@ public:
                                        {
             std::stringstream ss;
             ss <<    "with name " << T::GetLibraryName() << " and c++ class " << HelperFunctions::GetClassNameString<T>();
-
             return ss.str(); })();
         if constexpr (has_get_library_name<T>::value)
         {

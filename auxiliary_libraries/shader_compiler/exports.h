@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include "../auxiliary_libraries_interface.h"
 
 #if _WIN32
 #include <windows.h>
@@ -13,28 +14,17 @@
 #endif
 
 #if _WIN32
-#define FFI_PLUGIN_EXPORT __declspec(dllexport)
+#define TYPHON_EXPORT __declspec(dllexport)
 #else
-#define FFI_PLUGIN_EXPORT
+#define TYPHON_EXPORT
 #endif
-
-struct CompilationResult
-{
-    std::string shaderText = "";
-    std::string jsonResources = "";
-    std::string error = "";
-    bool result = false;
-};
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-   
 
-    FFI_PLUGIN_EXPORT CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::string shaderName, int64_t shaderType);
-   
-
+    TYPHON_EXPORT ShaderCompilerInterface::CompilationResult CompileGLSLToPlatformSpecific(std::string shaderText, std::string shaderName, int64_t shaderType);
 
 #ifdef __cplusplus
 }

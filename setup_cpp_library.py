@@ -81,7 +81,7 @@ cmake_command = ("src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Conten
 
 import create_auxiliary_libraries as shader_lib
 
-#shader_lib.compile_auxiliary_libraries(run_tests=args.run_tests,release=False)
+shader_lib.compile_auxiliary_libraries(run_tests=args.run_tests,release=False)
 
 
 

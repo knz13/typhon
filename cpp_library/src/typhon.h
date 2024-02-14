@@ -14,9 +14,9 @@
 #endif
 
 #ifdef _WIN32
-#define FFI_PLUGIN_EXPORT __declspec(dllexport)
+#define TYPHON_EXPORT __declspec(dllexport)
 #else
-#define FFI_PLUGIN_EXPORT
+#define TYPHON_EXPORT
 #endif
 
 #ifdef __cplusplus
@@ -26,38 +26,38 @@ extern "C"
 
     //__BEGIN__CPP__EXPORTS__
 
-    FFI_PLUGIN_EXPORT void passPlatformSpecificViewPointer(void *window);
+    TYPHON_EXPORT void passPlatformSpecificViewPointer(void *window);
 
-    FFI_PLUGIN_EXPORT void setPlatformSpecificWindowSizeAndPos(double x, double y, double width, double height);
-    FFI_PLUGIN_EXPORT void *getPlatformSpecificPointer();
-    FFI_PLUGIN_EXPORT bool initializeCppLibrary();
-    FFI_PLUGIN_EXPORT void onMouseMove(double positionX, double positionY);
-    FFI_PLUGIN_EXPORT void onKeyboardKeyDown(int64_t input);
-    FFI_PLUGIN_EXPORT void onKeyboardKeyUp(int64_t input);
-    FFI_PLUGIN_EXPORT void onUpdateCall(double dt);
-    FFI_PLUGIN_EXPORT void onRenderCall(double dt);
-    FFI_PLUGIN_EXPORT void passProjectPath(const char *path);
-    FFI_PLUGIN_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
-    FFI_PLUGIN_EXPORT void attachOnChildrenChanged(OnChildrenChangedFunc func);
-    FFI_PLUGIN_EXPORT void unloadLibrary();
-    FFI_PLUGIN_EXPORT void createObjectFromClassID(int64_t classID);
-    FFI_PLUGIN_EXPORT char *getInstantiableClasses();
-    FFI_PLUGIN_EXPORT char *getInstantiableComponents();
-    FFI_PLUGIN_EXPORT bool isEngineInitialized();
-    FFI_PLUGIN_EXPORT bool isRenderingEngineInitialized();
+    TYPHON_EXPORT void setPlatformSpecificWindowSizeAndPos(double x, double y, double width, double height);
+    TYPHON_EXPORT void *getPlatformSpecificPointer();
+    TYPHON_EXPORT bool initializeCppLibrary();
+    TYPHON_EXPORT void onMouseMove(double positionX, double positionY);
+    TYPHON_EXPORT void onKeyboardKeyDown(int64_t input);
+    TYPHON_EXPORT void onKeyboardKeyUp(int64_t input);
+    TYPHON_EXPORT void onUpdateCall(double dt);
+    TYPHON_EXPORT void onRenderCall(double dt);
+    TYPHON_EXPORT void passProjectPath(const char *path);
+    TYPHON_EXPORT void attachEnqueueRender(EnqueueObjectRender func);
+    TYPHON_EXPORT void attachOnChildrenChanged(OnChildrenChangedFunc func);
+    TYPHON_EXPORT void unloadLibrary();
+    TYPHON_EXPORT void createObjectFromClassID(int64_t classID);
+    TYPHON_EXPORT char *getInstantiableClasses();
+    TYPHON_EXPORT char *getInstantiableComponents();
+    TYPHON_EXPORT bool isEngineInitialized();
+    TYPHON_EXPORT bool isRenderingEngineInitialized();
 
-    FFI_PLUGIN_EXPORT AliveObjectsArray getAliveParentlessObjects();
-    FFI_PLUGIN_EXPORT const char *getObjectNameByID(int64_t id);
-    FFI_PLUGIN_EXPORT void removeObjectByID(int64_t id);
-    FFI_PLUGIN_EXPORT const char *getObjectSerializationByID(int64_t id);
-    FFI_PLUGIN_EXPORT const char *getObjectInspectorUIByID(int64_t id);
-    FFI_PLUGIN_EXPORT const char *getObjectChildTree(int64_t id);
-    FFI_PLUGIN_EXPORT bool setObjectParent(int64_t objectID, int64_t parentID);
-    FFI_PLUGIN_EXPORT bool setObjectName(int64_t objectID, const char *str, int64_t size);
-    FFI_PLUGIN_EXPORT bool removeObjectFromParent(int64_t objectID);
-    FFI_PLUGIN_EXPORT char *getContextMenuForFilePath(const char *filePath, int64_t size);
-    FFI_PLUGIN_EXPORT void loadModelFromPath(const char *filePath, int64_t size);
-    FFI_PLUGIN_EXPORT void addComponentToObject(int64_t objectID, int64_t componentClassID);
+    TYPHON_EXPORT AliveObjectsArray getAliveParentlessObjects();
+    TYPHON_EXPORT const char *getObjectNameByID(int64_t id);
+    TYPHON_EXPORT void removeObjectByID(int64_t id);
+    TYPHON_EXPORT const char *getObjectSerializationByID(int64_t id);
+    TYPHON_EXPORT const char *getObjectInspectorUIByID(int64_t id);
+    TYPHON_EXPORT const char *getObjectChildTree(int64_t id);
+    TYPHON_EXPORT bool setObjectParent(int64_t objectID, int64_t parentID);
+    TYPHON_EXPORT bool setObjectName(int64_t objectID, const char *str, int64_t size);
+    TYPHON_EXPORT bool removeObjectFromParent(int64_t objectID);
+    TYPHON_EXPORT char *getContextMenuForFilePath(const char *filePath, int64_t size);
+    TYPHON_EXPORT void loadModelFromPath(const char *filePath, int64_t size);
+    TYPHON_EXPORT void addComponentToObject(int64_t objectID, int64_t componentClassID);
 
     //__END__CPP__EXPORTS__
 

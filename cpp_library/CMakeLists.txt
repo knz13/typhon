@@ -121,7 +121,7 @@ SET(FETCHCONTENT_QUIET FALSE)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/features/project_selection/project_selection_canvas.cpp)
       #list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/typhon_generated.cpp)
       list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/main.cpp)
-
+      
       if(APPLE)
         list(APPEND typhon_SOURCE_FILES ${PROJECT_SOURCE_DIR}/src/engine/platform_specific/MacOS/metal_rendering_engine.mm)
       endif()

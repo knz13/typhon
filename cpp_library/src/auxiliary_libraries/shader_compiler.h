@@ -14,13 +14,6 @@ struct ShaderCompilationResult
         return result == true;
     }
 };
-struct CompilationResult
-{
-    std::string shaderText = "";
-    std::string jsonResources = "";
-    std::string error = "";
-    bool result = false;
-};
 
 enum class ShaderType
 {
