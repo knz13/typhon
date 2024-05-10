@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-#include "../auxiliary_libraries_interface.h"
+#include "../../cpp_library/src/auxiliary_libraries_helpers/auxiliary_libraries_interface.h"
+
 
 #if _WIN32
 #include <windows.h>

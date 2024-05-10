@@ -132,6 +132,8 @@ void RenderingEngine::InitializeEngine()
 
         return;
     }
+
+    glfwWindowHint
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindow = glfwCreateWindow(1024, 768, "helloworld", nullptr, nullptr);
     if (!glfwWindow)

@@ -13,8 +13,6 @@ import 'package:typhon/engine.dart';
 import 'package:typhon/engine_sub_window.dart';
 import 'package:typhon/widgets/hierarchy_widget.dart';
 import 'package:typhon/widgets/spacings.dart';
-import 'package:typhon/hierarchy_panel/hierarchy_panel.dart';
-import 'package:typhon/main_engine_frontend.dart';
 import 'package:typhon/native_context_menu/native_context_menu.dart';
 import 'package:typhon/regex_parser.dart';
 import 'package:typhon/typhon_bindings.dart';
@@ -349,33 +347,34 @@ class _FileViewerPanelState extends State<FileViewerPanel> {
 
                       showNativeContextMenu(
                           context,
-                          MainEngineFrontend.mousePosition.dx,
-                          MainEngineFrontend.mousePosition.dy, [
-                        if (hoveringPath != "")
-                          ContextMenuOption(
-                              title: "Open",
-                              callback: () {
-                                launchUrl(Uri.parse("file:" +
-                                    path.join(
-                                        FileViewerPanel.currentDirectory.value
-                                            .absolute.path,
-                                        hoveringPath)));
-                              }),
-                        ContextMenuOption(
-                            title: "Open Folder In Explorer",
-                            callback: () {
-                              launchUrl(Uri.parse("file:" +
-                                  FileViewerPanel
-                                      .currentDirectory.value.absolute.path));
-                            }),
-                        ContextMenuSeparator(),
-                        ContextMenuOption(title: "Create", subOptions: [
-                          ContextMenuOption(
-                              title: "Empty GameObject",
-                              callback: () {
-                                setState(() {
-                                  tempFileData = FileViewerFileToCreate(
-                                      fileData: (str) => """#pragma once
+                          0, // TODO
+                          0,
+                          [
+                            if (hoveringPath != "")
+                              ContextMenuOption(
+                                  title: "Open",
+                                  callback: () {
+                                    launchUrl(Uri.parse("file:" +
+                                        path.join(
+                                            FileViewerPanel.currentDirectory
+                                                .value.absolute.path,
+                                            hoveringPath)));
+                                  }),
+                            ContextMenuOption(
+                                title: "Open Folder In Explorer",
+                                callback: () {
+                                  launchUrl(Uri.parse("file:" +
+                                      FileViewerPanel.currentDirectory.value
+                                          .absolute.path));
+                                }),
+                            ContextMenuSeparator(),
+                            ContextMenuOption(title: "Create", subOptions: [
+                              ContextMenuOption(
+                                  title: "Empty GameObject",
+                                  callback: () {
+                                    setState(() {
+                                      tempFileData = FileViewerFileToCreate(
+                                          fileData: (str) => """#pragma once
 #include <iostream>
 #include "engine.h"
 
@@ -395,37 +394,38 @@ public:
 
 };
 """);
-                                });
-                              }),
-                        ]),
-                        if (hoveringPath != "" &&
-                            path.basename(hoveringPath) != "entry.h")
-                          ContextMenuSeparator(),
-                        if (hoveringPath != "" &&
-                            path.basename(hoveringPath) != "entry.h")
-                          ContextMenuOption(
-                              title: "Delete",
-                              callback: () {
-                                File(path.join(
-                                        FileViewerPanel.currentDirectory.value
-                                            .absolute.path,
-                                        hoveringPath))
-                                    .deleteSync(recursive: true);
-                                _refreshFiles();
-                              }),
-                        if (path.extension(hoveringPath) == ".obj")
-                          ContextMenuOption(
-                            title: "Import Model",
-                            callback: () {
-                              if (TyphonCPPInterface.checkIfLibraryLoaded()) {
-                                TyphonCPPInterface.getCppFunctions()
-                                    .loadModelFromPath(
-                                        hoveringPath.toNativeUtf8().cast(),
-                                        hoveringPath.length);
-                              }
-                            },
-                          )
-                      ]);
+                                    });
+                                  }),
+                            ]),
+                            if (hoveringPath != "" &&
+                                path.basename(hoveringPath) != "entry.h")
+                              ContextMenuSeparator(),
+                            if (hoveringPath != "" &&
+                                path.basename(hoveringPath) != "entry.h")
+                              ContextMenuOption(
+                                  title: "Delete",
+                                  callback: () {
+                                    File(path.join(
+                                            FileViewerPanel.currentDirectory
+                                                .value.absolute.path,
+                                            hoveringPath))
+                                        .deleteSync(recursive: true);
+                                    _refreshFiles();
+                                  }),
+                            if (path.extension(hoveringPath) == ".obj")
+                              ContextMenuOption(
+                                title: "Import Model",
+                                callback: () {
+                                  if (TyphonCPPInterface
+                                      .checkIfLibraryLoaded()) {
+                                    TyphonCPPInterface.getCppFunctions()
+                                        .loadModelFromPath(
+                                            hoveringPath.toNativeUtf8().cast(),
+                                            hoveringPath.length);
+                                  }
+                                },
+                              )
+                          ]);
                     },
                     child: ListView.separated(
                       separatorBuilder: (BuildContext context, int index) =>

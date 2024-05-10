@@ -7,9 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/widgets/general_widgets.dart';
-import 'package:typhon/inspector_panel/inspector_panel.dart';
+
 import 'package:typhon/native_context_menu/native_context_menu.dart';
 import 'package:typhon/typhon_bindings_generated.dart';
+
+import 'features/engine_frontend/widgets/inspector_panel/inspector_panel.dart';
 
 class TyphonCPPInterface {
   static List<ContextMenuOption> _buildMenuOptionsForPrefabFromJSON(

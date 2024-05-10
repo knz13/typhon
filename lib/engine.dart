@@ -21,6 +21,7 @@ import 'package:flutter/src/services/keyboard_key.g.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:typhon/console_panel.dart';
+import 'package:typhon/features/project_initialization/data/project_type.dart';
 import 'package:typhon/widgets/general_widgets.dart';
 import 'package:typhon/main.dart';
 import 'package:typhon/native_view_interface.dart';
@@ -1033,6 +1034,13 @@ void addComponentToObject(int64_t objectID, int64_t componentClassID)
     }
 
     projectsList.add(ProjectModel(
+      executableName: "typhon",
+      version: "0.0.1",
+        type: ProjectType(
+            id: "project_3d",
+            description: "A 3D project for creating 3D games.",
+            name: "3D Project"
+        ),
         name: projectName,
         location: projectPath,
         lastModified: DateTime.now()));

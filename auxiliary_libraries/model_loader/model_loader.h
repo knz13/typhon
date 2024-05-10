@@ -6,7 +6,8 @@
 #include "vendor/assimp/include/assimp/mesh.h"
 #include "vendor/assimp/include/assimp/postprocess.h"
 #include "vendor/assimp/include/assimp/scene.h"
-#include "../auxiliary_libraries_interface.h"
+#include "../../cpp_library/src/auxiliary_libraries_helpers/auxiliary_libraries_interface.h"
+
 
 
 #define LOG(x) std::cout << x << std::endl

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
 import 'package:typhon/config/size_config.dart';
 import 'package:typhon/environment.dart';
+import 'package:typhon/features/global_widgets/platform_specific_menu_bar.dart';
 import 'package:typhon/features/project_initialization/presentation/existing_project_selection_panel.dart';
 import 'package:typhon/native_context_menu/native_context_menu.dart';
 import 'package:typhon/typhon_bindings.dart';
@@ -44,7 +45,6 @@ void main() async {
     await windowManager.show();
     await windowManager.focus();
   });
-  await TyphonCPPInterface.extractLib();
 
   runApp(const MainEngineApp());
 }
@@ -103,7 +103,6 @@ class _MainEngineAppState extends State<MainEngineApp> {
             highlightColor: Colors.transparent,
             hoverColor: Colors.transparent,
             splashColor: Colors.transparent,
-            selectedRowColor: Colors.transparent,
             unselectedWidgetColor: Colors.transparent,
             disabledColor: Colors.transparent,
             buttonTheme: ButtonThemeData(
@@ -131,42 +130,7 @@ class _MainEngineAppState extends State<MainEngineApp> {
               body: ExistingProjectSelectionPanel())),
     );
 
-    return Platform.isMacOS
-        ? PlatformMenuBar(menus: [
-            PlatformMenu(label: "Typhon", menus: [
-              PlatformMenuItemGroup(members: [
-                PlatformProvidedMenuItem(
-                    type: PlatformProvidedMenuItemType.about),
-                PlatformMenuItem(
-                  label: "Preferences",
-                ),
-                PlatformMenuItem(
-                  label: "Shortcuts",
-                ),
-              ]),
-            ]),
-            PlatformMenu(label: "Project", menus: [
-              PlatformMenuItemGroup(members: [
-                PlatformMenuItem(
-                    label: "Project Selection",
-                    onSelected: () {
-                      Engine.instance.unload();
-                      Navigator.of(MainEngineApp.globalContext.currentContext!)
-                          .popUntil((route) => route.isFirst);
-                      Navigator.of(MainEngineApp.globalContext.currentContext!)
-                          .pop();
-                      Navigator.of(MainEngineApp.globalContext.currentContext!)
-                          .push(MaterialPageRoute(
-                        builder: (context) {
-                          print("loading projects page!");
-                          return ExistingProjectSelectionPanel();
-                        },
-                      ));
-                    }),
-              ])
-            ])
-          ], child: mainAppWidget)
-        : mainAppWidget;
+    return PlatformSpecificMenuBar.buildMenuBar(child: mainAppWidget);
   }
 
   int page = 1;

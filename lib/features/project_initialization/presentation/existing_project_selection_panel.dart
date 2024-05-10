@@ -24,13 +24,30 @@ class _ExistingProjectSelectionPanelState
   String? errorFound;
 
   bool loadedProjects = false;
+  bool unpackingAssets = false;
+  int progress = 0;
+  int total = 0;
 
   Future<bool> loadProjects() async {
-    if (loadedProjects) {
+    if (loadedProjects || unpackingAssets) {
       return true;
     }
 
     try {
+      // unpack the assets
+
+      setState(() {
+        unpackingAssets = true;
+      });
+
+      await ProjectInitializationService.unpackLibAssets(
+          onProgress: (progress, total) {
+        setState(() {
+          this.progress = progress;
+          this.total = total;
+        });
+      });
+
       var value = await ProjectInitializationService.getProjects();
 
       value.fold((l) {
@@ -41,9 +58,14 @@ class _ExistingProjectSelectionPanelState
         projects = r;
       });
 
+      unpackingAssets = false;
+
       return true;
     } catch (e) {
       loadedProjects = true;
+      setState(() {
+        unpackingAssets = false;
+      });
       errorFound = e.toString();
       return false;
     }
@@ -56,6 +78,24 @@ class _ExistingProjectSelectionPanelState
         backgroundColor: ConfigColors.platinumGray,
         title: const Text('Project Choice Panel'),
         actions: [
+          TyphonButtonWidget(
+            onPressed: () {
+              setState(() {
+                loadedProjects = false;
+                projects = [];
+                errorFound = null;
+                unpackingAssets = false;
+              });
+            },
+            child: const Text(
+              "Reload",
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+          ),
+          SizedBox(
+            width: getProportionateScreenWidth(20),
+          ),
           TyphonButtonWidget(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
@@ -75,8 +115,21 @@ class _ExistingProjectSelectionPanelState
       body: FutureBuilder(
           future: loadProjects(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
+            if (!snapshot.hasData || unpackingAssets) {
+              return SizedBox(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Unpacking Assets - $progress/$total",
+                        style: TextStyle(
+                            color: ConfigColors.platinumGray,
+                            fontSize: getProportionateScreenWidth(20))),
+                    CircularProgressIndicator(),
+                  ],
+                ),
+              );
             }
 
             return TyphonErrorPage(

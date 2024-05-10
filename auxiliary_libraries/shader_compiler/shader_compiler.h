@@ -8,6 +8,7 @@
 #include "vendor/spirv_cross/spirv_glsl.hpp"
 #include "vendor/spirv_cross/spirv_reflect.hpp"
 #include "vendor/json/single_include/nlohmann/json.hpp"
+#include "../../cpp_library/src/auxiliary_libraries_helpers/auxiliary_libraries_interface.h"
 
 using json = nlohmann::json;
 

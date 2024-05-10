@@ -1,6 +1,8 @@
 # Miscellaneous
 vendor/
 build/
+assets/lib/src/vendor/*
+assets/lib/auxiliary_libraries/*
 *.class
 *.log
 *.pyc

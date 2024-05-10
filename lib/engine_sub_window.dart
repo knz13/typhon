@@ -6,18 +6,13 @@ import 'dart:ui';
 
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart' hide MenuBar hide MenuStyle;
-import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tabbed_view/tabbed_view.dart';
 import 'package:typhon/console_panel.dart';
-import 'package:typhon/engine.dart';
 import 'package:typhon/file_viewer_panel/file_viewer_panel.dart';
 import 'package:typhon/widgets/general_widgets.dart';
-import 'package:typhon/hierarchy_panel/hierarchy_panel.dart';
-import 'package:typhon/inspector_panel/inspector_panel.dart';
-import 'package:typhon/main.dart';
 import 'package:typhon/native_context_menu/native_context_menu.dart';
-import 'package:typhon/scene_viewer_panel.dart';
+
 
 
 
@@ -65,6 +60,7 @@ class EngineSubWindow extends StatefulWidget {
   void Function(EngineSubWindow) onChildEmpty = (f) {};
   void Function() initializeNotifiersFunc = () {};
   EngineSubWindow? parent;
+  final List<ContextMenuOption>? menuItems;
 
 
   EngineSubWindow(
@@ -76,7 +72,8 @@ class EngineSubWindow extends StatefulWidget {
       this.tabs = const [],
       this.division = SubWindowDivision.top,
       this.mainChildProportion = 0.5,
-      this.proportionAllowedRange = 0.6
+      this.proportionAllowedRange = 0.6,
+      this.menuItems
     }
   ) {
     mainSubWindow?.parent = this;
@@ -317,26 +314,7 @@ class _EngineSubWindowState extends State<EngineSubWindow>  {
                     ContextMenuSeparator(),
                     ContextMenuOption(title: "Add Tab",subOptions: [
                       
-                      ContextMenuOption(title: "Hierarchy",callback: () {
-                        setState(() {
-                          widget.tabs.add(HierarchyPanelWindow());
-                        });
-                      },),
-                      ContextMenuOption(title: "File Viewer",callback: () {
-                        setState(() {
-                          widget.tabs.add(FileViewerPanelWindow());
-                        });
-                      },),
-                      ContextMenuOption(title: "Inspector",callback: () {
-                        setState(() {
-                          widget.tabs.add(InspectorPanelWindow());
-                        });
-                      },),
-                      ContextMenuOption(title: "Console",callback: () {
-                        setState(() {
-                          widget.tabs.add(ConsolePanelSubWindow());
-                        });
-                      },),
+                      ...widget.menuItems??[]
                     ])
                   ]);
                 },

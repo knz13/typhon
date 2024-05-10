@@ -94,6 +94,25 @@ class Utils {
   }
 
 
+static String normalizePathString(String text) {
+    return text
+        .toLowerCase()
+        .replaceAll("á", "a")
+        .replaceAll("ã", "a")
+        .replaceAll("â", "a")
+        .replaceAll("à", "a")
+        .replaceAll("é", "e")
+        .replaceAll("ê", "e")
+        .replaceAll("í", "i")
+        .replaceAll("ó", "o")
+        .replaceAll("ô", "o")
+        .replaceAll("õ", "o")
+        .replaceAll("ú", "u")
+        .replaceAll("ç", "c")
+        .replaceAll(" ","_")
+        .trim();
+  }
+
   static String formatDate(DateTime date, {bool usDate = false}) {
     if (usDate) {
       return "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
