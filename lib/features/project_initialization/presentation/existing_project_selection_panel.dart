@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:typhon/config/size_config.dart';
 import 'package:typhon/config/theme.dart';
@@ -6,6 +8,7 @@ import 'package:typhon/features/project_initialization/data/project_model.dart';
 import 'package:typhon/features/project_initialization/domain/project_initialization_service.dart';
 import 'package:typhon/features/project_initialization/presentation/project_type_selection_panel.dart';
 import 'package:typhon/features/project_initialization/widgets/project_overview_widget.dart';
+import 'package:typhon/utils/websocket_manager.dart';
 
 import '../../../engine.dart';
 import '../../global_widgets/typhon_error_page.dart';
@@ -24,6 +27,7 @@ class _ExistingProjectSelectionPanelState
   String? errorFound;
 
   bool loadedProjects = false;
+  WebSocketManager? webSocketManager;
 
   Future<bool> loadProjects() async {
     if (loadedProjects) {
@@ -40,6 +44,15 @@ class _ExistingProjectSelectionPanelState
         loadedProjects = true;
         projects = r;
       });
+
+      // try creating socket server
+
+      webSocketManager = WebSocketManager("ws://0.0.0.0:9090",
+          onNumberInternalClientsChanged: (int number) {});
+
+      await webSocketManager!.initialize();
+
+      
 
       return true;
     } catch (e) {

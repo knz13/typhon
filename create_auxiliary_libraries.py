@@ -16,6 +16,10 @@ def compile_auxiliary_libraries(run_tests=False,release=False):
         os.system("pip install ninja")
   
     for directory in os.listdir("auxiliary_libraries"):
+
+        if directory == "shader_compiler":
+            continue
+
         if(not os.path.isdir("auxiliary_libraries/" + directory)):
             continue
         os.chdir("auxiliary_libraries/" + directory)

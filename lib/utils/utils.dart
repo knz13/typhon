@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -93,7 +94,6 @@ class Utils {
     return digest1.toString();
   }
 
-
   static String formatDate(DateTime date, {bool usDate = false}) {
     if (usDate) {
       return "${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
@@ -105,8 +105,20 @@ class Utils {
     return "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
   }
 
-  static void showLoadingPage({required BuildContext context,required Future<Either<String,String>> Function() futureFunction}) {
-    Navigator.of(context).push(MaterialPageRoute(builder:(context) => LoadingPage(futureFunction: futureFunction,)));
+  static void showLoadingPage(
+      {required BuildContext context,
+      required Future<Either<String, String>> Function() futureFunction}) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => LoadingPage(
+              futureFunction: futureFunction,
+            )));
   }
 
+  static String generateRandomHexString(int length) {
+    Random random = Random();
+    const String hexChars = '0123456789ABCDEF';
+
+    return List.generate(length, (index) => hexChars[random.nextInt(16)])
+        .join('');
+  }
 }

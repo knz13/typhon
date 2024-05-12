@@ -16,16 +16,14 @@ if(TYPHON_RENDER_2D)
 add_compile_definitions(TYPHON_RENDER_2D=1)
 endif()
 
-set(TYPHON_DEBUG ON)
-
 SET(FETCHCONTENT_QUIET FALSE)
 
 
 # --------------------- External Libraries ------------------------
 
-    # adding dylib library
+  # adding dylib library
 
-    list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/dylib/include)
+  list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/dylib/include)
 
     # adding glfw library
 
@@ -108,10 +106,6 @@ SET(FETCHCONTENT_QUIET FALSE)
 
       # adding ixwebsocket library
 
-      set(USE_TLS ON)
-
-      add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/ixwebsocket)
-
       list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/ixwebsocket)
 
       list(APPEND typhon_LIBRARIES ixwebsocket)
@@ -150,7 +144,7 @@ SET(FETCHCONTENT_QUIET FALSE)
 
     add_library(typhon
         ${typhon_SOURCE_FILES}
-        
+        ${PROJECT_SOURCE_DIR}/main.cpp
     )
 
 
@@ -186,91 +180,3 @@ SET(FETCHCONTENT_QUIET FALSE)
       #message(STATUS "BEGIN__INCLUDE__DIRS ${TYPHON_INCLUDES_FINAL};${} END__INCLUDE__DIRS")
     
       
-#__TESTING_TYPHON__
-# testing main 
-add_executable(typhon_exec_test
-  ${typhon_SOURCE_FILES}
-  ${PROJECT_SOURCE_DIR}/main.cpp
-)
-
- # setting c++ standard
- set_target_properties(typhon_exec_test PROPERTIES
- CXX_STANDARD 20
-)
-
-# setting c standard
-
-set_target_properties(typhon_exec_test PROPERTIES
- C_STANDARD 20
-)
-# adding include paths 
-
-target_include_directories(typhon_exec_test PUBLIC ${typhon_INCLUDES})
-      
-# adding internal libraries
-      
-target_link_libraries(typhon_exec_test PUBLIC ${typhon_LIBRARIES})
-
-#__END_TESTING_TYPHON__
-#tests
-
-if(TYPHON_RUN_TESTS)
-  add_subdirectory(${PROJECT_SOURCE_DIR}/src/vendor/catch2)
-  add_compile_definitions(__TYPHON_TESTING__=1)
-
-  list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/src/vendor/catch2/extras)
-
-  include(CTest)
-  include(Catch)
-
-  # Creating shared test library to be loaded as dll/dylib
-  add_library(typhon_shared_tests_lib SHARED tests/shared_library_code.cpp)
-
-  set_target_properties(typhon_shared_tests_lib PROPERTIES
-      CXX_STANDARD 20
-  )
-
-  set_target_properties(typhon_shared_tests_lib PROPERTIES
-  C_STANDARD 20
-  )
-  
-  target_link_libraries(typhon_shared_tests_lib PRIVATE typhon)
-
-  # Creating test to load dll/dylib created above
-  add_executable(typhon_shared_tests 
-    tests/shared_library_test.cpp  
-
-  )
-
-  set_target_properties(typhon_shared_tests PROPERTIES
-      CXX_STANDARD 20
-  )
-
-  set_target_properties(typhon_shared_tests PROPERTIES
-      C_STANDARD 20
-  )
-
-  add_dependencies(typhon_shared_tests typhon_shared_tests_lib)
-
-  # Adding main engine tests
-  add_executable(typhon_tests 
-    tests/main_test.cpp
-  )
-
-  set_target_properties(typhon_tests PROPERTIES
-      CXX_STANDARD 20
-  )
-
-  # setting c standard
-
-  set_target_properties(typhon_tests PROPERTIES
-      C_STANDARD 20
-  )
-
-  target_link_libraries(typhon_tests PRIVATE Catch2::Catch2WithMain)
-  target_link_libraries(typhon_tests PRIVATE typhon)
-  
-  catch_discover_tests(typhon_shared_tests)
-  catch_discover_tests(typhon_tests)
-
-endif()

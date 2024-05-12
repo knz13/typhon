@@ -15,6 +15,7 @@ from subprocess import check_output
 import requests
 from python_scripts.cpp_parser import CPPParser
 import distutils.dir_util
+from python_scripts.download_dependencies import download_dependencies
 
 def get_first_available_cpp_compiler():
     system = platform.system()
@@ -79,9 +80,9 @@ if shutil.which("cmake") is None:
 cmake_command = ("src/vendor/cmake/cmake-3.26.3-macos-universal/CMake.app/Contents/bin/cmake" if platform.system() == "Darwin" else "src/vendor/cmake/cmake-3.26.3-windows-x86_64/bin/cmake.exe") if shutil.which("cmake") is None else "cmake"
 
 
-import create_auxiliary_libraries as shader_lib
+import create_auxiliary_libraries as aux_libs
 
-shader_lib.compile_auxiliary_libraries(run_tests=args.run_tests,release=False)
+aux_libs.compile_auxiliary_libraries(run_tests=args.run_tests,release=False)
 
 
 
@@ -100,61 +101,8 @@ if not os.path.exists("src/vendor"):
 
 #if get_first_available_cpp_compiler() == None:
 
-if not os.path.exists("src/vendor/dylib"):
-    os.system('git clone --recursive https://github.com/martin-olivier/dylib src/vendor/dylib')
-if not os.path.exists("src/vendor/entt"):
-    os.system('git clone --recursive --branch v3.11.1 https://github.com/skypjack/entt/ src/vendor/entt')
-if not os.path.exists("src/vendor/yael"):
-    os.system('git clone --recursive https://github.com/knz13/YAEL src/vendor/yael')
-if not os.path.exists("src/vendor/random"):
-    os.system('git clone --recursive https://github.com/effolkronium/random src/vendor/random')
-if not os.path.exists("src/vendor/glm"):
-    os.system('git clone --recursive https://github.com/g-truc/glm src/vendor/glm')
-if not os.path.exists("src/vendor/json"):
-    os.system('git clone --recursive https://github.com/nlohmann/json src/vendor/json')
-if not os.path.exists("src/vendor/bgfx"):
-    os.system('git clone --recursive https://github.com/bkaradzic/bgfx.cmake src/vendor/bgfx')
-if not os.path.exists("src/vendor/imgui"):
-    os.system("git clone --recursive https://github.com/ocornut/imgui src/vendor/imgui")
-if not os.path.exists("src/vendor/glfw"):
-    os.system('git clone --recursive https://github.com/glfw/glfw src/vendor/glfw')
-if not os.path.exists("src/vendor/crunch"):
-    os.system('git clone --recursive https://github.com/johnfredcee/crunch src/vendor/crunch')
+download_dependencies()
 
-    for file in os.listdir("src/vendor/crunch/crunch"):
-        with open(f'src/vendor/crunch/crunch/{file}','r', encoding='iso-8859-1') as f:
-            file_data = f.read()
-        
-        if file != "packer.hpp":
-            pattern = r'(?<![A-Za-z<>])Point(?![A-Za-z<>])'
-            file_data = re.sub(pattern, 'Crunch::Point', file_data)
-        else:
-            file_data = file_data.replace("""struct Point
-{
-    int x;
-    int y;
-    int dupID;
-    bool rot;
-};""","""
-namespace Crunch {
-
-    struct Point
-    {
-        int x;
-        int y;
-        int dupID;
-        bool rot;
-    };
-
-}
-""")        
-            file_data = file_data.replace("vector<Point> points;","vector<Crunch::Point> points;")
-
-        with open(f'src/vendor/crunch/crunch/{file}','w') as f:
-            f.write(file_data)
-
-
-print("Finished downloading dependencies!")
 
 
 if False:
@@ -168,77 +116,97 @@ if False:
     os.system("echo Built Typhon Library!")
     os.chdir(os.path.join(current_dir,"cpp_library"))
 
-    roots = []
-    os.makedirs("../assets/lib",exist_ok=True)
-    shutil.copyfile("CMakeLists.txt","../assets/lib/CMakeLists.txt")
-    dir = os.listdir("src")
-    num_files = 0
-    for root, dirs, files in os.walk('src'):
-        root = os.path.abspath(root)
+roots = []
+os.makedirs("../assets/lib",exist_ok=True)
+shutil.copyfile("CMakeLists.txt","../assets/lib/CMakeLists.txt")
+
+# modify CMakeLists to remove everything between #__TESTING_TYPHON__ and #__END__TESTING_TYPHON__
+
+with open("../assets/lib/CMakeLists.txt",'r') as f:
+    lines = f.readlines()
+    shouldAddLine = True
+    new_lines = []
+    for line in lines:
+        if "#__TESTING_TYPHON__" in line:
+            shouldAddLine = False
+            continue
+        if "#__END__TESTING_TYPHON__" in line:
+            shouldAddLine = True
+            continue
+        if shouldAddLine:
+            new_lines.append(line)
+    
+    with open("../assets/lib/CMakeLists.txt",'w') as f:
+        f.write("".join(new_lines))
+
+dir = os.listdir("src")
+num_files = 0
+for root, dirs, files in os.walk('src'):
+    root = os.path.abspath(root)
+    if os.path.basename(root).startswith("."):
+        continue
+    for file in files:
         if os.path.basename(root).startswith("."):
             continue
-        for file in files:
-            if os.path.basename(root).startswith("."):
-                continue
-            if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")))):
-                os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src"))),exist_ok=True)
-            if root not in roots:
-                roots.append(root)
-            num_files += 1
-                
-        #print(f"Done dir {root}")
-
-    os.chdir(current_dir)
-
-    print("Copying Files To Assets!")
-
-    os.chdir("cpp_library")
-
-    distutils.dir_util.copy_tree(
-        "src",
-        os.path.join("../assets","lib",'src'),
-        update=1,
-        verbose=1,
-    )
-
-    print("Finished Copying Files To Assets!")
-
-    paths_to_add_to_pubspec = []
-    for root in roots:
-        path = os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")).replace("\\","/")
-        paths_to_add_to_pubspec.append(f'    - assets/lib/src/{path}/')
-
-
-
-    os.chdir(current_dir)
-
-    for file in os.listdir("assets/lib/auxiliary_libraries"):
-        paths_to_add_to_pubspec.append(f'    - assets/lib/auxiliary_libraries/{file}')
-
-    pubspecNew = ""
-    with open("pubspec.yaml",'r') as f:
-        lines = f.readlines()
-        shouldStartIncluding = False
-
-        for line in lines:
-            if "__BEGIN__ASSETS__INCLUSION__" in line:
-                pubspecNew += line
-                shouldStartIncluding = True
+        if not os.path.exists(os.path.join("../assets/lib/src",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")))):
+            os.makedirs(os.path.join("../assets/lib/src/",os.path.relpath(root,os.path.join(current_dir,"cpp_library","src"))),exist_ok=True)
+        if root not in roots:
+            roots.append(root)
+        num_files += 1
             
-            if "__END__ASSETS__INCLUSION__" in line:
-                pubspecNew += "\n".join(paths_to_add_to_pubspec) + "\n"
-                pubspecNew += line
-                shouldStartIncluding = False
-                continue
+    #print(f"Done dir {root}")
+
+os.chdir(current_dir)
+
+print("Copying Files To Assets!")
+
+os.chdir("cpp_library")
+
+distutils.dir_util.copy_tree(
+    "src",
+    os.path.join("../assets","lib",'src'),
+    update=1,
+    verbose=1,
+)
+
+print("Finished Copying Files To Assets!")
+
+paths_to_add_to_pubspec = []
+for root in roots:
+    path = os.path.relpath(root,os.path.join(current_dir,"cpp_library","src")).replace("\\","/")
+    paths_to_add_to_pubspec.append(f'    - assets/lib/src/{path}/')
 
 
-            if shouldStartIncluding:
-                continue
 
+os.chdir(current_dir)
+
+for file in os.listdir("assets/lib/auxiliary_libraries"):
+    paths_to_add_to_pubspec.append(f'    - assets/lib/auxiliary_libraries/{file}')
+
+pubspecNew = ""
+with open("pubspec.yaml",'r') as f:
+    lines = f.readlines()
+    shouldStartIncluding = False
+
+    for line in lines:
+        if "__BEGIN__ASSETS__INCLUSION__" in line:
             pubspecNew += line
+            shouldStartIncluding = True
+        
+        if "__END__ASSETS__INCLUSION__" in line:
+            pubspecNew += "\n".join(paths_to_add_to_pubspec) + "\n"
+            pubspecNew += line
+            shouldStartIncluding = False
+            continue
 
-    with open("pubspec.yaml",'w') as f:
-        f.write(pubspecNew)
+
+        if shouldStartIncluding:
+            continue
+
+        pubspecNew += line
+
+with open("pubspec.yaml",'w') as f:
+    f.write(pubspecNew)
 
 cpp_exports = ""
 cpp_exports_impl = ""

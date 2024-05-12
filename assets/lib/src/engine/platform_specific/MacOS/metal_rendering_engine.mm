@@ -22,6 +22,7 @@ void MetalRenderingEngine::InitializeRenderingEngine() {
     renderPassDescriptor = [MTLRenderPassDescriptor new];
     
 
+
 }
 
 void MetalRenderingEngine::UnloadRenderingEngine() {
@@ -50,12 +51,12 @@ void MetalRenderingEngine::Render(RenderingCanvas& canvas) {
         ImGui_ImplMetal_NewFrame(renderPassDescriptor);
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        
+
         canvas.Render();
 
         ImGui::Render();
         ImGui_ImplMetal_RenderDrawData(ImGui::GetDrawData(), commandBuffer, renderEncoder);
-        
+
         [renderEncoder endEncoding];
 
         [commandBuffer presentDrawable:drawable];

@@ -45,7 +45,7 @@ public:
             return {};
         }
 
-        auto func = GetLibrary()->get_function<ShaderCompilerInterface::CompilationResult(std::string, std::string, int64_t)>("CompileGLSLToPlatformSpecific");
+        auto func = GetLibrary()->get_function<CompilationResult(std::string, std::string, int64_t)>("CompileGLSLToPlatformSpecific");
 
         if (func == nullptr)
         {

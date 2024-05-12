@@ -103,7 +103,6 @@ class _MainEngineAppState extends State<MainEngineApp> {
             highlightColor: Colors.transparent,
             hoverColor: Colors.transparent,
             splashColor: Colors.transparent,
-            selectedRowColor: Colors.transparent,
             unselectedWidgetColor: Colors.transparent,
             disabledColor: Colors.transparent,
             buttonTheme: ButtonThemeData(

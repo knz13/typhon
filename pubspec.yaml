@@ -56,6 +56,8 @@ dependencies:
   window_manager: ^0.3.5
   crypto: ^3.0.3
   dartz: ^0.10.1
+  web_socket_channel: ^2.4.5
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -87,176 +89,20 @@ flutter:
     # __BEGIN__ASSETS__INCLUSION__
     - assets/lib/src/./
     - assets/lib/src/ui/
-    - assets/lib/src/macos/
     - assets/lib/src/auxiliary_libraries_helpers/
+    - assets/lib/src/features/project_selection/
     - assets/lib/src/component/
     - assets/lib/src/component/default_components/
+    - assets/lib/src/utils/
     - assets/lib/src/object/
     - assets/lib/src/auxiliary_libraries/
     - assets/lib/src/prefab/
     - assets/lib/src/prefab/defaults/
-    - assets/lib/src/vendor/igl/
-    - assets/lib/src/vendor/igl/cmake/
-    - assets/lib/src/vendor/igl/shell/
-    - assets/lib/src/vendor/igl/shell/openxr/
-    - assets/lib/src/vendor/igl/shell/openxr/impl/
-    - assets/lib/src/vendor/igl/shell/openxr/desktop/
-    - assets/lib/src/vendor/igl/shell/openxr/desktop/vulkan/
-    - assets/lib/src/vendor/igl/shell/openxr/mobile/
-    - assets/lib/src/vendor/igl/shell/openxr/mobile/java/com/facebook/igl/shell/openxr/gles/
-    - assets/lib/src/vendor/igl/shell/openxr/mobile/java/com/facebook/igl/shell/openxr/vulkan/
-    - assets/lib/src/vendor/igl/shell/openxr/mobile/vulkan/
-    - assets/lib/src/vendor/igl/shell/openxr/mobile/opengl/
-    - assets/lib/src/vendor/igl/shell/openxr/src/
-    - assets/lib/src/vendor/igl/shell/resources/images/
-    - assets/lib/src/vendor/igl/shell/resources/models/
-    - assets/lib/src/vendor/igl/shell/resources/mac/
-    - assets/lib/src/vendor/igl/shell/resources/mac/Assets.xcassets/
-    - assets/lib/src/vendor/igl/shell/resources/mac/Assets.xcassets/AppIcon.appiconset/
-    - assets/lib/src/vendor/igl/shell/resources/mac/Base.lproj/
-    - assets/lib/src/vendor/igl/shell/resources/shaders/
-    - assets/lib/src/vendor/igl/shell/shared/extension/
-    - assets/lib/src/vendor/igl/shell/shared/input/
-    - assets/lib/src/vendor/igl/shell/shared/platform/
-    - assets/lib/src/vendor/igl/shell/shared/platform/win/
-    - assets/lib/src/vendor/igl/shell/shared/platform/ios/
-    - assets/lib/src/vendor/igl/shell/shared/platform/mac/
-    - assets/lib/src/vendor/igl/shell/shared/platform/android/
-    - assets/lib/src/vendor/igl/shell/shared/fileLoader/
-    - assets/lib/src/vendor/igl/shell/shared/fileLoader/apple/
-    - assets/lib/src/vendor/igl/shell/shared/fileLoader/win/
-    - assets/lib/src/vendor/igl/shell/shared/fileLoader/android/
-    - assets/lib/src/vendor/igl/shell/shared/renderSession/
-    - assets/lib/src/vendor/igl/shell/shared/imageWriter/
-    - assets/lib/src/vendor/igl/shell/shared/imageWriter/win/
-    - assets/lib/src/vendor/igl/shell/shared/imageWriter/ios/
-    - assets/lib/src/vendor/igl/shell/shared/imageWriter/stb/
-    - assets/lib/src/vendor/igl/shell/shared/imageWriter/mac/
-    - assets/lib/src/vendor/igl/shell/shared/imageWriter/android/
-    - assets/lib/src/vendor/igl/shell/shared/imageLoader/
-    - assets/lib/src/vendor/igl/shell/shared/imageLoader/android/
-    - assets/lib/src/vendor/igl/shell/shared/testShell/
-    - assets/lib/src/vendor/igl/shell/shared/netservice/
-    - assets/lib/src/vendor/igl/shell/shared/netservice/apple/
-    - assets/lib/src/vendor/igl/shell/shared/netservice/zeromq/
-    - assets/lib/src/vendor/igl/shell/ios/
-    - assets/lib/src/vendor/igl/shell/mac/
-    - assets/lib/src/vendor/igl/shell/android/
-    - assets/lib/src/vendor/igl/shell/android/java/com/facebook/igl/sample/
-    - assets/lib/src/vendor/igl/shell/android/jni/
-    - assets/lib/src/vendor/igl/shell/windows/
-    - assets/lib/src/vendor/igl/shell/windows/vulkan/
-    - assets/lib/src/vendor/igl/shell/windows/opengles/
-    - assets/lib/src/vendor/igl/shell/windows/opengl/
-    - assets/lib/src/vendor/igl/shell/renderSessions/
-    - assets/lib/src/vendor/igl/shell/apps/
-    - assets/lib/src/vendor/igl/shell/renderSessionTests/
-    - assets/lib/src/vendor/igl/docs/
-    - assets/lib/src/vendor/igl/docs/source/
-    - assets/lib/src/vendor/igl/docs/source/video/
-    - assets/lib/src/vendor/igl/docs/source/images/
-    - assets/lib/src/vendor/igl/docs/source/images/favicon/
-    - assets/lib/src/vendor/igl/docs/source/_extensions/
-    - assets/lib/src/vendor/igl/docs/source/getting-started/
-    - assets/lib/src/vendor/igl/docs/source/theme/
-    - assets/lib/src/vendor/igl/docs/source/data/
-    - assets/lib/src/vendor/igl/samples/wasm/
-    - assets/lib/src/vendor/igl/samples/desktop/
-    - assets/lib/src/vendor/igl/samples/desktop/Tiny/
-    - assets/lib/src/vendor/igl/samples/ios/snapshot_test_support/
-    - assets/lib/src/vendor/igl/samples/android/vulkan/java/com/facebook/igl/sample/
-    - assets/lib/src/vendor/igl/samples/android/vulkan/jni/
-    - assets/lib/src/vendor/igl/samples/android/opengl/java/com/facebook/igl/sample/
-    - assets/lib/src/vendor/igl/samples/android/opengl/jni/
-    - assets/lib/src/vendor/igl/.github/workflows/
-    - assets/lib/src/vendor/igl/third-party/
-    - assets/lib/src/vendor/igl/third-party/deps/patches/
-    - assets/lib/src/vendor/igl/third-party/deps/patches/stb_impl/
-    - assets/lib/src/vendor/igl/build/
-    - assets/lib/src/vendor/igl/build/android/
-    - assets/lib/src/vendor/igl/build/android/app/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/mipmap-mdpi/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/drawable-v24/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/mipmap-hdpi/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/drawable/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/mipmap-xxxhdpi/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/layout/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/mipmap-xxhdpi/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/values-night/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/values/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/xml/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/mipmap-xhdpi/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/res/mipmap-anydpi-v26/
-    - assets/lib/src/vendor/igl/build/android/app/src/main/java/com/facebook/igl/sample/
-    - assets/lib/src/vendor/igl/build/android/gradle/wrapper/
-    - assets/lib/src/vendor/igl/IGLU/
-    - assets/lib/src/vendor/igl/IGLU/state_pool/
-    - assets/lib/src/vendor/igl/IGLU/managedUniformBuffer/
-    - assets/lib/src/vendor/igl/IGLU/uniform/
-    - assets/lib/src/vendor/igl/IGLU/imgui/
-    - assets/lib/src/vendor/igl/IGLU/sentinel/
-    - assets/lib/src/vendor/igl/IGLU/texture_accessor/
-    - assets/lib/src/vendor/igl/IGLU/texture_loader/
-    - assets/lib/src/vendor/igl/IGLU/texture_loader/stb_jpeg/
-    - assets/lib/src/vendor/igl/IGLU/texture_loader/ktx/
-    - assets/lib/src/vendor/igl/IGLU/texture_loader/ktx1/
-    - assets/lib/src/vendor/igl/IGLU/texture_loader/stb_hdr/
-    - assets/lib/src/vendor/igl/IGLU/texture_loader/stb_image/
-    - assets/lib/src/vendor/igl/IGLU/texture_loader/ktx2/
-    - assets/lib/src/vendor/igl/IGLU/texture_loader/stb_png/
-    - assets/lib/src/vendor/igl/IGLU/simple_renderer/
-    - assets/lib/src/vendor/igl/IGLU/simdtypes/
-    - assets/lib/src/vendor/igl/.git/objects/pack/
-    - assets/lib/src/vendor/igl/.git/info/
-    - assets/lib/src/vendor/igl/.git/logs/
-    - assets/lib/src/vendor/igl/.git/logs/refs/heads/
-    - assets/lib/src/vendor/igl/.git/logs/refs/remotes/origin/
-    - assets/lib/src/vendor/igl/.git/hooks/
-    - assets/lib/src/vendor/igl/.git/refs/heads/
-    - assets/lib/src/vendor/igl/.git/refs/remotes/origin/
-    - assets/lib/src/vendor/igl/src/igl/
-    - assets/lib/src/vendor/igl/src/igl/metal/
-    - assets/lib/src/vendor/igl/src/igl/metal/macos/
-    - assets/lib/src/vendor/igl/src/igl/metal/ios/
-    - assets/lib/src/vendor/igl/src/igl/win/
-    - assets/lib/src/vendor/igl/src/igl/tests/
-    - assets/lib/src/vendor/igl/src/igl/tests/util/
-    - assets/lib/src/vendor/igl/src/igl/tests/util/device/
-    - assets/lib/src/vendor/igl/src/igl/tests/util/device/metal/
-    - assets/lib/src/vendor/igl/src/igl/tests/util/device/vulkan/
-    - assets/lib/src/vendor/igl/src/igl/tests/util/device/opengl/
-    - assets/lib/src/vendor/igl/src/igl/tests/metal/
-    - assets/lib/src/vendor/igl/src/igl/tests/ogl/
-    - assets/lib/src/vendor/igl/src/igl/tests/ogl/macos/
-    - assets/lib/src/vendor/igl/src/igl/tests/ogl/ios/
-    - assets/lib/src/vendor/igl/src/igl/tests/vulkan/
-    - assets/lib/src/vendor/igl/src/igl/tests/iglu/
-    - assets/lib/src/vendor/igl/src/igl/tests/iglu/texture_loader/
-    - assets/lib/src/vendor/igl/src/igl/tests/data/
-    - assets/lib/src/vendor/igl/src/igl/vulkan/
-    - assets/lib/src/vendor/igl/src/igl/vulkan/util/
-    - assets/lib/src/vendor/igl/src/igl/vulkan/moltenvk/
-    - assets/lib/src/vendor/igl/src/igl/android/
-    - assets/lib/src/vendor/igl/src/igl/opengl/
-    - assets/lib/src/vendor/igl/src/igl/opengl/macos/
-    - assets/lib/src/vendor/igl/src/igl/opengl/empty/
-    - assets/lib/src/vendor/igl/src/igl/opengl/util/
-    - assets/lib/src/vendor/igl/src/igl/opengl/webgl/
-    - assets/lib/src/vendor/igl/src/igl/opengl/ios/
-    - assets/lib/src/vendor/igl/src/igl/opengl/egl/
-    - assets/lib/src/vendor/igl/src/igl/opengl/egl/android/
-    - assets/lib/src/vendor/igl/src/igl/opengl/wgl/
-    - assets/lib/src/vendor/igl/src/igl/opengl/glx/
-    - assets/lib/src/vendor/metal-cpp/
-    - assets/lib/src/vendor/metal-cpp/metal-cpp/
-    - assets/lib/src/vendor/metal-cpp/metal-cpp/Metal/
-    - assets/lib/src/vendor/metal-cpp/metal-cpp/Foundation/
-    - assets/lib/src/vendor/metal-cpp/metal-cpp/QuartzCore/
-    - assets/lib/src/vendor/metal-cpp/metal-cpp/MetalFX/
-    - assets/lib/src/vendor/metal-cpp/metal-cpp/SingleHeader/
-    - assets/lib/src/vendor/metal-cpp/metal-cpp-extensions/AppKit/
-    - assets/lib/src/vendor/metal-cpp/metal-cpp-extensions/MetalKit/
+    - assets/lib/src/texture_packer/
+    - assets/lib/src/engine/
+    - assets/lib/src/engine/platform_specific/MacOS/
+    - assets/lib/src/engine/entity_component_system/
+    - assets/lib/src/vendor/
     - assets/lib/src/vendor/bgfx/
     - assets/lib/src/vendor/bgfx/bgfx/
     - assets/lib/src/vendor/bgfx/bgfx/tools/shaderc/
@@ -594,6 +440,66 @@ flutter:
     - assets/lib/src/vendor/entt/src/entt/signal/
     - assets/lib/src/vendor/entt/src/entt/process/
     - assets/lib/src/vendor/entt/src/entt/poly/
+    - assets/lib/src/vendor/imgui/
+    - assets/lib/src/vendor/imgui/misc/
+    - assets/lib/src/vendor/imgui/misc/single_file/
+    - assets/lib/src/vendor/imgui/misc/freetype/
+    - assets/lib/src/vendor/imgui/misc/debuggers/
+    - assets/lib/src/vendor/imgui/misc/cpp/
+    - assets/lib/src/vendor/imgui/misc/fonts/
+    - assets/lib/src/vendor/imgui/backends/
+    - assets/lib/src/vendor/imgui/backends/vulkan/
+    - assets/lib/src/vendor/imgui/docs/
+    - assets/lib/src/vendor/imgui/examples/
+    - assets/lib/src/vendor/imgui/examples/example_glfw_opengl2/
+    - assets/lib/src/vendor/imgui/examples/example_null/
+    - assets/lib/src/vendor/imgui/examples/example_glfw_opengl3/
+    - assets/lib/src/vendor/imgui/examples/example_glut_opengl2/
+    - assets/lib/src/vendor/imgui/examples/example_sdl2_vulkan/
+    - assets/lib/src/vendor/imgui/examples/example_win32_directx9/
+    - assets/lib/src/vendor/imgui/examples/example_glfw_vulkan/
+    - assets/lib/src/vendor/imgui/examples/example_win32_opengl3/
+    - assets/lib/src/vendor/imgui/examples/example_allegro5/
+    - assets/lib/src/vendor/imgui/examples/example_win32_directx10/
+    - assets/lib/src/vendor/imgui/examples/example_sdl2_metal/
+    - assets/lib/src/vendor/imgui/examples/example_glfw_metal/
+    - assets/lib/src/vendor/imgui/examples/example_emscripten_wgpu/
+    - assets/lib/src/vendor/imgui/examples/example_emscripten_wgpu/web/
+    - assets/lib/src/vendor/imgui/examples/example_win32_directx11/
+    - assets/lib/src/vendor/imgui/examples/libs/usynergy/
+    - assets/lib/src/vendor/imgui/examples/libs/emscripten/
+    - assets/lib/src/vendor/imgui/examples/libs/glfw/
+    - assets/lib/src/vendor/imgui/examples/libs/glfw/lib-vc2010-64/
+    - assets/lib/src/vendor/imgui/examples/libs/glfw/include/GLFW/
+    - assets/lib/src/vendor/imgui/examples/libs/glfw/lib-vc2010-32/
+    - assets/lib/src/vendor/imgui/examples/example_apple_opengl2/
+    - assets/lib/src/vendor/imgui/examples/example_apple_opengl2/example_apple_opengl2.xcodeproj/
+    - assets/lib/src/vendor/imgui/examples/example_sdl2_opengl2/
+    - assets/lib/src/vendor/imgui/examples/example_sdl2_opengl3/
+    - assets/lib/src/vendor/imgui/examples/example_sdl2_directx11/
+    - assets/lib/src/vendor/imgui/examples/example_sdl3_opengl3/
+    - assets/lib/src/vendor/imgui/examples/example_android_opengl3/
+    - assets/lib/src/vendor/imgui/examples/example_android_opengl3/android/
+    - assets/lib/src/vendor/imgui/examples/example_android_opengl3/android/app/
+    - assets/lib/src/vendor/imgui/examples/example_android_opengl3/android/app/src/main/
+    - assets/lib/src/vendor/imgui/examples/example_android_opengl3/android/app/src/main/java/
+    - assets/lib/src/vendor/imgui/examples/example_apple_metal/
+    - assets/lib/src/vendor/imgui/examples/example_apple_metal/macOS/
+    - assets/lib/src/vendor/imgui/examples/example_apple_metal/example_apple_metal.xcodeproj/
+    - assets/lib/src/vendor/imgui/examples/example_apple_metal/iOS/
+    - assets/lib/src/vendor/imgui/examples/example_sdl2_sdlrenderer2/
+    - assets/lib/src/vendor/imgui/examples/example_sdl3_sdlrenderer3/
+    - assets/lib/src/vendor/imgui/examples/example_win32_directx12/
+    - assets/lib/src/vendor/imgui/.github/workflows/
+    - assets/lib/src/vendor/imgui/.github/ISSUE_TEMPLATE/
+    - assets/lib/src/vendor/imgui/.git/objects/pack/
+    - assets/lib/src/vendor/imgui/.git/info/
+    - assets/lib/src/vendor/imgui/.git/logs/
+    - assets/lib/src/vendor/imgui/.git/logs/refs/heads/
+    - assets/lib/src/vendor/imgui/.git/logs/refs/remotes/origin/
+    - assets/lib/src/vendor/imgui/.git/hooks/
+    - assets/lib/src/vendor/imgui/.git/refs/heads/
+    - assets/lib/src/vendor/imgui/.git/refs/remotes/origin/
     - assets/lib/src/vendor/yael/
     - assets/lib/src/vendor/yael/include/
     - assets/lib/src/vendor/yael/tests/
@@ -710,6 +616,58 @@ flutter:
     - assets/lib/src/vendor/json/.git/refs/heads/
     - assets/lib/src/vendor/json/.git/refs/remotes/origin/
     - assets/lib/src/vendor/json/single_include/nlohmann/
+    - assets/lib/src/vendor/ixwebsocket/
+    - assets/lib/src/vendor/ixwebsocket/tools/
+    - assets/lib/src/vendor/ixwebsocket/docker/
+    - assets/lib/src/vendor/ixwebsocket/test/
+    - assets/lib/src/vendor/ixwebsocket/test/compatibility/python/websockets/
+    - assets/lib/src/vendor/ixwebsocket/test/compatibility/python/websockets/vendor/
+    - assets/lib/src/vendor/ixwebsocket/test/compatibility/python/websocket-client/
+    - assets/lib/src/vendor/ixwebsocket/test/compatibility/cpp/libwebsockets/
+    - assets/lib/src/vendor/ixwebsocket/test/compatibility/csharp/
+    - assets/lib/src/vendor/ixwebsocket/test/compatibility/node/
+    - assets/lib/src/vendor/ixwebsocket/test/compatibility/ruby/
+    - assets/lib/src/vendor/ixwebsocket/test/Catch2/single_include/
+    - assets/lib/src/vendor/ixwebsocket/test/data/
+    - assets/lib/src/vendor/ixwebsocket/CMake/
+    - assets/lib/src/vendor/ixwebsocket/docs/
+    - assets/lib/src/vendor/ixwebsocket/third_party/
+    - assets/lib/src/vendor/ixwebsocket/third_party/msgpack11/
+    - assets/lib/src/vendor/ixwebsocket/third_party/cpp-linenoise/
+    - assets/lib/src/vendor/ixwebsocket/third_party/cpp-linenoise/example/
+    - assets/lib/src/vendor/ixwebsocket/third_party/cli11/
+    - assets/lib/src/vendor/ixwebsocket/.github/workflows/
+    - assets/lib/src/vendor/ixwebsocket/ixwebsocket/
+    - assets/lib/src/vendor/ixwebsocket/.git/objects/pack/
+    - assets/lib/src/vendor/ixwebsocket/.git/info/
+    - assets/lib/src/vendor/ixwebsocket/.git/logs/
+    - assets/lib/src/vendor/ixwebsocket/.git/logs/refs/heads/
+    - assets/lib/src/vendor/ixwebsocket/.git/logs/refs/remotes/origin/
+    - assets/lib/src/vendor/ixwebsocket/.git/hooks/
+    - assets/lib/src/vendor/ixwebsocket/.git/refs/heads/
+    - assets/lib/src/vendor/ixwebsocket/.git/refs/remotes/origin/
+    - assets/lib/src/vendor/ixwebsocket/ws/
+    - assets/lib/src/vendor/glfw/
+    - assets/lib/src/vendor/glfw/CMake/
+    - assets/lib/src/vendor/glfw/CMake/modules/
+    - assets/lib/src/vendor/glfw/include/GLFW/
+    - assets/lib/src/vendor/glfw/tests/
+    - assets/lib/src/vendor/glfw/docs/
+    - assets/lib/src/vendor/glfw/examples/
+    - assets/lib/src/vendor/glfw/.github/workflows/
+    - assets/lib/src/vendor/glfw/deps/
+    - assets/lib/src/vendor/glfw/deps/mingw/
+    - assets/lib/src/vendor/glfw/deps/wayland/
+    - assets/lib/src/vendor/glfw/deps/glad/
+    - assets/lib/src/vendor/glfw/.git/objects/pack/
+    - assets/lib/src/vendor/glfw/.git/info/
+    - assets/lib/src/vendor/glfw/.git/logs/
+    - assets/lib/src/vendor/glfw/.git/logs/refs/heads/
+    - assets/lib/src/vendor/glfw/.git/logs/refs/remotes/origin/
+    - assets/lib/src/vendor/glfw/.git/hooks/
+    - assets/lib/src/vendor/glfw/.git/refs/heads/
+    - assets/lib/src/vendor/glfw/.git/refs/remotes/origin/
+    - assets/lib/src/vendor/glfw/src/
     - assets/lib/src/vendor/random/
     - assets/lib/src/vendor/random/test/
     - assets/lib/src/vendor/random/cmake/
