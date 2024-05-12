@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:typhon/config/size_config.dart';
 import 'package:typhon/config/theme.dart';
@@ -50,10 +51,32 @@ class _ExistingProjectSelectionPanelState
       webSocketManager = WebSocketManager("ws://0.0.0.0:9090",
           onNumberInternalClientsChanged: (int number) {});
 
+      // RGB image with 1920x1080 resolution
+
+      var image = List.generate(800 * 400 * 3, (index) => 0.0);
+
+      var imageUint8List =
+          Uint8List.fromList(image.map((e) => e.toInt()).toList());
+
+      print("Image size: ${imageUint8List.length} bytes");
+
       await webSocketManager!.initialize();
 
+      // send image to server and check time
       
+      var start = DateTime.now().millisecondsSinceEpoch;
 
+      webSocketManager!.sendMessage(imageUint8List);
+
+      /* // send a lot of data to check for server crash
+      int tries = 0;
+      while (tries < 50) {
+        print("Trying ${tries++}");
+        // sending 100kb of data
+        webSocketManager!.sendMessage(Uint8List(1024 * 100));
+        await Future.delayed(const Duration(milliseconds: 50));
+      }
+ */
       return true;
     } catch (e) {
       loadedProjects = true;

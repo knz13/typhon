@@ -127,7 +127,7 @@ class WebSocketManager {
 
   String getHttpPathFromCommand(WebsocketMessageCommand command) {
     String defaultPath = "http://0.0.0.0:9090/";
-   
+
     switch (command) {
       case WebsocketMessageCommand.findCircles:
         return "${defaultPath}find_circles";
@@ -140,73 +140,13 @@ class WebSocketManager {
     }
   }
 
-  Stream<WebsocketMessageResponse> sendMessageWithResponse(
-      WebsocketMessageCommand command, dynamic message,
-      {PlatformFile? file}) {
-    var controller = StreamController<WebsocketMessageResponse>();
+  Future<void> sendMessage(dynamic message) async {
+    _channel!.sink.add(message);
 
-    var httpPath = getHttpPathFromCommand(command);
+    // wait for message to be sent
 
-    var taskId = Utils.generateRandomHexString(16);
+    
 
-    var subscription = listen(
-      (message) {
-        if (message.data['task_id'] != taskId) {
-          return;
-        }
-        controller.add(WebsocketMessageResponse(
-            status: message.status, data: message.data["message"]));
-      },
-      onError: (error) {
-        controller.addError(error);
-        controller.close();
-      },
-      onDone: () => controller.close(),
-    );
-
-    switch (command) {
-      case WebsocketMessageCommand.findCircles ||
-            WebsocketMessageCommand.readToImages:
-        if (file == null) {
-          throw Exception("File is required for this command");
-        }
-
-        var request = http.MultipartRequest('POST', Uri.parse(httpPath));
-
-        request.fields['socket_id'] = socketId;
-        request.fields['task_id'] = taskId;
-        request.fields['data'] = jsonEncode(message);
-        request.headers['Content-Type'] = 'multipart/form-data';
-        request.files.add(http.MultipartFile.fromBytes('file', file.bytes!,
-            filename: file.name));
-
-        request.send().then((response) async {
-          var responseData = await response.stream.bytesToString();
-
-          if (response.statusCode != 200) {
-            controller.addError(responseData);
-            controller.close();
-            return;
-          }
-
-          controller
-              .add(WebsocketMessageResponse.fromJson(jsonDecode(responseData)));
-        }).catchError((error) {
-          controller.addError(error);
-          controller.close();
-        });
-
-        break;
-      case WebsocketMessageCommand.getCalibration:
-        break;
-      case WebsocketMessageCommand.identifyCircles:
-        break;
-    }
-
-    // Ensure the subscription is cancelled when the stream is closed
-    controller.onCancel = () => subscription.cancel();
-
-    return controller.stream;
   }
 
   void close() {

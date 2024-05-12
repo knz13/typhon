@@ -43,9 +43,9 @@ void MetalRenderingEngine::Render(RenderingCanvas& canvas) {
         id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
         renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(clear_color.x * 1, clear_color.y * 1, clear_color.z * 1, 1);
         renderPassDescriptor.colorAttachments[0].texture = drawable.texture;
-        renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-        renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-        id <MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+            renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+            renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+            id <MTLRenderCommandEncoder> renderEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
 
         ImGui_ImplMetal_NewFrame(renderPassDescriptor);
         ImGui_ImplGlfw_NewFrame();
