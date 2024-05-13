@@ -16,6 +16,9 @@
 }
 
 - (void)drawInMTKView:(MTKView *)view {
+    // print debug message
+
+    NSLog(@"Drawing in old view");
 }
 
 @end

@@ -92,7 +92,6 @@ if not os.path.exists("src/vendor"):
 
 if not os.path.exists("src/vendor/bgfx"):
     os.system('git clone --recursive https://github.com/bkaradzic/bgfx.cmake src/vendor/bgfx')
-
 if not os.path.exists("src/vendor/dylib"):
     os.system('git clone --recursive https://github.com/martin-olivier/dylib src/vendor/dylib')
 if not os.path.exists("src/vendor/entt"):

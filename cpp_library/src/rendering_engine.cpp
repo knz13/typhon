@@ -49,10 +49,10 @@ void *RenderingEngine::GetPlatformSpecificPointer()
 void RenderingEngine::InitializeEngine()
 {
 #ifdef __APPLE__
-    // platformSpecificRenderingEngine = std::make_unique<MacOSEngine>();
+    platformSpecificRenderingEngine = std::make_unique<MacOSEngine>();
 #endif
 
-    // platformSpecificRenderingEngine.get()->InitializeRenderingEngine();
+    platformSpecificRenderingEngine.get()->InitializeRenderingEngine();
 
     std::string vertexShader = R"(
 #version 330 core

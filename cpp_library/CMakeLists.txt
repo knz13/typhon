@@ -90,9 +90,6 @@ SET(FETCHCONTENT_QUIET FALSE)
 
     list(APPEND typhon_INCLUDES ${PROJECT_SOURCE_DIR}/src/vendor/crunch/crunch/)
 
-    
-
-
     list(APPEND typhon_LIBRARIES libcrunch)
 
 

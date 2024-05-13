@@ -3,7 +3,32 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:native_context_menu/native_context_menu.dart';
+
+class MenuItem {
+  MenuItem({
+    required this.title,
+    this.onSelected,
+    this.action,
+    this.items = const <MenuItem>[],
+  });
+
+  late int _id;
+  final String title;
+  final List<MenuItem> items;
+  final Object? action;
+
+  final VoidCallback? onSelected;
+
+  bool get hasSubitems => items.isNotEmpty;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': _id,
+      'title': title,
+      'items': items.map((e) => e.toJson()).toList(),
+    };
+  }
+}
 
 MethodChannel contextMenuChannel = const MethodChannel('context_menu');
 
@@ -59,8 +84,7 @@ void showNativeContextMenu(
     contextMenuChannel.invokeMethod(
         'showContextMenu', buildJSONNativeMessage(options, x, y));
   } else {
-    showContextMenu(ShowMenuArgs(MediaQuery.of(context).devicePixelRatio,
-        Offset(x, y), getMenuItemFromContextMenuOption(options)));
+    throw UnsupportedError('This platform is not supported');
   }
 }
 

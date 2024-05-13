@@ -25,13 +25,14 @@ void RenderingEngine::PassPlatformSpecificViewPointer(void *view)
 #else
 
 #endif
-    bgfxInit.resolution.width = 500;
-    bgfxInit.resolution.height = 500;
+
+    bgfxInit.resolution.width = 1500;
+    bgfxInit.resolution.height = 1500;
     bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
     bgfx::init(bgfxInit);
 
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0xffA2EB00, 1.0f, 0);
-    bgfx::setViewRect(0, 0, 0, 500, 500);
+    bgfx::setViewRect(0, 0, 0, 1500, 1500);
 
     bgfx::frame();
 }
@@ -48,10 +49,10 @@ void *RenderingEngine::GetPlatformSpecificPointer()
 void RenderingEngine::InitializeEngine()
 {
 #ifdef __APPLE__
-    // platformSpecificRenderingEngine = std::make_unique<MacOSEngine>();
+    platformSpecificRenderingEngine = std::make_unique<MacOSEngine>();
 #endif
 
-    // platformSpecificRenderingEngine.get()->InitializeRenderingEngine();
+    platformSpecificRenderingEngine.get()->InitializeRenderingEngine();
 
     std::string vertexShader = R"(
 #version 330 core
